@@ -18,6 +18,7 @@
                 </div>
             </button>
 
+            <!-- todo: 디자인 외주 후 수정  -->
             <template slot="popover">
                 <v-popover offset="16" popoverBaseClass="tooltip customPopover">
                     <b-button v-close-popover>Community</b-button>
@@ -34,13 +35,21 @@
                                 >{{ community.name }}</b-button
                             >
                             <template slot="popover">
-                                <b-button
-                                    v-close-popover
-                                    @click="selectCategory(channel)"
-                                    v-for="channel in channelList"
-                                    :key="channel.id"
-                                    >{{ channel.name }}</b-button
+                                <overlay-scrollbars
+                                    style="
+                                        overflow: auto;
+                                        height: 150px;
+                                        width: 120px;
+                                    "
                                 >
+                                    <b-button
+                                        v-close-popover.all
+                                        @click="selectCategory(channel)"
+                                        v-for="channel in channelList"
+                                        :key="channel.id"
+                                        >{{ channel.name }}</b-button
+                                    >
+                                </overlay-scrollbars>
                             </template>
                         </v-popover>
                     </template>
@@ -70,6 +79,7 @@ export default class Tooltip extends Vue {
     async mounted() {
         this.communityList = await this.$api.getCommunityList();
     }
+
     async selectCommunity(community) {
         this.selectedCommunity = community;
         this.channelList = await this.$api.getCommunityChannel(community.id);
@@ -83,6 +93,9 @@ export default class Tooltip extends Vue {
 </script>
 
 <style lang="scss" scoped>
+.simplebar-scrollbar::before {
+    background-color: red;
+}
 .tooltip {
     &.popover {
         $color: #f9f9f9;

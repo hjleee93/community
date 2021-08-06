@@ -5,7 +5,7 @@ import store from './store'
 import './api/api';
 import './plugins/firebase'
 import './plugins/axios'
-
+import 'vuedraggable'
 
 import 'tiny-slider'
 import '@/script/utils/svg-loader'
@@ -28,7 +28,11 @@ Vue.use(VTooltip)
 import vuescroll from 'vuescroll/dist/vuescroll-slide';
 Vue.use(vuescroll);
 
-import Toasted from 'vue-toasted'; 
+import 'overlayscrollbars/css/OverlayScrollbars.css';
+import { OverlayScrollbarsPlugin } from 'overlayscrollbars-vue';
+Vue.use(OverlayScrollbarsPlugin);
+
+import Toasted from 'vue-toasted';
 Vue.use(Toasted)
 
 export const bus = new Vue();

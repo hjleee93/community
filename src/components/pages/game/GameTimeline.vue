@@ -9,6 +9,7 @@
         </div>
         <div class="grid-column">
             <about-game :game="game"></about-game>
+            <clipboard-box :game="game"></clipboard-box>
         </div>
     </div>
 </template>
@@ -23,8 +24,9 @@ import EntryPost from "@/components/layout/EntryPost.vue";
 import Feed from "@/components/timeline/Feed.vue";
 import AboutGame from "@/components/pages/game/GameDescBox.vue";
 import Screenshot from "@/components/pages/game/GameScreenshot.vue";
+import ClipboardBox from "@/components/pages/game/ClipboardBox.vue";
 @Component({
-    components: { EntryPost, Feed, AboutGame, Screenshot },
+    components: { EntryPost, Feed, AboutGame, Screenshot, ClipboardBox },
 })
 export default class GameTimeline extends Vue {
     @Prop() game!: any;

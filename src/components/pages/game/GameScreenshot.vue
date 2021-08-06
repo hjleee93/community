@@ -9,13 +9,25 @@
             background="#ababab"
             style="text-shadow: 1px 1px 2px #333"
         >
-            <b-carousel-slide
-                v-for="img in imgList"
-                :key="img.id"
-                :style="`background:url(${img.url}) center
+            <!-- <div @click="openImgModal(img.url)"> -->
+                <b-carousel-slide
+                    v-for="img in imgList"
+                    :key="img.id"
+                    :style="`background:url(${img.url}) center
                                 center / cover no-repeat; height:400px; border-radius:12px;`"
-            ></b-carousel-slide>
+                ></b-carousel-slide>
+            <!-- </div> -->
         </b-carousel>
+
+        <!-- <b-modal
+            modal-class="orgin-img-modal"
+            centered
+            hide-header
+            hide-footer
+            ref="originScreenShootImgModal"
+        >
+            <b-img :src="img.url" @click="closeImgModal" />
+        </b-modal> -->
     </div>
 </template>
 
@@ -32,6 +44,13 @@ export default class GameScreenshot extends Vue {
 
     async mounted() {
         this.imgList = await this.$api.screenshot(this.gameId);
+    }
+    openImgModal() {
+        console.log("?");
+        (this.$refs.originScreenShootImgModal as any).hide();
+    }
+    closeImgModal() {
+        (this.$refs.originScreenShootImgModal as any).hide();
     }
 }
 </script>

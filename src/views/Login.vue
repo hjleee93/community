@@ -8,7 +8,6 @@
             </div>
 
             <h2 class="landing-info-pretitle">Welcome to</h2>
-            {{ isGoolgeLoginDone }}
 
             <h1 class="landing-info-title">Zempie</h1>
 
@@ -324,6 +323,8 @@ export default class Login extends Vue {
         const { $dirty, $error } = this.$v.form[name]!;
         return $dirty ? !$error : null;
     }
+
+    //login enter key event
     checkLogin(event) {
         if (event.which === 13) {
             this.onSubmit();

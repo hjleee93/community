@@ -31,8 +31,6 @@
                 :to="`/community/${community.id}/manageChannel`"
                 >채널 관리</router-link
             >
-
-            <p class="simple-tab-item">Blog Posts</p>
         </div>
         <router-view></router-view>
     </div>

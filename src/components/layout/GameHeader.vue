@@ -161,8 +161,6 @@
 
                     <p class="section-menu-item-text">Videos</p>
                 </router-link>
-
-               
             </div>
 
             <div
@@ -229,6 +227,14 @@ export default class GameHeader extends Vue {
             path: `/play/${this.game.pathname}`,
         });
         window.open(routerLink.href, "_blank");
+    }
+
+    @Watch("game", { immediate: true })
+    watchImg(val: any) {
+        // console.log("watch userInfo", val);
+        this.$nextTick(() => {
+            this.hexagon.init();
+        });
     }
 }
 </script>

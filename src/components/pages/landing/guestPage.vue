@@ -19,8 +19,8 @@
                 <div class="interactive-input dark search-bar">
                     <input
                         type="text"
-                        id="search-main"
-                        name="search_main"
+                        id="search-group"
+                        name="search_group"
                         placeholder="Search for community"
                         v-model="searchInput"
                         @keyup.enter="searchCommunity"

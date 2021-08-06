@@ -108,7 +108,7 @@
                     </svg>
                 </div>
 
-                <div class="profile-header-info-actions" v-if="user">
+                <div class="profile-header-info-actions" >
                     <p
                         class="profile-header-info-action button secondary"
                         @click="subscribe"
@@ -132,12 +132,13 @@
                     </div>
                     <div>
                         <div
+                       
                             class="simple-dropdown header-settings-dropdown"
                             @click="setting"
                         >
                             <router-link
                                 class="simple-dropdown-link"
-                                :to="`/community/${community.id}/setting`"
+                                :to="`/community/${community && community.id}/setting`"
                             >
                                 Group setting
                             </router-link>
@@ -277,7 +278,7 @@ export default class CommunityHeader extends Vue {
 
     created() {
         this.community = this.$api.getCommunityInfo(this.communityId);
-        console.log(this.user);
+        // console.log(this.user);
     }
     mounted() {
         this.dropdown.init();
@@ -286,7 +287,6 @@ export default class CommunityHeader extends Vue {
 
     subscribe() {
         const result = this.$api.subscribeCommunity(this.communityId, 1);
-        console.log("subscribes", result);
     }
     setting() {
         // (this.$refs.dropbox as HTMLElement).click();

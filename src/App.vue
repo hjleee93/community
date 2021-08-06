@@ -43,6 +43,7 @@ export default class App extends Vue {
 // @import "./css/styles.css";
 @import "./css/modal.scss";
 @import "./css/common.scss";
+@import "./css/simplebar.css";
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap");
 
 #app {

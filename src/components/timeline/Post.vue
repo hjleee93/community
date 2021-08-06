@@ -116,7 +116,7 @@
             </div>
         </div>
 
-        <vue-scroll style="height: 65px" :ops="ops">
+        <vue-scroll style="height: 70px" :ops="ops">
             <div
                 @mousewheel="disableWheel"
                 class="
@@ -656,9 +656,9 @@ export default class Post extends Vue {
                 fitToScreen: true,
                 theme: "outline",
                 position: "top-center",
-                className:'toast-success',
+                className: "toast-success",
                 duration: 3000,
-                type:'success',
+                type: "success",
                 action: {
                     text: "X",
                     onClick: (e, toastObject) => {
@@ -672,9 +672,9 @@ export default class Post extends Vue {
                 fitToScreen: true,
                 theme: "outline",
                 position: "top-center",
-                className:'toast-error',
+                className: "toast-error",
                 duration: 3000,
-                type:'error',
+                type: "error",
                 action: {
                     text: "X",
                     onClick: (e, toastObject) => {
@@ -748,7 +748,6 @@ export default class Post extends Vue {
         this.isEditorEmpty = state;
     }
 
-   
     getChannel(channel) {
         this.selectedCommunity = Object.assign(this.selectedCommunity, {
             channel: channel,

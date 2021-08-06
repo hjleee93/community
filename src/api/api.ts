@@ -155,7 +155,6 @@ export default class Api {
         if (id === 2) {
             result = [{
 
-
                 "id": 1,
                 "created_at": 1622615373000,
                 "name": "general",
@@ -166,6 +165,78 @@ export default class Api {
             },
             {
                 "id": 2,
+                "created_at": 1622615373000,
+                "name": "private",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/aarkKHQ2eBWDgSC0A3U6/aa591b33-341b-41aa-a4a8-924bcc003c46.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "private"
+            }, {
+
+                "id": 3,
+                "created_at": 1622615373000,
+                "name": "general",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/kSlBLJlsKBVuI0j1MQlv/73d85711-031c-472e-8579-fd017e9ddada.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "public"
+            },
+            {
+                "id": 4,
+                "created_at": 1622615373000,
+                "name": "private",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/aarkKHQ2eBWDgSC0A3U6/aa591b33-341b-41aa-a4a8-924bcc003c46.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "private"
+            }, {
+
+                "id": 5,
+                "created_at": 1622615373000,
+                "name": "general",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/kSlBLJlsKBVuI0j1MQlv/73d85711-031c-472e-8579-fd017e9ddada.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "public"
+            },
+            {
+                "id": 6,
+                "created_at": 1622615373000,
+                "name": "private",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/aarkKHQ2eBWDgSC0A3U6/aa591b33-341b-41aa-a4a8-924bcc003c46.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "private"
+            }, {
+
+                "id": 7,
+                "created_at": 1622615373000,
+                "name": "general",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/kSlBLJlsKBVuI0j1MQlv/73d85711-031c-472e-8579-fd017e9ddada.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "public"
+            },
+            {
+                "id": 8,
+                "created_at": 1622615373000,
+                "name": "private",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/aarkKHQ2eBWDgSC0A3U6/aa591b33-341b-41aa-a4a8-924bcc003c46.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "private"
+            }, {
+
+                "id": 9,
+                "created_at": 1622615373000,
+                "name": "general",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/kSlBLJlsKBVuI0j1MQlv/73d85711-031c-472e-8579-fd017e9ddada.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "public"
+            },
+            {
+                "id": 10,
                 "created_at": 1622615373000,
                 "name": "private",
                 "description": "null",
@@ -187,6 +258,101 @@ export default class Api {
             },
             {
                 "id": 2,
+                "created_at": 1622615373000,
+                "name": "channel2",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/aarkKHQ2eBWDgSC0A3U6/aa591b33-341b-41aa-a4a8-924bcc003c46.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "private"
+            }, {
+
+
+                "id": 3,
+                "created_at": 1622615373000,
+                "name": "channel1",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/kSlBLJlsKBVuI0j1MQlv/73d85711-031c-472e-8579-fd017e9ddada.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "public"
+            },
+            {
+                "id": 4,
+                "created_at": 1622615373000,
+                "name": "channel2",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/aarkKHQ2eBWDgSC0A3U6/aa591b33-341b-41aa-a4a8-924bcc003c46.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "private"
+            }, {
+
+
+                "id": 5,
+                "created_at": 1622615373000,
+                "name": "channel1",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/kSlBLJlsKBVuI0j1MQlv/73d85711-031c-472e-8579-fd017e9ddada.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "public"
+            },
+            {
+                "id": 6,
+                "created_at": 1622615373000,
+                "name": "channel2",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/aarkKHQ2eBWDgSC0A3U6/aa591b33-341b-41aa-a4a8-924bcc003c46.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "private"
+            }, {
+
+
+                "id": 7,
+                "created_at": 1622615373000,
+                "name": "channel1",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/kSlBLJlsKBVuI0j1MQlv/73d85711-031c-472e-8579-fd017e9ddada.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "public"
+            },
+            {
+                "id": 8,
+                "created_at": 1622615373000,
+                "name": "channel2",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/aarkKHQ2eBWDgSC0A3U6/aa591b33-341b-41aa-a4a8-924bcc003c46.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "private"
+            }, {
+
+
+                "id": 9,
+                "created_at": 1622615373000,
+                "name": "channel1",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/kSlBLJlsKBVuI0j1MQlv/73d85711-031c-472e-8579-fd017e9ddada.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "public"
+            },
+            {
+                "id": 10,
+                "created_at": 1622615373000,
+                "name": "channel2",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/aarkKHQ2eBWDgSC0A3U6/aa591b33-341b-41aa-a4a8-924bcc003c46.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "private"
+            }, {
+
+
+                "id": 11,
+                "created_at": 1622615373000,
+                "name": "channel1",
+                "description": "null",
+                "profile_img": "https://blush-design.imgix.net/collections/kSlBLJlsKBVuI0j1MQlv/73d85711-031c-472e-8579-fd017e9ddada.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "state": "public"
+            },
+            {
+                "id": 12,
                 "created_at": 1622615373000,
                 "name": "channel2",
                 "description": "null",
