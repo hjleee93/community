@@ -25,6 +25,7 @@ export default Node.create({
     name: 'video',
 
     group: 'block',
+    
 
     atom: true,
 

@@ -1224,66 +1224,132 @@ export default class Api {
 
     }
 
+    // feed detail
     getFeed(id: number) {
-        const result = {
-            "id": 111,
-            "user": {
-                "id": 1,
-                "uid": 'wjZpvIjDEMWUBdXKsUQyR33RWrx2',
-                "status": "owner ",
-                "email": "zempie@google.name",
-                "name": "젬파이",
-                "nickname": "zempieeee",
-                "channel_id": 12,
-                "created_at": 1616117970000,
-                "state": "active || block ",
-                "profile_img": "https://blush-design.imgix.net/collections/Xu9zfHCDvMoRx6YhtcN4/3ab2ecb4-bd1f-4834-82df-89d183c643ca.png?w=800&auto=compress&cs=srgb",
-                "post_cnt": 0,
-                "liked_cnt": 7,
-                "followers_cnt": 123,
-                "followings_cnt": 0,
-                "follows_you": true,
-                "is_following": true,
-                "block_you": false,
-                "is_blocked": false,
-                "mutes_you": false,
-                "is_muted": false,
-                "type": "user"
-            },
-            "created_at": 1625196444865,
-            "attatchment_files": [
-                {
-                    "id": 111,
-                    "type": "image",
-                    "size": 200,
-                    "url": "https://blush-design.imgix.net/collections/kSlBLJlsKBVuI0j1MQlv/73d85711-031c-472e-8579-fd017e9ddada.png?w=800&auto=compress&cs=srgb"
-                },
-
-
-            ],
-            "content": "<div><p>ㄷㅈㄷㅂㄷ</p><img class='attr-img' src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCDSyJJYxEyv3gZclxu6GaczwEGBoIhBAdeA&amp;usqp=CAU' alt='펫플스토리] 고양이 입양하기 전 의식주 마련은 필수 - 부산일보'><p>123</p></div>",
-            "is_private": false,
-            "hashtags": ["tag", "tag1"],
-            "user_tag": [],
-            "liked": true,
-            "like_cnt": 1,
-            "comment_cnt": 5,
-            "read_cnt": 0,
-            "shared_cnt": 0,
-            "posted_at": {
-                "channel_id": 1,
-                "game_id": null,
-                "community": [{
+        let result;
+        if (id === 111) {
+            result = {
+                "id": 111,
+                "user": {
                     "id": 1,
+                    "uid": 'wjZpvIjDEMWUBdXKsUQyR33RWrx2',
+                    "status": "owner ",
+                    "email": "zempie@google.name",
+                    "name": "젬파이",
+                    "nickname": "zempieeee",
+                    "channel_id": 12,
+                    "created_at": 1616117970000,
+                    "state": "active || block ",
+                    "profile_img": "https://blush-design.imgix.net/collections/Xu9zfHCDvMoRx6YhtcN4/3ab2ecb4-bd1f-4834-82df-89d183c643ca.png?w=800&auto=compress&cs=srgb",
+                    "post_cnt": 0,
+                    "liked_cnt": 7,
+                    "followers_cnt": 123,
+                    "followings_cnt": 0,
+                    "follows_you": true,
+                    "is_following": true,
+                    "block_you": false,
+                    "is_blocked": false,
+                    "mutes_you": false,
+                    "is_muted": false,
+                    "type": "user"
+                },
+                "created_at": 1625196444865,
+                "attatchment_files": [
+                    {
+                        "id": 111,
+                        "type": "image",
+                        "size": 200,
+                        "url": "https://blush-design.imgix.net/collections/kSlBLJlsKBVuI0j1MQlv/73d85711-031c-472e-8579-fd017e9ddada.png?w=800&auto=compress&cs=srgb"
+                    },
+
+
+                ],
+                "content": "<div><p>안녕하세요. 피드 디테일입니다. </p><img class='attr-img' src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCDSyJJYxEyv3gZclxu6GaczwEGBoIhBAdeA&amp;usqp=CAU' alt='펫플스토리] 고양이 입양하기 전 의식주 마련은 필수 - 부산일보'><p>사진을 클릭하시면 원본 이미지를 확인하실 수 있습니다. </p></div>",
+                "is_private": false,
+                "hashtags": ["tag", "tag1"],
+                "user_tag": [],
+                "liked": true,
+                "like_cnt": 1,
+                "comment_cnt": 5,
+                "read_cnt": 0,
+                "shared_cnt": 0,
+                "posted_at": {
                     "channel_id": 1,
-                }],
-                "portfolio_id": null,
-            },
-            "poll": null,
-            "scheduled_for": null,
-            "status": "active",
-            "is_retweet": false,
-            "is_pinned": false
+                    "game_id": null,
+                    "community": [{
+                        "id": 1,
+                        "channel_id": 1,
+                    }],
+                    "portfolio_id": null,
+                },
+                "poll": null,
+                "scheduled_for": null,
+                "status": "active",
+                "is_retweet": false,
+                "is_pinned": false
+            }
+        } else if (id === 222) {
+            result = {
+                "id": 111,
+                "user": {
+                    "id": 1,
+                    "uid": 'wjZpvIjDEMWUBdXKsUQyR33RWrx2',
+                    "status": "owner ",
+                    "email": "zempie@google.name",
+                    "name": "젬파이",
+                    "nickname": "zempieeee",
+                    "channel_id": 12,
+                    "created_at": 1616117970000,
+                    "state": "active || block ",
+                    "profile_img": "https://blush-design.imgix.net/collections/Xu9zfHCDvMoRx6YhtcN4/3ab2ecb4-bd1f-4834-82df-89d183c643ca.png?w=800&auto=compress&cs=srgb",
+                    "post_cnt": 0,
+                    "liked_cnt": 7,
+                    "followers_cnt": 123,
+                    "followings_cnt": 0,
+                    "follows_you": true,
+                    "is_following": true,
+                    "block_you": false,
+                    "is_blocked": false,
+                    "mutes_you": false,
+                    "is_muted": false,
+                    "type": "user"
+                },
+                "created_at": 1625196444865,
+                "attatchment_files": [
+                    {
+                        "id": 111,
+                        "type": "image",
+                        "size": 200,
+                        "url": "https://blush-design.imgix.net/collections/kSlBLJlsKBVuI0j1MQlv/73d85711-031c-472e-8579-fd017e9ddada.png?w=800&auto=compress&cs=srgb"
+                    },
+
+
+                ],
+                "content": `<p>안녕하세요</p><p>비디오테스트</p><div class="iframe-wrapper"><iframe src="https://dev-zempie.s3.ap-northeast-2.amazonaws.com/v1/lFP2FM6chmdRRYbN1TGOGQaEVWx2/c/v/xavbc00ks4c78np.mp4" frameborder="3" allowfullscreen="true"></iframe></div><p>오디오 테스트입니다.</p><div class="audio-wrapper"><audio src="https://dev-zempie.s3.ap-northeast-2.amazonaws.com/v1/lFP2FM6chmdRRYbN1TGOGQaEVWx2/c/a/xavb31wks4ew0ez.mp3" controls="true"></audio></div>`,
+                "is_private": false,
+                "hashtags": ["tag", "tag1"],
+                "user_tag": [],
+                "liked": true,
+                "like_cnt": 1,
+                "comment_cnt": 5,
+                "read_cnt": 0,
+                "shared_cnt": 0,
+                "posted_at": {
+                    "channel_id": 1,
+                    "game_id": null,
+                    "community": [{
+                        "id": 1,
+                        "channel_id": 1,
+                    }],
+                    "portfolio_id": null,
+                },
+                "poll": null,
+                "scheduled_for": null,
+                "status": "active",
+                "is_retweet": false,
+                "is_pinned": false
+            }
+
         }
         return result;
 
@@ -2508,12 +2574,39 @@ export default class Api {
     async imageUplaod(src: string) {
         const formData = new FormData();
         if (src) { formData.append('file', src) };
-
-
         const response = await this.request('post', '/community/att/i', formData, true);
         console.log(response)
         return response.result || response;
     }
+
+    //동영상 업로드
+    async videoUplaod(src: string) {
+        const formData = new FormData();
+        if (src) { formData.append('file', src) };
+        // const response = await this.request('post', '/community/att/v', formData, true);
+        // return response.result || response;
+        const response = {
+            "url": "https://dev-zempie.s3.ap-northeast-2.amazonaws.com/v1/lFP2FM6chmdRRYbN1TGOGQaEVWx2/c/v/xavbc00ks4c78np.mp4",
+            "size": 38167218
+        }
+        return response;
+    }
+
+    // 오디오 업로드
+    async audioUplaod(src: string) {
+        const formData = new FormData();
+        if (src) { formData.append('file', src) };
+        console.log(src)
+        // const response = await this.request('post', '/community/att/a', formData, true);
+        // console.log(response)
+        // return response.result || response;
+        const response = {
+            "url": "https://dev-zempie.s3.ap-northeast-2.amazonaws.com/v1/lFP2FM6chmdRRYbN1TGOGQaEVWx2/c/a/xavb31wks4ew0ez.mp3",
+            "size": 10362110
+        }
+        return response;
+    }
+
 
 
 

@@ -249,7 +249,7 @@ const routes: Array<RouteConfig> = [
         component: () => import("@/components/pages/landing/guestPage.vue")
     },
     {
-        path: '/feedDetail/:feedId',
+        path: '/feed/:feedId',
         name: 'feedDetail',
         component: () => import("@/components/timeline/FeedDetail.vue")
     },

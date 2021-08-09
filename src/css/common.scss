@@ -1,5 +1,5 @@
 //post
-
+@use "sass:math";
 a {
     cursor: pointer;
 }
@@ -635,11 +635,58 @@ pre {
 
 }
 
-img {
-    max-width: 100%;
-    height: auto;
+//tiptap
+::v-deep {
+    .ProseMirror {
+      > * + * {
+        margin-top: 0.75em;
+      }
+    }
+    
+  }
+
+  .iframe-wrapper {
+    position: relative;
+    padding-bottom: math.div(100,16)*9%;
+    height: 0;
+    overflow: hidden;
+    width: 100% !important;
+    height: auto !important;
 
     &.ProseMirror-selectednode {
       outline: 3px solid #68CEF8;
     }
+
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
   }
+   
+    .audio-wrapper {    
+   
+        audio{
+            width: 100%;
+            background-color: #f1f3f4;
+            border-radius: 12px;}
+        &.ProseMirror-selectednode {
+            audio{
+                
+                border: 3px solid #68CEF8;
+            }
+   
+    
+      
+    }
+}
+
+
+.post-open-content-body {
+    text-align: left;
+    div > * {
+        margin-top: 0.5em !important;
+    }
+}

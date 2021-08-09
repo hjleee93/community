@@ -60,8 +60,8 @@ export default class ImageUploaderBtn extends Vue {
         } else if (this.activeTab === "blog") {
             // console.log(event.target.files)
             event.target.files.forEach(async (element) => {
-                let imgUrl = await this.$api.imageUplaod(element);
-                bus.$emit("imgUrl", imgUrl.url);
+                let img = await this.$api.imageUplaod(element);
+                bus.$emit("imgUrl", img.url);
             });
             // this.$api.imageUplaod(event.target.files)
             // if (this.fileLoader.checkBlogImgFile(event.target.files)) {

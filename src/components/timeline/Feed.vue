@@ -342,7 +342,7 @@ export default class Feed extends Vue {
                 `/channel/${e.target.attributes["channel-id"].nodeValue}/timeline`
             );
         } else {
-            this.$router.push(`/feedDetail/${this.feed.id}`);
+            this.$router.push(`/feed/${this.feed.id}`);
         }
     }
     postEdit(val: number) {

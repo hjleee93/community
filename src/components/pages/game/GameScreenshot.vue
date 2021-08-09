@@ -9,25 +9,28 @@
             background="#ababab"
             style="text-shadow: 1px 1px 2px #333"
         >
-            <!-- <div @click="openImgModal(img.url)"> -->
+            <div
+                v-for="img in imgList"
+                :key="img.id"
+                @click="openImgModal(img.url)"
+            >
+                <!-- @click="openImgModal(img.url)"> -->
                 <b-carousel-slide
-                    v-for="img in imgList"
-                    :key="img.id"
                     :style="`background:url(${img.url}) center
                                 center / cover no-repeat; height:400px; border-radius:12px;`"
                 ></b-carousel-slide>
-            <!-- </div> -->
+            </div>
         </b-carousel>
 
-        <!-- <b-modal
+        <b-modal
             modal-class="orgin-img-modal"
             centered
             hide-header
             hide-footer
             ref="originScreenShootImgModal"
         >
-            <b-img :src="img.url" @click="closeImgModal" />
-        </b-modal> -->
+            <b-img :src="imgSrc" @click="closeImgModal" />
+        </b-modal>
     </div>
 </template>
 
@@ -41,13 +44,15 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 export default class GameScreenshot extends Vue {
     @Prop() gameId!: number;
     private imgList: file[] = [];
+    private imgSrc: string = "";
 
     async mounted() {
         this.imgList = await this.$api.screenshot(this.gameId);
     }
-    openImgModal() {
-        console.log("?");
-        (this.$refs.originScreenShootImgModal as any).hide();
+    openImgModal(imgSrc: string) {
+        console.log("?", imgSrc);
+        this.imgSrc = imgSrc;
+        (this.$refs.originScreenShootImgModal as any).show();
     }
     closeImgModal() {
         (this.$refs.originScreenShootImgModal as any).hide();

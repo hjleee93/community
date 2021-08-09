@@ -14,6 +14,7 @@
                         <div class="all-post-container"></div>
                         <!-- <img  /> -->
                     </div>
+
                     <div @click="isActive">
                         <channel
                             :channel="channel"

@@ -223,6 +223,7 @@
                 <video-uploader-btn
                     @fileCheckDone="getFileList('video')"
                     :fileLoader="fileLoader"
+                    :activeTab="activeTab"
                 ></video-uploader-btn>
 
                 <!-- /upload video  -->
@@ -230,6 +231,7 @@
                 <audio-uploader-btn
                     @fileCheckDone="getFileList('audio')"
                     :fileLoader="fileLoader"
+                    :activeTab="activeTab"
                 >
                 </audio-uploader-btn>
                 <!-- /upload audio -->

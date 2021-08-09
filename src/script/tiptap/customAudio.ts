@@ -10,7 +10,7 @@ declare module '@tiptap/core' {
     interface Commands<ReturnType> {
         audio: {
 
-            setAudio: (options: { src: string, type: string, controls: boolean }) => ReturnType,
+            setAudio: (options: { src: string, type?: string, controls?: boolean }) => ReturnType,
         }
     }
 }
@@ -61,7 +61,7 @@ export default Node.create({
 
     addCommands() {
         return {
-            setAudio: (options: { src: string, type: string }) => ({ tr, dispatch }) => {
+            setAudio: (options: { src: string, type?: string }) => ({ tr, dispatch }) => {
                 const { selection } = tr
                 const node = this.type.create(options)
                 if (dispatch) {

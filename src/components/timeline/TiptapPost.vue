@@ -318,8 +318,14 @@ export default class TiptapPost extends Vue {
         });
     }
     mounted() {
-        bus.$on("imgUrl", (imgUrl) => {
-            this.editor.chain().focus().setImage({ src: imgUrl }).run();
+        bus.$on("imgUrl", (url) => {
+            this.editor.chain().focus().setImage({ src: url }).run();
+        });
+        bus.$on("videoUrl", (url) => {
+            this.editor.chain().focus().setIframe({ src: url }).run();
+        });
+        bus.$on("audioUrl", (url) => {
+            this.editor.chain().focus().setAudio({ src: url }).run();
         });
     }
     destroyed() {
@@ -332,12 +338,13 @@ export default class TiptapPost extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@use "sass:math";
 .editor-container {
     text-align: left;
     padding: 15px;
     .iframe-wrapper {
         position: relative;
-        padding-bottom: 100/16 * 9%;
+        padding-bottom: math.div(100, 16) * 9%;
         height: 0;
         overflow: hidden;
         width: 100%;
@@ -353,17 +360,7 @@ export default class TiptapPost extends Vue {
             height: 100%;
         }
     }
-    .video-wrapper {
-        position: relative;
-        padding-bottom: 100/16 * 9%;
 
-        overflow: hidden;
-        width: 360px;
-        height: 240px;
-        &.ProseMirror-selectednode {
-            outline: 3px solid #68cef8;
-        }
-    }
     .audio-wrapper {
         position: relative;
 

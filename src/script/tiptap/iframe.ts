@@ -38,13 +38,14 @@ export default Node.create({
         default: null,
       },
       frameborder: {
-        default: 0,
+        default: 3,
       },
       allowfullscreen: {
         default: this.options.allowFullscreen,
         parseHTML: () => {
           return {
             allowfullscreen: this.options.allowFullscreen,
+            
           }
         },
       },
