@@ -87,6 +87,7 @@ export default class ImgPreview extends Vue {
     private bannerImgSrc: string = this.bannerImg;
 
     mounted() {
+        console.log(this.bannerImg)
         bus.$on("profileImgSrc", (src: string) => {
             this.profileImgSrc = src;
         });

@@ -20,6 +20,7 @@
             <!-- comment input -->
 
             <comment-input
+                :commentId="null"
                 :postId="postId"
                 class="bordered-top"
             ></comment-input>

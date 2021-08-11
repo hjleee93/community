@@ -27,8 +27,8 @@
             >
             <router-link
                 class="simple-tab-item"
-                :class="$route.name === 'ManageChannel' ? 'active' : ''"
-                :to="`/community/${community.id}/manageChannel`"
+                :class="$route.name === 'ChannelManage' ? 'active' : ''"
+                :to="`/community/${community.id}/setting/channel`"
                 >채널 관리</router-link
             >
         </div>

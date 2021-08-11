@@ -1,53 +1,58 @@
 <template>
-  <div class="post-comment-form">
-    <div class="user-avatar small no-outline">
-      <div class="user-avatar-content">
-        <div
-          class="hexagon-image-30-32"
-          data-src="../../img/avatar/01.jpg"
-        ></div>
-      </div>
+    <div class="post-comment-form">
+        <div class="user-avatar small no-outline">
+            <div class="user-avatar-content">
+                <div
+                    class="hexagon-image-30-32"
+                    data-src="../../img/avatar/01.jpg"
+                ></div>
+            </div>
 
-      <div class="user-avatar-progress">
-        <div class="hexagon-progress-40-44"></div>
-      </div>
+            <div class="user-avatar-progress">
+                <div class="hexagon-progress-40-44"></div>
+            </div>
 
-      <div class="user-avatar-progress-border">
-        <div class="hexagon-border-40-44"></div>
-      </div>
-    </div>
-    <div class="form-row" v-if="parentId">
-      <div class="form-item reply-container">
-        <div class="user-tag" :class="[parentId ? 'active' : '']">
-          <router-link :to="`/channel/${userTag}/timeline`"
-            >@{{ userTag }}</router-link
-          >
+            <div class="user-avatar-progress-border">
+                <div class="hexagon-border-40-44"></div>
+            </div>
         </div>
-        <div class="form-input small reply-form">
-          <label for="popup-post-reply" class="reply-label">Your Reply</label>
-          <input
-            class="reply-input"
-            type="text"
-            id="popup-post-reply"
-            v-model="content"
-          />
-          <div class="reply-send-wrapper" @click="sendComment">
-            <svg class="icon-send-message">
-              <use xlink:href="#svg-send-message"></use>
-            </svg>
-          </div>
+        <div class="form-row" v-if="parentId">
+            <div class="form-item reply-container">
+                <div class="user-tag" :class="[parentId ? 'active' : '']">
+                    <router-link :to="`/channel/${userTag}/timeline`"
+                        >@{{ userTag }}</router-link
+                    >
+                </div>
+                <div class="form-input small reply-form">
+                    <label for="popup-post-reply" class="reply-label"
+                        >Your Reply</label
+                    >
+                    <input
+                        class="reply-input"
+                        type="text"
+                        id="popup-post-reply"
+                        v-model="content"
+                    />
+                    <div class="reply-send-wrapper" @click="sendComment">
+                        <svg class="icon-send-message">
+                            <use xlink:href="#svg-send-message"></use>
+                        </svg>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <div class="form-row" v-else>
-      <div class="form-item">
-        <div
-          class="form-input small"
-          :class="[editContent ? 'active' : '', parentId ? 'active' : '']"
-        >
-        <!-- todo: css -->
-          <!-- <div
+        <div class="form-row" v-else>
+            <div class="form-item">
+                <div
+                    class="form-input small"
+                    :class="[
+                        editContent ? 'active' : '',
+                        parentId ? 'active' : '',
+                    ]"
+                >
+                    <!-- todo: css -->
+                    <!-- <div
           style="display:inline-block"
             class="quick-post-footer-action text-tooltip-tft-medium"
             data-title="Insert Image"
@@ -66,30 +71,40 @@
               />
             </svg>
           </div> -->
-          <label for="popup-post-reply">Your Reply</label>
+                    <label for="popup-post-reply">Your Reply</label>
 
-          <input type="text" id="popup-post-reply" v-model="content" />
+                    <input
+                        type="text"
+                        id="popup-post-reply"
+                        v-model="content"
+                    />
 
-          <div class="reply-send-wrapper" @click="sendComment">
-            <svg class="icon-send-message">
-              <use xlink:href="#svg-send-message"></use>
-            </svg>
-          </div>
+                    <div class="reply-send-wrapper" @click="sendComment">
+                        <svg class="icon-send-message">
+                            <use xlink:href="#svg-send-message"></use>
+                        </svg>
+                    </div>
+                </div>
+                <div class="checkbox-wrap">
+                    <input
+                        type="checkbox"
+                        :id="'commentState' + commentId"
+                        v-model="isPrivate"
+                    />
+
+                    <div class="checkbox-box">
+                        <svg class="icon-check">
+                            <use xlink:href="#svg-check"></use>
+                        </svg>
+                    </div>
+
+                    <label :for="'commentState' + commentId"
+                        >{{ commentId }}Private Comment</label
+                    >
+                </div>
+            </div>
         </div>
-        <div class="checkbox-wrap">
-          <input type="checkbox" id="commentState" v-model="isPrivate" />
-
-          <div class="checkbox-box">
-            <svg class="icon-check">
-              <use xlink:href="#svg-check"></use>
-            </svg>
-          </div>
-
-          <label for="commentState">Private Comment</label>
-        </div>
-      </div>
     </div>
-  </div>
 </template>
 
 <script lang="ts">
@@ -97,105 +112,106 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import Form from "@/script/form";
 
 @Component({
-  components: {},
+    components: {},
 })
 export default class CommentInput extends Vue {
-  @Prop() postId!: any;
-  @Prop() parentId!: any;
-  @Prop() editContent!: any;
+    @Prop() postId!: any;
+    @Prop() parentId!: any;
+    @Prop() editContent!: any;
+    @Prop() commentId!: number;
 
-  private content: string = "";
-  private isPrivate: boolean = false;
-  private userTag: string = "";
-  mounted() {
-    Form.formInput();
-    if (this.editContent) {
-      this.content = this.editContent;
+    private content: string = "";
+    private isPrivate: boolean = false;
+    private userTag: string = "";
+    mounted() {
+        Form.formInput();
+        if (this.editContent) {
+            this.content = this.editContent;
+        }
+        //대댓글
+        if (this.parentId) {
+            // this.content = `<router-link @${this.parentId}></router-link>`;
+            this.userTag = this.parentId;
+        }
     }
-    //대댓글
-    if (this.parentId) {
-      // this.content = `<router-link @${this.parentId}></router-link>`;
-      this.userTag = this.parentId;
+
+    //수정 , 작성
+    sendComment() {
+        const result = this.$api.sendComment(
+            this.postId,
+            11,
+            this.isPrivate,
+            this.content,
+            undefined,
+            this.parentId
+        );
+
+        this.content = "";
+        this.isPrivate = false;
+
+        this.$emit("editDone", true);
     }
-  }
-
-  //수정 , 작성
-  sendComment() {
-    const result = this.$api.sendComment(
-      this.postId,
-      11,
-      this.isPrivate,
-      this.content,
-      undefined,
-      this.parentId
-    );
-
-    this.content = "";
-    this.isPrivate = false;
-
-    this.$emit("editDone", true);
-  }
 }
 </script>
 
 
 <style scoped>
 .reply-send-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 60px;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  right: 0;
-  cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
 }
 .icon-send-message:hover {
-  fill: #fff;
+    fill: #fff;
 }
 .checkbox-wrap label {
-  text-align: left;
+    text-align: left;
 }
 .checkbox-wrap {
-  margin-top: 8px;
+    margin-top: 8px;
 }
 
 .checkbox-wrap input[type="checkbox"]:checked + .checkbox-box,
 .checkbox-wrap input[type="radio"]:checked + .checkbox-box {
-  background-color: rgb(0 0 0 / 10%);
-  border-color: #3f485f;
+    background-color: rgb(0 0 0 / 10%);
+    border-color: #3f485f;
 }
 .checkbox-wrap input[type="checkbox"]:checked + .checkbox-box .icon-check,
 .checkbox-wrap input[type="radio"]:checked + .checkbox-box .icon-check {
-  fill: #ffffff;
+    fill: #ffffff;
 }
 .checkbox-wrap .checkbox-box .icon-check {
-  fill: transparent;
-  transition: fill 0.2s ease-in-out;
+    fill: transparent;
+    transition: fill 0.2s ease-in-out;
 }
 .user-tag {
-  font-weight: 700;
-  margin-left: 10px;
+    font-weight: 700;
+    margin-left: 10px;
 }
 .form-input.small {
-  height: 48px;
+    height: 48px;
 }
 .reply-container {
-  display: flex;
-  align-items: center;
-  background-color: #1d2333;
-  border: 1px solid #3f485f;
-  color: #fff;
-  transition: border-color 0.2s ease-in-out;
-  border-radius: 12px;
+    display: flex;
+    align-items: center;
+    background-color: #1d2333;
+    border: 1px solid #3f485f;
+    color: #fff;
+    transition: border-color 0.2s ease-in-out;
+    border-radius: 12px;
 }
 .reply-form {
-  width: 100%;
+    width: 100%;
 }
 .reply-input {
-  border: none;
-  width: 100%;
+    border: none;
+    width: 100%;
 }
 /* .reply-label {
     margin-left: 20%;

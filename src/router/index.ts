@@ -124,9 +124,14 @@ const routes: Array<RouteConfig> = [
                 component: () => import("@/components/pages/community/CommunitySettingMember.vue"),
             },
             {
-                path: '/community/:community_id/manageChannel',
-                name: 'ManageChannel',
-                component: () => import("@/components/pages/community/ManageChannel.vue"),
+                path: '/community/:community_id/setting/channel',
+                name: 'ChannelManage',
+                component: () => import("@/components/pages/community/channel/ChannelManage.vue"),
+            },
+            {
+                path: '/community/:community_id/setting/channel/:channel_id',
+                name: 'EditChannel',
+                component: () => import("@/components/pages/community/channel/ChannelEdit.vue"),
             },
             {
                 path: '/community/:community_id/channelCreate',
@@ -146,6 +151,7 @@ const routes: Array<RouteConfig> = [
         path: '/community/:community_id',
         name: 'CommunityDetail',
         component: () => import(/* webpackChunkName: "about" */ "@/components/layout/CommunityHeader.vue"),
+        redirect: '/community/:community_id/timeline',
         children: [
             {
                 path: '/community/:community_id/timeline',

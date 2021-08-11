@@ -4,6 +4,7 @@ import Vue, { PluginObject } from "vue";
 import firebase from 'firebase/app';
 import { User } from "@/types/index";
 import { file, fileObjWtUrl } from '@/types/file/file';
+import { Channel } from '@/types/group/group';
 
 export default class Api {
 
@@ -534,6 +535,7 @@ export default class Api {
         return true;
     }
 
+    // channel
     async createChannel(community_id: number, name: string, description: string, is_private: boolean, profile_img?: string) {
         const formData = new FormData();
 
@@ -552,6 +554,82 @@ export default class Api {
         return true;
 
     }
+    async editChannel(community_id: number, channel_id: number, name: string, description: string, is_private: boolean, profile_img?: string) {
+        const formData = new FormData();
+
+        if (community_id) { formData.append('community_id', community_id.toString()); }
+        if (channel_id) { formData.append('channel_id', channel_id.toString()); }
+        if (name) { formData.append('name', name); }
+
+        if (description) { formData.append('description', description); }
+
+        if (is_private) { formData.append('is_private', is_private.toString()); }
+        if (profile_img) { formData.append('profile_img', profile_img); }
+
+        for (var pair of formData.entries()) {
+            console.log(pair[0] + ', ' + pair[1]);
+        }
+
+        return true;
+
+    }
+    async getChannelInfo(community_id: number, channel_id: number) {
+        let result;
+        if (channel_id === 1) {
+            result = {
+                "id": 1,
+                "created_at": 1622615373000,
+                "name": "channel1",
+                "description": "channel1 수정사항 페이지입니다.",
+                "profile_img": "https://blush-design.imgix.net/collections/kSlBLJlsKBVuI0j1MQlv/73d85711-031c-472e-8579-fd017e9ddada.png?w=800&auto=compress&cs=srgb",
+                "sort": 1,
+                "is_private": false
+            }
+        } else {
+            result =
+            {
+                "id": 2,
+                "created_at": 1622615373000,
+                "name": "channel2",
+                "description": "channel2 수정사항 페이지입니다.",
+                "profile_img": "https://blush-design.imgix.net/collections/aarkKHQ2eBWDgSC0A3U6/aa591b33-341b-41aa-a4a8-924bcc003c46.png?w=800&auto=compress&cs=srgb",
+                "sort": 2,
+                "is_private": true
+            }
+        }
+        return result;
+
+    }
+    async deleteChannel(community_id: number, channel_id: number) {
+        return true;
+
+    }
+    async combinedChannel(community_id: number, removed_channel_id: number, combined_channel_id: number) {
+        return true;
+
+    }
+    async getChannelList(community_id: number, channel_id: number) {
+        let result: Channel[] = [{
+            "id": 1,
+            "created_at": 1622615373000,
+            "name": "channel1",
+            "description": "channel1 수정사항 페이지입니다.",
+            "profile_img": "https://blush-design.imgix.net/collections/kSlBLJlsKBVuI0j1MQlv/73d85711-031c-472e-8579-fd017e9ddada.png?w=800&auto=compress&cs=srgb",
+            "sort": 1,
+            "is_private": false
+        }, {
+            "id": 2,
+            "created_at": 1622615373000,
+            "name": "channel2",
+            "description": "channel2 수정사항 페이지입니다.",
+            "profile_img": "https://blush-design.imgix.net/collections/aarkKHQ2eBWDgSC0A3U6/aa591b33-341b-41aa-a4a8-924bcc003c46.png?w=800&auto=compress&cs=srgb",
+            "sort": 2,
+            "is_private": true
+        }
+        ]
+        return result;
+    }
+
 
     // 타임라인
     getTimeline(id: number | string, channelId?: number, portfolioId?: number) {

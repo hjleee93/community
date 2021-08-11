@@ -36,6 +36,7 @@
                     <comment-input
                         @editDone="editDone"
                         :postId="postId"
+                        :commentId="comment.id"
                         :editContent="comment.content"
                     ></comment-input>
                 </template>
@@ -134,7 +135,6 @@
                 </div>
             </div>
         </div>
-
         <modal
             :reportId="comment.id.toString()"
             :title="modalTitle"
@@ -144,12 +144,13 @@
             <template v-slot:reason2>스팸</template>
             <template v-slot:reason3>음란성</template>
         </modal>
-        <comment-input
+        <!-- <comment-input
             v-if="isOpenReply"
             :postId="postId"
+            :commentId="comment.id"
             :parentId="parentId"
             class="post-comment unread reply-2"
-        ></comment-input>
+        ></comment-input> -->
     </div>
 </template>
 

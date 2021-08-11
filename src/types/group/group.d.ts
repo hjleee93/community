@@ -28,7 +28,7 @@ export interface Group {
 export interface Channel {
     id: number;
     created_at: number;
-    title: string;
+    name: string;
     description: string;
     profile_img: string;
     sort: number;

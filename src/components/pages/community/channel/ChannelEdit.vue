@@ -7,9 +7,11 @@
             </div>
 
             <div class="grid grid-3-3-3">
+                <!-- 'https://contattafiles.s3.us-west-1.amazonaws.com/tnt34018/3zSt8zXVMKCNeeG/default_profile.png' -->
                 <img-preview
-                    :profileImg="'https://contattafiles.s3.us-west-1.amazonaws.com/tnt34018/3zSt8zXVMKCNeeG/default_profile.png'"
-                    :bannerImg="'https://contattafiles.s3.us-west-1.amazonaws.com/tnt34018/7tA7006wJaTGd1F/Pasted%20Image%3A%20Jul%2012%2C%202021%20-%2011%3A40%3A07am'"
+                    :key="form.profileImgSrc"
+                    :profileImg="null"
+                    :bannerImg="form.profileImgSrc"
                 ></img-preview>
                 <profile-img-uploader
                     @profileImgSrc="getProfileImgSrc"
@@ -23,7 +25,12 @@
                 <form class="form">
                     <div class="form-row">
                         <div class="form-item">
-                            <div class="form-input small">
+                            <div
+                                class="form-input small"
+                                :class="
+                                    form.channelName.length > 0 ? 'active' : ''
+                                "
+                            >
                                 <b-form-group
                                     label="Channel Name"
                                     label-for="channel-name"
@@ -35,7 +42,7 @@
                                         name="channel-name"
                                         v-model="$v.form.channelName.$model"
                                         :state="
-                                            createChannel
+                                            editChannel
                                                 ? validateState('channelName')
                                                 : undefined
                                         "
@@ -51,7 +58,12 @@
 
                     <div class="form-row">
                         <div class="form-item">
-                            <div class="form-input small mid-textarea">
+                            <div
+                                class="form-input small mid-textare active"
+                                :class="
+                                    form.description.length > 0 ? 'active' : ''
+                                "
+                            >
                                 <b-form-group
                                     label="Description"
                                     label-for="description"
@@ -61,7 +73,7 @@
                                         name="description"
                                         v-model="$v.form.description.$model"
                                         :state="
-                                            createChannel
+                                            editChannel
                                                 ? validateState('description')
                                                 : undefined
                                         "
@@ -104,7 +116,7 @@
                         </div>
                     </div>
                 </form>
-                <div class="button-container" @click="createChannel">
+                <div class="button-container" @click="editChannel">
                     <p
                         class="
                             button
@@ -118,8 +130,96 @@
                         SAVE
                     </p>
                 </div>
+                <div class="button-container" @click="openDeleteChannelModal">
+                    <p class="button small white add-field-button tertiary">
+                        Delete
+                    </p>
+                </div>
             </div>
         </div>
+        <b-modal
+            ref="deleteChannelModal"
+            class="modal-container"
+            centered
+            hide-header
+            hide-footer
+        >
+            <p class="mt-4 text-center" style="color: #000">
+                해당 채널을 삭제하시겠습니까?
+            </p>
+            <p class="my-3 text-center small" style="color: #000">
+                해당 채널의 포스팅을 다른 채널로 옮기시고 싶으신경우 move <br />
+                모든 포스팅을 삭제하고 싶으신 경우 delete를 클릭해주세요
+            </p>
+
+            <transition-group name="fade">
+                <template v-if="isMoveChannel">
+                    <p
+                        v-for="channel in channelList"
+                        :key="channel.id"
+                        class="my-3 text-center small"
+                        style="color: #000"
+                    >
+                        <template v-if="channel.id !== channelId">
+                            <p
+                                @click="combinedChannel(channel.id)"
+                                style="color: #000"
+                            >
+                                {{ channel.name }}
+                            </p></template
+                        >
+                    </p>
+                </template>
+            </transition-group>
+            <div class="button-container">
+                <button
+                    class="popup-box-action half button"
+                    @click="deleteChannel"
+                >
+                    delete
+                </button>
+                <button
+                    class="popup-box-action half button"
+                    @click="moveChannelPosting"
+                >
+                    move
+                </button>
+            </div>
+        </b-modal>
+
+        <b-modal
+            ref="deleteDone"
+            hide-footer
+            hide-header
+            centered
+            modal-class="modal-container"
+        >
+            <template #default="{ close }">
+                <p class="mt-4 text-center" style="color: #000">
+                    삭제가 완료되었습니다.
+                </p>
+                <button class="full button secondary" @click="close()">
+                    확인
+                </button>
+            </template>
+        </b-modal>
+
+        <b-modal
+            ref="combindDone"
+            hide-footer
+            hide-header
+            centered
+            modal-class="modal-container"
+        >
+            <template #default="{ close }">
+                <p class="mt-4 text-center" style="color: #000">
+                    포스팅 이동이 완료되었습니다.
+                </p>
+                <button class="full button secondary" @click="close()">
+                    확인
+                </button>
+            </template>
+        </b-modal>
     </div>
 </template>
 
@@ -135,6 +235,7 @@ import { required, minLength, maxLength } from "vuelidate/lib/validators";
 import ImgPreview from "@/components/common/upload/ImgPreview.vue";
 import ProfileImgUploader from "@/components/common/upload/ProfileImgUploader.vue";
 import BannerImgUploader from "@/components/common/upload/BannerImgUploader.vue";
+import { Channel } from "@/types/group/group";
 
 @Component({
     computed: { ...mapGetters(["user"]) },
@@ -153,7 +254,7 @@ import BannerImgUploader from "@/components/common/upload/BannerImgUploader.vue"
         },
     },
 })
-export default class ChannelCreate extends Vue {
+export default class ChannelEdit extends Vue {
     private form = {
         channelName: "",
         description: "",
@@ -163,18 +264,30 @@ export default class ChannelCreate extends Vue {
     private user!: any;
     private isPrivate: boolean = false;
     private communityId: number = parseInt(this.$route.params.community_id);
+    private channelId: number = parseInt(this.$route.params.channel_id);
+    private channelInfo: Channel = {} as Channel;
+    private channelList: Channel[] = [];
+    private isMoveChannel: boolean = false;
 
-    mounted() {
+    async mounted() {
         this.hexagon.init();
         Form.formInput();
+        this.channelInfo = await this.$api.getChannelInfo(
+            this.communityId,
+            this.channelId
+        );
+        this.form.channelName = this.channelInfo.name;
+        this.form.description = this.channelInfo.description;
+        this.form.profileImgSrc = this.channelInfo.profile_img;
     }
-    async createChannel() {
+    async editChannel() {
         this.$v.form.$touch();
         if (this.$v.form.$anyError) {
             return;
         }
-        const result = await this.$api.createChannel(
+        const result = await this.$api.editChannel(
             this.communityId,
+            this.channelId,
             this.form.channelName,
             this.form.description,
             this.isPrivate,
@@ -194,6 +307,40 @@ export default class ChannelCreate extends Vue {
 
     getProfileImgSrc(imgSrc: string) {
         this.form.profileImgSrc = imgSrc;
+    }
+    openDeleteChannelModal() {
+        this.isMoveChannel = false;
+        (this.$refs.deleteChannelModal as any).show();
+    }
+    async deleteChannel() {
+        let result = await this.$api.deleteChannel(
+            this.communityId,
+            this.channelId
+        );
+        //todo: 백엔드 연결 후 분기 처리
+        console.log(result);
+        (this.$refs.deleteChannelModal as any).hide();
+        (this.$refs.deleteDone as any).show();
+    }
+    async moveChannelPosting() {
+        this.isMoveChannel = true;
+        this.channelList = await this.$api.getChannelList(
+            this.communityId,
+            this.channelId
+        );
+    }
+    async combinedChannel(combined_channel_id: number) {
+        const result = await this.$api.combinedChannel(
+            this.communityId,
+            this.channelId,
+            combined_channel_id
+        );
+        //todo: 분기처리
+        if (result) {
+            (this.$refs.combindDone as any).show();
+            (this.$refs.deleteChannelModal as any).hide();
+        } else {
+        }
     }
 }
 </script>
@@ -224,5 +371,13 @@ export default class ChannelCreate extends Vue {
 }
 .button.white {
     color: white;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
 }
 </style>
