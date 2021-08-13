@@ -46,6 +46,9 @@ export default class ProfileImgUploader extends Vue {
         // let file = files[0];
         // this.filename = file.name;
     }
+    123() {
+       
+    }
 }
 </script>
 

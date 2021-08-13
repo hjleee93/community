@@ -4,7 +4,7 @@
 
         <div class="landing-info">
             <div class="logo">
-                <b-img src="img/zempie_logo.png" />
+                <b-img-lazy src="img/zempie_logo.png" />
             </div>
 
             <h2 class="landing-info-pretitle">Welcome to</h2>
@@ -161,7 +161,7 @@
                     @mouseout="goolgeBtnOut"
                 >
                     <!-- <a class="social-link google" style="width:100%"> -->
-                    <b-img :src="googleBtn"></b-img>
+                    <b-img-lazy :src="googleBtn"></b-img-lazy>
                     <!-- <svg class="icon-google">
                             <use xlink:href="#svg-google"></use>
                         </svg> -->

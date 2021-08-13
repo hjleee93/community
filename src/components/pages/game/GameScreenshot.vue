@@ -29,7 +29,7 @@
             hide-footer
             ref="originScreenShootImgModal"
         >
-            <b-img :src="imgSrc" @click="closeImgModal" />
+            <b-img-lazy :src="imgSrc" @click="closeImgModal" />
         </b-modal>
     </div>
 </template>

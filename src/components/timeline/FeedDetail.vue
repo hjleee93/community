@@ -127,7 +127,7 @@
             hide-footer
             ref="originImgModal"
         >
-            <b-img :src="originImg" @click="closeImgModal" />
+            <b-img-lazy :src="originImg" @click="closeImgModal" />
         </b-modal>
     </article>
 </template>

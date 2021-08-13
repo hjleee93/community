@@ -5,7 +5,7 @@
         <use xlink:href="#svg-cross-thin"></use>
       </svg>
 
-      <b-img :src="img.url"></b-img>
+      <b-img-lazy :src="img.url"></b-img-lazy>
     </div>
   </div>
 </template>
