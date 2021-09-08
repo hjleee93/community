@@ -4,7 +4,7 @@
     @click="moveChannel(channel.id)"
     :id="channel.id"
   >
-    <span class="channel-title">{{ channel.name }}</span>
+    <span class="channel-title">{{ channel.title.slice(0,10) }}</span>
     <div
       :style="`background: url(${
         channel.profile_img || 'img/default.png'

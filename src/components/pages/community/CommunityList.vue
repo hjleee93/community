@@ -35,7 +35,10 @@
                         />
 
                         <!-- <template v-if="isSearched"> -->
-                        <button class="search button primary" @click="searchReset" >
+                        <button
+                            class="search button primary"
+                            @click="searchReset"
+                        >
                             <svg class="icon-cross-thin">
                                 <use xlink:href="#svg-cross-thin"></use>
                             </svg>
@@ -204,13 +207,20 @@ export default class Community extends Vue {
     async created() {
         if (this.$route.query.q) {
             this.searchInput = this.$route.query.q as string;
-            console.log("yes query");
             const query: string = this.$route.query.q as string;
+            console.log("yes query");
             this.communityList = await this.$api.search(query, "community");
             console.log(this.communityList);
         } else {
             console.log("no query");
-            this.communityList = this.$api.getCommunityList();
+            this.$api.group
+                .list()
+                .then((res) => {
+                    this.communityList = res;
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         }
     }
 
@@ -221,16 +231,24 @@ export default class Community extends Vue {
     filterList(filter: number) {
         this.filter = filter;
         if (filter == 0) {
-            this.communityList = this.$api.getCommunityList(filter);
+            // this.communityList = this.$api.getCommunityList(filter);
             console.log(this.communityList);
         } else if (filter == 1) {
-            this.communityList = this.$api.getCommunityList(filter);
+            // this.communityList = this.$api.getCommunityList(filter);
             console.log(this.communityList);
         }
     }
     searchCommunity(e: Event) {
         e.preventDefault();
-        this.communityList = this.$api.search(this.searchInput, "community");
+        this.$api
+            .search(this.searchInput, "community")
+            .then((res) => {
+                this.communityList = res;
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
         if (this.communityList) {
             this.isSearched = true;
         }

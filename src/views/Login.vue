@@ -285,7 +285,7 @@ const pwdValidator = helpers.regex(
             },
             password: {
                 required,
-                pwdValidator,
+                // pwdValidator,
                 minLength: minLength(6),
                 maxLength: maxLength(20),
             },
@@ -362,7 +362,8 @@ export default class Login extends Vue {
                     return;
                 }
 
-                const { user } = result;
+                const { user } = result.result;
+                console.log(result)
                 this.$store.commit("user", user);
                 await LoginManager.login();
                 // this.$store.commit('loginState', LoginState.login );
@@ -457,7 +458,7 @@ export default class Login extends Vue {
             this.$store.commit("idToken", token);
 
             const result = await Vue.$api.user();
-            console.log(result);
+            console.log('result', result);
             // if( result.error && result.error && result.error.message === '잘 못 된 유저 아이디입니다' ) {
             if (result?.error?.code === 20001) {
                 (this.$refs.googleRegisterBtn as any).click();
@@ -469,7 +470,7 @@ export default class Login extends Vue {
             }
 
             const { user } = result;
-            this.$store.commit("user", user);
+            this.$store.commit("user",user);
             console.log("user", user);
             await LoginManager.login();
             // this.$store.commit('loginState', LoginState.login );

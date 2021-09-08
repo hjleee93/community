@@ -13,7 +13,7 @@
             <router-link
                 class="simple-tab-item"
                 :class="$route.name === 'CommunitySetting' ? 'active' : ''"
-                :to="`/community/${community.id}/setting`"
+                :to="`/community/${communityId}/setting`"
                 >정보</router-link
             >
 
@@ -22,13 +22,13 @@
                 :class="
                     $route.name === 'CommunitySettingMember' ? 'active' : ''
                 "
-                :to="`/community/${community.id}/setting/member`"
+                :to="`/community/${communityId}/setting/member`"
                 >유저 관리</router-link
             >
             <router-link
                 class="simple-tab-item"
                 :class="$route.name === 'ChannelManage' ? 'active' : ''"
-                :to="`/community/${community.id}/setting/channel`"
+                :to="`/community/${communityId}/setting/channel`"
                 >채널 관리</router-link
             >
         </div>
@@ -44,10 +44,10 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 })
 export default class CommunitySettingHeader extends Vue {
     private community: any;
-    private communityId = parseInt(this.$route.params.community_id);
-    created() {
-        this.community = this.$api.getCommunityInfo(this.communityId);
-    }
+    private communityId = this.$route.params.community_id;
+    // created() {
+    //     this.community = this.$api.getCommunityInfo(this.communityId);
+    // }
 }
 </script>
 

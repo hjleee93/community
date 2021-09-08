@@ -44,14 +44,13 @@
                     </div>
                 </div>
             </div>
-            <div class="grid grid-3-3-3 ">
-                <div v-for="i in 12" :key="i">
+            <div class="grid grid-3-3-3 ">                
                     <community-card
                         v-for="community in communityList"
                         :key="community.id"
                         :community="community"
                     ></community-card>
-                </div>
+                
             </div>
         </div>
     </div>
@@ -71,8 +70,15 @@ export default class guestPage extends Vue {
     private dropdown: Dropdown = new Dropdown();
     
     created() {
-        this.communityList = this.$api.getCommunityList();
+        this.$api.group.list('recent')
+        .then((res)=>{
+            this.communityList = res;
+        })
+        .catch((err)=>{
+            console.log(err)
+        })        
     }
+    
     mounted() {
         this.dropdown.init();
     }

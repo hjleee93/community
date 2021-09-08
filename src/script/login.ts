@@ -27,13 +27,14 @@ class Login {
                 const cookie = Cookie.read( cookieName );
                 // console.log( cookie, currentUser.uid, cookie === currentUser.uid );
                 if( cookie && cookie === currentUser.uid ) {
-                    const result = await Vue.$api.user();
+                    const result = await Vue.$api.user1();
+                    
                     // console.log('유저정보 세팅 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
                     if( !result || result.error ) {
                         await Login.logout();
                     }
                     else {
-                        const { user } = result;
+                        const { user } = result.result;
                         store.commit('user', user);
                         console.log('user commit')
                         await Login.login();
@@ -76,7 +77,7 @@ class Login {
             // console.log('커스텀토큰 로그인 - 토큰갱신 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
             store.commit('idToken', idToken);
             // console.log(idToken);
-            const result = await Vue.$api.user();
+            const result = await Vue.$api.user1();
             // console.log('커스텀토큰 로그인 - 유저 정보 갱신 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
             if( !result || result.error ) {
                 await Login.logout();

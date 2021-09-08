@@ -1,5 +1,5 @@
 <template>
-    <div class="content-grid">
+    <div class="content-grid" v-if="community">
         <div class="profile-header v2">
             <figure class="profile-header-cover liquid">
                 <img :src="`${community.banner_img}`" alt="cover-29" />
@@ -90,13 +90,17 @@
                         class="user-stat big"
                         :to="`/community/${community.id}/timeline`"
                     >
-                        <p class="user-stat-title">{{ community.posts_cnt }}</p>
+                        <p class="user-stat-title">
+                            {{ community.posts_cnt }}
+                        </p>
 
                         <p class="user-stat-text">posts</p>
                     </router-link>
 
                     <div class="user-stat big">
-                        <p class="user-stat-title">{{ community.visit_cnt }}</p>
+                        <p class="user-stat-title">
+                            {{ community.visit_cnt }}
+                        </p>
 
                         <p class="user-stat-text">visits</p>
                     </div>
@@ -108,7 +112,7 @@
                     </svg>
                 </div>
 
-                <div class="profile-header-info-actions" >
+                <div class="profile-header-info-actions">
                     <p
                         class="profile-header-info-action button secondary"
                         @click="subscribe"
@@ -132,13 +136,14 @@
                     </div>
                     <div>
                         <div
-                       
                             class="simple-dropdown header-settings-dropdown"
                             @click="setting"
                         >
                             <router-link
                                 class="simple-dropdown-link"
-                                :to="`/community/${community && community.id}/setting`"
+                                :to="`/community/${
+                                    community && community.id
+                                }/setting`"
                             >
                                 Group setting
                             </router-link>
@@ -273,12 +278,19 @@ export default class CommunityHeader extends Vue {
     private hexagon: Hexagon = new Hexagon();
 
     private communityId = parseInt(this.$route.params.community_id);
-    private community: any;
-    private user!: User;
+    private community: any = {};
+    private user!: any;
 
     created() {
-        this.community = this.$api.getCommunityInfo(this.communityId);
-        // console.log(this.user);
+        this.$api.group
+            .info(this.$route.params.community_id)
+            .then((res) => {
+                this.community = res;
+                this.$store.commit("communityInfo", res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
     mounted() {
         this.dropdown.init();
@@ -286,7 +298,30 @@ export default class CommunityHeader extends Vue {
     }
 
     subscribe() {
-        const result = this.$api.subscribeCommunity(this.communityId, 1);
+        let userId: number = 0;
+        this.$api.user
+            .mine()
+            .then((res) => {
+                if (res.id) {
+                    this.$api.group
+                        .subscribe(
+                            res.id,
+                            this.$route.params.community_id
+                        )
+                        .then((res) => {
+                            console.log(res);
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
+                } else {
+                    throw Error;
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        // const result = this.$api.subscribeCommunity(this.communityId, 1);
     }
     setting() {
         // (this.$refs.dropbox as HTMLElement).click();

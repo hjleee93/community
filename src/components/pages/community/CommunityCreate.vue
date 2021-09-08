@@ -203,6 +203,7 @@ export default class CommunityCreate extends Vue {
     mounted() {
         this.hexagon.init();
         Form.formInput();
+         console.log(this.$store.getters.user)
     }
 
     validateState(name) {
@@ -215,7 +216,8 @@ export default class CommunityCreate extends Vue {
         if (this.$v.form.$anyError) {
             return;
         }
-        const result = await this.$api.createCommunity(
+       
+        const result = await this.$api.group.create(
             this.user.uid,
             this.form.groupName,
             this.form.groupUrl,

@@ -1,5 +1,5 @@
 <template>
-    <div class="grid grid-3-6-3 mobile-prefer-content">
+    <div class="grid grid-3-6-3 mobile-prefer-content" v-if="community">
         <div class="grid-column">
             <div class="widget-box">
                 <p class="widget-box-title">Channels</p>
@@ -13,6 +13,7 @@
                         <span class="all-post-title">All Posts</span>
                         <div class="all-post-container"></div>
                         <!-- <img  /> -->
+                        
                     </div>
 
                     <div @click="isActive">
@@ -71,19 +72,21 @@ import Feed from "@/components/timeline/Feed.vue";
 export default class CommunityTimeline extends Vue {
     private dropdown: Dropdown = new Dropdown();
     private communityId = parseInt(this.$route.params.community_id);
-    private community: any;
+    private community: any ={};
     private timeline: any;
     private isAllPosts: boolean = false;
 
     private channelId: number = -1;
 
     created() {
+        
         this.isAllPosts = true;
-        this.community = this.$api.getCommunityInfo(this.communityId);
+        // this.community = this.$api.getCommunityInfo(this.communityId);
         //all posts
         this.timeline = this.$api.getTimeline(this.communityId);
     }
     mounted() {
+       
         this.dropdown.init();
     }
 
@@ -106,8 +109,10 @@ export default class CommunityTimeline extends Vue {
     watchQuery(query: any) {
         console.log(query);
     }
-    @Watch("timeline")
-    watchTimeline() {}
+    @Watch("$store.getters.communityInfo")
+    watchTimeline() {
+         this.community =  this.$store.getters.communityInfo;
+    }
 }
 </script>
 

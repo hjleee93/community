@@ -7,7 +7,7 @@
         <div class="user-preview-info">
             <div class="user-short-description">
                 <router-link
-                    :to="`/channel/${member.uid}/timeline`"
+                    :to="`/channel/${member.user.uid}/timeline`"
                     class="user-short-description-avatar user-avatar medium"
                 >
                     <div class="user-avatar-border">
@@ -17,7 +17,7 @@
                     <div class="user-avatar-content">
                         <div
                             class="hexagon-image-82-90"
-                            :data-src="member.profile_img"
+                            :data-src="member.user.picture"
                         ></div>
                     </div>
 
@@ -32,9 +32,9 @@
 
                 <p class="user-short-description-title">
                     <router-link
-                        :to="`/channel/${member.uid}/timeline`"
+                        :to="`/channel/${member.user.uid}/timeline`"
                         style="color: #fff"
-                        >{{ member.name }}</router-link
+                        >{{ member.user.name }}</router-link
                     >
                 </p>
                  <p class="user-nickname">
@@ -80,12 +80,11 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Hexagon from "@/plugins/hexagon";
-import { User } from "@/types/index";
 @Component({
     components: {},
 })
 export default class MemberCard extends Vue {
-    @Prop() member!: User;
+    @Prop() member!: any;
     private hexagon: Hexagon = new Hexagon();
 
     mounted() {

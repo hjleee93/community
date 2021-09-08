@@ -6,7 +6,7 @@
                     <h2 class="section-title">
                         Followings
                         <span class="highlighted secondary">{{
-                            followingList.length
+                            followingList.totalCount
                         }}</span>
                     </h2>
                 </div>
@@ -14,7 +14,7 @@
 
             <div class="grid grid-4-4-4">
                 <member-card
-                    v-for="member in followingList"
+                    v-for="member in followingList.edges"
                     :key="member.id"
                     :member="member"
                 ></member-card>
@@ -35,7 +35,15 @@ export default class FollowingList extends Vue {
     private userId = this.$route.params.channel_id;
 
     async created() {
-        this.followingList = await this.$api.followingList(this.userId);
+        // this.followingList = await this.$api.followingList(this.userId);
+
+        this.$api.user.followingList(83)
+        .then((res)=>{
+            this.followingList = res;
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
      
     }
 }

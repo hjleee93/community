@@ -283,8 +283,10 @@ export default class UserHeader extends Vue {
             this.hexagon.init();
         });
     }
-    @Watch("")
-    followUser() {}
+    
+    followUser() {
+        const result = this.$api.follow(this.userUid);
+    }
 }
 </script>
 

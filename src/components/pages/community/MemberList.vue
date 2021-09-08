@@ -48,11 +48,16 @@ export default class MemberList extends Vue {
     private memberList: User[] = [];
     private user!: User;
     created() {
-        this.memberList = this.$api.getCommunityMember(this.communityId);
+        this.$api.group
+            .members(this.$route.params.community_id)
+            .then((res) => {
+                this.memberList = res.edges;
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
-    mounted() {
-        console.log("mounted");
-    }
+   
 
     async followUser() {
         if (!this.user) {
@@ -61,8 +66,6 @@ export default class MemberList extends Vue {
             console.log("follow");
         }
     }
-
-  
 }
 </script>
 

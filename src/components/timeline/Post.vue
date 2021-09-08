@@ -618,6 +618,7 @@ export default class Post extends Vue {
     async uploadPost() {
         let date = this.reserved_date + "T" + this.reserved_time;
         let scheduledTime = moment(date).valueOf();
+        
         console.log(
             "result",
             this.activeTab,
@@ -633,10 +634,11 @@ export default class Post extends Vue {
             scheduledTime
         );
 
-        const result = await this.$api.uploadpost(
-            "123",
-            // this.user.uid,
+        const result = await this.$api.post.upload(
+            // "123",
+            this.user.uid,
             this.activeTab,
+            'PUBLIC',
             this.fileLoader.fileObj,
             this.isPrivate,
             this.$store.getters.postContents,

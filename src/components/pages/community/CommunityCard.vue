@@ -51,8 +51,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-
 import Hexagon from "@/plugins/hexagon";
+
 @Component({
     components: {},
 })

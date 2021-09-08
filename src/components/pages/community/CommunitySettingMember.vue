@@ -49,7 +49,14 @@ export default class CommunitySettingMember extends Vue {
     private memberList: any = [];
 
     created() {
-        this.memberList = this.$api.getCommunityMember(this.communityId);
+         this.$api.group
+            .members(this.$route.params.community_id)
+            .then((res) => {
+                this.memberList = res.edges;
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
     blockMember() {}
     outMember() {}

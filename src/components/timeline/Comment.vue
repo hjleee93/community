@@ -144,13 +144,13 @@
             <template v-slot:reason2>스팸</template>
             <template v-slot:reason3>음란성</template>
         </modal>
-        <!-- <comment-input
+        <comment-input
             v-if="isOpenReply"
             :postId="postId"
             :commentId="comment.id"
             :parentId="parentId"
             class="post-comment unread reply-2"
-        ></comment-input> -->
+        ></comment-input>
     </div>
 </template>
 
@@ -214,6 +214,7 @@ export default class Comment extends Vue {
     }
 
     openReply(comment: any) {
+        console.log(comment)
         this.isOpenReply = !this.isOpenReply;
         this.parentId = this.comment.id;
     }

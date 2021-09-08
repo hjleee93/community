@@ -17,7 +17,7 @@
                             <div class="user-avatar-content">
                                 <div
                                     class="hexagon-image-40-44"
-                                   :data-src="community.profile_img"
+                                    :data-src="community.profile_img"
                                     style="
                                         width: 40px;
                                         height: 44px;
@@ -76,9 +76,18 @@ export default class JoinedCommunity extends Vue {
 
     async mounted() {
         this.hexagon.init();
-        this.communityList = await this.$api.joinedCommunityList(this.userUid);
+        // this.communityList = await this.$api.joinedCommunityList(this.userUid);
 
-        console.log(this.communityList);
+        this.$api.user
+            .groupList(83)
+            .then((res) => {
+                this.communityList = res;
+                console.log('list',res)
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
     }
 }
 </script>
