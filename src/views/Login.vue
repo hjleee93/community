@@ -351,7 +351,7 @@ export default class Login extends Vue {
                 const token = await firebase.auth().currentUser!.getIdToken();
                 this.$store.commit("idToken", token);
 
-                const result = await Vue.$api.user();
+                const result = await Vue.$api.user1();
                 // if( result.error && result.error && result.error.message === '잘 못 된 유저 아이디입니다' ) {
                 if (result?.error?.code === 20001) {
                     // alert( this.$t('login.joinError') as string );

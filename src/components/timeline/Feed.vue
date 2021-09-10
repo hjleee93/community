@@ -314,7 +314,11 @@ export default class Feed extends Vue {
     }
 
     created() {
-        this.likeList = this.$api.likeList(this.feed.id);
+        this.$api.post
+            .likeList("38f5b85c-de18-4314-8350-b6b895f28f91")
+            .then((res) => {
+                this.likeList = res;
+            }) 
     }
     copyUrl() {
         let input = document.body.appendChild(document.createElement("input"));

@@ -263,8 +263,8 @@ export default class ChannelEdit extends Vue {
     private hexagon: Hexagon = new Hexagon();
     private user!: any;
     private isPrivate: boolean = false;
-    private communityId: number = parseInt(this.$route.params.community_id);
-    private channelId: number = parseInt(this.$route.params.channel_id);
+    private communityId: string = this.$route.params.community_id;
+    private channelId: string = this.$route.params.channel_id;
     private channelInfo: Channel = {} as Channel;
     private channelList: Channel[] = [];
     private isMoveChannel: boolean = false;
@@ -272,10 +272,7 @@ export default class ChannelEdit extends Vue {
     async mounted() {
         this.hexagon.init();
         Form.formInput();
-        this.channelInfo = await this.$api.getChannelInfo(
-            this.communityId,
-            this.channelId
-        );
+        this.channelInfo = await this.$api.getChannelInfo(123, 123);
         this.form.channelName = this.channelInfo.name;
         this.form.description = this.channelInfo.description;
         this.form.profileImgSrc = this.channelInfo.profile_img;
@@ -285,19 +282,19 @@ export default class ChannelEdit extends Vue {
         if (this.$v.form.$anyError) {
             return;
         }
-        const result = await this.$api.editChannel(
-            this.communityId,
-            this.channelId,
-            this.form.channelName,
-            this.form.description,
-            this.isPrivate,
-            this.form.profileImgSrc
-        );
+        // const result = await this.$api.editChannel(
+        //     this.communityId,
+        //     this.channelId,
+        //     this.form.channelName,
+        //     this.form.description,
+        //     this.isPrivate,
+        //     this.form.profileImgSrc
+        // );
 
-        //todo: 백엔드 연결 후 분기 처리
-        if (result) {
-            this.$router.push(`/community/${this.communityId}/setting/channel`);
-        }
+        // //todo: 백엔드 연결 후 분기 처리
+        // if (result) {
+        //     this.$router.push(`/community/${this.communityId}/setting/channel`);
+        // }
     }
 
     validateState(name) {
@@ -313,26 +310,31 @@ export default class ChannelEdit extends Vue {
         (this.$refs.deleteChannelModal as any).show();
     }
     async deleteChannel() {
-        let result = await this.$api.deleteChannel(
-            this.communityId,
-            this.channelId
-        );
-        //todo: 백엔드 연결 후 분기 처리
-        console.log(result);
-        (this.$refs.deleteChannelModal as any).hide();
-        (this.$refs.deleteDone as any).show();
+        this.$api.group.channel
+            .delete(this.communityId, this.channelId)
+            .then((res) => {
+                console.log(res);
+            });
+
+        // let result = await this.$api.deleteChannel(
+        //     this.communityId,
+        //     this.channelId
+        // );
+        // //todo: 백엔드 연결 후 분기 처리
+        // console.log(result);
+
+        // (this.$refs.deleteChannelModal as any).hide();
+        // (this.$refs.deleteDone as any).show();
     }
+
     async moveChannelPosting() {
         this.isMoveChannel = true;
-        this.channelList = await this.$api.getChannelList(
-            this.communityId,
-            this.channelId
-        );
+        this.channelList = await this.$api.getChannelList(1234, 123);
     }
     async combinedChannel(combined_channel_id: number) {
         const result = await this.$api.combinedChannel(
-            this.communityId,
-            this.channelId,
+            123,
+            123,
             combined_channel_id
         );
         //todo: 분기처리

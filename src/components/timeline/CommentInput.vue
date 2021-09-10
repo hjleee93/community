@@ -99,7 +99,7 @@
                     </div>
 
                     <label :for="'commentState' + commentId"
-                        >{{ commentId }}Private Comment</label
+                        >Private Comment</label
                     >
                 </div>
             </div>
@@ -118,7 +118,7 @@ export default class CommentInput extends Vue {
     @Prop() postId!: any;
     @Prop() parentId!: any;
     @Prop() editContent!: any;
-    @Prop() commentId!: number;
+    @Prop() commentId!: string;
 
     private content: string = "";
     private isPrivate: boolean = false;
@@ -137,14 +137,31 @@ export default class CommentInput extends Vue {
 
     //수정 , 작성
     sendComment() {
-        const result = this.$api.sendComment(
-            this.postId,
-            11,
-            this.isPrivate,
-            this.content,
-            undefined,
-            this.parentId
-        );
+        console.log(this.commentId);
+        const commentObj = {
+            user_id: 83,
+            parent_id: this.parentId,
+            post_id: "38f5b85c-de18-4314-8350-b6b895f28f91",
+            content: this.content,
+            is_private: this.isPrivate,
+            type: "COMMENT",
+            attatchment_files: undefined,
+        };
+
+        if (this.commentId) {
+            this.$api.comment.update(this.commentId, commentObj).then((res) => {
+                console.log(res);
+            });
+        } else {
+            this.$api.comment
+                .upload(commentObj)
+                .then((res) => {
+                    console.log(res);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
 
         this.content = "";
         this.isPrivate = false;

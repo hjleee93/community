@@ -12,7 +12,7 @@ class FileLoader {
         store.commit('isClearEditor', false)
         // let fileUrl: string | null | ArrayBuffer;
         let reader = new FileReader();
-        reader.onload = callback;
+        reader.onload = callback(file);
         reader.readAsDataURL(file);
     }
 
@@ -22,9 +22,9 @@ class FileLoader {
         console.log('checkImgFile', files)
         let totalImgCnt = files.length + this.fileObj.img.length;
 
-        let fileSize: number = 0;
-        let fileName: string = '';
-        let fileContentType: string = '';
+        // let fileSize: number = 0;
+        // let fileName: string = '';
+        // let fileContentType: string = '';
 
         if (files.length > 5 || totalImgCnt > 5) {
             alert("이미지 개수는 최대 5개입니다");
@@ -39,25 +39,25 @@ class FileLoader {
                         return false;
 
                     }
-                    fileSize = files[i].size;
-                    fileName = files[i].name;
-                    fileContentType = files[i].type;
+                    // fileSize = files[i].size;
+                    // fileName = files[i].name;
+                    // fileContentType = files[i].type;
 
-                    // this.imgLoad(files[i]);
-                    this.getFileUrl(files[i], e => {
-                        this.fileObj.img.push({
-                            size: fileSize,
-                            name: fileName,
-                            contentType: fileContentType,
-                            url: e.target.result
-                        });
+                    // // this.imgLoad(files[i]);
+                    // this.getFileUrl(files[i], e => {
+                    //     this.fileObj.img.push({
+                    //         size: fileSize,
+                    //         name: fileName,
+                    //         contentType: fileContentType,
+                    //         url: e.target.result
+                    //     });
 
-                    })
+                    // })
                 }
             }
 
-            console.log('checkImgFile', this.fileObj)
-            return this.fileObj;
+            // console.log('checkImgFile', this.fileObj)
+            // return this.fileObj;
         }
     }
 

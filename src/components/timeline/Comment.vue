@@ -1,8 +1,10 @@
 <template>
-    <div>
+<!-- v-if="comment && !comment.parent_id" -->
+    <div  >
         <!--  unread reply-2 -->
-        <div class="post-comment">
+        <div class="post-comment" v-if="comment && !comment.parent_id">
             <!-- {{userInfo}} -->
+            
             <router-link
                 class="user-avatar small no-outline"
                 :to="`/channel/${userInfo && userInfo.uid}/timeline`"
@@ -30,6 +32,7 @@
                         href="profile-timeline.html"
                         >{{ userInfo && userInfo.name }}</a
                     >{{ comment && comment.content }}
+                
                 </template>
                 <!-- edit comment -->
                 <template v-else>
@@ -135,6 +138,13 @@
                 </div>
             </div>
         </div>
+
+        <!-- 대댓글 -->
+        <div v-else>
+            
+        </div>
+        <!-- 대댓글 호출 -->
+        <!-- /대댓글 -->
         <modal
             :reportId="comment.id.toString()"
             :title="modalTitle"
@@ -147,10 +157,10 @@
         <comment-input
             v-if="isOpenReply"
             :postId="postId"
-            :commentId="comment.id"
             :parentId="parentId"
             class="post-comment unread reply-2"
         ></comment-input>
+            <!-- :commentId="comment.id" -->
     </div>
 </template>
 
@@ -198,9 +208,15 @@ export default class Comment extends Vue {
         this.isEditing = false;
     }
 
-    deleteComment(commentId: number) {
-        const result = this.$api.deleteComment(this.postId, commentId);
-        (this.$refs.dropbox as HTMLElement).click();
+    deleteComment(commentId: string) {
+        this.$api.comment
+            .delete(this.postId, commentId)
+            .then((res) => {
+                console.log(res);
+            })
+            .finally(() => {
+                (this.$refs.dropbox as HTMLElement).click();
+            });
     }
     reportComment() {
         (this.$refs.dropbox as HTMLElement).click();
@@ -210,11 +226,15 @@ export default class Comment extends Vue {
         //  document.documentElement.style.overflow = 'hidden'
     }
     likeComment() {
-        const result = this.$api.likeComment(this.comment.id);
+        this.$api.comment.like(this.postId, this.comment.id)
+        .then((res) => {
+            console.log(res);
+        });
+        // const result = this.$api.likeComment(this.comment.id);
     }
 
     openReply(comment: any) {
-        console.log(comment)
+        console.log(comment);
         this.isOpenReply = !this.isOpenReply;
         this.parentId = this.comment.id;
     }

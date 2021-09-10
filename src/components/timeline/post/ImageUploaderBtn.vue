@@ -50,12 +50,23 @@ export default class ImageUploaderBtn extends Vue {
     async onFileChange(event: {
         target: { accept: any; files: any; value: string | null };
     }) {
+        //array로 만들어서 보내야됨
+        this.fileLoader.getFileUrl(event.target.files[0], (e) => {
+            this.$api
+                .imageUplaod(e)
+                .then((res) => {
+                    console.log(res);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        });
         //포스팅 타입 분기
         if (this.activeTab === "sns") {
             if (this.fileLoader.checkImgFile(event.target.files)) {
+                // console.log(this.fileLoader.checkImgFile(event.target.files))
                 this.$emit("fileCheckDone");
                 bus.$emit("fileLoader", this.fileLoader);
-                console.log("파일 업로드", event.target.value);
             }
         } else if (this.activeTab === "blog") {
             // console.log(event.target.files)

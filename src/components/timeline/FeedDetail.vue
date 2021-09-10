@@ -66,7 +66,7 @@
                     >
                     <span>{{ createdDate }}</span>
                 </div>
-                <p class="button secondary">follow</p>
+                <p class="button secondary" @click="follow">follow</p>
             </div>
 
             <div class="post-open-content">
@@ -145,7 +145,7 @@ import { dateFormat } from "@/script/moment";
 })
 export default class FeedDetail extends Vue {
     private dropdown: Dropdown = new Dropdown();
-    private feedId = parseInt(this.$route.params.feedId);
+    private feedId = "df6311b7-2dad-4206-9edc-29d497633b2a";
     private feed: any = null;
     private isCopied: boolean = false;
     private createdDate: string = "";
@@ -153,7 +153,15 @@ export default class FeedDetail extends Vue {
     private originImg: string = "";
 
     created() {
-        this.feed = this.$api.getFeed(this.feedId);
+        // this.feed = this.$api.getFeed(this.feedId);
+        this.$api.post
+            .read(this.feedId)
+            .then((res) => {
+                this.feed = res;
+            })
+            .catch((err) => {
+                console.log(err);
+            });
 
         this.createdDate = dateFormat(this.feed.created_at)!;
     }
@@ -161,12 +169,19 @@ export default class FeedDetail extends Vue {
         this.dropdown.init();
     }
     sendLike() {
-        console.log("liked!");
+        this.$api.post
+            .like(this.feedId)
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
     copyUrl() {
         let input = document.body.appendChild(document.createElement("input"));
         input.value = window.location.href;
-        
+
         input.select();
         document.execCommand("copy");
         input.parentNode?.removeChild(input);
@@ -188,8 +203,12 @@ export default class FeedDetail extends Vue {
         }
     }
     closeImgModal() {
-        console.log("?");
         (this.$refs.originImgModal as any).hide();
+    }
+    follow() {
+        this.$api.user.unfollow(50).then((res) => {
+            console.log(res);
+        });
     }
 }
 </script>
@@ -208,8 +227,8 @@ export default class FeedDetail extends Vue {
         margin-top: 0.75em !important;
     }
 }
-.post-open-content{
-  margin-top: 0px !important;
+.post-open-content {
+    margin-top: 0px !important;
 }
 .post-open-content-sidebar {
     display: flex;

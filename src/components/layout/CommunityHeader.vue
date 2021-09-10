@@ -113,6 +113,7 @@
                 </div>
 
                 <div class="profile-header-info-actions">
+
                     <p
                         class="profile-header-info-action button secondary"
                         @click="subscribe"
@@ -285,6 +286,7 @@ export default class CommunityHeader extends Vue {
         this.$api.group
             .info(this.$route.params.community_id)
             .then((res) => {
+                console.log(res)
                 this.community = res;
                 this.$store.commit("communityInfo", res);
             })

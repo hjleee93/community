@@ -118,9 +118,9 @@
                             </a>
 
                             <p class="user-short-description-title small">
-                                <a href="group-timeline.html">{{
+                               {{
                                     channel.name
-                                }}</a>
+                                }}
                             </p>
 
                             <p class="user-short-description-text regular"></p>
@@ -149,15 +149,24 @@ import draggable from "vuedraggable";
     components: { draggable },
 })
 export default class ChannelManage extends Vue {
-    private communityId: number = parseInt(this.$route.params.community_id);
+    private communityId: string = this.$route.params.community_id;
     private channelList: Channel[] = [];
 
     async mounted() {
-        this.channelList = await this.$api.getCommunityChannel(
-            this.communityId
-        );
+        // this.channelList = await this.$api.getCommunityChannel(
+        //     this.communityId
+        // );
 
-        console.log(this.channelList);
+        this.$api.group.channel
+            .list(this.communityId)
+            .then((res) => {
+                console.log(res.edges)
+                this.channelList = res.edges;
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
     }
 }
 </script>

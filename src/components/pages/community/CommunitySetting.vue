@@ -1,5 +1,6 @@
 <template>
-    <div class="grid-column">
+    <div class="grid-column" v-if="community">
+        
         <div class="section-header-info mt-5">
             <h2 class="section-title mb-3">프로필 사진</h2>
             <p class="section-pretitle">
@@ -10,8 +11,8 @@
 
         <div class="grid grid-3-3-3">
             <img-preview
-                :profileImg="community.profile_img"
-                :bannerImg="community.banner_img"
+                :profileImg="form.profile_img"
+                :bannerImg="form.bannerImgSrc"
             ></img-preview>
             <profile-img-uploader
                 @profileImgSrc="getProfileImgSrc"
@@ -77,7 +78,7 @@
             <form class="form">
                 <div
                     class="form-input right community-name"
-                    :class="communityName.length > 0 ? 'active' : ''"
+                    :class="form.groupName.length > 0 ? 'active' : ''"
                 >
                     <b-form-group label="Group name" label-for="communityName">
                         <b-form-input
@@ -99,7 +100,7 @@
 
                 <div
                     class="form-input right community-name form-textarea"
-                    :class="description.length > 0 ? 'active' : ''"
+                    :class="form.description.length > 0 ? 'active' : ''"
                 >
                     <b-form-group label="Description" label-for="description">
                         <b-form-textarea
@@ -120,7 +121,7 @@
                         >
                     </b-form-group>
                     <p class="form-textarea-limit-text">
-                        {{ this.form.description.length }}/2000
+                        {{ form.description.length }}/2000
                     </p>
                 </div>
             </form>
@@ -193,6 +194,7 @@ import ImgPreview from "@/components/common/upload/ImgPreview.vue";
 import ProfileImgUploader from "@/components/common/upload/ProfileImgUploader.vue";
 import BannerImgUploader from "@/components/common/upload/BannerImgUploader.vue";
 import { User } from "@/types";
+import axios, { AxiosError, AxiosResponse } from "axios";
 @Component({
     computed: { ...mapGetters(["user"]) },
     components: { ImgPreview, ProfileImgUploader, BannerImgUploader },
@@ -229,8 +231,8 @@ export default class CommunitySetting extends Vue {
     };
 
     private user!: User;
-    private communityId = parseInt(this.$route.params.community_id);
-    private community: any;
+    private communityId = this.$route.params.community_id;
+    private community: any = {};
     private description: string = "";
     private communityName: string = "";
     // private communityMember: string
@@ -244,18 +246,25 @@ export default class CommunitySetting extends Vue {
     private managerInfo: User = {} as User;
     private selectedManager: string = "";
 
-    async created() {
-        this.community = this.$api.getCommunityInfo(this.communityId);
-        this.form.groupName = this.community.name;
-        this.form.description = this.community.description;
-        this.form.isPrivate = this.community.is_private;
-        this.memberList = this.$api.getCommunityMember(this.communityId);
-        this.managerInfo = await this.$api.getUserInfo(
-            this.community.manager_uid
-        );
-        this.selectedManager = this.managerInfo.uid;
-        this.form.bannerImgSrc = this.community.banner_img;
-        this.form.profileImgSrc = this.community.profile_img;
+     created() {
+        this.$api.group.info(this.communityId)
+        .then((res) => {
+            this.community = res;
+            console.log("???",this.community)
+            this.form.groupName = this.community.name;
+            this.form.description = this.community.description;
+            this.form.isPrivate = true;
+            this.selectedManager = this.community.manager_id;
+            this.form.bannerImgSrc = this.community.banner_img;
+            this.form.profileImgSrc = this.community.profile_img;
+            
+        });
+
+            
+        // this.memberList = this.$api.getCommunityMember(this.communityId);
+        // this.managerInfo = await this.$api.getUserInfo(
+        //     this.community.manager_uid
+        // );
     }
 
     validateState(name) {
@@ -279,29 +288,52 @@ export default class CommunitySetting extends Vue {
             console.log(this.$v.form);
             return;
         }
-        console.log(
-            this.selectedManager,
-            this.communityId,
-            this.form.groupName,
-            this.form.description,
-            this.form.isPrivate,
-            this.form.bannerImgSrc,
-            this.form.profileImgSrc
-        );
-        const result = this.$api.modifiedCommunityInfo(
-            this.communityId,
-            this.form.groupName,
-            this.form.description,
-            this.form.isPrivate,
-            this.form.profileImgSrc,
-            this.form.bannerImgSrc
-        );
-        // console.log(result);
-        // if (result === true) {
-        // }
+
+        // this.$api.group.update()
+        // console.log(
+        //     this.selectedManager,
+        //     this.communityId,
+        //     this.form.groupName,
+        //     this.form.description,
+        //     this.form.isPrivate,
+        //     this.form.bannerImgSrc,
+        //     this.form.profileImgSrc
+        // );
+        // const result = this.$api.modifiedCommunityInfo(
+        //     this.communityId,
+        //     this.form.groupName,
+        //     this.form.description,
+        //     this.form.isPrivate,
+        //     this.form.profileImgSrc,
+        //     this.form.bannerImgSrc
+        // );
+        // // console.log(result);
+        // // if (result === true) {
+        // // }
     }
-    deleteCommunity() {
-        const result = this.$api.deleteCommunity(this.communityId);
+    async deleteCommunity() {
+        this.$api.group
+            .delete(this.communityId)
+            .then((res: AxiosResponse) => {
+                console.log("res", res);
+            })
+            .catch((err:AxiosError) => {
+                console.log("err");
+                // if (err.statusCode === 401) {
+                //     console.log("no auth");
+                // }
+            });
+
+            // try{
+            //      const res = await this.$api.group
+            // .delete(this.communityId)
+            // console.log(res)
+            // }
+            // catch(e){
+            //     console.log(e)
+            // }
+
+        // const result = this.$api.deleteCommunity(this.communityId);
     }
 
     @Watch("description")

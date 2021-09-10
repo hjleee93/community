@@ -384,6 +384,7 @@ import Messages from "@/components/pages/user/Messages.vue";
 import Dropdown from "@/plugins/dropdown";
 import CustomTooltip from "@/components/layout/tooltip/Tooltip.vue";
 import { fileObjWtUrl } from "@/types/file/file";
+import { AxiosError, AxiosResponse } from "axios";
 
 @Component({
     computed: { ...mapGetters(["user"]) },
@@ -618,75 +619,74 @@ export default class Post extends Vue {
     async uploadPost() {
         let date = this.reserved_date + "T" + this.reserved_time;
         let scheduledTime = moment(date).valueOf();
-        
-        console.log(
-            "result",
-            this.activeTab,
-            this.fileLoader.fileObj,
-            this.isPrivate,
-            this.$store.getters.postContents,
-            this.$store.getters.hashtagList,
-            this.$store.getters.userTagList,
-            this.selectedCategory,
-            this.selectedChannelId,
-            this.selectedChannelId,
-            this.selectedPfId,
-            scheduledTime
-        );
 
-        const result = await this.$api.post.upload(
-            // "123",
-            this.user.uid,
-            this.activeTab,
-            'PUBLIC',
-            this.fileLoader.fileObj,
-            this.isPrivate,
-            this.$store.getters.postContents,
-            this.$store.getters.hashtagList,
-            this.$store.getters.userTagList,
-            this.selectedCategory,
-            this.selectedChannelId,
-            this.selectedChannelId,
-            this.selectedPfId,
-            scheduledTime
-        );
+        const postObj = {
+            user_uid: this.user.uid,
+            post_state: "SNS",
+            attatchment_files: [
+                {
+                    priority: 0,
+                    url: "https://contattafiles.s3.us-west-1.amazonaws.com/tnt34018/3zSt8zXVMKCNeeG/default_profile.png",
+                    type: "image",
+                },
+            ],
+            post_contents: this.$store.getters.postContents,
+            visibility: "PUBLIC",
+            hashtags: this.$store.getters.hashtagList,
+            user_tagId: this.$store.getters.userTagList,
+            // game_id: "string",
+            // channel_id: this.$store.getters.us,
+            community: [
+                // {
+                //     id: "string",
+                //     channel_id: "string",
+                // },
+            ],
+            // portfolio_ids: ["string"],
+            // scheduled_for: 0,
+        };
 
-        //todo: 백엔드 연결 후 분기처리
-        if (result) {
-            this.init();
-            this.$emit("closePostModal");
-            this.$toasted.show("포스팅이 완료되었습니다.", {
-                fullWidth: true,
-                fitToScreen: true,
-                theme: "outline",
-                position: "top-center",
-                className: "toast-success",
-                duration: 3000,
-                type: "success",
-                action: {
-                    text: "X",
-                    onClick: (e, toastObject) => {
-                        toastObject.goAway(0);
+        this.$api.post
+            .upload(postObj)
+            .then((res: AxiosResponse) => {
+                 this.init();
+                this.$emit("closePostModal");
+                this.$toasted.show("포스팅이 완료되었습니다.", {
+                    fullWidth: true,
+                    fitToScreen: true,
+                    theme: "outline",
+                    position: "top-center",
+                    className: "toast-success",
+                    duration: 3000,
+                    type: "success",
+                    action: {
+                        text: "X",
+                        onClick: (e, toastObject) => {
+                            toastObject.goAway(0);
+                        },
                     },
-                },
-            });
-        } else {
-            this.$toasted.show("업로드에 실패하였습니다.", {
-                fullWidth: true,
-                fitToScreen: true,
-                theme: "outline",
-                position: "top-center",
-                className: "toast-error",
-                duration: 3000,
-                type: "error",
-                action: {
-                    text: "X",
-                    onClick: (e, toastObject) => {
-                        toastObject.goAway(0);
+                });
+            })
+            .catch((err: AxiosError) => {
+                this.$toasted.show("업로드에 실패하였습니다.", {
+                    fullWidth: true,
+                    fitToScreen: true,
+                    theme: "outline",
+                    position: "top-center",
+                    className: "toast-error",
+                    duration: 3000,
+                    type: "error",
+                    action: {
+                        text: "X",
+                        onClick: (e, toastObject) => {
+                            toastObject.goAway(0);
+                        },
                     },
-                },
+                });
+            })
+            .finally(() => {
+               
             });
-        }
     }
 
     stringToHTML = (str: any) => {

@@ -47,9 +47,17 @@ export default class CommentList extends Vue {
     private selectedCommentId: number = 0;
 
     created() {
-        this.comments = this.$api.getCommentList(this.postId);
+        // this.comments = this.$api.getCommentList(this.postId);
 
-        console.log('this.comments', this.comments)
+        this.$api.comment
+            .list("38f5b85c-de18-4314-8350-b6b895f28f91")
+            .then((res) => {
+                console.log(res.edges);
+
+                this.comments = res.edges;
+            });
+
+        console.log("this.comments", this.comments);
     }
 
     mounted() {
