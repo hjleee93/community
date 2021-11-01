@@ -10,7 +10,7 @@
             <p class="section-banner-title">
                 Groups
                 <span v-if="communityList && communityList.length > 0"
-                    >({{ communityList.length }})</span
+                >({{ communityList.length }})</span
                 >
             </p>
 
@@ -35,7 +35,7 @@
                         />
 
                         <!-- <template v-if="isSearched"> -->
-                        <button class="search button primary" @click="searchReset" >
+                        <button class="search button primary" @click="searchReset">
                             <svg class="icon-cross-thin">
                                 <use xlink:href="#svg-cross-thin"></use>
                             </svg>
@@ -185,14 +185,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import {Component, Prop, Vue} from "vue-property-decorator";
 import PageLoader from "@/components/common/PageLoader.vue";
 import CommunityCard from "@/components/pages/community/CommunityCard.vue";
 
 import Form from "@/script/form";
+import {AxiosError, AxiosResponse} from "axios";
+import {PaginationRes} from "@/types";
+import {scrollDone} from "@/script/scrollManager";
 
 @Component({
-    components: { PageLoader, CommunityCard },
+    components: {PageLoader, CommunityCard},
 })
 export default class Community extends Vue {
     private selectedFilter: number = 0;
@@ -201,43 +204,90 @@ export default class Community extends Vue {
     private filter: number = 0;
     private isSearched: boolean = false;
 
-    async created() {
-        if (this.$route.query.q) {
-            this.searchInput = this.$route.query.q as string;
-            console.log("yes query");
-            const query: string = this.$route.query.q as string;
-            this.communityList = await this.$api.search(query, "community");
-            console.log(this.communityList);
-        } else {
-            console.log("no query");
-            this.communityList = this.$api.getCommunityList();
+    //fetch data object
+    private limit: number = 20;
+    private offset: number = 0;
+    private community: string = null;
+    private sort: string = null;
+    private show: string = null
+    private isAddData: boolean = false;
+
+
+    scrollCheck() {
+        if (scrollDone(document.documentElement)) {
+            this.offset += this.limit;
+            this.fetch();
         }
     }
 
     mounted() {
+        this.fetch();
         Form.formInput();
+        window.addEventListener("scroll", this.scrollCheck);
     }
 
+    beforeDestroy() {
+        window.removeEventListener("scroll", this.scrollCheck);
+    }
+
+    fetch() {
+        const obj = {
+            limit: this.limit,
+            offset: this.offset,
+            community: this.searchInput,
+            sort: this.sort,
+            show: this.show
+        }
+        this.$api.getCommunityList(obj)
+            .then((res: AxiosResponse) => {
+                if (this.isAddData) {
+                    if (res.length > 0) {
+                        this.communityList = [...this.communityList, ...res]
+                    }
+                    else {
+                        window.removeEventListener("scroll", this.scrollCheck);
+                    }
+                }
+                else {
+                    this.communityList = res;
+                    this.isAddData = true
+                }
+            })
+            .catch((err: AxiosError) => {
+                console.log(err)
+            })
+    }
+
+
     filterList(filter: number) {
-        this.filter = filter;
-        if (filter == 0) {
-            this.communityList = this.$api.getCommunityList(filter);
-            console.log(this.communityList);
-        } else if (filter == 1) {
-            this.communityList = this.$api.getCommunityList(filter);
-            console.log(this.communityList);
+        if (filter === 0) {
+            this.fetch()
+        }
+        else if (filter === 1) {
+            this.sort = 'SUBSCRIBE'
+            this.fetch()
+        }
+        else if (filter === 2) {
+            this.sort = 'ALPAHBETIC'
+            this.fetch()
         }
     }
+
     searchCommunity(e: Event) {
         e.preventDefault();
-        this.communityList = this.$api.search(this.searchInput, "community");
+        this.isAddData = false
+        this.fetch()
+
         if (this.communityList) {
             this.isSearched = true;
         }
     }
-    searchReset() {
+
+    searchReset(e: Event) {
+        e.preventDefault();
         console.log("search Reset");
     }
+
     joinCommunity() {
         console.log("joined!");
     }
@@ -249,6 +299,7 @@ svg {
     overflow: hidden;
     vertical-align: middle;
 }
+
 .search.button {
     width: 64px !important;
     position: absolute;
