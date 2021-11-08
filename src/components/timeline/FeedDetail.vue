@@ -145,7 +145,7 @@ import { dateFormat } from "@/script/moment";
 })
 export default class FeedDetail extends Vue {
     private dropdown: Dropdown = new Dropdown();
-    private feedId = parseInt(this.$route.params.feedId);
+    private feedId = this.$route.params.feedId;
     private feed: any = null;
     private isCopied: boolean = false;
     private createdDate: string = "";
@@ -153,15 +153,28 @@ export default class FeedDetail extends Vue {
     private originImg: string = "";
 
     created() {
-        this.feed = this.$api.getFeed(this.feedId);
+        this.fetch();
 
         this.createdDate = dateFormat(this.feed.created_at)!;
+    }
+    fetch(){
+        this.$api.feed(this.feedId)
+            .then((res:AxiosResponse)=>{
+                this.feed = res
+            })
     }
     mounted() {
         this.dropdown.init();
     }
     sendLike() {
         console.log("liked!");
+        this.$api.like(this.feed.id)
+            .then((res: AxiosResponse) => {
+                console.log(res)
+            })
+            .catch((err: AxiosError) => {
+
+            })
     }
     copyUrl() {
         let input = document.body.appendChild(document.createElement("input"));

@@ -2,7 +2,7 @@
     <div class="content-grid">
         <div class="profile-header v2">
             <figure class="profile-header-cover liquid">
-                <img :src="`${community.banner_img}`" alt="cover-29" />
+                <img :src="`${community.banner_img}`" alt="cover-29"/>
             </figure>
 
             <div class="profile-header-info">
@@ -60,7 +60,7 @@
                 <div class="user-stats">
                     <div class="user-stat big">
                         <div class="user-stat-icon">
-                            <template v-if="community.state === 'public'">
+                            <template v-if="community.state === 'PUBLIC'">
                                 <svg class="icon-public">
                                     <use xlink:href="#svg-public"></use>
                                 </svg>
@@ -108,7 +108,7 @@
                     </svg>
                 </div>
 
-                <div class="profile-header-info-actions" >
+                <div class="profile-header-info-actions">
                     <p
                         class="profile-header-info-action button secondary"
                         @click="subscribe"
@@ -132,7 +132,7 @@
                     </div>
                     <div>
                         <div
-                       
+
                             class="simple-dropdown header-settings-dropdown"
                             @click="setting"
                         >
@@ -258,36 +258,56 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { mapGetters } from "vuex";
+import {Component, Prop, Vue} from "vue-property-decorator";
+import {mapGetters} from "vuex";
 import Dropdown from "@/plugins/dropdown";
 import Hexagon from "@/plugins/hexagon";
-import { User } from "@/types";
+import {User} from "@/types";
+import {AxiosError, AxiosResponse} from "axios";
 
 @Component({
     components: {},
-    computed: { ...mapGetters(["user"]) },
+    computed: {...mapGetters(["user"])},
 })
 export default class CommunityHeader extends Vue {
     private dropdown: Dropdown = new Dropdown();
     private hexagon: Hexagon = new Hexagon();
 
-    private communityId = parseInt(this.$route.params.community_id);
-    private community: any;
+    private communityId = this.$route.params.community_id;
+    private community: any = {};
     private user!: User;
 
-    created() {
-        this.community = this.$api.getCommunityInfo(this.communityId);
-        // console.log(this.user);
+    fetch() {
+        this.$api.communityInfo(this.communityId)
+            .then((res: AxiosResponse) => {
+                this.community = res
+            })
+        .catch((err:AxiosError)=>{
+            console.log(err)
+        })
     }
+
     mounted() {
+        this.fetch()
         this.dropdown.init();
         this.hexagon.init();
     }
 
     subscribe() {
-        const result = this.$api.subscribeCommunity(this.communityId, 1);
+       this.subscribeFetch();
     }
+
+    subscribeFetch(){
+        this.$api.subscribe({user_id: this.user.id, community_id: this.communityId})
+            .then((res:AxiosResponse)=>{
+                console.log(res)
+            }).catch((err:AxiosError)=>{
+            if(err.message){
+                alert(err.message)
+            }
+        })
+    }
+
     setting() {
         // (this.$refs.dropbox as HTMLElement).click();
     }
@@ -298,6 +318,7 @@ export default class CommunityHeader extends Vue {
 svg {
     vertical-align: middle;
 }
+
 figure > img {
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;

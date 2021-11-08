@@ -9,7 +9,6 @@
                 <use xlink:href="#svg-cross-thin"></use>
             </svg>
             <audio controls :src="audio.url"></audio>
-            <!-- <b-img :src="img.url"></b-img> -->
         </div>
     </div>
 </template>
@@ -37,7 +36,19 @@ export default class AudioPreview extends Vue {
 
     //미리보기 사진 삭제
     deletePreviewAudio(idx: number) {
-        this.fileLoader.deletePreviewAudio(idx);
+        // this.fileLoader.deletePreviewAudio(idx);
+        const audioArr = this.$store.getters.audioArr
+
+        audioArr.splice(idx, 1)
+        console.log(audioArr, this.$store.getters.audioArr)
+        //
+        // this.$store.commit('audioArr', audioArr)
+    }
+
+    @Watch('$store.getters.audioArr')
+    watchAudio(){
+        this.audioPreviewArr = this.$store.getters.audioArr
+        console.log('watch', this.$store.getters.audioArr)
     }
 }
 </script>

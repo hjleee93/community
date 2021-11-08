@@ -34,11 +34,12 @@ import Hashtag from "@/script/tiptap/hashtag";
 import CharacterCount from "@tiptap/extension-character-count";
 import Mention from "@/script/tiptap/mention";
 
-import HahstagList from "./HashTagList.vue";
+import HashtagList from "./HashTagList.vue";
 import MentionList from "./MentionList.vue";
 import tippy from "tippy.js";
 import { bus } from "@/main";
 import { User } from "@/types";
+
 
 @Component({
     computed: { ...mapGetters(["user"]) },
@@ -61,12 +62,15 @@ export default class TiptapSns extends Vue {
     private hasMentionSuggestion: boolean = false;
     private mentionList: any[] = [];
     hashTagList: string[] = [];
+
+
     // tiptap
 
     @Watch("user")
     async watchUser() {
         this.mentionList = await this.$api.followingList(this.user.uid);
     }
+
 
     @Watch("$store.getters.isClearEditor")
     watchReset() {
@@ -114,20 +118,20 @@ export default class TiptapSns extends Vue {
                             node.attrs.label ?? node.attrs.id
                         }`;
                     },
+
                     suggestion: {
                         //@ts-ignore
                         items: async (query) => {
-                            if (query.length > 0) {
-                                this.hashTagList =
-                                    await this.$api.hashtagList();
-                                return this.hashTagList
-                                    .filter((item) =>
-                                        item
-                                            .toLowerCase()
-                                            .startsWith(query.toLowerCase())
-                                    )
-                                    .slice(0, 10);
-                            }
+                            /* 추후 hashtag log api 생기면 추가 예정 */
+                            // if (query.length > 0) {
+                            //     return this.hashTagListTest
+                            //         .filter((item) =>
+                            //             item
+                            //                 .toLowerCase()
+                            //                 .startsWith(query.toLowerCase())
+                            //         )
+                            //         .slice(0, 10);
+                            // }
                         },
                         render: () => {
                             let component;
@@ -135,7 +139,7 @@ export default class TiptapSns extends Vue {
 
                             return {
                                 onStart: (props) => {
-                                    component = new VueRenderer(HahstagList, {
+                                    component = new VueRenderer(HashtagList, {
                                         parent: this,
                                         propsData: props,
                                     });
@@ -164,19 +168,34 @@ export default class TiptapSns extends Vue {
                                     });
                                 },
                                 onKeyDown: (props) => {
-                                    // console.log("onKeyDown", props);
                                     if (
-                                        props.event.key === "Enter" &&
+                                        props.event.code === "Space" ||
+                                        ( props.event.key === "Enter" &&
                                         !this.hasTagSuggestion &&
-                                        component.ref?._props.query
+                                        component.ref?._props.query)
                                     ) {
                                         let id = {
                                             id: component.ref?._props.query,
                                         };
-                                        this.$store.commit(
-                                            "hashtagList",
-                                            component.ref?._props.query
-                                        );
+
+                                        return component.ref?._props.editor
+                                            .chain()
+                                            .focus()
+                                            .insertContentAt(
+                                                component.ref?._props.range,
+                                                [
+                                                    {
+                                                        type: "hashtag",
+                                                        attrs: id,
+                                                    }
+                                                ]
+                                            )
+                                            .run();
+                                    } else if(props.event.key === "#") {
+                                        let id = {
+                                            id: component.ref?._props.query,
+                                        };
+
                                         return component.ref?._props.editor
                                             .chain()
                                             .focus()
@@ -189,12 +208,13 @@ export default class TiptapSns extends Vue {
                                                     },
                                                     {
                                                         type: "text",
-                                                        text: " ",
+                                                        text: "#",
                                                     },
                                                 ]
                                             )
                                             .run();
-                                    } else {
+                                    }
+                                    else {
                                         return component.ref?.onKeyDown(props);
                                     }
                                 },
@@ -208,17 +228,27 @@ export default class TiptapSns extends Vue {
                 }),
                 Mention.configure({
                     HTMLAttributes: {
-                        class: "mention",
+                        class: 'mention',
+                    },
+                    renderLabel({ options, node }) {
+                        return `${options.suggestion.char}${
+                            node.attrs.label ?? node.attrs.id
+                        }`;
                     },
                     suggestion: {
-                        items: (query) => {
-                            return this.mentionList
-                                .filter((item) =>
-                                    item.nickname
-                                        .toLowerCase()
-                                        .startsWith(query.toLowerCase())
-                                )
-                                .slice(0, 10);
+                        //@ts-ignore
+                        items: async (query) => {
+                            if (query.length > 0) {
+                                const obj = {
+                                    limit:5,
+                                    username:query
+                                }
+                                const res = await this.$api.search(obj)
+                                let username = res.result.map((user)=>{
+                                    return user.name
+                                })
+                                return username;
+                            }
                         },
                         render: () => {
                             let component;
@@ -233,19 +263,14 @@ export default class TiptapSns extends Vue {
 
                                     popup = tippy("body", {
                                         getReferenceClientRect:
-                                            props.clientRect,
+                                        props.clientRect,
                                         appendTo: () => document.body,
                                         content: component.element,
                                         showOnCreate: true,
-                                        interactive: true,
+                                        interactive: false,
                                         trigger: "manual",
                                         placement: "bottom-start",
                                     });
-                                    if (props.items && props.items.length > 0) {
-                                        this.hasMentionSuggestion = true;
-                                    } else {
-                                        this.hasMentionSuggestion = false;
-                                    }
                                 },
                                 onUpdate: (props) => {
                                     component.updateProps(props);
@@ -254,25 +279,22 @@ export default class TiptapSns extends Vue {
                                     } else {
                                         this.hasMentionSuggestion = false;
                                     }
-
                                     popup[0].setProps({
                                         getReferenceClientRect:
-                                            props.clientRect,
+                                        props.clientRect,
                                     });
                                 },
                                 onKeyDown: (props) => {
+
                                     if (
-                                        props.event.key === "Enter" &&
-                                        !this.hasMentionSuggestion &&
-                                        component.ref?._props.query
+                                        props.event.code === "Space" ||
+                                        ( props.event.key === "Enter" &&
+                                            !this.hasMentionSuggestion &&
+                                            component.ref?._props.query)
                                     ) {
                                         let id = {
                                             id: component.ref?._props.query,
                                         };
-                                        this.$store.commit(
-                                            "userTagList",
-                                            component.ref?._props.query
-                                        );
                                         return component.ref?._props.editor
                                             .chain()
                                             .focus()
@@ -282,15 +304,39 @@ export default class TiptapSns extends Vue {
                                                     {
                                                         type: "mention",
                                                         attrs: id,
-                                                    },
-                                                    {
-                                                        type: "text",
-                                                        text: " ",
-                                                    },
+                                                    }
                                                 ]
                                             )
                                             .run();
-                                    } else {
+                                    }
+                                    // else if(props.event.key === "@") {
+                                    //     let id = {
+                                    //         id: component.ref?._props.query,
+                                    //     };
+                                    //     this.$store.commit(
+                                    //         "userTagList",
+                                    //         component.ref?._props.query
+                                    //     );
+                                    //     return component.ref?._props.editor
+                                    //         .chain()
+                                    //         .focus()
+                                    //         .insertContentAt(
+                                    //             component.ref?._props.range,
+                                    //             [
+                                    //                 {
+                                    //                     type: "mention",
+                                    //                     attrs: id,
+                                    //                 },
+                                    //                 {
+                                    //                     type: "text",
+                                    //                     text: "@",
+                                    //                 },
+                                    //             ]
+                                    //         )
+                                    //         .run();
+                                    // }
+                                    else {
+
                                         return component.ref?.onKeyDown(props);
                                     }
                                 },
@@ -302,6 +348,7 @@ export default class TiptapSns extends Vue {
                         },
                     },
                 }),
+
             ],
             autofocus: "end",
             onUpdate: () => {

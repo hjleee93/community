@@ -20,6 +20,7 @@ const _axios = axios.create(config);
 
 _axios.interceptors.request.use(
   (cfg) => {
+    store.commit('startSpinner');
     if (store.getters.idToken) {
       cfg.headers.authorization = `Bearer ${store.getters.idToken}`;
     }
@@ -34,7 +35,7 @@ _axios.interceptors.request.use(
 
 _axios.interceptors.response.use(
   (res) => {
-
+    store.commit('endSpinner');
     // if ( res.data.result ) {
     //   res.data = res.data.result;
     // }

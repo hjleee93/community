@@ -56,10 +56,11 @@
 </template>
 
 <script lang="ts">
-import { Group } from "@/types";
+import {Group, User} from "@/types";
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 import Hexagon from "@/plugins/hexagon";
+import {AxiosError, AxiosResponse} from "axios";
 @Component({
     components: {},
 })
@@ -74,11 +75,27 @@ export default class JoinedCommunity extends Vue {
         member_cnt: number;
     }[] = [];
 
-    async mounted() {
+     mounted() {
         this.hexagon.init();
-        this.communityList = await this.$api.joinedCommunityList(this.userUid);
+        console.log(this.user)
+         this.fetch();
+    }
+    fetch(){
+        const obj={
+            user_id:this.$store.getters.channelUserInfo.id,
 
-        console.log(this.communityList);
+        }
+        console.log('obj',obj)
+        this.$api.joinedCommunityList(obj)
+            .then((res: AxiosResponse) => {
+                console.log('joinedCommunityList', res)
+                this.communityList = res;
+            })
+            .catch((err: AxiosError) => {
+
+            })
+
+
     }
 }
 </script>

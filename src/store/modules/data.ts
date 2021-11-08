@@ -1,24 +1,28 @@
 export default {
     state: {
-        hashtagList: [],
         userTagList: [],
-        previewImgArr: [],
+        imgArr: [],
+        audioArr: [],
+        video:[],
         previewAudioArr: [],
         previewVideo: '',
         imageList: [],
         postContents: '',
         isClearEditor: false,
-        userInfo: [],
+        channelUserInfo: [],
     },
     getters: {
-        hashtagList(state: any) {
-            return state.hashtagList;
-        },
         userTagList(state: any) {
             return state.userTagList;
         },
-        previewImgArr(state: any) {
-            return state.previewImgArr;
+        imgArr(state: any) {
+            return state.imgArr;
+        },
+        video(state:any){
+            return state.video
+        },
+        audioArr(state: any) {
+            return state.audioArr;
         },
         previewAudioArr(state: any) {
             return state.previewAudioArr;
@@ -35,20 +39,24 @@ export default {
         isClearEditor(state: any) {
             return state.isClearEditor;
         },
-        userInfo(state: any) {
-            return state.userInfo;
+        channelUserInfo(state: any) {
+            return state.channelUserInfo;
         },
     },
 
     mutations: {
-        hashtagList(state: any, payload: any) {
-            state.hashtagList.push(payload);
-        },
+
         userTagList(state: any, payload: any) {
             state.userTagList.push(payload);
         },
-        previewImgArr(state: any, payload: any) {
-            state.previewImgArr.push(payload);
+        imgArr(state: any, payload: any) {
+            state.imgArr.push(payload);
+        },
+        video(state: any, payload: any) {
+            state.video = payload;
+        },
+        audioArr(state: any, payload: any) {
+            state.audioArr.push(payload);
         },
         previewAudioArr(state: any, payload: any) {
             state.previewAudioArr.push(payload);
@@ -66,17 +74,18 @@ export default {
         isClearEditor(state: any, payload: any) {
             state.isClearEditor = payload;
         },
-        userInfo(state: any, payload: any) {
-            state.userInfo = payload;
+        channelUserInfo(state: any, payload: any) {
+            state.channelUserInfo = payload;
         },
     },
     actions: {
         resetEditor(context: any) {
-            context.state.hashtagList = [];
             context.state.userTagList = [];
             context.state.postContents = '';
             context.state.isClearEditor = true;
-        }
+        },
+
+
     }
 }
 

@@ -7,17 +7,18 @@
             :key="index"
             @click="selectItem(index)"
         >
-            {{ item.name }}
+            {{ item }}
         </button>
     </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
+
 @Component({
     components: {},
 })
-export default class MentinList extends Vue {
+export default class MentionList extends Vue {
     private selectedIndex: number = 0;
     @Prop() items!: any;
     @Prop() command!: any;
@@ -27,7 +28,7 @@ export default class MentinList extends Vue {
         this.selectedIndex = 0;
     }
 
-    onKeyDown({ event }) {
+    onKeyDown({event}) {
         if (event.key === "ArrowUp") {
             this.upHandler();
             return true;
@@ -47,17 +48,20 @@ export default class MentinList extends Vue {
         this.selectedIndex =
             (this.selectedIndex + this.items.length - 1) % this.items.length;
     }
+
     downHandler() {
         this.selectedIndex = (this.selectedIndex + 1) % this.items.length;
     }
+
     enterHandler() {
         this.selectItem(this.selectedIndex);
     }
+
     selectItem(index) {
         const item = this.items[index];
         if (item) {
-        this.$store.commit('userTagList', item.name)  
-            this.command({ id: item.name, channel:item.uid });
+            this.$store.commit('userTagList', item)
+            this.command({id: item, channel: item.uid});
         }
     }
 }
@@ -73,6 +77,7 @@ export default class MentinList extends Vue {
     font-size: 0.9rem;
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0px 10px 20px rgba(0, 0, 0, 0.1);
 }
+
 .item {
     display: block;
     width: 100%;
@@ -80,6 +85,7 @@ export default class MentinList extends Vue {
     background: transparent;
     border: none;
     padding: 0.2rem 0.5rem;
+
     &.is-selected,
     &:hover {
         color: #a975ff;

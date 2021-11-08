@@ -4,6 +4,7 @@ import store from "@/store"
 import Cookie from "@/script/cookie";
 import Vue from "vue";
 import router from '@/router';
+import {AxiosError, AxiosResponse} from "axios";
 // import {firebaseInitStartTime} from "boot/firebase";
 
 const cookieName = process.env.VUE_APP_COOKIE_NAME;
@@ -14,7 +15,6 @@ class Login {
         // console.log('파이어베이스 초기화 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
         if( store.getters.loginState === LoginState.none ) {
             const currentUser = firebase.auth().currentUser;
-            console.log('autoLogin', currentUser)
             if ( currentUser ) {
                 // console.log(currentUser);
 
@@ -22,12 +22,14 @@ class Login {
                 // console.log('아이디 토큰 갱신 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
 
                 store.commit('idToken', idToken);
+
                 // console.log(idToken);
 
                 const cookie = Cookie.read( cookieName );
                 // console.log( cookie, currentUser.uid, cookie === currentUser.uid );
                 if( cookie && cookie === currentUser.uid ) {
                     const result = await Vue.$api.user();
+
                     // console.log('유저정보 세팅 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
                     if( !result || result.error ) {
                         await Login.logout();
@@ -92,6 +94,14 @@ class Login {
     static async login() {
         store.commit('loginState', LoginState.login );
         Cookie.write( cookieName, store.getters.user.uid, 30, process.env.VUE_APP_COOKIE_DOMAIN );
+
+        Vue.$api.saveFcmToken(store.getters.user.id, store.getters.fcmToken)
+            .then((res: AxiosResponse) => {
+                console.log('fcm token is registered')
+            })
+            .catch((err: AxiosError) => {
+
+            })
     }
 
     static async logout() {
@@ -100,6 +110,13 @@ class Login {
         await store.dispatch('logout');
         // await store.commit('clearMail');
         Cookie.delete( cookieName, process.env.VUE_APP_COOKIE_DOMAIN );
+        Vue.$api.removeFcmToken(store.getters.user.id)
+            .then((res: AxiosResponse) => {
+                console.log('fcm token is deleted')
+            })
+            .catch((err: AxiosError) => {
+
+            })
         
     }
     

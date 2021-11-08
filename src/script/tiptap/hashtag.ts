@@ -1,6 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core'
 import { Node as ProseMirrorNode } from 'prosemirror-model'
 import Suggestion, { SuggestionOptions } from '@tiptap/suggestion'
+import store from '@/store/index'
 
 export type HashtagOptions = {
   HTMLAttributes: Record<string, any>,
@@ -122,11 +123,11 @@ export default Node.create<HashtagOptions>({
 
   addKeyboardShortcuts() {
     return {
-
       Backspace: () => this.editor.commands.command(({ tr, state }) => {
         let isHashtag = false
         const { selection } = state
         const { empty, anchor } = selection
+
 
         if (!empty) {
           return false
@@ -143,9 +144,6 @@ export default Node.create<HashtagOptions>({
 
         return isHashtag
       }),
-
-
-
     }
   },
 

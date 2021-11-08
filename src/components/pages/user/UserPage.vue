@@ -5,10 +5,9 @@
             <portfolio :userUid="userUid"></portfolio>
         </div>
         <div class="grid-column">
-            <entry-post></entry-post>
+            <PostBox></PostBox>
             <!-- 타임라인 -->
-
-            <feed v-for="feed in timeline" :key="feed.id" :feed="feed"></feed>
+            <Timeline :currPage="'user'" :key="this.$route.query.media" ></Timeline>
         </div>
         <div class="grid-column">
             <who-to-follow v-if="user"></who-to-follow>
@@ -23,41 +22,45 @@ import { mapGetters } from "vuex";
 import Dropdown from "@/plugins/dropdown";
 import Hexagon from "@/plugins/hexagon";
 
-import EntryPost from "@/components/layout/EntryPost.vue";
+import PostBox from "@/components/layout/PostBox.vue";
 import Feed from "@/components/timeline/Feed.vue";
 import WhoToFollow from "@/components/pages/user/WhoToFollow.vue";
 import JoinedCommunity from "@/components/pages/user/JoinedCommunity.vue";
 import Portfolio from "@/components/pages/user/PortfolioList.vue";
 import GameList from "@/components/pages/user/GameList.vue";
 
+import Timeline from "@/components/common/_timeline.vue"
+
 import { User } from "@/types";
 
 @Component({
     computed: { ...mapGetters(["user"]) },
     components: {
-        EntryPost,
+        PostBox,
         Feed,
         WhoToFollow,
         Portfolio,
         JoinedCommunity,
         GameList,
+        Timeline
     },
 })
-export default class UserTimeline extends Vue {
+export default class UserPage extends Vue {
     private dropdown: Dropdown = new Dropdown();
     private hexagon: Hexagon = new Hexagon();
     private userUid = this.$route.params.channel_id;
 
-    private timeline: any = "";
-    private user!: User;
-
-    async created() {
-        this.timeline = await this.$api.getUserTimeline(this.userUid);
-    }
     mounted() {
         this.dropdown.init();
         this.hexagon.init();
+
     }
+
+
+
+
+
+
 }
 </script>
 

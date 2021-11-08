@@ -27,6 +27,7 @@ export default class ImagePreview extends Vue {
     bus.$off("fileLoder");
   }
   mounted() {
+      console.log(this.imgArr)
     //post 수정
     if (this.editFileLoader) {
       this.fileLoader = this.editFileLoader;
@@ -44,11 +45,19 @@ export default class ImagePreview extends Vue {
       console.log("bus", fileLoader);
     });
   }
+  @Watch('$store.getters.imgArr')
+  watchImg(){
+      this.imgPreviewArr = this.$store.getters.imgArr
+      console.log('watch', this.$store.getters.imgArr)
+  }
 
   //미리보기 사진 삭제
   deletePreviewImg(idx: number) {
-    console.log("fileLoader", this.fileLoader);
-    this.fileLoader.deletePreviewImg(idx);
+      console.log(this.$store.getters.imgArr)
+      //흠ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ
+      const imgArr = this.$store.getters.imgArr
+      imgArr.splice(idx, 1)
+      // this.$store.dispatch('imageArrChg', imgArr)
   }
 }
 </script>

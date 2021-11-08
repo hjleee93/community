@@ -8,6 +8,10 @@ class FileLoader {
     private remainAudioFileSize: number = mbToByte(40); //40mb (binary);
     fileObj: { img: fileObjWtUrl[], video: fileObjWtUrl[], audio: fileObjWtUrl[] } = { img: [], video: [], audio: [] };
 
+
+
+
+
     getFileUrl(file: File, callback) {
         store.commit('isClearEditor', false)
         // let fileUrl: string | null | ArrayBuffer;

@@ -20,6 +20,7 @@ export default {
         redirectUrl: null,
         redirectRouter: null,
         googleAccountInfo: null,
+        fcmToken:null,
     },
     getters: {
         loginState(state: any) {
@@ -64,6 +65,9 @@ export default {
         googleAccountInfo(state: any) {
             return state.googleAccountInfo;
         },
+        fcmToken(state:any){
+            return state.fcmToken;
+        }
     },
 
     mutations: {
@@ -122,6 +126,9 @@ export default {
                 state.user.profile.description = payload.description;
             }
         },
+        fcmToken(state:any, payload:any){
+            state.fcmToken = payload;
+        }
     },
 
     //dispatch

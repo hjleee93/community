@@ -43,7 +43,7 @@
             v-model="show"
             ref="editModal"
         >
-            <post>
+            <post @closePostModal="closePostModal">
                 <template v-slot:closeBtn>
                     <div class="modal-close-container">
                         <svg class="icon-cross text-right">
@@ -100,7 +100,7 @@ import { User } from "@/types";
     computed: { ...mapGetters(["user"]) },
     components: { Post },
 })
-export default class EntryPost extends Vue {
+export default class PostBox extends Vue {
     private hexagon: Hexagon = new Hexagon();
     private show: boolean = false;
     private user!: User;
@@ -121,6 +121,11 @@ export default class EntryPost extends Vue {
         } else {
             (this.$refs["loginModal"] as any).hide();
         }
+    }
+
+    closePostModal(){
+        (this.$refs.editModal as any).hide();
+
     }
 }
 </script>

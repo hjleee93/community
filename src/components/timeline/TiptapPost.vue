@@ -5,7 +5,7 @@
             class="editor-container"
             v-model="postingText"
         />
-        <div class="character-count">
+        <div class="character-count">ggggg
             <p>{{ charCnt }}/{{ limit }}</p>
         </div>
     </div>
@@ -36,7 +36,7 @@ import Hashtag from "@/script/tiptap/hashtag";
 import Mention from "@/script/tiptap/mention";
 import Image from "@/script/tiptap/image";
 
-import HahstagList from "./HashTagList.vue";
+import HashtagList from "./HashTagList.vue";
 import MentionList from "./MentionList.vue";
 import tippy from "tippy.js";
 import { bus } from "@/main";
@@ -140,7 +140,7 @@ export default class TiptapPost extends Vue {
 
                             return {
                                 onStart: (props) => {
-                                    component = new VueRenderer(HahstagList, {
+                                    component = new VueRenderer(HashtagList, {
                                         parent: this,
                                         propsData: props,
                                     });
@@ -178,10 +178,7 @@ export default class TiptapPost extends Vue {
                                         let id = {
                                             id: component.ref?._props.query,
                                         };
-                                        this.$store.commit(
-                                            "hashtagList",
-                                            component.ref?._props.query
-                                        );
+
                                         return component.ref?._props.editor
                                             .chain()
                                             .focus()
@@ -204,6 +201,7 @@ export default class TiptapPost extends Vue {
                                     }
                                 },
                                 onExit() {
+
                                     popup[0].destroy();
                                     component.destroy();
                                 },

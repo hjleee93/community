@@ -18,7 +18,7 @@
             />
         </svg>
         <div style="height: 0px; overflow: hidden">
-            <input type="file" @change="onFileChange" multiple accept= image/*
+            <input type="file" @input="onSelectFile" multiple accept= image/*
             ref="image" name="fileInput" />
         </div>
     </div>
@@ -26,51 +26,21 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { FileLoader } from "@/script/fileLoader";
-import { mbToByte } from "@/script/fileManager";
-import { bus } from "@/main";
+import { onSelectFile } from "@/script/fileManager";
 @Component({
     components: {},
 })
 export default class ImageUploaderBtn extends Vue {
-    @Prop() fileLoader!: FileLoader;
     @Prop() activeTab!: string;
-    private remainFileSize: number = mbToByte(20); //20mb (binary);
-    private fileList: any[] = [];
-
-    mounted() {
-        console.log(this.activeTab);
-    }
+    private maxFileNum: number = 10;
 
     uploadFile() {
         (this.$refs.image as HTMLElement).click();
     }
 
-    // 파일 업로드
-    async onFileChange(event: {
-        target: { accept: any; files: any; value: string | null };
-    }) {
-        //포스팅 타입 분기
-        if (this.activeTab === "sns") {
-            if (this.fileLoader.checkImgFile(event.target.files)) {
-                this.$emit("fileCheckDone");
-                bus.$emit("fileLoader", this.fileLoader);
-                console.log("파일 업로드", event.target.value);
-            }
-        } else if (this.activeTab === "blog") {
-            // console.log(event.target.files)
-            event.target.files.forEach(async (element) => {
-                let img = await this.$api.imageUplaod(element);
-                bus.$emit("imgUrl", img.url);
-            });
-            // this.$api.imageUplaod(event.target.files)
-            // if (this.fileLoader.checkBlogImgFile(event.target.files)) {
-            //     this.$emit("fileCheckDone");
-            //     bus.$emit("fileLoader", this.fileLoader);
-            //     console.log("파일 업로드", event.target.value);
-            // }
-        }
-        event.target.value = null;
+    onSelectFile() {
+        const input:any = this.$refs.image;
+        onSelectFile(input.files, this.maxFileNum, 'imgArr')
     }
 }
 </script>

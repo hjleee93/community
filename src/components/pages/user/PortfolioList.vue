@@ -58,8 +58,8 @@ export default class PortfolioList extends Vue {
     private portfolios: any = "";
 
     async mounted() {
-        this.portfolios = await this.$api.portfolioList(this.userUid);
-        console.log(this.portfolios);
+        // this.portfolios = await this.$api.portfolioList(this.userUid);
+        // console.log(this.portfolios);
     }
     addPortfolio() {
         console.log("add pf");

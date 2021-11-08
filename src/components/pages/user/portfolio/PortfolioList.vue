@@ -36,7 +36,7 @@ export default class PortfolioList extends Vue {
     private userId = this.$route.params.channel_id;
 
     async created() {
-        this.portfolioList = await this.$api.portfolioList("123");
+        // this.portfolioList = await this.$api.portfolioList("123");
     }
 }
 </script>

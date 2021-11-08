@@ -23,7 +23,7 @@ import { mapGetters } from "vuex";
 import Dropdown from "@/plugins/dropdown";
 import Hexagon from "@/plugins/hexagon";
 
-import EntryPost from "@/components/layout/EntryPost.vue";
+import PostBox from "@/components/layout/PostBox.vue";
 import Post from "@/components/timeline/Post.vue";
 import Feed from "@/components/timeline/Feed.vue";
 import WhoToFollow from "@/components/pages/user/WhoToFollow.vue";
@@ -42,7 +42,7 @@ import { User } from "@/types";
         Portfolio,
         JoinedCommunity,
         GameList,
-        EntryPost,
+        PostBox,
     },
 })
 export default class PortfolioTimeline extends Vue {

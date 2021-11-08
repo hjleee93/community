@@ -10,7 +10,6 @@
                 all around the world
             </p>
 
-            <!-- <b-img src="image/default/guest_header_500.png" /> -->
         </div>
         <div class="content-grid">
             <div class="landing-container">
@@ -72,6 +71,7 @@ export default class guestPage extends Vue {
     
     created() {
         this.communityList = this.$api.getCommunityList();
+        console.log(this.communityList)
     }
     mounted() {
         this.dropdown.init();

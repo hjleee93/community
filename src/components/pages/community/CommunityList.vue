@@ -21,7 +21,7 @@
 
         <div class="section-filters-bar v1">
             <div class="section-filters-bar-actions">
-                <form class="form">
+                <div class="form">
                     <div
                         class="form-input small with-button"
                         :class="searchInput.length > 0 ? 'active' : ''"
@@ -32,25 +32,25 @@
                             id="groups-search"
                             name="groups_search"
                             v-model="searchInput"
+                            @keyup.enter="searchCommunity"
                         />
-
-                        <!-- <template v-if="isSearched"> -->
-                        <button class="search button primary" @click="searchReset">
-                            <svg class="icon-cross-thin">
-                                <use xlink:href="#svg-cross-thin"></use>
-                            </svg>
-                        </button>
-                        <!-- </template>
-                        <template v-else> -->
-                        <button
-                            class="search button primary"
-                            @click="searchCommunity"
-                        >
-                            <svg class="icon-magnifying-glass">
-                                <use xlink:href="#svg-magnifying-glass"></use>
-                            </svg>
-                        </button>
-                        <!-- </template> -->
+                        <template v-if="isSearched">
+                            <button class="search button primary" @click="searchReset">
+                                <svg class="icon-cross-thin">
+                                    <use xlink:href="#svg-cross-thin"></use>
+                                </svg>
+                            </button>
+                        </template>
+                        <template v-else>
+                            <button
+                                class="search button primary"
+                                @click="searchCommunity"
+                            >
+                                <svg class="icon-magnifying-glass">
+                                    <use xlink:href="#svg-magnifying-glass"></use>
+                                </svg>
+                            </button>
+                        </template>
                     </div>
 
                     <div class="form-select">
@@ -58,7 +58,7 @@
                         <select
                             id="groups-filter-category"
                             name="groups_filter_category"
-                            @change="filterList($event.target.value)"
+                            @change="sortGroups($event.target.value)"
                         >
                             <option value="0">Newly Created</option>
                             <option value="1">Most Members</option>
@@ -69,14 +69,14 @@
                             <use xlink:href="#svg-small-arrow"></use>
                         </svg>
                     </div>
-                </form>
+                </div>
 
                 <div class="filter-tabs">
                     <div
                         class="filter-tab"
                         :class="filter === 0 ? 'active' : ''"
                     >
-                        <p class="filter-tab-text" @click="filterList(0)">
+                        <p class="filter-tab-text" @click="sortGroups(0)">
                             Newly Created
                         </p>
                     </div>
@@ -85,7 +85,7 @@
                         class="filter-tab"
                         :class="filter === 1 ? 'active' : ''"
                     >
-                        <p class="filter-tab-text" @click="filterList(1)">
+                        <p class="filter-tab-text" @click="sortGroups(1)">
                             Most Members
                         </p>
                     </div>
@@ -94,7 +94,7 @@
                         class="filter-tab"
                         :class="filter === 2 ? 'active' : ''"
                     >
-                        <p class="filter-tab-text" @click="filterList(2)">
+                        <p class="filter-tab-text" @click="sortGroups(2)">
                             Alphabetical
                         </p>
                     </div>
@@ -103,7 +103,7 @@
         </div>
 
         <div class="grid grid-4-4-4">
-            <p v-if="!communityList">검색 결과가 없습니다.</p>
+            <p v-if="!communityList || communityList.length === 0">검색 결과가 없습니다.</p>
             <community-card
                 v-for="community in communityList"
                 :key="community.id"
@@ -191,14 +191,12 @@ import CommunityCard from "@/components/pages/community/CommunityCard.vue";
 
 import Form from "@/script/form";
 import {AxiosError, AxiosResponse} from "axios";
-import {PaginationRes} from "@/types";
 import {scrollDone} from "@/script/scrollManager";
 
 @Component({
     components: {PageLoader, CommunityCard},
 })
 export default class Community extends Vue {
-    private selectedFilter: number = 0;
     private communityList: any = [];
     private searchInput: string = "";
     private filter: number = 0;
@@ -238,9 +236,9 @@ export default class Community extends Vue {
             sort: this.sort,
             show: this.show
         }
-        this.$api.getCommunityList(obj)
+        this.$api.communityList(obj)
             .then((res: AxiosResponse) => {
-                if (this.isAddData) {
+                if (this.isAddData ) {
                     if (res.length > 0) {
                         this.communityList = [...this.communityList, ...res]
                     }
@@ -258,8 +256,8 @@ export default class Community extends Vue {
             })
     }
 
-
-    filterList(filter: number) {
+    sortGroups(filter: number) {
+        this.isAddData = false;
         if (filter === 0) {
             this.fetch()
         }
@@ -275,17 +273,28 @@ export default class Community extends Vue {
 
     searchCommunity(e: Event) {
         e.preventDefault();
-        this.isAddData = false
-        this.fetch()
 
-        if (this.communityList) {
-            this.isSearched = true;
-        }
+        this.isSearched = true;
+        this.isAddData = false;
+        this.fetch()
     }
 
     searchReset(e: Event) {
         e.preventDefault();
-        console.log("search Reset");
+        this.initData();
+        this.fetch()
+
+    }
+
+    initData() {
+        this.isSearched = false;
+        this.isAddData = false
+        this.limit = 20;
+        this.offset = 0;
+        this.community = null;
+        this.sort = null;
+        this.show = null;
+        this.searchInput = '';
     }
 
     joinCommunity() {

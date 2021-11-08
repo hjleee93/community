@@ -18,7 +18,7 @@
             />
         </svg>
         <div style="height: 0px; overflow: hidden">
-            <input type="file" @change="onFileChange" multiple accept= audio/*
+            <input type="file" @input="onSelectFile" multiple accept= audio/*
             ref="audio" />
         </div>
     </div>
@@ -29,6 +29,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { FileLoader } from "@/script/fileLoader";
 import { mbToByte } from "@/script/fileManager";
 import { bus } from "@/main";
+import { onSelectFile } from "@/script/fileManager";
 @Component({
     components: {},
 })
@@ -42,24 +43,11 @@ export default class AudioUploaderBtn extends Vue {
         (this.$refs.audio as HTMLElement).click();
     }
 
-    // 파일 업로드
-    async onFileChange(event: {
-        target: { accept: any; files: any; value: string | null };
-    }) {
-        //포스팅 타입 분기
-        if (this.activeTab === "sns") {
-            if (this.fileLoader.checkAudioFile(event.target.files)) {
-                this.$emit("fileCheckDone");
-                bus.$emit("fileLoader", this.fileLoader);
-            }
-        } else if (this.activeTab === "blog") {
-            event.target.files.forEach(async (element) => {
-                let audio = await this.$api.audioUplaod(element);
-                bus.$emit("audioUrl", audio.url);
-            });
-        }
-        event.target.value = null;
+    onSelectFile() {
+        const input:any = this.$refs.audio;
+        onSelectFile(input.files, this.maxFileNum, 'audioArr')
     }
+
 }
 </script>
 

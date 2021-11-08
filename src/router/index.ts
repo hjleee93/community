@@ -194,8 +194,8 @@ const routes: Array<RouteConfig> = [
         children: [
             {
                 path: '/channel/:channel_id/timeline',
-                name: 'UserTimeline',
-                component: () => import("@/components/pages/user/UserTimeline.vue"),
+                name: 'UserPage.vue',
+                component: () => import("@/components/pages/user/UserPage.vue"),
             },
             {
                 path: '/channel/:channel_id/follwers',

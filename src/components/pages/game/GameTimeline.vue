@@ -20,13 +20,13 @@ import { mapGetters } from "vuex";
 import Dropdown from "@/plugins/dropdown";
 import Hexagon from "@/plugins/hexagon";
 
-import EntryPost from "@/components/layout/EntryPost.vue";
+import PostBox from "@/components/layout/PostBox.vue";
 import Feed from "@/components/timeline/Feed.vue";
 import AboutGame from "@/components/pages/game/GameDescBox.vue";
 import Screenshot from "@/components/pages/game/GameScreenshot.vue";
 import ClipboardBox from "@/components/pages/game/ClipboardBox.vue";
 @Component({
-    components: { EntryPost, Feed, AboutGame, Screenshot, ClipboardBox },
+    components: { PostBox, Feed, AboutGame, Screenshot, ClipboardBox },
 })
 export default class GameTimeline extends Vue {
     @Prop() game!: any;

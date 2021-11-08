@@ -4,8 +4,8 @@
             <div class="option-items">
                 <div
                     class="option-item"
-                    @click="isActive('sns')"
-                    :class="activeTab === 'sns' ? 'active' : ''"
+                    @click="isActive('SNS')"
+                    :class="activeTab === 'SNS' ? 'active' : ''"
                 >
                     <svg class="option-item-icon icon-status">
                         <use xlink:href="#svg-status"></use>
@@ -65,7 +65,7 @@
             </div>
         </div>
         <!-- sns post -->
-        <div class="quick-post-body" v-else-if="activeTab === 'sns'">
+        <div class="quick-post-body" v-else-if="activeTab === 'SNS'">
             <div class="form">
                 <div class="form-row">
                     <div class="form-item">
@@ -83,17 +83,17 @@
 
                             <div
                                 class="video-container"
-                                v-if="fileList.video[0]"
+                                v-if="videoSrc.url"
                             >
                                 <svg class="icon-cross" @click="deleteVideo">
                                     <use xlink:href="#svg-cross-thin"></use>
                                 </svg>
+
                                 <video
                                     width="320"
                                     height="240"
                                     controls
-                                    :src="fileList.video[0].url"
-                                    :key="videoSrc"
+                                    :src="videoSrc.url"
                                 ></video>
                             </div>
                             <!-- <p>{{ feed.attatchment_files }}</p> -->
@@ -128,10 +128,10 @@
             >
                 <!-- todo: user id send -->
                 <!-- <p>{{ feed.posted_at }}</p> -->
-                <custom-tooltip
-                    @channel="getChannel"
-                    @community="getCommunity"
-                ></custom-tooltip>
+                <!--                <custom-tooltip-->
+                <!--                    @channel="getChannel"-->
+                <!--                    @community="getCommunity"-->
+                <!--                ></custom-tooltip>-->
 
                 <div
                     class="category-listing"
@@ -215,14 +215,12 @@
 
                 <image-uploader-btn
                     @fileCheckDone="getFileList('img')"
-                    :fileLoader="fileLoader"
                     :activeTab="activeTab"
                 ></image-uploader-btn>
 
                 <!-- upload video -->
                 <video-uploader-btn
                     @fileCheckDone="getFileList('video')"
-                    :fileLoader="fileLoader"
                     :activeTab="activeTab"
                 ></video-uploader-btn>
 
@@ -230,7 +228,6 @@
                 <!-- upload audio -->
                 <audio-uploader-btn
                     @fileCheckDone="getFileList('audio')"
-                    :fileLoader="fileLoader"
                     :activeTab="activeTab"
                 >
                 </audio-uploader-btn>
@@ -277,7 +274,6 @@
                         type="checkbox"
                         :id="feed ? `checkbox${feed.id}` : 'checkbox'"
                         v-model="isPrivate"
-                        name="event_add-end-time"
                     />
 
                     <div class="checkbox-box">
@@ -287,7 +283,7 @@
                     </div>
 
                     <label :for="feed ? `checkbox${feed.id}` : 'checkbox'"
-                        >private</label
+                    >private</label
                     >
                 </div>
             </div>
@@ -318,7 +314,6 @@
             height="315"
             :src="`https://www.youtube.com/embed/${link}`"
             title="YouTube video player"
-            frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
         ></iframe>
@@ -357,19 +352,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { mapGetters } from "vuex";
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
+import {mapGetters} from "vuex";
 import Tooltip from "@/plugins/tooltip";
 import FileUpload from "@/components/common/FileUpload.vue";
 import TiptapSns from "@/components/timeline/TiptapSns.vue";
 import TiptapPost from "@/components/timeline/TiptapPost.vue";
 import Modal from "@/components/common/Modal.vue";
 
-import { Editor, EditorContent, HTMLElement, VueRenderer } from "@tiptap/vue-2";
+import {Editor, EditorContent, HTMLElement, VueRenderer} from "@tiptap/vue-2";
 
 import moment from "moment";
-import { FileLoader } from "@/script/fileLoader";
-import { mbToByte } from "@/script/fileManager";
+import {FileLoader} from "@/script/fileLoader";
+import {mbToByte} from "@/script/fileManager";
 import ImageUploaderBtn from "@/components/timeline/post/ImageUploaderBtn.vue";
 import ImagePreview from "@/components/timeline/post/ImagePreview.vue";
 import VideoUploaderBtn from "@/components/timeline/post/VideoUploaderBtn.vue";
@@ -377,16 +372,16 @@ import AudioUploaderBtn from "@/components/timeline/post/AudioUploaderBtn.vue";
 import AudioPreview from "@/components/timeline/post/AudioPreview.vue";
 
 import AlertModal from "@/components/common/AlertModal.vue";
-import { User } from "@/types";
+import {User} from "@/types";
 
 import Messages from "@/components/pages/user/Messages.vue";
 
 import Dropdown from "@/plugins/dropdown";
 import CustomTooltip from "@/components/layout/tooltip/Tooltip.vue";
-import { fileObjWtUrl } from "@/types/file/file";
+import {fileObjWtUrl} from "@/types/file/file";
 
 @Component({
-    computed: { ...mapGetters(["user"]) },
+    computed: {...mapGetters(["user"])},
     components: {
         Messages,
         FileUpload,
@@ -424,6 +419,7 @@ export default class Post extends Vue {
 
     // 첨부파일
     private imgPreviewArr: any[] = [];
+    private videoSrc: any = {};
     private fileList: {
         img: fileObjWtUrl[];
         video: fileObjWtUrl[];
@@ -467,6 +463,8 @@ export default class Post extends Vue {
     private selectedCommunity: any = "";
     private selectedCategory: any[] = [];
 
+    private attFiles: any[] = [];
+
     //scroll
     ops = {
         scrollPanel: {
@@ -484,10 +482,10 @@ export default class Post extends Vue {
     tempKey: string = "";
     userTag: string = "";
 
-    videoSrc: string = "";
+    // videoSrc: string = "";
     audioSrc: string = "";
     imgSrc: string = "";
-    activeTab: string = "sns";
+    activeTab: string = "SNS";
 
     // 해시태그 멘션
     private hasTagSuggestion: boolean = false;
@@ -499,16 +497,13 @@ export default class Post extends Vue {
     }
 
     async mounted() {
+        console.log(this.$store.getters.currPage)
         console.log(this.feed);
         this.tooltip.init();
         this.dropdown.init();
 
-        if (this.user) {
-            this.communityList = await this.$api.joinedCommunityList(
-                this.user.uid
-            );
-        } else {
-        }
+        this.fetch();
+
 
         // edit
         if (this.feed) {
@@ -520,16 +515,36 @@ export default class Post extends Vue {
 
             if (this.feed.attatchment_files.img) {
                 this.fileLoader.fileObj.img = this.feed.attatchment_files.img;
-            } else if (this.feed.attatchment_files.audio) {
+            }
+            else if (this.feed.attatchment_files.audio) {
                 this.fileLoader.fileObj.audio =
                     this.feed.attatchment_files.audio;
-            } else if (this.feed.attatchment_files.video) {
+            }
+            else if (this.feed.attatchment_files.video) {
                 this.fileLoader.fileObj.video =
                     this.feed.attatchment_files.video;
             }
 
             console.log("this.fileLoader", this.fileLoader.fileObj);
         }
+    }
+
+    fetch() {
+        const obj = {
+            user_id: this.user.id,
+            sort: 'ALPAHBETIC'
+        }
+
+        this.$api.joinedCommunityList(obj)
+            .then((res: AxiosResponse) => {
+                console.log('res', res)
+                this.communityList = res;
+            })
+            .catch((err: AxiosError) => {
+
+            })
+
+
     }
 
     disableWheel(e) {
@@ -549,7 +564,7 @@ export default class Post extends Vue {
         this.audioPreviewArr = [];
         this.remainFileSize = 20971520;
         this.remainAudioSize = 41943040;
-        this.fileList = { img: [], video: [], audio: [] };
+        this.fileList = {img: [], video: [], audio: []};
         this.$store.dispatch("resetEditor");
         this.isResetEditor = true;
     }
@@ -557,7 +572,8 @@ export default class Post extends Vue {
     isActive(type: string) {
         if (!this.user) {
             (this.$refs["loginModal"] as any).show();
-        } else {
+        }
+        else {
             this.tempType = type;
             if (
                 this.postingText ||
@@ -567,7 +583,8 @@ export default class Post extends Vue {
                 !this.isEditorEmpty
             ) {
                 (this.$refs["alertModal"] as any).show();
-            } else {
+            }
+            else {
                 this.activeTab = type;
             }
         }
@@ -614,43 +631,38 @@ export default class Post extends Vue {
         }
     }
 
-    //포스팅
+    //포스팅 업로드
     async uploadPost() {
+
         let date = this.reserved_date + "T" + this.reserved_time;
         let scheduledTime = moment(date).valueOf();
-        console.log(
-            "result",
-            this.activeTab,
-            this.fileLoader.fileObj,
-            this.isPrivate,
-            this.$store.getters.postContents,
-            this.$store.getters.hashtagList,
-            this.$store.getters.userTagList,
-            this.selectedCategory,
-            this.selectedChannelId,
-            this.selectedChannelId,
-            this.selectedPfId,
-            scheduledTime
-        );
+        this.attFiles = await this.uploadAtt()
 
-        const result = await this.$api.uploadpost(
-            "123",
-            // this.user.uid,
-            this.activeTab,
-            this.fileLoader.fileObj,
-            this.isPrivate,
-            this.$store.getters.postContents,
-            this.$store.getters.hashtagList,
-            this.$store.getters.userTagList,
-            this.selectedCategory,
-            this.selectedChannelId,
-            this.selectedChannelId,
-            this.selectedPfId,
-            scheduledTime
-        );
+        console.log(document.querySelectorAll('.hashtag'))
 
-        //todo: 백엔드 연결 후 분기처리
-        if (result) {
+        const obj = {
+            user_uid: this.user.uid,
+            post_state: this.activeTab,
+            attatchment_files: this.attFiles,
+            post_contents: this.$store.getters.postContents,
+            visibility: this.isPrivate ? "PRIVATE" : "PUBLIC",
+            hashtags: [],
+            // user_tagId: this.$store.getters.userTagList,
+            // user_tagId:'123',
+            game_id: "",
+            channel_id: this.user.uid,
+            ...this.$store.getters.currPage,
+            portfolio_ids: [
+                ""
+            ],
+            scheduled_for: null
+        }
+        console.log(this.$store.getters.postContents)
+        console.log(obj)
+
+        this.$api.uploadPost(obj)
+        .then((res: AxiosResponse) => {
+            this.$store.commit('isNeededRefresh', true)
             this.init();
             this.$emit("closePostModal");
             this.$toasted.show("포스팅이 완료되었습니다.", {
@@ -668,7 +680,8 @@ export default class Post extends Vue {
                     },
                 },
             });
-        } else {
+        })
+        .catch((err: AxiosError) => {
             this.$toasted.show("업로드에 실패하였습니다.", {
                 fullWidth: true,
                 fitToScreen: true,
@@ -684,7 +697,41 @@ export default class Post extends Vue {
                     },
                 },
             });
+        })
+
+
+    }
+
+
+    async uploadAtt() {
+        const imgFiles = this.$store.getters.imgArr.map((img) => {
+            return img.file;
+        })
+        const audioFiles = this.$store.getters.audioArr.map((audio) => {
+            return audio.file;
+        })
+        const formData = new FormData();
+        for (let i = 0; i < imgFiles.length; i++) {
+            formData.append(imgFiles[i].name, imgFiles[i]);
         }
+        for (let i = 0; i < audioFiles.length; i++) {
+            formData.append(audioFiles[i].name, audioFiles[i]);
+        }
+
+        if(this.videoSrc.file){
+            formData.append(this.videoSrc.file.name, this.videoSrc.file)
+        }
+
+
+        return await this.$api.fileUploader(formData)
+
+    }
+
+
+    @Watch('$store.getters.video')
+    watchImg(){
+        this.videoSrc = this.$store.getters.video
+        console.log('watch',  this.videoSrc)
     }
 
     stringToHTML = (str: any) => {
@@ -696,8 +743,8 @@ export default class Post extends Vue {
                 dom
                     .getElementsByTagName("a")
                     [i].href.match(
-                        /(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/
-                    )![1]
+                    /(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/
+                )![1]
             );
         }
         return dom;
@@ -708,7 +755,8 @@ export default class Post extends Vue {
         let selectedItem = e.target.value;
         if (selectedItem.toLowerCase() === "communities") {
             this.isChannelOn = false;
-        } else {
+        }
+        else {
             this.isChannelOn = true;
             this.channelList = this.$api.getCommunityInfo(
                 selectedItem.id
@@ -736,9 +784,11 @@ export default class Post extends Vue {
         console.log("fileLoader", this.fileLoader);
         if (fileType === "img") {
             this.fileList.img = this.fileLoader.fileObj.img;
-        } else if (fileType === "video") {
+        }
+        else if (fileType === "video") {
             this.fileList.video = this.fileLoader.fileObj.video;
-        } else if (fileType === "audio") {
+        }
+        else if (fileType === "audio") {
             this.fileList.audio = this.fileLoader.fileObj.audio;
         }
         // console.log("getFileList", this.fileLoader.fileObj, value);
@@ -757,9 +807,11 @@ export default class Post extends Vue {
 
         this.selectedCategory.push(this.selectedCommunity);
     }
+
     getCommunity(community) {
         this.selectedCommunity = community;
     }
+
     deleteCategory(idx: number) {
         this.selectedCategory.splice(idx, 1);
         console.log("idx", idx, this.selectedCategory);
@@ -782,6 +834,7 @@ export default class Post extends Vue {
 
     border: 1px solid #fff;
 }
+
 .quick-post.dimmed {
     // position: fixed;
     top: 0px;
@@ -793,6 +846,7 @@ export default class Post extends Vue {
     // opacity: 0.3;
     pointer-events: none;
 }
+
 .date-container {
     display: flex;
     justify-content: space-evenly;
@@ -814,11 +868,13 @@ export default class Post extends Vue {
         svg {
             fill: #616a82;
         }
+
         .dropdown-menu .show {
             width: 100% !important;
         }
     }
 }
+
 .form-control {
     .btn {
         width: 50% !important;
@@ -840,12 +896,14 @@ export default class Post extends Vue {
         border-radius: 10px;
         position: relative;
         overflow: hidden;
+
         .icon-cross {
             position: absolute;
             top: 10px;
             right: 10px;
             cursor: pointer;
         }
+
         img {
             display: block;
             border-radius: 10px;
@@ -863,10 +921,12 @@ export default class Post extends Vue {
     white-space: nowrap;
     overflow-x: auto;
 }
+
 .preview-img {
     max-width: 100%;
     height: 100%;
 }
+
 .input {
     height: 150px;
     color: #fff;
@@ -884,6 +944,7 @@ export default class Post extends Vue {
     border-bottom: 1px solid #fff;
     /* margin-bottom: 20px; */
 }
+
 .menu-item {
     width: 1.75rem;
     height: 1.75rem;
@@ -898,6 +959,7 @@ export default class Post extends Vue {
 .editor-container {
     text-align: left;
     padding: 15px;
+
     .iframe-wrapper {
         position: relative;
         padding-bottom: 100/16 * 9%;
@@ -905,9 +967,11 @@ export default class Post extends Vue {
         overflow: hidden;
         width: 100%;
         height: auto;
+
         &.ProseMirror-selectednode {
             outline: 3px solid #68cef8;
         }
+
         iframe {
             position: absolute;
             top: 0;
@@ -916,6 +980,7 @@ export default class Post extends Vue {
             height: 100%;
         }
     }
+
     .video-wrapper {
         position: relative;
         padding-bottom: 100/16 * 9%;
@@ -923,16 +988,19 @@ export default class Post extends Vue {
         overflow: hidden;
         width: 360px;
         height: 240px;
+
         &.ProseMirror-selectednode {
             outline: 3px solid #68cef8;
         }
     }
+
     .audio-wrapper {
         position: relative;
 
         overflow: hidden;
         width: 360px;
         height: 100px;
+
         &.ProseMirror-selectednode {
             outline: 3px solid #68cef8;
         }

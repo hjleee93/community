@@ -18,7 +18,7 @@
             />
         </svg>
         <div style="height: 0px; overflow: hidden">
-            <input type="file" @change="onFileChange" accept= video/*
+            <input type="file" @input="onSelectFile" accept= video/*
             ref="video" />
         </div>
     </div>
@@ -26,20 +26,21 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { FileLoader } from "@/script/fileLoader";
-import { mbToByte } from "@/script/fileManager";
-import { bus } from "@/main";
+import { onSelectFile } from "@/script/fileManager";
 @Component({
     components: {},
 })
 export default class ImageUploaderBtn extends Vue {
-    @Prop() fileLoader!: FileLoader;
     @Prop() activeTab!: string;
-    private remainFileSize: number = mbToByte(40); //20mb (binary);
-    private file: any = "";
+    private maxFileNum: number = 1;
 
     uploadFile() {
         (this.$refs.video as HTMLElement).click();
+    }
+
+    onSelectFile() {
+        const input:any = this.$refs.video;
+        onSelectFile(input.files, this.maxFileNum, 'video')
     }
 
     // 파일 업로드
@@ -61,6 +62,8 @@ export default class ImageUploaderBtn extends Vue {
         }
         event.target.value = null;
     }
+
+
 }
 </script>
 

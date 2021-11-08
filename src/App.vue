@@ -36,6 +36,8 @@ export default class App extends Vue {
         //     await this.$router.replace('/login');
         // }
     }
+
+
 }
 </script>
 

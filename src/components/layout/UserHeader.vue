@@ -132,7 +132,7 @@
                     class="section-menu-item"
                     :to="`/channel/${userUid}/timeline`"
                     :class="
-                        $route.name === 'UserTimeline' &&
+                        $route.name === 'UserPage.vue' &&
                         Object.keys($route.query).length === 0
                             ? 'active'
                             : ''
@@ -265,15 +265,15 @@ export default class UserHeader extends Vue {
     async created() {
         const result = await this.$api.channel(this.userUid);
         this.userInfo = result.target;
-        this.$store.commit("userInfo", this.userInfo);
-        console.log("userinfo in header", this.$store.getters.userInfo);
+        this.$store.commit("channelUserInfo", this.userInfo);
+        console.log("userinfo in header", this.$store.getters.channelUserInfo);
     }
 
     async mounted() {
-        this.followingCnt = await this.$api.followingCnt(
-            this.userInfo.user_uid
-        );
-        this.followerCnt = await this.$api.follwerCnt(this.userInfo.user_uid);
+        // this.followingCnt = await this.$api.followingCnt(
+        //     this.userInfo.user_uid
+        // );
+        // this.followerCnt = await this.$api.follwerCnt(this.userInfo.user_uid);
     }
 
     @Watch("userInfo", { immediate: true })

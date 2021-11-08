@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="feed-box">
         <div class="grid mobile-prefer-content">
             <div
                 class="widget-box no-padding"
@@ -43,11 +43,11 @@
 
                             <p class="user-status-title medium">
                                 <a class="bold" href="profile-timeline.html">{{
-                                    feed.user.name
-                                }}</a>
+                                        feed.user.name
+                                    }}</a>
                                 uploaded a
                                 <span class="bold"
-                                    >{{ feed.post_type }} post</span
+                                >{{ feed.post_type }} post</span
                                 >
                             </p>
 
@@ -60,22 +60,29 @@
                             v-html="feed.content"
                             @click="contentClicked"
                         ></div>
-
-                        <!-- <swiper-c
-                            :feedId="feed.id"
-                            :imgObj="feed.attatchment_files"
-                        ></swiper-c> -->
+                        <div v-for="file in JSON.parse(feed.attatchment_files)">
+                            {{file}}
+                        <b-img v-if="file.type === 'image'" :src="file.url"></b-img>
+                            <video
+                                width="320"
+                                height="240"
+                                controls
+                                :src="file.url"
+                                v-if="file.type === 'video'"></video>
+                            <audio v-if="file.type === 'sound'" controls :src="file.url"></audio>
+                        </div>
                     </div>
 
-                    <!-- <h2>{{feed.attatchment_files}} </h2>         -->
+<!--                     <h2>{{feed.attatchment_files}} </h2>-->
                     <div class="widget-box-status-content">
                         <div class="tag-list">
                             <router-link
                                 class="tag-item secondary"
                                 :to="`/search?hashtag=${hashtag}`"
-                                v-for="hashtag in feed.hashtags"
-                                :key="hashtag.id"
-                                >{{ hashtag }}</router-link
+                                v-for="hashtag in JSON.parse(feed.hashtags)"
+
+                            >{{ hashtag }}
+                            </router-link
                             >
                         </div>
                         <b-modal
@@ -86,7 +93,7 @@
                             v-model="show"
                             ref="editModal"
                         >
-                            <post :feed="feed" :key="isEdit">
+                            <Post :feed="feed" :key="isEdit">
                                 <template v-slot:closeBtn>
                                     <div
                                         class="modal-close-container"
@@ -97,7 +104,7 @@
                                         </svg>
                                     </div>
                                 </template>
-                            </post>
+                            </Post>
                         </b-modal>
                         <div class="content-actions">
                             <div class="meta-line">
@@ -140,9 +147,10 @@
                                                 <router-link
                                                     :to="`/channel/${like.user.channel_id}/timeline`"
                                                     style="color: #fff"
-                                                    >{{
+                                                >{{
                                                         like.user.name
-                                                    }}</router-link
+                                                    }}
+                                                </router-link
                                                 >
                                             </p>
                                         </div>
@@ -248,7 +256,7 @@
             hide-footer
             ref="originImgModal"
         >
-            <b-img-lazy :src="originImg" @click="closeImgModal" />
+            <b-img-lazy :src="originImg" @click="closeImgModal"/>
         </b-modal>
 
         <template v-if="isOpenedComments">
@@ -258,7 +266,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import {Component, Prop, Vue} from "vue-property-decorator";
 
 import CommentList from "./CommentList.vue";
 // import Popup from "@/components/common/Popup.vue";
@@ -271,8 +279,9 @@ import Carousel from "@/components/common/Carousel.vue";
 import Post from "@/components/timeline/Post.vue";
 import PostDropdown from "@/components/layout/dropdown/PostDropdown.vue";
 import TiptapSns from "@/components/timeline/TiptapSns.vue";
-import { dateFormat } from "@/script/moment";
-import { BootstrapVuePlugin, BvEvent, BvModal } from "bootstrap-vue";
+import {dateFormat} from "@/script/moment";
+import {BootstrapVuePlugin, BvEvent, BvModal} from "bootstrap-vue";
+
 @Component({
     components: {
         CommentList,
@@ -306,16 +315,46 @@ export default class Feed extends Vue {
         this.postDate = dateFormat(this.feed.created_at);
         //  document.getElementsByClassName('mention').click();
     }
+
     sendLike() {
         console.log("liked!");
+
+        this.$api.like(this.feed.id)
+            .then((res: AxiosResponse) => {
+console.log(res)
+            })
+            .catch((err: AxiosError) => {
+
+            })
+
+
     }
+
     openComments() {
         this.isOpenedComments = !this.isOpenedComments;
     }
 
     created() {
-        this.likeList = this.$api.likeList(this.feed.id);
+        this.likeListFetch();
     }
+
+    likeListFetch() {
+        const obj = {
+            post_id: this.feed.id,
+            limit: this.limit,
+            offset: this.offset
+        }
+        this.$api.likeList(obj)
+            .then((res: AxiosResponse) => {
+                this.likeList = res;
+            })
+            .catch((err: AxiosError) => {
+
+            })
+
+
+    }
+
     copyUrl() {
         let input = document.body.appendChild(document.createElement("input"));
         input.value = window.location.href;
@@ -326,6 +365,7 @@ export default class Feed extends Vue {
 
         this.isCopied = true;
     }
+
     //post
 
     contentClicked(e: any) {
@@ -333,18 +373,22 @@ export default class Feed extends Vue {
             console.log("이미지 클릭", e.target.src);
             this.originImg = e.target.src;
             (this.$refs.originImgModal as any).show();
-        } else if (e.target.matches(".hashtag")) {
+        }
+        else if (e.target.matches(".hashtag")) {
             this.$router.push(
                 `/search?hashtag=${e.target.attributes["data-id"].nodeValue}`
             );
-        } else if (e.target.matches(".mention")) {
+        }
+        else if (e.target.matches(".mention")) {
             this.$router.push(
                 `/channel/${e.target.attributes["channel-id"].nodeValue}/timeline`
             );
-        } else {
+        }
+        else {
             this.$router.push(`/feed/${this.feed.id}`);
         }
     }
+
     postEdit(val: number) {
         this.isEdit = val;
         this.show = true;
@@ -362,12 +406,13 @@ export default class Feed extends Vue {
     editPost() {
         console.log("?");
     }
+
     pinPost() {
         console.log("pinned");
     }
 }
 </script>
-   
+
 }
 
 <style lang="scss" scoped>
@@ -381,6 +426,7 @@ export default class Feed extends Vue {
     fill: #4ff461;
     opacity: 1;
 }
+
 .thumbs-up.active,
 .post-option-text.active {
     color: #fff;
@@ -389,17 +435,21 @@ export default class Feed extends Vue {
 .reaction {
     top: 5px;
 }
+
 #copied {
     z-index: 999999;
 }
+
 .checkbox-wrap input[type="checkbox"]:checked + .checkbox-box .icon-check,
 .checkbox-wrap input[type="radio"]:checked + .checkbox-box .icon-check {
     fill: #ffffff;
 }
+
 .checkbox-wrap .checkbox-box .icon-check {
     fill: transparent;
     transition: fill 0.2s ease-in-out;
 }
+
 .content-actions {
     height: 92px;
     flex-direction: column;
@@ -410,15 +460,18 @@ export default class Feed extends Vue {
         margin-top: 16px;
     }
 }
+
 .post-icon-wrap {
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
 }
+
 .icon-pinned {
     fill: #616a82;
 }
+
 .icon-pinned.active {
     fill: #f39800;
     opacity: 1;

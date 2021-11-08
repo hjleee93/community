@@ -36,6 +36,7 @@ export default class Play extends Vue {
         this.gameData = this.$store.getters.gameByPathname(this.pathname);
 
         if (!this.gameData) {
+
             //todo 게임 요청
             const result = await this.$api.game(this.pathname);
             if (!result && result.error) {
