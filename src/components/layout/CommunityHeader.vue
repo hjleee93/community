@@ -90,7 +90,7 @@
                         class="user-stat big"
                         :to="`/community/${community.id}/timeline`"
                     >
-                        <p class="user-stat-title">{{ community.posts_cnt }}</p>
+                        <p class="user-stat-title">{{ postCnt }}</p>
 
                         <p class="user-stat-text">posts</p>
                     </router-link>
@@ -137,12 +137,14 @@
                             @click="setting"
                         >
                             <router-link
+                                v-if="community.manager_id === user.id"
                                 class="simple-dropdown-link"
                                 :to="`/community/${community && community.id}/setting`"
                             >
                                 Group setting
                             </router-link>
 
+<!--                            todo: 커뮤니티 관리자만 보이게 수정-->
                             <router-link
                                 class="simple-dropdown-link"
                                 to="/createCommunity"
@@ -272,7 +274,7 @@ import {AxiosError, AxiosResponse} from "axios";
 export default class CommunityHeader extends Vue {
     private dropdown: Dropdown = new Dropdown();
     private hexagon: Hexagon = new Hexagon();
-
+    private postCnt: number = 0;
     private communityId = this.$route.params.community_id;
     private community: any = {};
     private user!: User;
@@ -280,6 +282,7 @@ export default class CommunityHeader extends Vue {
     fetch() {
         this.$api.communityInfo(this.communityId)
             .then((res: AxiosResponse) => {
+                console.log("postCnt", res)
                 this.community = res
             })
         .catch((err:AxiosError)=>{

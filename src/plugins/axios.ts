@@ -21,6 +21,7 @@ const _axios = axios.create(config);
 _axios.interceptors.request.use(
   (cfg) => {
     store.commit('startSpinner');
+    // console.log('interceptor', store.getters.idToken)
     if (store.getters.idToken) {
       cfg.headers.authorization = `Bearer ${store.getters.idToken}`;
     }

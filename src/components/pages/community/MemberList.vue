@@ -6,8 +6,8 @@
                     <h2 class="section-title">
                         Members
                         <span class="highlighted secondary">{{
-                            memberList.length
-                        }}</span>
+                                totalMembers
+                            }}</span>
                     </h2>
                 </div>
             </div>
@@ -19,9 +19,8 @@
                     :member="member"
                 >
                     <template v-slot:action-button1 v-if="user">
-                        <p class="button secondary" @click="followUser">
-                            Follow
-                        </p>
+                        <FollowBtn :member="member"></FollowBtn>
+
                     </template>
                     <template v-slot:action-button2 v-if="user">
                         <p class="button primary">Send Message</p>
@@ -33,36 +32,57 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { mapGetters } from "vuex";
+import {Component, Prop, Vue} from "vue-property-decorator";
+import {mapGetters} from "vuex";
 
 import MemberCard from "@/components/pages/community/MemberCard.vue";
-import { User } from "@/types/index";
+import {User} from "@/types/index";
+import FollowBtn from "@/components/pages/user/_followBtn.vue";
 
 @Component({
-    computed: { ...mapGetters(["user"]) },
-    components: { MemberCard },
+    computed: {...mapGetters(["user"])},
+    components: {MemberCard, FollowBtn},
 })
 export default class MemberList extends Vue {
-    private communityId = parseInt(this.$route.params.community_id);
+    private communityId = this.$route.params.community_id;
+    private totalMembers: number = 0;
     private memberList: User[] = [];
     private user!: User;
-    created() {
-        this.memberList = this.$api.getCommunityMember(this.communityId);
-    }
+    private limit: number = 10;
+    private offset: number = 0;
+
     mounted() {
-        console.log("mounted");
+        this.fetch();
+    }
+
+    fetch() {
+        const obj = {
+            limit: this.limit,
+            offset: this.offset
+        }
+
+        this.$api.communityMembers(this.communityId, obj)
+            .then((res: AxiosResponse) => {
+                this.totalMembers = res.totalCount;
+                this.memberList = res.result;
+            })
+            .catch((err: AxiosError) => {
+
+            })
+
+
     }
 
     async followUser() {
         if (!this.user) {
-        } else {
+        }
+        else {
             const result = this.$api.follow(this.user.uid);
             console.log("follow");
         }
     }
 
-  
+
 }
 </script>
 
@@ -70,6 +90,7 @@ export default class MemberList extends Vue {
 svg {
     vertical-align: middle;
 }
+
 .button-container {
     display: flex;
 }

@@ -61,8 +61,8 @@
                             @click="contentClicked"
                         ></div>
                         <div v-for="file in JSON.parse(feed.attatchment_files)">
-                            {{file}}
-                        <b-img v-if="file.type === 'image'" :src="file.url"></b-img>
+                            {{ file }}
+                            <b-img v-if="file.type === 'image'" :src="file.url"></b-img>
                             <video
                                 width="320"
                                 height="240"
@@ -73,7 +73,7 @@
                         </div>
                     </div>
 
-<!--                     <h2>{{feed.attatchment_files}} </h2>-->
+                    <!--                     <h2>{{feed.attatchment_files}} </h2>-->
                     <div class="widget-box-status-content">
                         <div class="tag-list">
                             <router-link
@@ -216,6 +216,7 @@
                                                 xlink:href="#svg-comment"
                                             ></use>
                                         </svg>
+                                        {{feed.comment_cnt}}
                                     </div>
                                 </div>
 
@@ -260,7 +261,7 @@
         </b-modal>
 
         <template v-if="isOpenedComments">
-            <comment-list :postId="feed.id"></comment-list>
+            <TimelineComments :postId="feed.id"></TimelineComments>
         </template>
     </div>
 </template>
@@ -269,18 +270,16 @@
 import {Component, Prop, Vue} from "vue-property-decorator";
 
 import CommentList from "./CommentList.vue";
-// import Popup from "@/components/common/Popup.vue";
-
 import Hexagon from "@/plugins/hexagon";
 import Dropdown from "@/plugins/dropdown";
 import Tooltip from "@/plugins/tooltip";
 import Carousel from "@/components/common/Carousel.vue";
-// import SwiperC from "@/components/common/SwiperC.vue";
 import Post from "@/components/timeline/Post.vue";
 import PostDropdown from "@/components/layout/dropdown/PostDropdown.vue";
 import TiptapSns from "@/components/timeline/TiptapSns.vue";
 import {dateFormat} from "@/script/moment";
-import {BootstrapVuePlugin, BvEvent, BvModal} from "bootstrap-vue";
+import {AxiosError, AxiosResponse} from "axios";
+import TimelineComments from "@/components/timeline/_commentList.vue";
 
 @Component({
     components: {
@@ -289,6 +288,7 @@ import {BootstrapVuePlugin, BvEvent, BvModal} from "bootstrap-vue";
         Post,
         PostDropdown,
         TiptapSns,
+        TimelineComments
     },
 })
 export default class Feed extends Vue {
@@ -313,15 +313,12 @@ export default class Feed extends Vue {
         this.hexagon.init();
         this.tooltip.init();
         this.postDate = dateFormat(this.feed.created_at);
-        //  document.getElementsByClassName('mention').click();
     }
 
     sendLike() {
-        console.log("liked!");
-
         this.$api.like(this.feed.id)
             .then((res: AxiosResponse) => {
-console.log(res)
+                console.log(res)
             })
             .catch((err: AxiosError) => {
 

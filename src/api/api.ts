@@ -3,7 +3,7 @@ import axios, {AxiosInstance} from 'axios'
 import Vue, {PluginObject} from "vue";
 import firebase from 'firebase/app';
 
-
+const studioApi = process.env.VUE_APP_STUDIO_API;
 export default class Api {
     private communityApi = process.env.VUE_APP_COMMUNITY_API;
 
@@ -90,8 +90,9 @@ export default class Api {
         return await this.request('get', `${this.communityApi}timeline/${obj.community_id}/post`, obj, false)
     }
 
-    async joinedCommunityList(obj: any) {
-        return await this.request('get', `${this.communityApi}user/${obj.user_id}/list/community`, undefined, false)
+
+    async communityMembers(community_id:string, obj:any){
+        return await this.request('get', `${this.communityApi}community/${community_id}/members`, obj, false);
     }
 
     /* /community */
@@ -117,6 +118,9 @@ export default class Api {
     async uploadPost(obj:any){
         return await this.request('post', `${this.communityApi}post`, obj, false);
     }
+    async updatePost(obj:any){
+        return await this.request('put', `${this.communityApi}post/${obj.post_id}`, obj, false);
+    }
     async likeList(obj:any){
         return await this.request('get',`${this.communityApi}post/${obj.post_id}/like/list`, obj, false )
     }
@@ -126,39 +130,57 @@ export default class Api {
     async feed(post_id: string){
         return await this.request('get', `${this.communityApi}post/${post_id}`, undefined, false)
     }
+    async deletePost(post_id: string){
+        return await this.request('delete', `${this.communityApi}post/${post_id}`, undefined, false);
+    }
+    async retweet(post_id:string){
+        return await this.request('post', `${this.communityApi}post/${post_id}/retweet`, undefined, false);
+    }
+
     /* /post */
 
-    getCommentList(id: number) {
-        let result = [
-            {
-                "id": 1,
-                "user_id": 1,
-                "parent_id": null,
-                "post_id": 111,
-                "created_at": 1622615373000,
-                "content": "comment~!",
-                "state": "public",
-                "is_pinned": false,
-                "attatchment_file":
-                    {
-                        "id": 123,
-                        "type": "image/png",
-                        "size": 15762,
-                        "data_unit": "bytes",
-                        "url": "https://blush-design.imgix.net/collections/ob0qDoT6RsCX7xcsG6PD/51234a1a-d7ef-41e6-9ec9-75249e850f08.png?w=800&auto=compress&cs=srgb"
-
-                    },
-                "like_cnt": 0,
-                "dislike_cnt": 0
-
-
-            }
-        ]
-        return result;
+    /* comment */
+    async comments(post_id: string, obj:any){
+        return await this.request('get', `${this.communityApi}post/${post_id}/comment/list`, obj, false)
     }
+    async sendComment(obj: any){
+        return await this.request('post',`${this.communityApi}post/${obj.post_id}/comment`, obj, false)
+    }
+    async deleteComment(post_id:string, comment_id: string){
+        return await this.request('delete', `${this.communityApi}post/${post_id}/comment/${comment_id}`, undefined, false);
+    }
+    async updateComment(obj:any){
+        return await this.request('post',`${this.communityApi}post/${obj.post_id}/comment/${obj.comment_id}`, obj, false)
+    }
+    async likeComment(post_id: string, comment_id: string){
+        return await this.request('post', `${this.communityApi}post/${post_id}/comment/${comment_id}/like`, undefined, false);
+    }
+    /* /comment */
+
+    /* game */
+    async gameList(){
+        const response = await this.request('get', `${studioApi}studio/project`, undefined, false);
+        return response.result || response;
+    }
+    /* /game */
+
+
 
 
     //USER
+    async joinedCommunityList(user_id: number) {
+        return await this.request('get', `${this.communityApi}user/${user_id}/list/community`, undefined, false)
+    }
+    async follow(user_id:number){
+        return await this.request('post', `${this.communityApi}user/${user_id}/follow`, undefined, false);
+    }
+    async followingList(obj:any, user_id:number){
+        return await this.request('get', `${this.communityApi}user/${user_id}/list/following`, obj, false);
+    }
+    async followerList(obj:any, user_id: number){
+        return await this.request('get', `${this.communityApi}user/${user_id}/list/follower`, obj, false);
+    }
+
     async userTimeline(obj:any){
         return await this.request('get', `${this.communityApi}timeline/channel/${obj.channel_id}`, obj,false)
 

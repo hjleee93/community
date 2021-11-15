@@ -20,12 +20,13 @@
             <div class="form-item reply-container">
                 <div class="user-tag" :class="[parentId ? 'active' : '']">
                     <router-link :to="`/channel/${userTag}/timeline`"
-                        >@{{ userTag }}</router-link
+                    >@{{ parentName }}
+                    </router-link
                     >
                 </div>
                 <div class="form-input small reply-form">
                     <label for="popup-post-reply" class="reply-label"
-                        >Your Reply</label
+                    >Your Reply</label
                     >
                     <input
                         class="reply-input"
@@ -77,6 +78,7 @@
                         type="text"
                         id="popup-post-reply"
                         v-model="content"
+                        @keyup.enter="sendComment"
                     />
 
                     <div class="reply-send-wrapper" @click="sendComment">
@@ -99,7 +101,7 @@
                     </div>
 
                     <label :for="'commentState' + commentId"
-                        >{{ commentId }}Private Comment</label
+                    >Private Comment</label
                     >
                 </div>
             </div>
@@ -108,10 +110,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import Form from "@/script/form";
+import {mapGetters} from "vuex";
+import {AxiosError, AxiosResponse} from "axios";
+import {User} from "@/types";
 
 @Component({
+    computed: {...mapGetters(["user"])},
     components: {},
 })
 export default class CommentInput extends Vue {
@@ -119,10 +125,13 @@ export default class CommentInput extends Vue {
     @Prop() parentId!: any;
     @Prop() editContent!: any;
     @Prop() commentId!: number;
+    @Prop() parentName!: string;
 
     private content: string = "";
     private isPrivate: boolean = false;
     private userTag: string = "";
+    private user!: User;
+
     mounted() {
         Form.formInput();
         if (this.editContent) {
@@ -137,20 +146,60 @@ export default class CommentInput extends Vue {
 
     //수정 , 작성
     sendComment() {
-        const result = this.$api.sendComment(
-            this.postId,
-            11,
-            this.isPrivate,
-            this.content,
-            undefined,
-            this.parentId
-        );
+        if(this.commentId){
+            const obj={
+                comment_id: this.commentId,
+                post_id: this.postId,
+                content:this.content
+            }
+            this.$api.updateComment(obj)
+                .then((res: AxiosResponse) => {
+                    console.log(res)
+                    this.$store.commit('isNeededRefresh', true)
+                })
+                .catch((err: AxiosError) => {
 
-        this.content = "";
-        this.isPrivate = false;
+                })
+            .finally(()=>{
+                this.$emit("editDone", true);
+            })
 
-        this.$emit("editDone", true);
+
+        }else{
+            const obj = {
+                user_id: this.user.id,
+                attatchment_files: [
+                    {
+                        priority: 0,
+                        url: "string"
+                    }
+                ],
+                type: "COMMENT",
+                parent_id: this.parentId,
+                post_id: this.postId,
+                content: this.content,
+                is_private: this.isPrivate
+
+            }
+            this.$api.sendComment(obj)
+                .then((res: AxiosResponse) => {
+                    this.$store.commit('isNeededRefresh', true)
+                })
+                .catch((err: AxiosError) => {
+
+                })
+
+
+
+            this.content = "";
+            this.isPrivate = false;
+
+
+        }
+
     }
+
+
 }
 </script>
 
@@ -167,12 +216,15 @@ export default class CommentInput extends Vue {
     right: 0;
     cursor: pointer;
 }
+
 .icon-send-message:hover {
     fill: #fff;
 }
+
 .checkbox-wrap label {
     text-align: left;
 }
+
 .checkbox-wrap {
     margin-top: 8px;
 }
@@ -182,21 +234,26 @@ export default class CommentInput extends Vue {
     background-color: rgb(0 0 0 / 10%);
     border-color: #3f485f;
 }
+
 .checkbox-wrap input[type="checkbox"]:checked + .checkbox-box .icon-check,
 .checkbox-wrap input[type="radio"]:checked + .checkbox-box .icon-check {
     fill: #ffffff;
 }
+
 .checkbox-wrap .checkbox-box .icon-check {
     fill: transparent;
     transition: fill 0.2s ease-in-out;
 }
+
 .user-tag {
     font-weight: 700;
     margin-left: 10px;
 }
+
 .form-input.small {
     height: 48px;
 }
+
 .reply-container {
     display: flex;
     align-items: center;
@@ -206,13 +263,16 @@ export default class CommentInput extends Vue {
     transition: border-color 0.2s ease-in-out;
     border-radius: 12px;
 }
+
 .reply-form {
     width: 100%;
 }
+
 .reply-input {
     border: none;
     width: 100%;
 }
+
 /* .reply-label {
     margin-left: 20%;
 } */

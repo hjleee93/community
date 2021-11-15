@@ -6,7 +6,7 @@
                     <h2 class="section-title">
                         Followers
                         <span class="highlighted secondary">{{
-                            followerList.length
+                            totalCnt
                         }}</span>
                     </h2>
                 </div>
@@ -27,16 +27,41 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 import MemberCard from "@/components/pages/community/MemberCard.vue";
+import {mapGetters} from "vuex";
 @Component({
+    computed: {...mapGetters(["user"])},
     components: { MemberCard },
 })
 export default class FollowerList extends Vue {
     private followerList: any = [];
+    private totalCnt: number = 0;
     private userId = this.$route.params.channel_id;
+    private limit: number = 10;
+    private offset: number = 0;
+    private search: string = '';
+    private user !: any;
 
-    async created() {
-        this.followerList = await this.$api.followerList(this.userId);
-     
+    mounted(){
+        this.fetch();
+    }
+
+    fetch(){
+        const obj={
+            limit : this.limit,
+            offset : this.offset,
+            search: this.search
+        }
+        this.$api.followerList(obj, this.user.id)
+            .then((res: AxiosResponse) => {
+                this.followerList = res.result;
+                this.totalCnt = res.totalCount;
+                console.log(res)
+            })
+            .catch((err: AxiosError) => {
+
+            })
+
+
     }
 }
 </script>

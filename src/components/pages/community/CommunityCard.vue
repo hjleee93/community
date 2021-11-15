@@ -1,8 +1,10 @@
 <template>
     <div class="user-preview">
         <!-- 배너이미지 -->
+
         <figure class="user-preview-cover liquid">
-            <img :src="community.banner_img" alt="cover-29" />
+
+            <img :src="community.banner_img" alt="cover-29"/>
         </figure>
         <!--/ 배너이미지 -->
 

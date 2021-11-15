@@ -28,7 +28,7 @@
                     <a
                         class="post-comment-text-author"
                         href="profile-timeline.html"
-                        >{{ userInfo && userInfo.name }}</a
+                    >{{ userInfo && userInfo.name }}</a
                     >{{ comment && comment.content }}
                 </template>
                 <!-- edit comment -->
@@ -82,13 +82,17 @@
                         >
                             Reply
                         </p>
-                    </div>
-
-                    <div class="meta-line">
                         <p class="meta-line-timestamp">
                             {{ comment && createdDate }}
                         </p>
                     </div>
+
+<!--                    수정, 삭제-->
+                    <div class="meta-line" v-if="user.id === comment.user_id">
+                        <button @click="deleteComment(comment.id)">삭제</button>
+                        <button @click="editComment">수정</button>
+                    </div>
+
 
                     <div class="meta-line settings">
                         <div class="post-settings-wrap">
@@ -103,33 +107,35 @@
                                 </svg>
                             </div>
 
-                            <div
-                                class="simple-dropdown post-settings-dropdown"
-                                ref="dropboxList"
-                            >
-                                <p
-                                    class="
-                                        simple-dropdown-link
-                                        popup-event-creation-trigger
-                                    "
-                                    v-b-modal="comment.id.toString()"
-                                    @click="reportComment"
-                                >
-                                    Report Comment
-                                </p>
-                                <p
-                                    class="simple-dropdown-link"
-                                    @click="editPost"
-                                >
-                                    Edit Comment
-                                </p>
-                                <p
-                                    class="simple-dropdown-link"
-                                    @click="deleteComment(comment.id)"
-                                >
-                                    Delete Comment
-                                </p>
-                            </div>
+
+                            <!--                            <div-->
+                            <!--                                class="simple-dropdown post-settings-dropdown"-->
+                            <!--                                ref="dropboxList"-->
+                            <!--                            >-->
+                            <!--                                <p-->
+                            <!--                                    class="-->
+                            <!--                                        simple-dropdown-link-->
+                            <!--                                        popup-event-creation-trigger-->
+                            <!--                                    "-->
+                            <!--                                    v-b-modal="comment.id.toString()"-->
+                            <!--                                    @click="reportComment"-->
+                            <!--                                >-->
+                            <!--                                    Report Comment-->
+                            <!--                                </p>-->
+                            <!--                                <p-->
+                            <!--                                    class="simple-dropdown-link"-->
+                            <!--                                    @click="editPost"-->
+                            <!--                                >-->
+                            <!--                                    Edit Comment-->
+                            <!--                                </p>-->
+                            <!--                                <p-->
+                            <!--                                    class="simple-dropdown-link"-->
+                            <!--                                    @click="deleteComment(comment.id)"-->
+                            <!--                                >-->
+                            <!--                                    Delete Comment-->
+                            <!--                                </p>-->
+                            <!--                            </div>-->
+
                         </div>
                     </div>
                 </div>
@@ -144,26 +150,32 @@
             <template v-slot:reason2>스팸</template>
             <template v-slot:reason3>음란성</template>
         </modal>
-        <!-- <comment-input
+        <comment-input
             v-if="isOpenReply"
             :postId="postId"
             :commentId="comment.id"
             :parentId="parentId"
+            :parentName="userInfo.name"
             class="post-comment unread reply-2"
-        ></comment-input> -->
+        ></comment-input>
     </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import {Component, Prop, Vue} from "vue-property-decorator";
 import Hexagon from "@/plugins/hexagon";
 import PopupPlugin from "@/plugins/popup";
 
-import { dateFormat } from "@/script/moment";
+import {dateFormat} from "@/script/moment";
 import Modal from "@/components/common/Modal.vue";
 import CommentInput from "@/components/timeline/CommentInput.vue";
+import {AxiosError, AxiosResponse} from "axios";
+import {dateFormat} from "@/script/moment";
+import {mapGetters} from "vuex";
+
 @Component({
-    components: { CommentInput, Modal },
+    computed: {...mapGetters(["user"])},
+    components: {CommentInput, Modal},
 })
 export default class Comment extends Vue {
     @Prop() comment!: any;
@@ -183,25 +195,39 @@ export default class Comment extends Vue {
     mounted() {
         this.init();
         this.hexagon.init();
-        this.createdDate = dateFormat(this.comment.created_at);
+        this.createdDate = dateFormat(this.comment.createdAt);
         // this.popupPlugin.init();
     }
+
     async init() {
         const result = await this.$api.channel(this.comment.user_uid);
         this.userInfo = result.target;
     }
+
     editPost() {
         this.isEditing = true;
         (this.$refs.dropbox as HTMLElement).click();
     }
+
     editDone() {
         this.isEditing = false;
     }
 
-    deleteComment(commentId: number) {
-        const result = this.$api.deleteComment(this.postId, commentId);
-        (this.$refs.dropbox as HTMLElement).click();
+    deleteComment(commentId: string) {
+        this.$api.deleteComment(this.postId, commentId)
+            .then((res: AxiosResponse) => {
+                //todo : 댓글 삭제
+                this.$store.commit('isNeededRefresh', true)
+            })
+            .catch((err: AxiosError) => {
+
+            })
     }
+
+    editComment() {
+        this.isEditing = true;
+    }
+
     reportComment() {
         (this.$refs.dropbox as HTMLElement).click();
         this.$emit("openReport", true);
@@ -209,8 +235,17 @@ export default class Comment extends Vue {
         this.uniqeKey = new Date().getTime();
         //  document.documentElement.style.overflow = 'hidden'
     }
+
     likeComment() {
-        const result = this.$api.likeComment(this.comment.id);
+        this.$api.likeComment(this.postId, this.comment.id)
+            .then((res: AxiosResponse) => {
+                console.log(res)
+            })
+            .catch((err: AxiosError) => {
+
+            })
+
+
     }
 
     openReply(comment: any) {
@@ -224,6 +259,7 @@ export default class Comment extends Vue {
 .post-comment-text {
     text-align: left;
 }
+
 .comment.active {
     color: #4ff461;
 }

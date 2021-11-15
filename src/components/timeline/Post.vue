@@ -290,8 +290,8 @@
 
             <div class="quick-post-footer-actions">
                 <!-- <p class="button small">임시 저장</p> -->
-
-                <p class="button small secondary" @click="uploadPost">Post</p>
+                <p class="button small secondary" @click="updatePost" v-if="feed">Update</p>
+                <p class="button small secondary" @click="uploadPost" v-else>Post</p>
             </div>
         </div>
         <div v-if="isScheduledPost" class="date-container">
@@ -379,6 +379,7 @@ import Messages from "@/components/pages/user/Messages.vue";
 import Dropdown from "@/plugins/dropdown";
 import CustomTooltip from "@/components/layout/tooltip/Tooltip.vue";
 import {fileObjWtUrl} from "@/types/file/file";
+import {AxiosError, AxiosResponse} from "axios";
 
 @Component({
     computed: {...mapGetters(["user"])},
@@ -505,12 +506,16 @@ export default class Post extends Vue {
         this.fetch();
 
 
-        // edit
-        if (this.feed) {
+
+
+    }
+
+    prefill(){
+
             // console.log()
-            this.selectedCategory = (
-                await this.$api.getPostedAt(this.feed.id)
-            ).community;
+            // this.selectedCategory = (
+            //     await this.$api.getPostedAt(this.feed.id)
+            // ).community;
             console.log(this.feed);
 
             if (this.feed.attatchment_files.img) {
@@ -523,12 +528,10 @@ export default class Post extends Vue {
             else if (this.feed.attatchment_files.video) {
                 this.fileLoader.fileObj.video =
                     this.feed.attatchment_files.video;
-            }
 
-            console.log("this.fileLoader", this.fileLoader.fileObj);
+
         }
     }
-
     fetch() {
         const obj = {
             user_id: this.user.id,
@@ -702,6 +705,66 @@ export default class Post extends Vue {
 
     }
 
+    //포스팅 수정
+    async updatePost(){
+        const obj = {
+            post_id:this.feed.id,
+            user_uid: this.user.uid,
+            post_state: this.activeTab,
+            attatchment_files: this.attFiles,
+            post_contents: this.$store.getters.postContents,
+            visibility: this.isPrivate ? "PRIVATE" : "PUBLIC",
+            hashtags: [],
+            // user_tagId: this.$store.getters.userTagList,
+            // user_tagId:'123',
+            game_id: "",
+            channel_id: this.user.uid,
+            ...this.$store.getters.currPage,
+            portfolio_ids: [
+                ""
+            ],
+            scheduled_for: null
+        }
+
+        this.$api.updatePost(obj)
+            .then((res: AxiosResponse) => {
+                this.$store.commit('isNeededRefresh', true)
+                this.init();
+                this.$emit("closePostModal");
+                this.$toasted.show("포스팅이 완료되었습니다.", {
+                    fullWidth: true,
+                    fitToScreen: true,
+                    theme: "outline",
+                    position: "top-center",
+                    className: "toast-success",
+                    duration: 3000,
+                    type: "success",
+                    action: {
+                        text: "X",
+                        onClick: (e, toastObject) => {
+                            toastObject.goAway(0);
+                        },
+                    },
+                });
+            })
+            .catch((err: AxiosError) => {
+                this.$toasted.show("업로드에 실패하였습니다.", {
+                    fullWidth: true,
+                    fitToScreen: true,
+                    theme: "outline",
+                    position: "top-center",
+                    className: "toast-error",
+                    duration: 3000,
+                    type: "error",
+                    action: {
+                        text: "X",
+                        onClick: (e, toastObject) => {
+                            toastObject.goAway(0);
+                        },
+                    },
+                });
+            })
+    }
 
     async uploadAtt() {
         const imgFiles = this.$store.getters.imgArr.map((img) => {

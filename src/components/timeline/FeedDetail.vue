@@ -66,7 +66,7 @@
                     >
                     <span>{{ createdDate }}</span>
                 </div>
-                <p class="button secondary">follow</p>
+                <FollowBtn :userId="feed.user.id"></FollowBtn>
             </div>
 
             <div class="post-open-content">
@@ -140,8 +140,11 @@ import Dropdown from "@/plugins/dropdown";
 
 import PostDropdown from "@/components/layout/dropdown/PostDropdown.vue";
 import { dateFormat } from "@/script/moment";
+import {AxiosError, AxiosResponse} from "axios";
+import FollowBtn from "@/components/pages/user/_followBtn.vue";
+
 @Component({
-    components: { CommentList, PostDropdown },
+    components: { CommentList, PostDropdown,FollowBtn },
 })
 export default class FeedDetail extends Vue {
     private dropdown: Dropdown = new Dropdown();

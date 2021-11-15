@@ -31,9 +31,6 @@ import VTooltip from 'v-tooltip'
 
 Vue.use(VTooltip)
 
-import vuescroll from 'vuescroll/dist/vuescroll-slide';
-
-Vue.use(vuescroll);
 
 import 'overlayscrollbars/css/OverlayScrollbars.css';
 import {OverlayScrollbarsPlugin} from 'overlayscrollbars-vue';

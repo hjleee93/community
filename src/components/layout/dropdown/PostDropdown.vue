@@ -17,6 +17,9 @@
                 <p class="simple-dropdown-link" @click="deletePost(feed.id)">
                     포스팅 삭제
                 </p>
+                <p class="simple-dropdown-link" @click="retweet(feed.id)">
+                    리트윗
+                </p>
                 <p
                     class="simple-dropdown-link"
                     v-b-modal="feed.id.toString()"
@@ -109,6 +112,7 @@ import Dropdown from "@/plugins/dropdown";
 import { bus } from "@/main";
 
 import Post from "@/components/timeline/Post.vue";
+import { AxiosError, AxiosResponse } from "axios";
 @Component({
     components: { Modal, DeleteModal, Post },
 })
@@ -124,17 +128,37 @@ export default class PostDropdown extends Vue {
     private show: boolean = false;
     private timeId: number = 0;
     private isShowEditPost: boolean = false;
+
     mounted() {
         this.dropdown.init();
     }
     destroy() {
         this.timeId = 0;
     }
-    deletePost(postId: number) {
+    deletePost(postId: string) {
         (this.$refs.dropbox as HTMLElement).click();
         this.show = true;
+        //todo: back-end check
+        this.$api.deletePost(postId)
+            .then((res: AxiosResponse) => {
+                console.log(res)
+            })
+            .catch((err: AxiosError) => {
 
-        const result = this.$api.deletePost(postId);
+            })
+
+
+    }
+    retweet(postId:string){
+        this.$api.retweet(postId)
+            .then((res: AxiosResponse) => {
+                console.log(res)
+            })
+            .catch((err: AxiosError) => {
+
+            })
+
+
     }
     closePostModal(){
         (this.$refs.editModal as any).hide();

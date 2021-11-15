@@ -1,3 +1,4 @@
+<script src="../../../../../../Downloads/app (1).js"></script>
 <template>
     <div class="grid">
         <div class="account-hub-content">
@@ -9,9 +10,13 @@
                 </div>
             </div>
         </div>
+        <div class="grid grid-4-4-4" v-if="$store.getters.LoadingStatus">
+            <b-skeleton-img animation="throb" variant="dark" ></b-skeleton-img>
+        </div>
 
-        <div class="grid grid-4-4-4">
+        <div class="grid grid-4-4-4" v-else>
             <community-card
+
                 v-for="community in communityList"
                 :key="community.id"
                 :community="community"
@@ -95,14 +100,21 @@ export default class ManageJoinedGroup extends Vue {
     private communityList: any = [];
     private memberList: any = [];
 
-    async created() {
-        // console.log(this.$store.getters.user)
-    }
+
     async mounted() {
-        this.communityList = await this.$api.joinedCommunityList(
-            this.$store.getters.user.uid
-        );
-        console.log(this.communityList);
+       this.fetch();
+    }
+
+    fetch(){
+        this.$api.joinedCommunityList(this.$store.getters.user.id)
+            .then((res: AxiosResponse) => {
+                this.communityList = res;
+            })
+            .catch((err: AxiosError) => {
+
+            })
+
+
     }
 }
 </script>

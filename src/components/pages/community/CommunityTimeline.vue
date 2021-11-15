@@ -70,6 +70,7 @@ import CommunityDescBox from "@/components/pages/community/CommunityDescBox.vue"
 import {AxiosError, AxiosResponse} from "axios";
 import {scrollDone} from "@/script/scrollManager";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
+import {PaginationRes} from "@/types";
 
 @Component({
     components: {Post, Channel, Feed, CommunityDescBox, PostBox, PulseLoader},
@@ -127,9 +128,7 @@ export default class CommunityTimeline extends Vue {
         }
         this.$store.commit('isNeededRefresh', false)
         this.$api.communityTimeline(obj)
-            .then((res: AxiosResponse) => {
-
-
+            .then((res: PaginationRes) => {
                    if (this.isAddData) {
                        if (res.result.length > 0) {
                            this.timeline = [...this.timeline, ...res.result]

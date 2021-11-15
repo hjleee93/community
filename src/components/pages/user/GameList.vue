@@ -40,15 +40,15 @@
                 <div
                     :key="game.id"
                     class="user-status-list"
-                    @click="moveGameChannel(game)"
+                    @click="moveGameChannel(game.game)"
                     :id="game.id"
                 >
-                    <span class="game-title">{{ game.title }}</span>
+                    <span class="game-title">{{ game.name }}</span>
 
                     <div
                         :style="`background: url(${
-                            game.url_thumb_webp ||
-                            game.url_thumb ||
+                            game.picture_webp ||
+                            game.picture ||
                             'img/default.png'
                         }) center center / cover no-repeat;`"
                         class="thumb img game-img"
@@ -72,6 +72,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import {AxiosError, AxiosResponse} from "axios";
 @Component({
     components: {},
 })
@@ -81,9 +82,24 @@ export default class GameList extends Vue {
 
     private user: any = null;
 
-    async mounted() {
-        this.gameList();
-        console.log(this.games);
+     mounted() {
+        //
+         this.fetch();
+
+
+    }
+
+
+    fetch(){
+        this.$api.gameList()
+            .then((res: AxiosResponse) => {
+                this.games = res;
+            })
+            .catch((err: AxiosError) => {
+
+            })
+
+
     }
 
     moveGameChannel(game: any) {
@@ -100,7 +116,7 @@ export default class GameList extends Vue {
     }
 
     gameList() {
-        console.log(this.$store.getters.userInfo.dev_games);
+        console.log(this.$store.getters.userInfo);
         if (
             this.$store.getters.userInfo.dev_games &&
             this.$store.getters.userInfo.dev_games.length >= 5
