@@ -15,25 +15,13 @@
                     >
                         <div class="user-avatar small no-border">
                             <div class="user-avatar-content">
-                                <div
-                                    class="hexagon-image-40-44"
-                                   :data-src="community.profile_img"
-                                    style="
+                                <b-img :src="community.profile_img"  style="
                                         width: 40px;
                                         height: 44px;
                                         position: relative;
-                                    "
-                                >
-                                    <canvas
-                                        width="40"
-                                        height="44"
-                                        style="
-                                            position: absolute;
-                                            top: 0px;
-                                            left: 0px;
-                                        "
-                                    ></canvas>
-                                </div>
+                                        border-radius: 10px;
+                                    "/>
+
                             </div>
                         </div>
                     </router-link>
@@ -42,7 +30,8 @@
                         <router-link
                             class="bold"
                             :to="`/community/${community.id}/timeline`"
-                            >{{ community.name }}</router-link
+                        >{{ community.name }}
+                        </router-link
                         >
                     </p>
 
@@ -57,12 +46,15 @@
 
 <script lang="ts">
 import {Group, User} from "@/types";
-import { Component, Prop, Vue } from "vue-property-decorator";
+import {Component, Prop, Vue} from "vue-property-decorator";
 
 import Hexagon from "@/plugins/hexagon";
 import {AxiosError, AxiosResponse} from "axios";
+import {mapGetters} from "vuex";
+
 @Component({
     components: {},
+    computed: {...mapGetters(["user"])},
 })
 export default class JoinedCommunity extends Vue {
     @Prop() userUid!: string;
@@ -75,18 +67,14 @@ export default class JoinedCommunity extends Vue {
         member_cnt: number;
     }[] = [];
 
-     mounted() {
+    async mounted() {
+        await this.$store.dispatch("loginState");
         this.hexagon.init();
-        console.log(this.user)
-         this.fetch();
+        await  this.fetch();
     }
-    fetch(){
-        const obj={
-            user_id:this.$store.getters.channelUserInfo.id,
 
-        }
-        console.log('obj',obj)
-        this.$api.joinedCommunityList(obj)
+    fetch() {
+        this.$api.joinedCommunityList(this.$store.getters.channelUserInfo.id)
             .then((res: AxiosResponse) => {
                 console.log('joinedCommunityList', res)
                 this.communityList = res;

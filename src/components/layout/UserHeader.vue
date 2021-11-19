@@ -81,7 +81,8 @@
                         <router-link
                             class="user-stat-title"
                             :to="`/channel/${userInfo.uid}/timeline`"
-                            >930</router-link
+                        >{{ postCnt }}
+                        </router-link
                         >
 
                         <p class="user-stat-text">posts</p>
@@ -91,7 +92,8 @@
                         <router-link
                             class="user-stat-title"
                             :to="`/channel/${userInfo.uid}/follwers`"
-                            >{{ followerCnt }}</router-link
+                        >{{ followerCnt }}
+                        </router-link
                         >
                         <p class="user-stat-text">Followers</p>
                     </div>
@@ -99,7 +101,8 @@
                         <router-link
                             class="user-stat-title"
                             :to="`/channel/${userInfo.uid}/followings`"
-                            >{{ followingCnt }}</router-link
+                        >{{ followingCnt }}
+                        </router-link
                         >
 
                         <p class="user-stat-text">Followings</p>
@@ -243,14 +246,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 
-import { mapGetters } from "vuex";
+import {mapGetters} from "vuex";
 import Hexagon from "@/plugins/hexagon";
-import { User } from "@/types";
+import {User} from "@/types";
 import plugins from "@/plugins/plugins";
+import {AxiosError, AxiosResponse} from "axios";
+
 @Component({
-    computed: { ...mapGetters(["user"]) },
+    computed: {...mapGetters(["user"])},
     components: {},
 })
 export default class UserHeader extends Vue {
@@ -258,6 +263,7 @@ export default class UserHeader extends Vue {
 
     private userUid = this.$route.params.channel_id;
     private userInfo: any = [];
+    private postCnt: number = 0;
     private followingCnt: number = 0;
     private followerCnt: number = 0;
     private user!: User;
@@ -270,21 +276,42 @@ export default class UserHeader extends Vue {
     }
 
     async mounted() {
-        // this.followingCnt = await this.$api.followingCnt(
-        //     this.userInfo.user_uid
-        // );
-        // this.followerCnt = await this.$api.follwerCnt(this.userInfo.user_uid);
+        this.fetch();
     }
 
-    @Watch("userInfo", { immediate: true })
+    fetch() {
+        if(this.$store.getters.channelUserInfo.id) {
+            this.$api.userPostCnt(this.$store.getters.channelUserInfo.id)
+                .then((res: number) => {
+                    this.postCnt = res;
+                })
+                .catch((err: AxiosError) => {
+
+                })
+        }
+
+
+    }
+
+    @Watch("userInfo", {immediate: true})
     watchImg(val: any) {
         console.log("watch userInfo", val);
         this.$nextTick(() => {
             this.hexagon.init();
         });
     }
-    @Watch("")
-    followUser() {}
+
+    followUser() {
+        console.log('follow')
+        this.$api.follow(this.userInfo.id)
+            .then((res: AxiosResponse) => {
+                console.log(res)
+            })
+            .catch((err: AxiosError) => {
+
+            })
+
+    }
 }
 </script>
 
@@ -292,6 +319,7 @@ export default class UserHeader extends Vue {
 svg {
     vertical-align: middle;
 }
+
 figure > div {
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;

@@ -36,11 +36,7 @@ export default class AudioPreview extends Vue {
 
     //미리보기 사진 삭제
     deletePreviewAudio(idx: number) {
-        // this.fileLoader.deletePreviewAudio(idx);
-        const audioArr = this.$store.getters.audioArr
-
-        audioArr.splice(idx, 1)
-        console.log(audioArr, this.$store.getters.audioArr)
+        this.$store.getters.audioArr.splice(idx, 1)
         //
         // this.$store.commit('audioArr', audioArr)
     }

@@ -17,9 +17,9 @@
                 <p class="simple-dropdown-link" @click="deletePost(feed.id)">
                     포스팅 삭제
                 </p>
-                <p class="simple-dropdown-link" @click="retweet(feed.id)">
-                    리트윗
-                </p>
+<!--                <p class="simple-dropdown-link" @click="retweet(feed.id)">-->
+<!--                    리트윗-->
+<!--                </p>-->
                 <p
                     class="simple-dropdown-link"
                     v-b-modal="feed.id.toString()"
@@ -139,13 +139,13 @@ export default class PostDropdown extends Vue {
         (this.$refs.dropbox as HTMLElement).click();
         this.show = true;
         //todo: back-end check
-        this.$api.deletePost(postId)
-            .then((res: AxiosResponse) => {
-                console.log(res)
-            })
-            .catch((err: AxiosError) => {
-
-            })
+        // this.$api.deletePost(postId)
+        //     .then((res: AxiosResponse) => {
+        //         console.log(res)
+        //     })
+        //     .catch((err: AxiosError) => {
+        //
+        //     })
 
 
     }

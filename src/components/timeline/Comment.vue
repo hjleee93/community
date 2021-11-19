@@ -170,7 +170,6 @@ import {dateFormat} from "@/script/moment";
 import Modal from "@/components/common/Modal.vue";
 import CommentInput from "@/components/timeline/CommentInput.vue";
 import {AxiosError, AxiosResponse} from "axios";
-import {dateFormat} from "@/script/moment";
 import {mapGetters} from "vuex";
 
 @Component({

@@ -21,8 +21,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-
-import ClickOutside from "vue-click-outside";
 @Component({
   components: {},
 })

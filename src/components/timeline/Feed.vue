@@ -1,5 +1,5 @@
 <template>
-    <div class="feed-box">
+    <div class="feed-box" v-if="feed.id">
         <div class="grid mobile-prefer-content">
             <div
                 class="widget-box no-padding"
@@ -19,13 +19,13 @@
                         <div class="user-status">
                             <router-link
                                 class="user-status-avatar"
-                                :to="`/channel/${feed.user.uid}/timeline`"
+                                :to="`/channel/${feed.user&&feed.user.uid}/timeline`"
                             >
                                 <div class="user-avatar small no-outline">
                                     <div class="user-avatar-content">
                                         <div
                                             class="hexagon-image-30-32"
-                                            :data-src="feed.user.profile_img"
+                                            :data-src="feed.user&&feed.user.profile_img"
                                         ></div>
                                     </div>
 
@@ -43,7 +43,7 @@
 
                             <p class="user-status-title medium">
                                 <a class="bold" href="profile-timeline.html">{{
-                                        feed.user.name
+                                        feed.user&& feed.user.name
                                     }}</a>
                                 uploaded a
                                 <span class="bold"
@@ -60,9 +60,9 @@
                             v-html="feed.content"
                             @click="contentClicked"
                         ></div>
-                        <div v-for="file in JSON.parse(feed.attatchment_files)">
-                            {{ file }}
-                            <b-img v-if="file.type === 'image'" :src="file.url"></b-img>
+                        <template v-if="attachedFile">
+                        <div v-for="file in attachedFile">
+                            <b-img v-if="file.type === 'image'" :src="file.url" class="feed-img mt-3"></b-img>
                             <video
                                 width="320"
                                 height="240"
@@ -71,15 +71,15 @@
                                 v-if="file.type === 'video'"></video>
                             <audio v-if="file.type === 'sound'" controls :src="file.url"></audio>
                         </div>
+                        </template>
                     </div>
 
-                    <!--                     <h2>{{feed.attatchment_files}} </h2>-->
                     <div class="widget-box-status-content">
                         <div class="tag-list">
                             <router-link
                                 class="tag-item secondary"
                                 :to="`/search?hashtag=${hashtag}`"
-                                v-for="hashtag in JSON.parse(feed.hashtags)"
+                                v-for="hashtag in hashtags"
 
                             >{{ hashtag }}
                             </router-link
@@ -305,24 +305,43 @@ export default class Feed extends Vue {
 
     private show: boolean = false;
 
+    private attachedFile: any = '';
+    private hashtags: any = '';
+
     private originImg: string = "";
 
     mounted() {
-        console.log("post", this.feed);
+        this.attachedFile = JSON.parse(this.feed.attatchment_files)
+        this.hashtags = JSON.parse(this.feed.hashtags)
         this.dropdown.init();
         this.hexagon.init();
         this.tooltip.init();
-        this.postDate = dateFormat(this.feed.created_at);
+        this.postDate = dateFormat(this.feed.createdAt);
+        // console.log('feed', this.feed)
     }
 
     sendLike() {
-        this.$api.like(this.feed.id)
-            .then((res: AxiosResponse) => {
-                console.log(res)
-            })
-            .catch((err: AxiosError) => {
+        // console.log(this.feed.liked)
+        if(!this.feed.liked) {
+            console.log('like')
+            this.$api.like(this.feed.id)
+                .then((res: AxiosResponse) => {
+                    console.log(res)
+                })
+                .catch((err: AxiosError) => {
 
-            })
+                    })
+        }else{
+            console.log('unlike')
+            this.$api.unlike(this.feed.id)
+                .then((res: AxiosResponse) => {
+                    console.log(res)
+                })
+                .catch((err: AxiosError) => {
+
+                })
+        }
+
 
 
     }
@@ -413,6 +432,9 @@ export default class Feed extends Vue {
 }
 
 <style lang="scss" scoped>
+.feed-img{
+    max-width:100%;
+}
 .content-grid {
     transform: translate(199.5px, 0px);
     transition: transform 0.4s ease-in-out 0s;

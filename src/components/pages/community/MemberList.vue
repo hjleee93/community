@@ -20,11 +20,10 @@
                 >
                     <template v-slot:action-button1 v-if="user">
                         <FollowBtn :member="member"></FollowBtn>
-
                     </template>
-                    <template v-slot:action-button2 v-if="user">
-                        <p class="button primary">Send Message</p>
-                    </template>
+<!--                    <template v-slot:action-button2 v-if="user">-->
+<!--                        <p class="button primary">Send Message</p>-->
+<!--                    </template>-->
                 </member-card>
             </div>
         </section>

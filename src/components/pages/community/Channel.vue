@@ -1,10 +1,10 @@
 <template>
   <div
     class="user-status-list"
-    @click="moveChannel(channel.id)"
+    @click="openChannelTl(channel.id)"
     :id="channel.id"
   >
-    <span class="channel-title">{{ channel.name }}</span>
+    <span class="channel-title">{{ channel.title }}</span>
     <div
       :style="`background: url(${
         channel.profile_img || 'img/default.png'
@@ -27,10 +27,32 @@ export default class Channel extends Vue {
   private timeline: any;
   private channelId: any = -1;
 
-  moveChannel(id?: number) {
-    this.timeline = this.$api.getTimeline(this.communityId, this.channel.id);
-    this.$emit("channelId", id);
-    this.$emit("channelTimeline", this.timeline);
+  private limit: number = 5;
+  private offset: number = 0;
+
+    openChannelTl(channel_id?: string) {
+    this.$emit("channelId", channel_id);
+  }
+
+  mounted(){
+      console.log(this.channel)
+      this.fetch()
+  }
+
+  fetch(){
+      const obj = {
+          limit: this.limit,
+          offset: this.offset
+      }
+      this.$api.channelList(this.communityId, obj)
+          .then((res: AxiosResponse) => {
+              console.log(res)
+          })
+          .catch((err: AxiosError) => {
+
+          })
+
+
   }
 }
 </script>

@@ -4,7 +4,6 @@
       <svg class="icon-cross" @click="deletePreviewImg(idx)">
         <use xlink:href="#svg-cross-thin"></use>
       </svg>
-
       <b-img-lazy :src="img.url"></b-img-lazy>
     </div>
   </div>
@@ -53,10 +52,8 @@ export default class ImagePreview extends Vue {
 
   //미리보기 사진 삭제
   deletePreviewImg(idx: number) {
+      this.$store.getters.imgArr.splice(idx, 1)
       console.log(this.$store.getters.imgArr)
-      //흠ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ
-      const imgArr = this.$store.getters.imgArr
-      imgArr.splice(idx, 1)
       // this.$store.dispatch('imageArrChg', imgArr)
   }
 }

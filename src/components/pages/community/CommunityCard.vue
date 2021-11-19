@@ -1,11 +1,12 @@
 <template>
     <div class="user-preview">
         <!-- 배너이미지 -->
-
-        <figure class="user-preview-cover liquid">
-
-            <img :src="community.banner_img" alt="cover-29"/>
-        </figure>
+            <div
+                :style="`background: url(${
+                           community.banner_img || bannerImg
+                        }) center center / cover no-repeat;`"
+                class="user-preview-cover liquid"
+            />
         <!--/ 배너이미지 -->
 
         <div class="user-preview-info">
@@ -55,12 +56,16 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 import Hexagon from "@/plugins/hexagon";
+
 @Component({
     components: {},
 })
+
 export default class CommunityCard extends Vue {
     @Prop() community!: any;
     private hexagon: Hexagon = new Hexagon();
+
+    private bannerImg: string = "img/community_banner_default.jpg";
 
     mounted() {
         this.hexagon.init();

@@ -109,14 +109,7 @@
                 </div>
 
                 <div class="profile-header-info-actions">
-                    <p
-                        class="profile-header-info-action button secondary"
-                        @click="subscribe"
-                    >
-                        <svg class="icon-join-group">
-                            <use xlink:href="#svg-join-group"></use>
-                        </svg>
-                    </p>
+                    <SubscribeBtn :community="community"></SubscribeBtn>
 
                     <div
                         class="
@@ -266,9 +259,11 @@ import Dropdown from "@/plugins/dropdown";
 import Hexagon from "@/plugins/hexagon";
 import {User} from "@/types";
 import {AxiosError, AxiosResponse} from "axios";
+import SubscribeBtn from "@/components/pages/community/_subscribeBtn.vue";
+
 
 @Component({
-    components: {},
+    components: {SubscribeBtn},
     computed: {...mapGetters(["user"])},
 })
 export default class CommunityHeader extends Vue {
@@ -279,10 +274,17 @@ export default class CommunityHeader extends Vue {
     private community: any = {};
     private user!: User;
 
+    mounted() {
+        this.fetch()
+        this.dropdown.init();
+        this.hexagon.init();
+    }
+
     fetch() {
         this.$api.communityInfo(this.communityId)
             .then((res: AxiosResponse) => {
                 console.log("postCnt", res)
+                this.$store.commit('communityInfo', res);
                 this.community = res
             })
         .catch((err:AxiosError)=>{
@@ -290,17 +292,9 @@ export default class CommunityHeader extends Vue {
         })
     }
 
-    mounted() {
-        this.fetch()
-        this.dropdown.init();
-        this.hexagon.init();
-    }
+
 
     subscribe() {
-       this.subscribeFetch();
-    }
-
-    subscribeFetch(){
         this.$api.subscribe({user_id: this.user.id, community_id: this.communityId})
             .then((res:AxiosResponse)=>{
                 console.log(res)
@@ -311,6 +305,17 @@ export default class CommunityHeader extends Vue {
         })
     }
 
+    unsubscribe(){
+        this.$api.unsubscribe({user_id: this.user.id, community_id: this.communityId})
+            .then((res:AxiosResponse)=>{
+                console.log(res)
+            }).catch((err:AxiosError)=>{
+            if(err.message){
+                alert(err.message)
+            }
+        })
+
+    }
     setting() {
         // (this.$refs.dropbox as HTMLElement).click();
     }

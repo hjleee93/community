@@ -1,5 +1,6 @@
 export default {
     state: {
+
         userTagList: [],
         imgArr: [],
         audioArr: [],
@@ -12,6 +13,7 @@ export default {
         channelUserInfo: [],
     },
     getters: {
+
         userTagList(state: any) {
             return state.userTagList;
         },
@@ -84,7 +86,13 @@ export default {
             context.state.postContents = '';
             context.state.isClearEditor = true;
         },
+        resetAttFiles(context:any){
+            console.log('reset!!!!')
+            context.state.imgArr =[];
+            context.state.audioArr =[];
+            context.state.video =[];
 
+        }
 
     }
 }

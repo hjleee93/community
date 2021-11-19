@@ -4,7 +4,6 @@
             <navigator></navigator>
         </template>
         <router-view />
-         <!-- <toast ></toast> -->
     </div>
 </template>
 
@@ -14,18 +13,20 @@ import { Component, Vue } from "vue-property-decorator";
 import Navigator from "@/components/layout/navigator/Navigator.vue";
 import Dropdown from "@/plugins/dropdown";
 
-import { LoginState } from "@/store/modules/user";
+import MetaSetting from "@/utils/meta"
 
 @Component({
     components: { Navigator },
 })
 export default class App extends Vue {
     private dropdown: Dropdown = new Dropdown();
-
-    mounted() {
-        
+    // metaInfo:{
+    //     title:'ZEMPIE',
+    //     titleTemplate:'게임 공유 플랫폼',
+    // }
+    async mounted() {
+        await this.$store.dispatch("loginState");
         this.dropdown.init();
-        // await this.$store.dispatch("loginState");
 
         //  if( state === LoginState.login ) {
         //     if( !this.$store.getters.user.is_developer ) {

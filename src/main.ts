@@ -46,6 +46,12 @@ export const bus = new Vue();
 
 Vue.config.productionTip = false
 
+//VUE-META
+import VueMeta from 'vue-meta'
+
+Vue.use(VueMeta)
+
+
 new Vue({
     router,
     store,

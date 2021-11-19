@@ -78,6 +78,10 @@ export default class Api {
         return await this.request('get', `${this.communityApi}community/list`, obj, false)
     };
 
+    async channelList(community_id: string, obj:any){
+        return await this.request('get', `${this.communityApi}community/${community_id}/channels`, obj, false)
+    }
+
     async communityInfo(id: string) {
         return await this.request('get', `${this.communityApi}community/${id}`, undefined, false);
     };
@@ -86,13 +90,24 @@ export default class Api {
         return await this.request('post', `${this.communityApi}community/${obj.community_id}/subscribe?user_id=${obj.user_id}`, undefined, false);
     }
 
+    async unsubscribe(obj: any) {
+        return await this.request('post', `${this.communityApi}community/${obj.community_id}/unsubscribe?user_id=${obj.user_id}`, undefined, false);
+    }
+
     async communityTimeline(obj: any) {
         return await this.request('get', `${this.communityApi}timeline/${obj.community_id}/post`, obj, false)
     }
 
-
     async communityMembers(community_id:string, obj:any){
         return await this.request('get', `${this.communityApi}community/${community_id}/members`, obj, false);
+    }
+
+    async channelInfo(community_id:string, channel_id: string){
+        return await this.request('get', `${this.communityApi}community/${community_id}/channel/${channel_id}`, undefined, false);
+    }
+
+    async channelTimeline(community_id:string, channel_id: string, obj:any){
+        return await this.request('get', `${this.communityApi}timeline/${community_id}/channel/${channel_id}`, obj, false);
     }
 
     /* /community */
@@ -127,6 +142,9 @@ export default class Api {
     async like(post_id: string){
         return await this.request('post', `${this.communityApi}post/${post_id}/like`, undefined, false);
     }
+    async unlike(post_id: string){
+        return await this.request('post', `${this.communityApi}post/${post_id}/unlike`, undefined, false);
+    }
     async feed(post_id: string){
         return await this.request('get', `${this.communityApi}post/${post_id}`, undefined, false)
     }
@@ -135,6 +153,10 @@ export default class Api {
     }
     async retweet(post_id:string){
         return await this.request('post', `${this.communityApi}post/${post_id}/retweet`, undefined, false);
+    }
+
+    async userPostCnt(user_id:number){
+        return await this.request('get', `${this.communityApi}user/${user_id}/totalPost`, undefined, false);
     }
 
     /* /post */

@@ -16,15 +16,8 @@
                     </div>
 
                     <div @click="isActive">
-                        <!--                        <Channel-->
-                        <!--                            :channel="channel"-->
-                        <!--                            v-for="channel in community.channels"-->
-                        <!--                            :key="channel.id"-->
-                        <!--                            :communityId="communityId"-->
-                        <!--                            :class="{ active: isActive(channel.id) }"-->
-                        <!--                            @channelId="getChannelId"-->
-                        <!--                            @channelTimeline="getChannelTL"-->
-                        <!--                        ></Channel>-->
+                        <Channel v-for="channel in community.channels" :channel="channel" :communityId="communityId"
+                                 @channelId="getChannelId"/>
                     </div>
                 </div>
             </div>
@@ -34,7 +27,94 @@
             <p class="block-alarm">
                 블락으로 인해 포스팅을 작성하실 수 없습니다.
             </p>
-            <PostBox></PostBox>
+            <!-- 포스팅 -->
+            <div class="quick-post">
+                <div class="quick-post-body">
+                    <div class="form">
+                        <div class="form-row">
+                            <div class="form-item">
+                                <div class="form-textarea entry-post-container">
+                                    <div class="user-status-avatar">
+                                        <div class="user-avatar small no-outline">
+                                            <div class="user-avatar-content">
+                                                <div
+                                                    class="hexagon-image-30-32"
+                                                    :data-src="user && user.picture"
+                                                ></div>
+                                            </div>
+
+                                            <div class="user-avatar-progress">
+                                                <div
+                                                    class="hexagon-progress-40-44"
+                                                ></div>
+                                            </div>
+
+                                            <div class="user-avatar-progress-border">
+                                                <div class="hexagon-border-40-44"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <textarea
+                                        readonly
+                                        @click="openEdit"
+                                        placeholder="무슨 생각을 하고 계신가요"
+                                    ></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <b-modal
+                    modal-class="post-edit-modal"
+                    centered
+                    hide-header
+                    hide-footer
+                    v-model="show"
+                    ref="editModal"
+                >
+                    <Post @closePostModal="closePostModal">
+                        <template v-slot:closeBtn>
+                            <div class="modal-close-container">
+                                <svg class="icon-cross text-right">
+                                    <use xlink:href="#svg-cross"></use>
+                                </svg>
+                            </div>
+                        </template>
+                        <template v-slot:saveType>
+                            <p class="button small secondary">post</p>
+                        </template>
+                    </Post>
+                </b-modal>
+                <b-modal
+                    ref="loginModal"
+                    class="modal-container"
+                    centered
+                    hide-header
+                    hide-footer
+                    no-close-on-backdrop
+                >
+                    <p class="my-4 text-center" style="color: #000">
+                        로그인 후 사용하시겠습니끼?
+                    </p>
+
+                    <div class="button-container">
+                        <button
+                            class="popup-box-action half button tertiary"
+                            style="width: 47%"
+                            @click="goLoginPage(true)"
+                        >
+                            Login
+                        </button>
+                        <button
+                            class="popup-box-action half button"
+                            style="width: 47%"
+                            @click="goLoginPage(false)"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </b-modal>
+            </div>
             <!-- 타임라인 -->
             <template v-if="timeline">
                 <feed
@@ -45,16 +125,16 @@
                     :feed="feed"
                 ></feed>
 
-                <PulseLoader :loading="$store.getters.LoadingStatus" ></PulseLoader>
+                <PulseLoader :loading="$store.getters.LoadingStatus"></PulseLoader>
             </template>
-            <template v-if="!hasData">
-                <!-- todo: design -->
-                <h2>No Result</h2>
-            </template>
+            <!-- todo: design -->
+            <h2 v-if="!hasData">No Result</h2>
         </div>
         <div class="grid-column">
             <!--            <CommunityDescBox></CommunityDescBox>-->
         </div>
+
+
     </div>
 </template>
 
@@ -78,11 +158,11 @@ import {PaginationRes} from "@/types";
 export default class CommunityTimeline extends Vue {
     private dropdown: Dropdown = new Dropdown();
     private communityId = this.$route.params.community_id;
-    // private community: any;
+    private community: any = this.$store.getters.communityInfo;
     private timeline: any = [];
     private isAllPosts: boolean = false;
 
-    private channelId: number = -1;
+    private channelId: string = '';
 
     //parameters
     private limit: number = 10;
@@ -93,7 +173,7 @@ export default class CommunityTimeline extends Vue {
     //state
     private isAddData: boolean = false;
     private isLoading: boolean = false;
-    private hasData:boolean = true;
+    private hasData: boolean = true;
 
     created() {
         this.isAllPosts = true;
@@ -126,25 +206,24 @@ export default class CommunityTimeline extends Vue {
             sort: this.sort,
             media: this.media
         }
-        this.$store.commit('isNeededRefresh', false)
         this.$api.communityTimeline(obj)
             .then((res: PaginationRes) => {
-                   if (this.isAddData) {
-                       if (res.result.length > 0) {
-                           this.timeline = [...this.timeline, ...res.result]
-                       }
-                       else {
-                           console.log('no data')
-                           this.hasData = false
-                           window.removeEventListener("scroll", this.scrollCheck);
+                if (this.isAddData) {
+                    if (res.result.length > 0) {
+                        this.timeline = [...this.timeline, ...res.result]
+                    }
+                    else {
+                        console.log('no data')
+                        this.hasData = false
+                        window.removeEventListener("scroll", this.scrollCheck);
 
-                       }
-                   }
-                   else {
+                    }
+                }
+                else {
 
-                       this.timeline = res.result;
-                       this.isAddData = true
-                   }
+                    this.timeline = res.result;
+                    this.isAddData = true
+                }
 
 
             })
@@ -164,17 +243,53 @@ export default class CommunityTimeline extends Vue {
     }
 
     allPost() {
-        this.channelId = -1;
+        this.channelId = '';
         this.isActive(-1);
-        this.timeline = this.$api.getTimeline(this.communityId);
+        this.fetch();
     }
 
-    getChannelId(id?: any) {
+    getChannelId(id: string) {
         this.channelId = id;
+        this.channelTlFetch();
     }
 
-    getChannelTL(timeline: any) {
-        this.timeline = timeline;
+    channelTlFetch(){
+        this.timeline = [];
+        const obj = {
+            limit: this.limit,
+            offset: this.offset,
+            sort: this.sort,
+            media: this.media
+        }
+        this.$store.commit('isNeededRefresh', false)
+
+        this.$api.channelTimeline(this.communityId, this.channelId, obj)
+            .then((res: PaginationRes) => {
+                console.log(res)
+                if (this.isAddData) {
+                    if (res.result.length > 0) {
+                        this.timeline = [...this.timeline, ...res.result]
+                    }
+                    else {
+                        console.log('no data')
+                        this.hasData = false
+                        window.removeEventListener("scroll", this.scrollCheck);
+
+                    }
+                }
+                else {
+
+                    this.timeline = res.result;
+                    this.isAddData = true
+                }
+
+
+            })
+            .catch((err: AxiosError) => {
+
+
+            })
+
     }
 
     isActive(id?: any) {
@@ -193,10 +308,58 @@ export default class CommunityTimeline extends Vue {
         }
 
     }
+
+    openEdit() {
+        console.log('here?')
+        if (this.user) {
+            this.show = true;
+        } else {
+            (this.$refs.loginModal as any).show();
+        }
+    }
+
+    goLoginPage(state: boolean) {
+        if (state) {
+            this.$router.push("/login");
+        } else {
+            (this.$refs["loginModal"] as any).hide();
+        }
+    }
+
+    closePostModal(){
+        (this.$refs.editModal as any).hide();
+        this.fetch();
+    }
 }
 </script>
 
 <style scoped>
+
+.quick-post {
+    height: 100px;
+    border-radius: 12px;
+}
+.quick-post-body {
+    height: 100%;
+    display: flex;
+}
+.form-row {
+    height: 100%;
+}
+.entry-post-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+}
+.user-avatar {
+    display: flex;
+}
+textarea {
+    height: 57px !important;
+    width: 500px !important;
+    padding: 14px 18px;
+}
 .all-post-container {
     width: 100%;
     height: 65px;

@@ -15,8 +15,8 @@
                 </div>
                 <div
                     class="option-item"
-                    @click="isActive('blog')"
-                    :class="activeTab === 'blog' ? 'active' : ''"
+                    @click="isActive('BLOG')"
+                    :class="activeTab === 'BLOG' ? 'active' : ''"
                 >
                     <svg class="option-item-icon icon-status">
                         <use xlink:href="#svg-status"></use>
@@ -28,7 +28,7 @@
         </div>
 
         <!-- blog post -->
-        <div class="quick-post-body" v-if="activeTab === 'blog'">
+        <div class="quick-post-body" v-if="activeTab === 'BLOG'">
             <div class="form">
                 <div class="form-row">
                     <div class="form-item">
@@ -81,6 +81,8 @@
                                 :editFileLoader="fileLoader"
                             ></image-preview>
 
+
+
                             <div
                                 class="video-container"
                                 v-if="videoSrc.url"
@@ -116,7 +118,7 @@
             </div>
         </div>
 
-        <vue-scroll style="height: 70px" :ops="ops">
+        <overlay-scrollbars>
             <div
                 @mousewheel="disableWheel"
                 class="
@@ -190,7 +192,7 @@
                 </select>
             </div> -->
             </div>
-        </vue-scroll>
+        </overlay-scrollbars>
         <!-- <div class="quick-post-footer checkbox">
             <div class="checkbox-wrap">
                 <input
@@ -380,7 +382,7 @@ import Dropdown from "@/plugins/dropdown";
 import CustomTooltip from "@/components/layout/tooltip/Tooltip.vue";
 import {fileObjWtUrl} from "@/types/file/file";
 import {AxiosError, AxiosResponse} from "axios";
-
+import {OverlayScrollbarsComponent} from "overlayscrollbars-vue";
 @Component({
     computed: {...mapGetters(["user"])},
     components: {
@@ -492,14 +494,10 @@ export default class Post extends Vue {
     private hasTagSuggestion: boolean = false;
     private postedHashtag: string[] = [];
 
-    @Watch("user")
-    async watchUser() {
-        this.communityList = await this.$api.joinedCommunityList(this.user.uid);
-    }
-
     async mounted() {
-        console.log(this.$store.getters.currPage)
-        console.log(this.feed);
+        await this.$store.dispatch("loginState");
+        // console.log(this.$store.getters.currPage)
+        // console.log(this.feed);
         this.tooltip.init();
         this.dropdown.init();
 
@@ -537,8 +535,7 @@ export default class Post extends Vue {
             user_id: this.user.id,
             sort: 'ALPAHBETIC'
         }
-
-        this.$api.joinedCommunityList(obj)
+        this.$api.joinedCommunityList(this.user.id)
             .then((res: AxiosResponse) => {
                 console.log('res', res)
                 this.communityList = res;
@@ -651,13 +648,17 @@ export default class Post extends Vue {
             visibility: this.isPrivate ? "PRIVATE" : "PUBLIC",
             hashtags: [],
             // user_tagId: this.$store.getters.userTagList,
-            // user_tagId:'123',
+            user_tag: [
+                {
+                    id: 111,
+                    nickname: "followers"
+                },
+            ],
             game_id: "",
             channel_id: this.user.uid,
             ...this.$store.getters.currPage,
-            portfolio_ids: [
-                ""
-            ],
+            // portfolio_ids: [
+            // ],
             scheduled_for: null
         }
         console.log(this.$store.getters.postContents)
@@ -665,7 +666,6 @@ export default class Post extends Vue {
 
         this.$api.uploadPost(obj)
         .then((res: AxiosResponse) => {
-            this.$store.commit('isNeededRefresh', true)
             this.init();
             this.$emit("closePostModal");
             this.$toasted.show("포스팅이 완료되었습니다.", {
@@ -728,7 +728,6 @@ export default class Post extends Vue {
 
         this.$api.updatePost(obj)
             .then((res: AxiosResponse) => {
-                this.$store.commit('isNeededRefresh', true)
                 this.init();
                 this.$emit("closePostModal");
                 this.$toasted.show("포스팅이 완료되었습니다.", {

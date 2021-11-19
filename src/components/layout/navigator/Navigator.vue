@@ -36,7 +36,16 @@
                         <router-link
                             class="menu-main-item-link"
                             to="/community/list"
-                            >Community</router-link
+                        >Community
+                        </router-link
+                        >
+                    </li>
+                    <li class="menu-main-item">
+                        <router-link
+                            class="menu-main-item-link"
+                            to="/community/list"
+                        >Games
+                        </router-link
                         >
                     </li>
                 </ul>
@@ -113,7 +122,7 @@
 
                                 <p class="user-status-title">
                                     <span class="bold username"
-                                        >{{ user.name }}@{{
+                                    >{{ user.name }}@{{
                                             user.nickname
                                         }}</span
                                     >
@@ -207,8 +216,8 @@
 
                                 <p class="user-status-title">
                                     <span class="bold username">{{
-                                        game.tag
-                                    }}</span>
+                                            game.tag
+                                        }}</span>
                                 </p>
                                 <div class="user-status-icon">
                                     <svg
@@ -242,7 +251,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import ClickOutside from "vue-click-outside";
 import Dropdown from "@/plugins/dropdown";
 
@@ -252,9 +261,11 @@ import router from "@/router";
 import ProfileMenu from "@/components/layout/navigator/ProfileMenu.vue";
 import Header from "@/script/header";
 import Hexagon from "@/plugins/hexagon";
-import { Group, User } from "@/types";
+import {Group, PaginationRes, User} from "@/types";
+import {AxiosError, AxiosResponse} from "axios";
+
 @Component({
-    components: { ProfileMenu },
+    components: {ProfileMenu},
     directives: {
         ClickOutside,
     },
@@ -273,21 +284,24 @@ export default class Navtigator extends Vue {
 
     private timer: number = 0;
 
-    mounted() {
+    async mounted() {
         this.hexagon.init();
         this.dropdown.init();
         this.header.searchDropdown();
     }
+
     hide() {
         this.searchInput = "";
         (this.$refs.input as HTMLElement).classList.remove("active");
         this.header.searchDropdown();
     }
+
     listReset() {
         this.userList = [];
         this.gameList = [];
         this.groupList = [];
     }
+
     login() {
         router.push("/login");
     }
@@ -308,9 +322,23 @@ export default class Navtigator extends Vue {
         //유저 검색
         if (this.searchInput.charAt(0) === "@") {
             query = this.searchInput.substring(1);
-            this.userList = await this.$api.search(query, "username");
 
-            console.log(this.userList);
+            const obj = {
+                username: query,
+                limit: 5
+            };
+
+            console.log('query obj', obj)
+
+            if (query.length > 0) {
+                this.$api.search(obj)
+                    .then((res: PaginationRes) => {
+                        this.userList=res.result;
+                    })
+                    .catch((err: AxiosError) => {
+
+                    })
+            }
         }
         //게임 검색
         else if (this.searchInput.charAt(0) === "#") {
@@ -324,17 +352,33 @@ export default class Navtigator extends Vue {
         else {
             // todo: hexagon delay backend 연결후 확인
             query = this.searchInput;
-            let result = await this.$api.search(query);
-            let result2 = await this.$api.hashtags(query);
-            this.userList = result.user;
-            this.gameList = result2.tags;
+            const obj = {
+                q: query,
+                limit: 5
+            };
+
+            console.log('query obj', obj)
+            this.$api.search(obj)
+                .then((res: AxiosResponse) => {
+                    console.log(res)
+                })
+                .catch((err: AxiosError) => {
+
+                })
+
+
+            // let result2 = await this.$api.hashtags(query);
+            // this.userList = result.user;
+            // this.gameList = result2.tags;
         }
     }
+
     closeDropbox() {
         (this.$refs.closeDropbox as HTMLElement).click();
         this.searchInput = "";
         this.timer = 0;
     }
+
     // blur() {
     //     console.log("blur");
     //     (this.$refs.closeDropbox as HTMLElement).click();
@@ -347,6 +391,7 @@ export default class Navtigator extends Vue {
 .header-brand-text {
     cursor: pointer;
 }
+
 .login {
     color: #fff;
     display: flex;
@@ -354,6 +399,7 @@ export default class Navtigator extends Vue {
     text-transform: uppercase;
     cursor: pointer;
 }
+
 .user-status-title {
     .username {
         height: 44px;
@@ -363,6 +409,7 @@ export default class Navtigator extends Vue {
         align-items: center;
     }
 }
+
 .interactive-input.dark input {
     border: none !important;
     background-color: #5538b5 !important;

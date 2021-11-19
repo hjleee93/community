@@ -2,16 +2,17 @@
     <div class="header-actions">
         <!-- <div class="login" @click="logout">logout</div> -->
         <div class="lang-selector form-select dropbox-container">
-            <b-select name="sub-manager" class="dropbox">
-                <b-select-option v-for="lan in langList" :key="lan.id">{{
-                    lan
-                }}</b-select-option>
-            </b-select>
+            <b-form-select
+                name="sub-manager" class="dropbox"
+                v-model="lanSelected"
+                :options="langList"
+                value-field="item"
+                text-field="name"
+                disabled-field="notEnabled"
+            ></b-form-select>
         </div>
         <div class="action-list dark">
             <!-- messages -->
-            <messages></messages>
-
             <notification></notification>
         </div>
 
@@ -56,7 +57,8 @@
 
                         <p class="user-status-text small">
                             <router-link :to="`/channel/${user.channel_id}`"
-                                >@{{ user.nickname }}</router-link
+                            >@{{ user.nickname }}
+                            </router-link
                             >
                         </p>
                     </div>
@@ -68,7 +70,8 @@
                     class="dropdown-navigation-link"
                     :to="`/channel/${user.channel_id}`"
                     @click.native="routerClick"
-                    >Profile Info</router-link
+                >Profile Info
+                </router-link
                 >
 
                 <!-- 
@@ -79,7 +82,7 @@
                     > -->
 
                 <a class="dropdown-navigation-link" @click="moveGameDashBoard"
-                    >Game Studio</a
+                >Game Studio</a
                 >
 
                 <p class="dropdown-navigation-category">Account</p>
@@ -93,14 +96,16 @@
                     class="dropdown-navigation-link"
                     :to="`/user/${user.uid}/changePassword`"
                     @click.native="routerClick"
-                    >Change Password</router-link
+                >Change Password
+                </router-link
                 >
 
                 <router-link
                     class="dropdown-navigation-link"
                     :to="`/user/${user.uid}/settings`"
                     @click.native="routerClick"
-                    >General Settings</router-link
+                >General Settings
+                </router-link
                 >
 
                 <p class="dropdown-navigation-category">Groups</p>
@@ -108,7 +113,8 @@
                     class="dropdown-navigation-link"
                     :to="`/user/${user.uid}/manageJoinedGroup`"
                     @click.native="routerClick"
-                    >Manage Groups</router-link
+                >Manage Groups
+                </router-link
                 >
 
                 <p
@@ -123,37 +129,45 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import {Component, Prop, Vue} from "vue-property-decorator";
 import Dropdown from "@/plugins/dropdown";
 import Hexagon from "@/plugins/hexagon";
 import Login from "@/script/login";
 
 import Messages from "@/components/pages/user/Messages.vue";
 import Notification from "@/components/pages/user/Notification.vue";
+
 @Component({
-    components: { Messages, Notification },
+    components: {Messages, Notification},
 })
 export default class ProfileMenu extends Vue {
     private dropdown: Dropdown = new Dropdown();
 
     private hexagon: Hexagon = new Hexagon();
     private user = this.$store.getters.user;
-    private langList = ["한국어", "English"];
-    private lang = "?";
+    private lanSelected = 'ko'
+    private langList = [
+        {item: 'ko', name: '한국어'},
+        {item: 'en', name: 'English'},
+    ];
+
     mounted() {
         // await this.$store.dispatch('loginState');
 
         this.hexagon.init();
         this.dropdown.init();
     }
+
     async logout() {
         this.$store.state.pathName = "logout";
         await Login.logout();
         this.$router.push("/guestPage");
     }
+
     moveGameDashBoard() {
         window.location.href = this.$store.getters.studioUrl + "dashboard";
     }
+
     routerClick() {
         (this.$refs.dropdown as HTMLElement).click();
     }
@@ -168,21 +182,23 @@ export default class ProfileMenu extends Vue {
     text-transform: uppercase;
     cursor: pointer;
 }
+
 .lang-selector {
     display: flex;
     margin-right: 26px;
     align-items: center;
     height: 80px;
+
     .custom-select {
         height: 38px;
         border: none !important;
-        background: #7750f8
-            url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e")
-            no-repeat right 0.75rem center/8px 10px !important;
+        background: #7750f8 url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px !important;
     }
+
     .custom-select:focus {
         box-shadow: none !important;
     }
+
     .custom-select::after {
         color: #fff;
     }

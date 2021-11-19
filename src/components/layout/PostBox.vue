@@ -126,6 +126,7 @@ export default class PostBox extends Vue {
     closePostModal(){
         (this.$refs.editModal as any).hide();
 
+
     }
 }
 </script>

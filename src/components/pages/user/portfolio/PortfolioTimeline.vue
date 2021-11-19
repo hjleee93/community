@@ -29,7 +29,6 @@ import Feed from "@/components/timeline/Feed.vue";
 import WhoToFollow from "@/components/pages/user/WhoToFollow.vue";
 import JoinedCommunity from "@/components/pages/user/JoinedCommunity.vue";
 import Portfolio from "@/components/pages/user/PortfolioList.vue";
-import GameList from "@/components/pages/user/GameList.vue";
 
 import { User } from "@/types";
 
@@ -39,7 +38,6 @@ import { User } from "@/types";
         Post,
         Feed,
         WhoToFollow,
-        Portfolio,
         JoinedCommunity,
         GameList,
         PostBox,

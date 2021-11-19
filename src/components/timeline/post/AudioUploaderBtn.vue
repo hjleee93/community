@@ -21,6 +21,33 @@
             <input type="file" @input="onSelectFile" multiple accept= audio/*
             ref="audio" />
         </div>
+
+        <b-modal ref="alertModal" class="modal-container"
+                 centered
+                 hide-header
+                 hide-footer>
+            <div class="my-4">
+                <h5 style="color: #000">한가지 형식의 첨부파일만 입력이 가능합니다. 여러가지 첨부파일을 업로드 하고 싶은 경우 블로그 포스팅을 이용해주세요.</h5>
+                <p style="color: #000">기존 첨부파일을 지우시겠습니까?</p>
+            </div>
+            <div style="display: flex">
+                <button
+                    class="popup-box-action half button tertiary"
+                    style="width: 47%"
+                    @click="resetAttr(true)"
+                >
+                    네
+                </button>
+                <button
+                    class="popup-box-action half button "
+                    style="width: 47%"
+                    @click="resetAttr(false)"
+                >
+                    아니요
+                </button>
+            </div>
+
+        </b-modal>
     </div>
 </template>
 
@@ -40,12 +67,30 @@ export default class AudioUploaderBtn extends Vue {
     private fileList: any[] = [];
 
     uploadFile() {
-        (this.$refs.audio as HTMLElement).click();
+        if (this.$store.getters.audioArr.length > 0 || this.$store.getters.imgArr.length>0) {
+            this.$refs['alertModal'].show()
+        }else{
+            (this.$refs.audio as HTMLElement).click();
+        }
     }
 
     onSelectFile() {
         const input:any = this.$refs.audio;
         onSelectFile(input.files, this.maxFileNum, 'audioArr')
+    }
+
+    resetAttr(isReset: boolean) {
+        if (isReset) {
+            this.$store.dispatch('resetAttFiles')
+        }
+        this.$refs['alertModal'].hide()
+
+    }
+
+    toggleModal() {
+        // We pass the ID of the button that we want to return focus to
+        // when the modal has hidden
+        this.$refs['my-modal'].toggle('#toggle-btn')
     }
 
 }
