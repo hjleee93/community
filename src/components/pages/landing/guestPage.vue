@@ -13,71 +13,90 @@
         </div>
         <div class="content-grid">
             <div class="landing-container">
-                <div class="landing-title">Search for communities</div>
-                community description
-                <div class="interactive-input dark search-bar">
-                    <input
-                        type="text"
-                        id="search-group"
-                        name="search_group"
-                        placeholder="Search for community"
-                        v-model="searchInput"
-                        @keyup.enter="searchCommunity"
-                    />
+                <div class="landing-title">Zempie communities</div>
 
-                    <div class="search-icon" @click="searchCommunity">
-                       <svg class="interactive-input-icon icon-magnifying-glass">
-                            <use xlink:href="#svg-magnifying-glass"></use>
-                        </svg>
-                    </div>
 
-                    <div class="interactive-input-action">
-                        <svg
-                            class="
-                                interactive-input-action-icon
-                                icon-cross-thin
-                            "
-                        >
-                            <use xlink:href="#svg-cross-thin"></use>
-                        </svg>
-                    </div>
-                </div>
             </div>
             <div class="grid grid-3-3-3 ">
-                <div v-for="i in 12" :key="i">
-                    <community-card
-                        v-for="community in communityList"
-                        :key="community.id"
-                        :community="community"
-                    ></community-card>
-                </div>
+
+                <community-card
+                    v-for="community in communityList"
+                    :key="community.id"
+                    :community="community"
+                ></community-card>
+
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import {Component, Prop, Vue} from "vue-property-decorator";
 import CommunityCard from "@/components/pages/community/CommunityCard.vue";
 import Dropdown from "@/plugins/dropdown";
+import {AxiosError} from "axios";
+import {scrollDone} from "@/script/scrollManager";
+import store from "@/store";
 
 @Component({
-    components: { CommunityCard },
+    components: {CommunityCard},
 })
 export default class guestPage extends Vue {
     private communityList: any = [];
     private searchInput: string = "";
     private dropdown: Dropdown = new Dropdown();
-    
-    created() {
-        this.communityList = this.$api.getCommunityList();
-        console.log(this.communityList)
-    }
+
+
+    private limit: number = 20;
+    private offset: number = 0;
+    private community: string = '';
+    private sort: string = '';
+    private show: string = '';
+    private isAddData: boolean = false;
+
     mounted() {
         this.dropdown.init();
+        this.fetch();
     }
+
+    fetch() {
+        const obj = {
+            limit: this.limit,
+            offset: this.offset,
+            community: this.searchInput,
+            sort: this.sort,
+            show: this.show
+        }
+
+        this.$api.communityList(obj)
+            .then((res: any) => {
+                if (this.isAddData) {
+                    if (res.length > 0) {
+                        this.communityList = [...this.communityList, ...res]
+                    }
+                    else {
+                        window.removeEventListener("scroll", this.scrollCheck);
+                    }
+                }
+                else {
+                    this.communityList = res;
+                    this.isAddData = true
+                }
+            })
+            .catch((err: AxiosError) => {
+                console.log(err)
+            })
+    }
+
     searchCommunity() {
         this.$router.push(`/community/list?q=${this.searchInput}`);
+    }
+
+    scrollCheck() {
+        if (scrollDone(document.documentElement)) {
+            this.offset += this.limit;
+            this.fetch();
+        }
     }
 }
 </script>
@@ -88,7 +107,7 @@ export default class guestPage extends Vue {
     width: 100vw;
     height: 500px;
     background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
-        url("../../../img/default/guest_header_500.png");
+    url("../../../img/default/guest_header_500.png");
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -97,24 +116,30 @@ export default class guestPage extends Vue {
         font-size: 50px;
         font-weight: bold;
     }
+
     .header-desc {
         font-size: 20px;
     }
 }
+
 .content-grid {
     padding-top: 30px;
 }
+
 .landing-container {
     color: #fff;
 }
+
 .landing-title {
     font-weight: 700;
     font-size: 30px;
 }
+
 .search-bar {
     margin: 32px auto 0 auto;
     width: 40%;
 }
+
 .search-icon {
     display: flex;
     justify-content: center;
@@ -126,6 +151,7 @@ export default class guestPage extends Vue {
     right: 0;
     cursor: pointer;
 }
+
 .icon-magnifying-glass {
     fill: #9b7dff;
 }

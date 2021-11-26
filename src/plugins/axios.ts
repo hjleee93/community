@@ -29,6 +29,7 @@ _axios.interceptors.request.use(
     return cfg;
   },
   (err) => {
+    store.commit('endSpinner');
     // Do something with request error
     return Promise.reject(err);
   },
@@ -47,6 +48,7 @@ _axios.interceptors.response.use(
     return res;
   },
   (err) => {
+    store.commit('endSpinner');
     // Do something with response error
     return Promise.reject(err);
   },

@@ -36,7 +36,6 @@ import Comment from "@/components/timeline/Comment.vue";
 import CommentInput from "@/components/timeline/CommentInput.vue";
 import {AxiosError, AxiosResponse} from "axios";
 import {scrollDone} from "@/script/scrollManager";
-import {PaginationRes} from "@/types";
 import {OverlayScrollbarsComponent} from "overlayscrollbars-vue";
 
 @Component({
@@ -60,6 +59,7 @@ export default class TimelineComments extends Vue {
 
         let scrollInfo = (this.$refs.commentContainer as OverlayScrollbarsComponent).osInstance()?.scroll();
 
+        //@ts-ignore
         if (scrollInfo.ratio.y === 1) {
             this.offset += this.limit;
             this.fetch();
@@ -80,7 +80,7 @@ export default class TimelineComments extends Vue {
             sort: this.sort
         }
         this.$api.comments(this.postId, obj)
-            .then((res: PaginationRes) => {
+            .then((res: any) => {
                 if (this.isAddData) {
                     if (res.result.length > 0) {
                         this.comments = [...this.comments, ...res.result]
@@ -98,7 +98,7 @@ export default class TimelineComments extends Vue {
 
             })
             .finally(() => {
-                this.$store.commit('isNeededRefresh', false)
+
             })
     }
 
@@ -124,14 +124,7 @@ export default class TimelineComments extends Vue {
         this.sort = '';
     }
 
-    @Watch("$store.getters.isNeededRefresh")
-    watchTimeline() {
-        if (this.$store.getters.isNeededRefresh) {
-            this.init();
-            this.fetch();
-        }
 
-    }
 }
 </script>
 

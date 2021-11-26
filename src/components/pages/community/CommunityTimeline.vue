@@ -27,111 +27,77 @@
             <p class="block-alarm">
                 블락으로 인해 포스팅을 작성하실 수 없습니다.
             </p>
-            <!-- 포스팅 -->
-            <div class="quick-post">
-                <div class="quick-post-body">
-                    <div class="form">
-                        <div class="form-row">
-                            <div class="form-item">
-                                <div class="form-textarea entry-post-container">
-                                    <div class="user-status-avatar">
-                                        <div class="user-avatar small no-outline">
-                                            <div class="user-avatar-content">
-                                                <div
-                                                    class="hexagon-image-30-32"
-                                                    :data-src="user && user.picture"
-                                                ></div>
-                                            </div>
+                <Timeline :currPage="'community'"  :key="this.$route.query.media"></Timeline>
+        </div>
+        <div class="grid-column">
+            <div class="widget-box">
+                <p class="widget-box-title">About Us</p>
 
-                                            <div class="user-avatar-progress">
-                                                <div
-                                                    class="hexagon-progress-40-44"
-                                                ></div>
-                                            </div>
+                <div class="widget-box-content">
+                    <p class="paragraph">
+                        {{ community.description }}
+                    </p>
 
-                                            <div class="user-avatar-progress-border">
-                                                <div class="hexagon-border-40-44"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <textarea
-                                        readonly
-                                        @click="openEdit"
-                                        placeholder="무슨 생각을 하고 계신가요"
-                                    ></textarea>
-                                </div>
-                            </div>
+                    <div class="information-line-list">
+<!--                        <div class="information-line">-->
+<!--                            <p class="information-line-title">Owner</p>-->
+<!--                            <router-link-->
+<!--                                class="user-status-avatar"-->
+<!--                                :to="`/channel/${this.community.owner_uid}/timeline`"-->
+<!--                            >-->
+<!--                                <div class="user-avatar small no-outline">-->
+<!--                                    <div class="user-avatar-content">-->
+<!--                                        <div-->
+<!--                                            class="hexagon-image-24-26"-->
+<!--                                            :data-src="ownerInfo.picture"-->
+<!--                                        ></div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </router-link>-->
+
+<!--                            <router-link-->
+<!--                                :to="`/channel/${ownerInfo.uid}/timeline`"-->
+<!--                                class="information-line-text nickname-link"-->
+<!--                            >-->
+<!--                                (@닉네임)-->
+<!--                            </router-link>-->
+<!--                        </div>-->
+<!--                        <div class="information-line">-->
+<!--                            <p class="information-line-title">Manager</p>-->
+<!--                            <router-link-->
+<!--                                class="user-status-avatar"-->
+<!--                                :to="`/channel/${this.community.manager_uid}/timeline`"-->
+<!--                            >-->
+<!--                                <div class="user-avatar small no-outline">-->
+<!--                                    <div class="user-avatar-content">-->
+<!--                                        <div-->
+<!--                                            class="hexagon-image-24-26"-->
+<!--                                            :data-src="managerInfo.picture"-->
+<!--                                        ></div>-->
+<!--                                    </div>-->
+
+
+<!--                                </div>-->
+<!--                            </router-link>-->
+
+<!--                            <router-link-->
+<!--                                :to="`/channel/${managerInfo.uid}/timeline`"-->
+<!--                                class="information-line-text nickname-link"-->
+<!--                            >-->
+<!--                                (@닉네임)-->
+<!--                            </router-link>-->
+<!--                        </div>-->
+
+                        <div class="information-line">
+                            <p class="information-line-title">Created</p>
+
+                            <p class="information-line-text">
+                                {{ createdDate }}
+                            </p>
                         </div>
                     </div>
                 </div>
-                <b-modal
-                    modal-class="post-edit-modal"
-                    centered
-                    hide-header
-                    hide-footer
-                    v-model="show"
-                    ref="editModal"
-                >
-                    <Post @closePostModal="closePostModal">
-                        <template v-slot:closeBtn>
-                            <div class="modal-close-container">
-                                <svg class="icon-cross text-right">
-                                    <use xlink:href="#svg-cross"></use>
-                                </svg>
-                            </div>
-                        </template>
-                        <template v-slot:saveType>
-                            <p class="button small secondary">post</p>
-                        </template>
-                    </Post>
-                </b-modal>
-                <b-modal
-                    ref="loginModal"
-                    class="modal-container"
-                    centered
-                    hide-header
-                    hide-footer
-                    no-close-on-backdrop
-                >
-                    <p class="my-4 text-center" style="color: #000">
-                        로그인 후 사용하시겠습니끼?
-                    </p>
-
-                    <div class="button-container">
-                        <button
-                            class="popup-box-action half button tertiary"
-                            style="width: 47%"
-                            @click="goLoginPage(true)"
-                        >
-                            Login
-                        </button>
-                        <button
-                            class="popup-box-action half button"
-                            style="width: 47%"
-                            @click="goLoginPage(false)"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </b-modal>
             </div>
-            <!-- 타임라인 -->
-            <template v-if="timeline">
-                <feed
-                    data-aos-once="true"
-                    data-aos="fade"
-                    v-for="feed in timeline"
-                    :key="feed.id"
-                    :feed="feed"
-                ></feed>
-
-                <PulseLoader :loading="$store.getters.LoadingStatus"></PulseLoader>
-            </template>
-            <!-- todo: design -->
-            <h2 v-if="!hasData">No Result</h2>
-        </div>
-        <div class="grid-column">
-            <!--            <CommunityDescBox></CommunityDescBox>-->
         </div>
 
 
@@ -146,14 +112,16 @@ import PostBox from "@/components/layout/PostBox.vue";
 import Post from "@/components/timeline/Post.vue";
 import Channel from "@/components/pages/community/Channel.vue";
 import Feed from "@/components/timeline/Feed.vue";
-import CommunityDescBox from "@/components/pages/community/CommunityDescBox.vue";
 import {AxiosError, AxiosResponse} from "axios";
 import {scrollDone} from "@/script/scrollManager";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
-import {PaginationRes} from "@/types";
+import {mapGetters} from "vuex";
+import Timeline from "@/components/common/_timeline.vue";
+import {dateFormat} from "@/script/moment";
 
 @Component({
-    components: {Post, Channel, Feed, CommunityDescBox, PostBox, PulseLoader},
+    computed: {...mapGetters(["user"])},
+    components: {Post, Channel, Feed, PostBox, PulseLoader, Timeline},
 })
 export default class CommunityTimeline extends Vue {
     private dropdown: Dropdown = new Dropdown();
@@ -175,14 +143,16 @@ export default class CommunityTimeline extends Vue {
     private isLoading: boolean = false;
     private hasData: boolean = true;
 
+    private user!: any;
+    show = false;
+    private createdDate: string = "";
+
     created() {
         this.isAllPosts = true;
-        // this.community = this.$api.getCommunityInfo(this.communityId);
-        //all posts
-        // this.timeline = this.$api.getTimeline(this.communityId);
     }
 
     mounted() {
+        this.createdDate = dateFormat(this.community.createdAt);
         this.fetch();
         this.dropdown.init();
         this.$store.commit('currPage', {
@@ -206,8 +176,10 @@ export default class CommunityTimeline extends Vue {
             sort: this.sort,
             media: this.media
         }
+        console.log('obj', obj)
         this.$api.communityTimeline(obj)
-            .then((res: PaginationRes) => {
+            .then((res: any) => {
+                console.log('res', res)
                 if (this.isAddData) {
                     if (res.result.length > 0) {
                         this.timeline = [...this.timeline, ...res.result]
@@ -261,10 +233,10 @@ export default class CommunityTimeline extends Vue {
             sort: this.sort,
             media: this.media
         }
-        this.$store.commit('isNeededRefresh', false)
+        console.log('obj', obj)
 
         this.$api.channelTimeline(this.communityId, this.channelId, obj)
-            .then((res: PaginationRes) => {
+            .then((res: any) => {
                 console.log(res)
                 if (this.isAddData) {
                     if (res.result.length > 0) {
@@ -301,28 +273,14 @@ export default class CommunityTimeline extends Vue {
         console.log(query);
     }
 
-    @Watch("$store.getters.isNeededRefresh")
-    watchTimeline() {
-        if (this.$store.getters.isNeededRefresh) {
-            this.fetch();
-        }
 
-    }
 
     openEdit() {
         console.log('here?')
         if (this.user) {
             this.show = true;
         } else {
-            (this.$refs.loginModal as any).show();
-        }
-    }
-
-    goLoginPage(state: boolean) {
-        if (state) {
-            this.$router.push("/login");
-        } else {
-            (this.$refs["loginModal"] as any).hide();
+            this.$store.commit('needLogin', true)
         }
     }
 

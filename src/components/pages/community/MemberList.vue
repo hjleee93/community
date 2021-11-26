@@ -37,6 +37,7 @@ import {mapGetters} from "vuex";
 import MemberCard from "@/components/pages/community/MemberCard.vue";
 import {User} from "@/types/index";
 import FollowBtn from "@/components/pages/user/_followBtn.vue";
+import {AxiosError, AxiosResponse} from "axios";
 
 @Component({
     computed: {...mapGetters(["user"])},
@@ -61,7 +62,7 @@ export default class MemberList extends Vue {
         }
 
         this.$api.communityMembers(this.communityId, obj)
-            .then((res: AxiosResponse) => {
+            .then((res: any) => {
                 this.totalMembers = res.totalCount;
                 this.memberList = res.result;
             })
@@ -76,7 +77,7 @@ export default class MemberList extends Vue {
         if (!this.user) {
         }
         else {
-            const result = this.$api.follow(this.user.uid);
+            const result = this.$api.follow(this.user.id);
             console.log("follow");
         }
     }

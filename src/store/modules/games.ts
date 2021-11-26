@@ -3,11 +3,16 @@ import Vue from 'vue';
 export default {
     state: {
         gameList: [],
+        gameInfo: {},
+
     },
     getters: {
 
         gameList: (state: any) => {
             return state.gameList;
+        },
+        gameInfo: (state: any) => {
+            return state.gameInfo;
         },
     },
 
@@ -15,6 +20,9 @@ export default {
 
         gameList: (state: any, payload: any) => {
             state.gameList = payload;
+        },
+        gameInfo: (state: any, payload: any) => {
+            state.gameInfo = payload;
         },
     },
     actions: {

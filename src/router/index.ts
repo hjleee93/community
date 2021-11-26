@@ -99,9 +99,6 @@ const routes: Array<RouteConfig> = [
         ]
 
     },
-
-
-
     {
         path: '/community/list',
         name: 'Community',
@@ -227,13 +224,13 @@ const routes: Array<RouteConfig> = [
     },
 
     {
-        path: '/timeline/game/:game_pathname',
+        path: '/timeline/game/:gamePath',
         name: 'Game',
         component: () => import("@/components/layout/GameHeader.vue"),
-        redirect: '/timeline/game/:game_pathname/timeline',
+        redirect: '/timeline/game/:gamePath/timeline',
         children: [
             {
-                path: '/timeline/game/:game_pathname/timeline',
+                path: '/timeline/game/:gamePath/timeline',
                 name: 'GameTimeline',
                 component: () => import("@/components/pages/game/GameTimeline.vue"),
             },

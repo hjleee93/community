@@ -253,7 +253,7 @@ export default class UserSettings extends Vue {
             this.isDmOn = !this.isDmOn;
         }
 
-        await this.$api.alarmOnOff(type);
+        // await this.$api.alarmOnOff(type);
     }
 
     getProfileImgSrc(imgSrc: string) {

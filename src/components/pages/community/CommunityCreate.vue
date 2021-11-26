@@ -215,17 +215,17 @@ export default class CommunityCreate extends Vue {
         if (this.$v.form.$anyError) {
             return;
         }
-        const result = await this.$api.createCommunity(
-            this.user.uid,
-            this.form.groupName,
-            this.form.groupUrl,
-            this.form.description,
-            this.isPrivate,
-            this.form.profileImgSrc,
-            this.form.bannerImgSrc
-        );
-
-        console.log(result);
+        // const result = await this.$api.createCommunity(
+        //     this.user.uid,
+        //     this.form.groupName,
+        //     this.form.groupUrl,
+        //     this.form.description,
+        //     this.isPrivate,
+        //     this.form.profileImgSrc,
+        //     this.form.bannerImgSrc
+        // );
+        //
+        // console.log(result);
     }
     getBannerImgSrc(imgSrc: string) {
         this.form.bannerImgSrc = imgSrc;

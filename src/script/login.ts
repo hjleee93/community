@@ -110,14 +110,15 @@ class Login {
         await store.dispatch('logout');
         // await store.commit('clearMail');
         Cookie.delete( cookieName, process.env.VUE_APP_COOKIE_DOMAIN );
-        Vue.$api.removeFcmToken(store.getters.user.id)
-            .then((res: AxiosResponse) => {
-                console.log('fcm token is deleted')
-            })
-            .catch((err: AxiosError) => {
+        if(store.getters.user) {
+            Vue.$api.removeFcmToken(store.getters.user.id)
+                .then((res: AxiosResponse) => {
+                    console.log('fcm token is deleted')
+                })
+                .catch((err: AxiosError) => {
 
-            })
-        
+                })
+        }
     }
     
 

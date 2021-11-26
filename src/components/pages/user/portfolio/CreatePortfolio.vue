@@ -150,16 +150,16 @@ export default class CreatePortfolio extends Vue {
     if (this.$v.form.$anyError) {
       return;
     }
-    const result = await this.$api.createPortfolio(
-      this.user.uid,
-      this.form.title,
-      this.form.description,
-      this.form.thumbnailImgSrc,
-      this.isPrivate
-    );
+    // const result = await this.$api.createPortfolio(
+    //   this.user.uid,
+    //   this.form.title,
+    //   this.form.description,
+    //   this.form.thumbnailImgSrc,
+    //   this.isPrivate
+    // );
 
     // 백엔드 연결 후 분기처리
-    console.log(result);
+    // console.log(result);
   }
 
   getProfileImgSrc(imgSrc: string) {

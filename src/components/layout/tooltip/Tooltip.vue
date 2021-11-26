@@ -77,12 +77,12 @@ export default class Tooltip extends Vue {
     private selectedCommunity: any = "";
 
     async mounted() {
-        this.communityList = await this.$api.getCommunityList();
+        // this.communityList = await this.$api.getCommunityList();
     }
 
     async selectCommunity(community) {
         this.selectedCommunity = community;
-        this.channelList = await this.$api.getCommunityChannel(community.id);
+        // this.channelList = await this.$api.getCommunityChannel(community.id);
     }
     selectCategory(channel) {
         this.$emit("community", this.selectedCommunity);

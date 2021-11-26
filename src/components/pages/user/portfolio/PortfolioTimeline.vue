@@ -39,7 +39,7 @@ import { User } from "@/types";
         Feed,
         WhoToFollow,
         JoinedCommunity,
-        GameList,
+        // GameList,
         PostBox,
     },
 })
@@ -52,11 +52,11 @@ export default class PortfolioTimeline extends Vue {
     private user!: User;
 
     async created() {
-        this.timeline = await this.$api.getTimeline(
-            this.userUid,
-            undefined,
-            parseInt(this.$route.params.porfolio_id)
-        );
+        // this.timeline = await this.$api.getTimeline(
+        //     this.userUid,
+        //     undefined,
+        //     parseInt(this.$route.params.porfolio_id)
+        // );
     }
     mounted() {
         this.dropdown.init();

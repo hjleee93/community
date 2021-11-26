@@ -22,7 +22,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 })
 export default class Channel extends Vue {
   @Prop() channel!: any;
-  @Prop() communityId!: number;
+  @Prop() communityId!: string;
 
   private timeline: any;
   private channelId: any = -1;
@@ -45,10 +45,10 @@ export default class Channel extends Vue {
           offset: this.offset
       }
       this.$api.channelList(this.communityId, obj)
-          .then((res: AxiosResponse) => {
+          .then((res: any) => {
               console.log(res)
           })
-          .catch((err: AxiosError) => {
+          .catch((err: any) => {
 
           })
 

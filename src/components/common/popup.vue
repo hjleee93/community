@@ -166,16 +166,16 @@ export default class Popup extends Vue {
     }
     sendReport() {
         // console.log("send", this.pickedReason, this.postId, this.commentId);
-        const result = this.$api.sendReport(
-            this.commentId,
-            1,
-            this.pickedReason
-        );
-        console.log("div", result);
-        if (result) {
-            this.isReportDone = true;
-            // this.inputInit();
-        }
+        // const result = this.$api.sendReport(
+        //     this.commentId,
+        //     1,
+        //     this.pickedReason
+        // );
+        // console.log("div", result);
+        // if (result) {
+        //     this.isReportDone = true;
+        //     // this.inputInit();
+        // }
     }
 
     inputInit() {

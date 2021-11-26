@@ -68,7 +68,8 @@ export default class TiptapSns extends Vue {
 
     @Watch("user")
     async watchUser() {
-        this.mentionList = await this.$api.followingList(this.user.uid);
+        const obj={}
+        // this.mentionList = await this.$api.followingList(this.user.uid, obj);
     }
 
 

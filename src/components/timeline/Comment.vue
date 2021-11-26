@@ -215,8 +215,7 @@ export default class Comment extends Vue {
     deleteComment(commentId: string) {
         this.$api.deleteComment(this.postId, commentId)
             .then((res: AxiosResponse) => {
-                //todo : 댓글 삭제
-                this.$store.commit('isNeededRefresh', true)
+
             })
             .catch((err: AxiosError) => {
 

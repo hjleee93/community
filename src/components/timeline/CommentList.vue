@@ -33,7 +33,6 @@ import Comment from "@/components/timeline/Comment.vue";
 import CommentInput from "@/components/timeline/CommentInput.vue";
 import {AxiosError, AxiosResponse} from "axios";
 import {scrollDone} from "@/script/scrollManager";
-import { PaginationRes } from "@/types";
 
 @Component({
     components: {Comment, CommentInput},
@@ -69,7 +68,7 @@ export default class CommentList extends Vue {
             sort: this.sort
         }
         this.$api.comments(this.postId, obj)
-            .then((res:PaginationRes) => {
+            .then((res:any) => {
                 if (this.isAddData) {
                     if (res.result.length > 0) {
                         this.comments = [...this.comments, ...res.result]
@@ -88,7 +87,7 @@ export default class CommentList extends Vue {
 
             })
         .finally(()=>{
-            this.$store.commit('isNeededRefresh', false)
+
         })
     }
     scrollCheck() {
@@ -118,14 +117,7 @@ export default class CommentList extends Vue {
         this.offset = 0;
         this.sort = '';
     }
-    @Watch("$store.getters.isNeededRefresh")
-    watchTimeline() {
-        if (this.$store.getters.isNeededRefresh) {
-            this.init();
-            this.fetch();
-        }
 
-    }
 }
 </script>
 

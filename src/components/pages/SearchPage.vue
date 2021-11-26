@@ -42,10 +42,10 @@ export default class SearchPage extends Vue {
     private games: any = [];
     private memberList: any = [];
     async created() {
-        this.memberList = this.$api.getCommunityMember(12);
-        const result = await this.$api.search(this.query, this.type);
-        this.posts = result.posts;
-        this.games = result.games;
+        // this.memberList = this.$api.getCommunityMember(12);
+        // const result = await this.$api.search(this.query, this.type);
+        // this.posts = result.posts;
+        // this.games = result.games;
     }
 }
 </script>

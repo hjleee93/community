@@ -120,9 +120,9 @@
                         Follow +
                     </p>
 
-                    <p class="profile-header-info-action button primary">
-                        <span class="hide-text-mobile">Send</span> Message
-                    </p>
+<!--                    <p class="profile-header-info-action button primary">-->
+<!--                        <span class="hide-text-mobile">Send</span> Message-->
+<!--                    </p>-->
                 </div>
             </div>
         </div>
@@ -279,6 +279,7 @@ export default class UserHeader extends Vue {
         this.fetch();
     }
 
+
     fetch() {
         if(this.$store.getters.channelUserInfo.id) {
             this.$api.userPostCnt(this.$store.getters.channelUserInfo.id)
@@ -302,10 +303,11 @@ export default class UserHeader extends Vue {
     }
 
     followUser() {
-        console.log('follow')
         this.$api.follow(this.userInfo.id)
             .then((res: AxiosResponse) => {
+                //todo: follow 버튼 새로고침 처리
                 console.log(res)
+
             })
             .catch((err: AxiosError) => {
 

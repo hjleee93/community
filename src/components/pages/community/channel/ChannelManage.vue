@@ -153,11 +153,11 @@ export default class ChannelManage extends Vue {
     private channelList: Channel[] = [];
 
     async mounted() {
-        this.channelList = await this.$api.getCommunityChannel(
-            this.communityId
-        );
-
-        console.log(this.channelList);
+        // this.channelList = await this.$api.getCommunityChannel(
+        //     this.communityId
+        // );
+        //
+        // console.log(this.channelList);
     }
 }
 </script>

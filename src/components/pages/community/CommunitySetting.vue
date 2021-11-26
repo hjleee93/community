@@ -245,14 +245,14 @@ export default class CommunitySetting extends Vue {
     private selectedManager: string = "";
 
     async created() {
-        this.community = this.$api.getCommunityInfo(this.communityId);
+        // this.community = this.$api.getCommunityInfo(this.communityId);
         this.form.groupName = this.community.name;
         this.form.description = this.community.description;
         this.form.isPrivate = this.community.is_private;
-        this.memberList = this.$api.getCommunityMember(this.communityId);
-        this.managerInfo = await this.$api.getUserInfo(
-            this.community.manager_uid
-        );
+        // this.memberList = this.$api.communityMembers(this.communityId);
+        // this.managerInfo = await this.$api.getUserInfo(
+        //     this.community.manager_uid
+        // );
         this.selectedManager = this.managerInfo.uid;
         this.form.bannerImgSrc = this.community.banner_img;
         this.form.profileImgSrc = this.community.profile_img;
@@ -288,21 +288,21 @@ export default class CommunitySetting extends Vue {
             this.form.bannerImgSrc,
             this.form.profileImgSrc
         );
-        const result = this.$api.modifiedCommunityInfo(
-            this.communityId,
-            this.form.groupName,
-            this.form.description,
-            this.form.isPrivate,
-            this.form.profileImgSrc,
-            this.form.bannerImgSrc
-        );
+        // const result = this.$api.modifiedCommunityInfo(
+        //     this.communityId,
+        //     this.form.groupName,
+        //     this.form.description,
+        //     this.form.isPrivate,
+        //     this.form.profileImgSrc,
+        //     this.form.bannerImgSrc
+        // );
         // console.log(result);
         // if (result === true) {
         // }
     }
-    deleteCommunity() {
-        const result = this.$api.deleteCommunity(this.communityId);
-    }
+    // deleteCommunity() {
+    //     const result = this.$api.deleteCommunity(this.communityId);
+    // }
 
     @Watch("description")
     watchChar() {

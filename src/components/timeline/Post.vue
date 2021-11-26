@@ -374,7 +374,7 @@ import AudioUploaderBtn from "@/components/timeline/post/AudioUploaderBtn.vue";
 import AudioPreview from "@/components/timeline/post/AudioPreview.vue";
 
 import AlertModal from "@/components/common/AlertModal.vue";
-import {User} from "@/types";
+import { User} from "@/types";
 
 import Messages from "@/components/pages/user/Messages.vue";
 
@@ -536,7 +536,7 @@ export default class Post extends Vue {
             sort: 'ALPAHBETIC'
         }
         this.$api.joinedCommunityList(this.user.id)
-            .then((res: AxiosResponse) => {
+            .then((res: any) => {
                 console.log('res', res)
                 this.communityList = res;
             })
@@ -820,9 +820,9 @@ export default class Post extends Vue {
         }
         else {
             this.isChannelOn = true;
-            this.channelList = this.$api.getCommunityInfo(
-                selectedItem.id
-            ).channels;
+            // this.channelList = this.$api.getCommunityInfo(
+            //     selectedItem.id
+            // ).channels;
         }
         this.communities = selectedItem.name;
         this.selectedCommunityId = selectedItem.id;

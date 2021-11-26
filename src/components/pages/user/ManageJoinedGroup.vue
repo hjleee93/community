@@ -107,10 +107,10 @@ export default class ManageJoinedGroup extends Vue {
 
     fetch(){
         this.$api.joinedCommunityList(this.$store.getters.user.id)
-            .then((res: AxiosResponse) => {
+            .then((res: any) => {
                 this.communityList = res;
             })
-            .catch((err: AxiosError) => {
+            .catch((err: any) => {
 
             })
 

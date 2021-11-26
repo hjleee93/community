@@ -1,9 +1,13 @@
 <template>
-    <div class="content-grid">
+    <div class="content-grid" v-if="community">
         <div class="profile-header v2">
-            <figure class="profile-header-cover liquid">
+            <figure class="profile-header-cover liquid" v-if="community.banner_img">
                 <img :src="`${community.banner_img}`" alt="cover-29"/>
             </figure>
+            <figure class="profile-header-cover liquid" v-else="community.banner_img">
+                <img src="img/community_banner_default.jpg" alt="no-banner-img"/>
+            </figure>
+
 
             <div class="profile-header-info">
                 <div class="user-short-description big">
@@ -95,11 +99,11 @@
                         <p class="user-stat-text">posts</p>
                     </router-link>
 
-                    <div class="user-stat big">
-                        <p class="user-stat-title">{{ community.visit_cnt }}</p>
+                    <!--                    <div class="user-stat big">-->
+                    <!--                        <p class="user-stat-title">{{ community.visit_cnt }}</p>-->
 
-                        <p class="user-stat-text">visits</p>
-                    </div>
+                    <!--                        <p class="user-stat-text">visits</p>-->
+                    <!--                    </div>-->
                 </div>
 
                 <div class="tag-sticker">
@@ -108,44 +112,45 @@
                     </svg>
                 </div>
 
-                <div class="profile-header-info-actions">
-                    <SubscribeBtn :community="community"></SubscribeBtn>
+                <div class="profile-header-info-actions" v-if="user">
+                    <SubscribeBtn :community="community" @joined="joined"></SubscribeBtn>
+                    <!--                            todo: 커뮤니티 관리자만 보이게 수정-->
+                    <!--                    <div-->
+                    <!--                        class="-->
+                    <!--                            profile-header-info-action-->
+                    <!--                            button-->
+                    <!--                            group-setting-dropdown-trigger-->
+                    <!--                        "-->
+                    <!--                        ref="dropbox"-->
+                    <!--                    >-->
+                    <!--                        <svg class="icon-more-dots">-->
+                    <!--                            <use xlink:href="#svg-more-dots"></use>-->
+                    <!--                        </svg>-->
+                    <!--                    </div>-->
+                    <!--                    -->
+                    <!--                    <div>-->
+                    <!--                        <div-->
 
-                    <div
-                        class="
-                            profile-header-info-action
-                            button
-                            group-setting-dropdown-trigger
-                        "
-                        ref="dropbox"
-                    >
-                        <svg class="icon-more-dots">
-                            <use xlink:href="#svg-more-dots"></use>
-                        </svg>
-                    </div>
-                    <div>
-                        <div
+                    <!--                            class="simple-dropdown header-settings-dropdown"-->
+                    <!--                            @click="setting"-->
+                    <!--                        >-->
+                    <!--                            <router-link-->
+                    <!--                                v-if="(community && community.manager_id )=== (user &&user.id)"-->
+                    <!--                                class="simple-dropdown-link"-->
+                    <!--                                :to="`/community/${community && community.id}/setting`"-->
+                    <!--                            >-->
+                    <!--                                Group setting-->
+                    <!--                            </router-link>-->
 
-                            class="simple-dropdown header-settings-dropdown"
-                            @click="setting"
-                        >
-                            <router-link
-                                v-if="community.manager_id === user.id"
-                                class="simple-dropdown-link"
-                                :to="`/community/${community && community.id}/setting`"
-                            >
-                                Group setting
-                            </router-link>
 
-<!--                            todo: 커뮤니티 관리자만 보이게 수정-->
-                            <router-link
-                                class="simple-dropdown-link"
-                                to="/createCommunity"
-                            >
-                                Create group
-                            </router-link>
-                        </div>
-                    </div>
+                    <!--                            <router-link-->
+                    <!--                                class="simple-dropdown-link"-->
+                    <!--                                to="/createCommunity"-->
+                    <!--                            >-->
+                    <!--                                Create group-->
+                    <!--                            </router-link>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
                 </div>
             </div>
         </div>
@@ -275,9 +280,12 @@ export default class CommunityHeader extends Vue {
     private user!: User;
 
     mounted() {
-        this.fetch()
         this.dropdown.init();
-        this.hexagon.init();
+        this.hexagon.init()
+
+
+        this.fetch()
+
     }
 
     fetch() {
@@ -287,37 +295,41 @@ export default class CommunityHeader extends Vue {
                 this.$store.commit('communityInfo', res);
                 this.community = res
             })
-        .catch((err:AxiosError)=>{
-            console.log(err)
-        })
+            .catch((err: AxiosError) => {
+                console.log(err)
+            })
     }
-
 
 
     subscribe() {
         this.$api.subscribe({user_id: this.user.id, community_id: this.communityId})
-            .then((res:AxiosResponse)=>{
+            .then((res: AxiosResponse) => {
                 console.log(res)
-            }).catch((err:AxiosError)=>{
-            if(err.message){
+            }).catch((err: AxiosError) => {
+            if (err.message) {
                 alert(err.message)
             }
         })
     }
 
-    unsubscribe(){
+    unsubscribe() {
         this.$api.unsubscribe({user_id: this.user.id, community_id: this.communityId})
-            .then((res:AxiosResponse)=>{
+            .then((res: AxiosResponse) => {
                 console.log(res)
-            }).catch((err:AxiosError)=>{
-            if(err.message){
+            }).catch((err: AxiosError) => {
+            if (err.message) {
                 alert(err.message)
             }
         })
 
     }
+
     setting() {
         // (this.$refs.dropbox as HTMLElement).click();
+    }
+
+    joined() {
+        this.fetch();
     }
 }
 </script>

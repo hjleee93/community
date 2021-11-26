@@ -1,9 +1,9 @@
 <template>
-<div>
+    <div v-if="user">
         <p class="button secondary" @click="follow" v-if="user.id !== member.id">follow</p>
-<!--    {{member}}-->
-    <p class="button secondary" @click="follow" v-if="user.id !== member.id && this.member.is_following">followed</p>
-</div>
+        <p class="button secondary" @click="follow" v-if="user.id !== member.id && this.member.is_following">
+            followed</p>
+    </div>
 </template>
 
 <script lang="ts">
@@ -16,11 +16,13 @@ import {mapGetters} from "vuex";
     components: {},
 })
 export default class FollowBtn extends Vue {
-    @Prop() member!: User;
+    @Prop() member!: any;
+    user!: any;
 
 
-    mounted(){
+    mounted() {
         console.log(this.member)
+        console.log(this.user)
     }
 
 

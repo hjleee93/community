@@ -1,5 +1,5 @@
 <template>
-    <div class="form-box login-register-form-element" style="top: 10%" >
+    <div class="form-box login-register-form-element" style="top: 10%">
         <img
             class="form-box-decoration"
             src="../../../img/landing/rocket.png"
@@ -31,12 +31,14 @@
                             ></b-form-input>
                             <b-form-invalid-feedback
                                 v-if="!$v.form.email.emailValidator"
-                                >올바른 이메일 형식을
-                                작성해주세요</b-form-invalid-feedback
+                            >올바른 이메일 형식을
+                                작성해주세요
+                            </b-form-invalid-feedback
                             >
                             <b-form-invalid-feedback
                                 v-if="!$v.form.email.required"
-                                >이메일을 입력해주세요</b-form-invalid-feedback
+                            >이메일을 입력해주세요
+                            </b-form-invalid-feedback
                             >
                         </b-form-group>
                     </div>
@@ -61,11 +63,11 @@
                             ></b-form-input>
                             <b-form-invalid-feedback
                                 v-if="!$v.form.password.required"
-                                >비밀번호를 입력해주세요
+                            >비밀번호를 입력해주세요
                             </b-form-invalid-feedback>
                             <b-form-invalid-feedback
                                 v-if="!$v.form.password.pwdValidator"
-                                >영문과 최소 1개의 숫자 혹은 특수 문자를 포함한
+                            >영문과 최소 1개의 숫자 혹은 특수 문자를 포함한
                                 6~20자리 비밀번호를 입력해주세요.
                             </b-form-invalid-feedback>
                         </b-form-group>
@@ -92,11 +94,11 @@
                             ></b-form-input>
                             <b-form-invalid-feedback
                                 v-if="!$v.form.repeatPassword.required"
-                                >비밀번호를 입력해주세요
+                            >비밀번호를 입력해주세요
                             </b-form-invalid-feedback>
                             <b-form-invalid-feedback
                                 v-if="!$v.form.repeatPassword.sameAsPassword"
-                                >비밀번호가 일치하지 않습니다
+                            >비밀번호가 일치하지 않습니다
                             </b-form-invalid-feedback>
                         </b-form-group>
                     </div>
@@ -125,11 +127,11 @@
                             ></b-form-input>
                             <b-form-invalid-feedback
                                 v-if="!$v.form.username.required"
-                                >이름은 최소 두글자 이상입력해주세요
+                            >이름은 최소 두글자 이상입력해주세요
                             </b-form-invalid-feedback>
                             <b-form-invalid-feedback
                                 v-if="!$v.form.username.maxLength"
-                                >이름은 12글자 이내로 작성해주세요.
+                            >이름은 12글자 이내로 작성해주세요.
                             </b-form-invalid-feedback>
                         </b-form-group>
                     </div>
@@ -157,11 +159,11 @@
                             ></b-form-input>
                             <b-form-invalid-feedback
                                 v-if="!$v.form.nickname.required"
-                                >닉네임은 최소 두글자 이상입력해주세요
+                            >닉네임은 최소 두글자 이상입력해주세요
                             </b-form-invalid-feedback>
                             <b-form-invalid-feedback
                                 v-if="!$v.form.nickname.maxLength"
-                                >닉네임은 12글자 이내로 작성해주세요
+                            >닉네임은 12글자 이내로 작성해주세요
                             </b-form-invalid-feedback>
                         </b-form-group>
                     </div>
@@ -183,7 +185,7 @@
                         </svg>
                     </div>
                     <label for="reportReason3" class="report-reason"
-                        >이용약관 동의</label
+                    >이용약관 동의</label
                     >
                 </div>
             </div>
@@ -194,7 +196,7 @@
                         id="reportReason4"
                         name="reportReason"
                         v-model="form.policyAgreement2"
-                        @click="radioBtn()"
+                        @click="policy2()"
                     />
 
                     <div class="checkbox-box">
@@ -203,7 +205,7 @@
                         </svg>
                     </div>
                     <label for="reportReason4" class="report-reason"
-                        >개인정보취급방침 동의</label
+                    >개인정보취급방침 동의</label
                     >
                 </div>
             </div>
@@ -225,21 +227,19 @@
             class="modal-container p-0"
             centered
             hide-header
+            no-close-on-backdrop
             :footer-border-variant="footerBgVariant"
             :body-bg-variant="footerBgVariant"
             :footer-bg-variant="footerBgVariant"
         >
-            <iframe class="iframe" :src="$store.getters.policyUrl"> </iframe>
+            <iframe class="iframe" :src="$store.getters.tosUrl"></iframe>
             <template #modal-footer>
                 <div class="w-100 button-container">
                     <b-button
                         variant="primary"
                         size="sm"
                         class="float-left"
-                        @click="
-                            form.policyAgreement1 = true;
-                            show = false;
-                        "
+                        @click="agreement1()"
                     >
                         동의
                     </b-button>
@@ -248,7 +248,41 @@
                         variant="secondary"
                         size="sm"
                         class="float-right"
-                        @click="form.policyAgreement1 = false"
+                        @click="disagreement1()"
+                    >
+                        동의안함
+                    </b-button>
+                </div>
+            </template>
+        </b-modal>
+
+        <b-modal
+            ref="policy2"
+            class="modal-container p-0"
+            centered
+            hide-header
+            no-close-on-backdrop
+            :footer-border-variant="footerBgVariant"
+            :body-bg-variant="footerBgVariant"
+            :footer-bg-variant="footerBgVariant"
+        >
+            <iframe class="iframe" :src="$store.getters.policyUrl"></iframe>
+            <template #modal-footer>
+                <div class="w-100 button-container">
+                    <b-button
+                        variant="primary"
+                        size="sm"
+                        class="float-left"
+                        @click="agreement2()"
+                    >
+                        동의
+                    </b-button>
+
+                    <b-button
+                        variant="secondary"
+                        size="sm"
+                        class="float-right"
+                        @click="disagreement2()"
                     >
                         동의안함
                     </b-button>
@@ -259,21 +293,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import LoginManager from "@/script/login";
 
 import firebase from "firebase/app";
-import { LoginState } from "@/store/modules/user";
+import {LoginState} from "@/store/modules/user";
 import Form from "@/script/form";
 
-import { validationMixin } from "vuelidate";
+import {validationMixin} from "vuelidate";
 import {
     required,
     minLength,
     maxLength,
     sameAs,
 } from "vuelidate/lib/validators";
-import { helpers } from "vuelidate/lib/validators";
+import {helpers} from "vuelidate/lib/validators";
 
 const emailValidator = helpers.regex(
     "emailValidator",
@@ -334,22 +368,23 @@ export default class Register extends Vue {
         const loginState = await this.$store.dispatch("loginState");
         switch (loginState) {
             case LoginState.login:
-                await this.$router.replace("/").catch(() => {});
+                await this.$router.replace("/").catch(() => {
+                });
                 return;
         }
 
         const currentUser = firebase.auth().currentUser;
 
         if (!currentUser) {
-            await this.$router.replace("/login").catch(() => {});
+            await this.$router.replace("/login").catch(() => {
+            });
             return;
         }
-
-        // this.form.nickname = currentUser.displayName!;
     }
+
     // vuelidate
     validateState(name) {
-        const { $dirty, $error } = this.$v.form[name]!;
+        const {$dirty, $error} = this.$v.form[name]!;
         return $dirty ? !$error : null;
     }
 
@@ -380,12 +415,14 @@ export default class Register extends Vue {
                     alert("사용할 수 없는 이름입니다");
                     // todo 닉네임 필터 에러 처리
                     // alert(this.$t('join.joinNicknameError'));
-                } else {
+                }
+                else {
                     console.error((result && result.error) || "error");
                     result && result.error && alert(result.error.message);
                 }
-            } else {
-                const { user } = result;
+            }
+            else {
+                const {user} = result;
                 this.$store.commit("user", user);
                 await LoginManager.login();
                 // await this.$router.replace('/');
@@ -393,24 +430,31 @@ export default class Register extends Vue {
                 if (this.$store.getters.redirectRouter) {
                     const router = this.$store.getters.redirectRouter;
                     this.$store.commit("redirectRouter", null);
-                    await this.$router.replace(router).catch(() => {});
-                } else if (this.$store.getters.redirectUrl) {
+                    await this.$router.replace(router).catch(() => {
+                    });
+                }
+                else if (this.$store.getters.redirectUrl) {
                     const url = this.$store.getters.redirectUrl;
                     this.$store.commit("redirectUrl", null);
                     window.location.href = url;
-                } else {
-                    await this.$router.replace("/").catch(() => {});
+                }
+                else {
+                    await this.$router.replace("/").catch(() => {
+                    });
                 }
             }
-        } catch (error) {
+        }
+        catch (error) {
             var errorCode = error.code;
             var errorMessage = error.message;
             console.log(errorCode, errorCode === "auth/email-already-in-use");
             if (errorCode === "auth/weak-password") {
                 alert("The password is too weak.");
-            } else if (errorCode === "auth/email-already-in-use") {
+            }
+            else if (errorCode === "auth/email-already-in-use") {
                 alert("이미 사용중인 이메일 입니다.");
-            } else {
+            }
+            else {
                 alert(errorMessage);
             }
         }
@@ -422,8 +466,12 @@ export default class Register extends Vue {
         //     (this.$refs.reportReason as HTMLFormElement).checked = false;
         // }
     }
+
     policy1() {
         (this.$refs["policy1"] as any).show();
+    }
+    policy2() {
+        (this.$refs["policy2"] as any).show();
     }
 
     @Watch("$store.getters.googleAccountInfo")
@@ -434,6 +482,28 @@ export default class Register extends Vue {
             this.form.nickname = this.googleForm.googleNickname.substring(1);
         }
         console.log("watchGoogleInfo", this.googleForm);
+    }
+
+    agreement1() {
+        this.form.policyAgreement1 = true;
+        this.$refs['policy1'].hide()
+        this.show = false;
+    }
+
+    disagreement1() {
+        this.form.policyAgreement1 = false;
+        this.$refs['policy1'].hide()
+    }
+
+    agreement2() {
+        this.form.policyAgreement2 = true;
+        this.$refs['policy2'].hide()
+        this.show = false;
+    }
+
+    disagreement2() {
+        this.form.policyAgreement2= false;
+        this.$refs['policy2'].hide()
     }
 }
 </script>
@@ -447,15 +517,18 @@ export default class Register extends Vue {
 .checkbox-wrap input[type="radio"]:checked + .checkbox-box .icon-check {
     fill: #ffffff;
 }
+
 .checkbox-wrap .checkbox-box .icon-check {
     fill: transparent;
     transition: fill 0.2s ease-in-out;
 }
+
 .iframe {
     background-color: black;
     width: 100%;
     height: 80vh;
 }
+
 .button-container {
     display: flex;
 }

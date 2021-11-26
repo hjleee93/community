@@ -38,30 +38,17 @@ export default class Play extends Vue {
         if (!this.gameData) {
 
             //todo 게임 요청
-            const result = await this.$api.game(this.pathname);
-            if (!result && result.error) {
-                console.error((result && result.error) || "error");
-            } else {
-                this.gameData = result.game;
-                const title = this.gameData?.title;
-                const description = this.gameData?.description;
-                const thumb = this.gameData?.url_thumb;
-                const author = this.gameData?.user.name;
-
-                // this.metaSetting = new MetaSetting( {
-                //     title : `${title} | Zempie.com`,
-                //     meta : [
-                //         { name: 'description', content: description },
-                //         // { name: 'author', content: author },
-                //         { property: 'og:url', content: `${document.location.href}` },
-                //         // { property: 'og:site_name', content: `${ title } | Zempie.com` },
-                //         { property: 'og:title', content: `${title} | Zempie.com` },
-                //         { property: 'og:description', content: description },
-                //         { property: 'og:image', content: thumb },
-                //         { property: 'og:type', content: 'website'},
-                //     ]
-                // } );
-            }
+            // const result = await this.$api.game(this.pathname);
+            // if (!result && result.error) {
+            //     console.error((result && result.error) || "error");
+            // } else {
+            //     this.gameData = result.game;
+            //     const title = this.gameData?.title;
+            //     const description = this.gameData?.description;
+            //     const thumb = this.gameData?.url_thumb;
+            //     const author = this.gameData?.user.name;
+            //
+            // }
         }
 
         // const game_uid = this.gameData.game_uid;

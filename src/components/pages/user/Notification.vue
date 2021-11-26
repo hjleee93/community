@@ -33,12 +33,12 @@
                             href="profile-timeline.html"
                         >
                             <div class="user-avatar small no-outline">
-                                <div class="user-avatar-content">
-                                    <div
-                                        class="hexagon-image-30-32"
-                                        data-src="img/avatar/03.jpg"
-                                    ></div>
-                                </div>
+<!--                                <div class="user-avatar-content">-->
+<!--                                    <div-->
+<!--                                        class="hexagon-image-30-32"-->
+<!--                                        data-src="img/avatar/03.jpg"-->
+<!--                                    ></div>-->
+<!--                                </div>-->
 
                                 <div class="user-avatar-progress">
                                     <div class="hexagon-progress-40-44"></div>

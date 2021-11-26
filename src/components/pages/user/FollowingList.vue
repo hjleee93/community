@@ -55,12 +55,12 @@ export default class FollowingList extends Vue {
             search: this.search
         }
         this.$api.followingList(obj, this.user.id)
-            .then((res: AxiosResponse) => {
+            .then((res: any) => {
                 this.followingList = res.result;
                 this.totalCnt = res.totalCount;
                 console.log(res)
             })
-            .catch((err: AxiosError) => {
+            .catch((err: any) => {
 
             })
     }

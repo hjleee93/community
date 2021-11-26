@@ -3,6 +3,7 @@ import axios, {AxiosInstance} from 'axios'
 import Vue, {PluginObject} from "vue";
 import firebase from 'firebase/app';
 
+const zempieApi = process.env.VUE_APP_BASE_API;
 const studioApi = process.env.VUE_APP_STUDIO_API;
 export default class Api {
     private communityApi = process.env.VUE_APP_COMMUNITY_API;
@@ -184,6 +185,23 @@ export default class Api {
         const response = await this.request('get', `${studioApi}studio/project`, undefined, false);
         return response.result || response;
     }
+    async getProject(id) {
+        const response = await this.request('get', `${studioApi}studio/project/${id}`, undefined, false);
+        return response.result || response;
+    }
+    async userChannel(channel_id) {
+        const response = await this.request( 'get', `${zempieApi}channel/${channel_id}`, undefined, false );
+        return response.result || response;
+    }
+    async gameInfo(pathname: string){
+        return await this.request('get', `/launch/game/${pathname}`, undefined, false)
+    }
+
+    async gameTimeline(obj:any){
+        return await this.request('get', `${this.communityApi}timeline/game/${obj.game_id}`, obj,false)
+
+    }
+
     /* /game */
 
 

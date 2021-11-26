@@ -70,7 +70,8 @@
                             :to="`/search?hashtag=${hashtag}`"
                             v-for="hashtag in hashtags"
                             :key="hashtag"
-                            >{{ hashtag }}</router-link
+                        >{{ hashtag }}
+                        </router-link
                         >
                     </div>
                 </div>
@@ -85,6 +86,7 @@
                     </router-link>
                     <!-- v-if="user && user.uid !== game.user.uid" -->
                     <p
+                        v-if="loginUser"
                         class="profile-header-info-action button secondary"
                         @click="subscribe"
                     >
@@ -100,7 +102,7 @@
             >
                 <router-link
                     class="section-menu-item"
-                    :to="`/timeline/game/${game.pathname}`"
+                    :to="{path:`/timeline/game/${game.pathname}`, query:{game_id:game.id}}"
                     :class="
                         $route.name === 'GameTimeline' &&
                         Object.keys($route.query).length === 0
@@ -117,7 +119,7 @@
 
                 <router-link
                     class="section-menu-item"
-                    :to="`/timeline/game/${game.pathname}?media=sns`"
+                    :to="{path:`/timeline/game/${game.pathname}/timeline`, query:{game_id:game.id, media:'sns'}}"
                     :class="$route.query.media === 'sns' ? 'active' : ''"
                 >
                     <svg class="section-menu-item-icon icon-forums">
@@ -128,7 +130,7 @@
 
                 <router-link
                     class="section-menu-item"
-                    :to="`/timeline/game/${game.pathname}?media=blog`"
+                    :to="{path:`/timeline/game/${game.pathname}/timeline`, query:{game_id:game.id, media:'blog'}}"
                     :class="$route.query.media === 'blog' ? 'active' : ''"
                 >
                     <svg class="section-menu-item-icon icon-forum">
@@ -140,7 +142,7 @@
 
                 <router-link
                     class="section-menu-item"
-                    :to="`/timeline/game/${game.pathname}?media=image`"
+                    :to="{path:`/timeline/game/${game.pathname}/timeline`, query:{game_id:game.id, media:'image'}}"
                     :class="$route.query.media === 'image' ? 'active' : ''"
                 >
                     <svg class="section-menu-item-icon icon-photos">
@@ -152,7 +154,7 @@
 
                 <router-link
                     class="section-menu-item"
-                    :to="`/timeline/game/${game.pathname}?media=video`"
+                    :to="{path:`/timeline/game/${game.pathname}/timeline`, query:{game_id:game.id, media:'video'}}"
                     :class="$route.query.media === 'video' ? 'active' : ''"
                 >
                     <svg class="section-menu-item-icon icon-videos">
@@ -186,23 +188,22 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { mapGetters } from "vuex";
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 
 import Hexagon from "@/plugins/hexagon";
-import { User } from "@/types";
+import {AxiosResponse} from "axios";
 
 @Component({
-    computed: { ...mapGetters(["user"]) },
     components: {},
 })
 export default class GameHeader extends Vue {
     private hexagon: Hexagon = new Hexagon();
 
-    private gamePathname = this.$route.params.game_pathname;
+    private gamePath = this.$route.params.gamePath;
     private game: any = {};
 
-    private user!: User;
+    private loginUser = {};
+    private user: any = {}
 
     private hashtags: string[] = [];
     private userInfo: any = [];
@@ -211,9 +212,29 @@ export default class GameHeader extends Vue {
 
     async mounted() {
         this.hexagon.init();
-        const result = await this.$api.game(this.gamePathname);
-        this.game = result.game;
-        this.hashtags = this.game.hashtags.split(",");
+        this.fetch()
+        this.loginUser = this.$store.getters.user
+    }
+
+    fetch() {
+        // this.$api.getProject(this.gameId)
+
+        this.$api.gameInfo(this.gamePath)
+            .then((res: any) => {
+                const {result} = res;
+                const {game} = result;
+                this.$store.commit('gameInfo', game)
+                this.game = game;
+                this.user = game.user
+                this.hashtags = (game.hashtags.length > 0) ? game.hashtags.split(",") : undefined;
+
+            })
+            .catch((err: any) => {
+
+
+            })
+
+
     }
 
     subscribe() {
@@ -229,7 +250,7 @@ export default class GameHeader extends Vue {
         window.open(routerLink.href, "_blank");
     }
 
-    @Watch("game", { immediate: true })
+    @Watch("game", {immediate: true})
     watchImg(val: any) {
         // console.log("watch userInfo", val);
         this.$nextTick(() => {
@@ -243,14 +264,17 @@ export default class GameHeader extends Vue {
 svg {
     vertical-align: middle;
 }
+
 figure > div {
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
 }
+
 .tag-list {
     justify-content: center;
     margin-top: 5px;
 }
+
 .profile-header-info-actions .button {
     width: 105px !important;
 }

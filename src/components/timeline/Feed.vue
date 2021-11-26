@@ -18,32 +18,15 @@
                     <div class="widget-box-status-content">
                         <div class="user-status">
                             <router-link
-                                class="user-status-avatar"
                                 :to="`/channel/${feed.user&&feed.user.uid}/timeline`"
                             >
-                                <div class="user-avatar small no-outline">
-                                    <div class="user-avatar-content">
-                                        <div
-                                            class="hexagon-image-30-32"
-                                            :data-src="feed.user&&feed.user.profile_img"
-                                        ></div>
-                                    </div>
-
-                                    <div class="user-avatar-progress">
-                                        <div
-                                            class="hexagon-progress-40-44"
-                                        ></div>
-                                    </div>
-
-                                    <div class="user-avatar-progress-border">
-                                        <div class="hexagon-border-40-44"></div>
-                                    </div>
-                                </div>
+                                <UserAvatar :user="feed.user"/>
                             </router-link>
+
 
                             <p class="user-status-title medium">
                                 <a class="bold" href="profile-timeline.html">{{
-                                        feed.user&& feed.user.name
+                                        feed.user && feed.user.name
                                     }}</a>
                                 uploaded a
                                 <span class="bold"
@@ -61,16 +44,16 @@
                             @click="contentClicked"
                         ></div>
                         <template v-if="attachedFile">
-                        <div v-for="file in attachedFile">
-                            <b-img v-if="file.type === 'image'" :src="file.url" class="feed-img mt-3"></b-img>
-                            <video
-                                width="320"
-                                height="240"
-                                controls
-                                :src="file.url"
-                                v-if="file.type === 'video'"></video>
-                            <audio v-if="file.type === 'sound'" controls :src="file.url"></audio>
-                        </div>
+                            <div v-for="file in attachedFile">
+                                <b-img v-if="file.type === 'image'" :src="file.url" class="feed-img mt-3"></b-img>
+                                <video
+                                    width="320"
+                                    height="240"
+                                    controls
+                                    :src="file.url"
+                                    v-if="file.type === 'video'"></video>
+                                <audio v-if="file.type === 'sound'" controls :src="file.url"></audio>
+                            </div>
                         </template>
                     </div>
 
@@ -167,31 +150,7 @@
                                 </div>
                             </div>
                             <div class="post-icon-wrap">
-                                <div class="post-option-wrap">
-                                    <div
-                                        class="
-                                            post-option
-                                            reaction-options-dropdown-trigger
-                                        "
-                                        @click="sendLike"
-                                    >
-                                        <svg
-                                            class="
-                                                post-option-icon
-                                                icon-thumbs-up
-                                            "
-                                            :class="
-                                                feed.liked === true
-                                                    ? 'active'
-                                                    : ''
-                                            "
-                                        >
-                                            <use
-                                                xlink:href="#svg-thumbs-up"
-                                            ></use>
-                                        </svg>
-                                    </div>
-                                </div>
+                                <LikeBtn :feed="feed"/>
                                 <div
                                     :style="
                                         this.isOpenedComments
@@ -216,7 +175,7 @@
                                                 xlink:href="#svg-comment"
                                             ></use>
                                         </svg>
-                                        {{feed.comment_cnt}}
+                                        {{ feed.comment_cnt }}
                                     </div>
                                 </div>
 
@@ -280,6 +239,8 @@ import TiptapSns from "@/components/timeline/TiptapSns.vue";
 import {dateFormat} from "@/script/moment";
 import {AxiosError, AxiosResponse} from "axios";
 import TimelineComments from "@/components/timeline/_commentList.vue";
+import LikeBtn from "@/components/common/_likeBtn.vue";
+import UserAvatar from "@/components/common/_userAvatar.vue";
 
 @Component({
     components: {
@@ -288,7 +249,9 @@ import TimelineComments from "@/components/timeline/_commentList.vue";
         Post,
         PostDropdown,
         TiptapSns,
-        TimelineComments
+        TimelineComments,
+        LikeBtn,
+        UserAvatar
     },
 })
 export default class Feed extends Vue {
@@ -310,9 +273,12 @@ export default class Feed extends Vue {
 
     private originImg: string = "";
 
+    limit = 5;
+    offset = 0;
+
     mounted() {
-        this.attachedFile = JSON.parse(this.feed.attatchment_files)
-        this.hashtags = JSON.parse(this.feed.hashtags)
+        this.attachedFile = this.feed.attatchment_files
+        this.hashtags = this.feed.hashtags
         this.dropdown.init();
         this.hexagon.init();
         this.tooltip.init();
@@ -322,7 +288,7 @@ export default class Feed extends Vue {
 
     sendLike() {
         // console.log(this.feed.liked)
-        if(!this.feed.liked) {
+        if (!this.feed.liked) {
             console.log('like')
             this.$api.like(this.feed.id)
                 .then((res: AxiosResponse) => {
@@ -330,8 +296,9 @@ export default class Feed extends Vue {
                 })
                 .catch((err: AxiosError) => {
 
-                    })
-        }else{
+                })
+        }
+        else {
             console.log('unlike')
             this.$api.unlike(this.feed.id)
                 .then((res: AxiosResponse) => {
@@ -341,7 +308,6 @@ export default class Feed extends Vue {
 
                 })
         }
-
 
 
     }
@@ -432,9 +398,11 @@ export default class Feed extends Vue {
 }
 
 <style lang="scss" scoped>
-.feed-img{
-    max-width:100%;
+
+.feed-img {
+    max-width: 100%;
 }
+
 .content-grid {
     transform: translate(199.5px, 0px);
     transition: transform 0.4s ease-in-out 0s;

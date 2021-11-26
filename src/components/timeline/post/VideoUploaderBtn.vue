@@ -63,7 +63,7 @@ export default class ImageUploaderBtn extends Vue {
     uploadFile() {
         console.log(this.$store.getters.imgArr.length)
         if (this.$store.getters.audioArr.length > 0 || this.$store.getters.imgArr.length>0) {
-            this.$refs['alertModal'].show()
+            (this.$refs['alertModal'] as any).show()
         }else{
             (this.$refs.video as HTMLElement).click();
         }
@@ -74,38 +74,20 @@ export default class ImageUploaderBtn extends Vue {
         onSelectFile(input.files, this.maxFileNum, 'video')
     }
 
-    // 파일 업로드
-    onFileChange(event: {
-        target: { accept: any; files: any; value: string | null };
-    }) {
-        //포스팅 타입 분기
-        if (this.activeTab === "sns") {
-            if (this.fileLoader.checkVideoFile(event.target.files)) {
-                this.$emit("fileCheckDone");
-            }
-            //   bus.$emit("fileLoader", this.fileLoader);
-        } else if (this.activeTab === "blog") {
-            event.target.files.forEach(async (element) => {
-                let video = await this.$api.videoUplaod(element);
-                console.log(video);
-                bus.$emit("videoUrl", video.url);
-            });
-        }
-        event.target.value = null;
-    }
+
 
     resetAttr(isReset: boolean) {
         if (isReset) {
             this.$store.dispatch('resetAttFiles')
         }
-        this.$refs['alertModal'].hide()
+        (this.$refs['alertModal'] as any).hide()
 
     }
 
     toggleModal() {
         // We pass the ID of the button that we want to return focus to
         // when the modal has hidden
-        this.$refs['my-modal'].toggle('#toggle-btn')
+        // this.$refs['my-modal'].toggle('#toggle-btn')
     }
 
 

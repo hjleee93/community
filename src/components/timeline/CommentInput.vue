@@ -146,6 +146,11 @@ export default class CommentInput extends Vue {
 
     //수정 , 작성
     sendComment() {
+        if(!this.user){
+            this.$store.commit('needLogin', true)
+        }else{
+
+
         if(this.commentId){
             const obj={
                 comment_id: this.commentId,
@@ -155,7 +160,7 @@ export default class CommentInput extends Vue {
             this.$api.updateComment(obj)
                 .then((res: AxiosResponse) => {
                     console.log(res)
-                    this.$store.commit('isNeededRefresh', true)
+
                 })
                 .catch((err: AxiosError) => {
 
@@ -165,7 +170,7 @@ export default class CommentInput extends Vue {
             })
 
 
-        }else{
+        }else {
             const obj = {
                 user_id: this.user.id,
                 attatchment_files: [
@@ -183,17 +188,16 @@ export default class CommentInput extends Vue {
             }
             this.$api.sendComment(obj)
                 .then((res: AxiosResponse) => {
-                    this.$store.commit('isNeededRefresh', true)
+
                 })
                 .catch((err: AxiosError) => {
 
                 })
 
 
-
             this.content = "";
             this.isPrivate = false;
-
+        }
 
         }
 

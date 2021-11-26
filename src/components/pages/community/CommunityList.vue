@@ -108,7 +108,7 @@
         <div>
             <div v-if="!communityList || communityList.length === 0">
                 <p class="mt-5 mb-3">검색 결과가 없습니다.</p>
-                <b-img src="/img/not-found.png" width="100px" height="100px"></b-img>
+                <b-img src="img/not-found.png" width="100px" height="100px"></b-img>
 
             </div>
             <transition-group name="list-complete" class="grid grid-4-4-4">
@@ -207,7 +207,6 @@ import Form from "@/script/form";
 import {AxiosError, AxiosResponse} from "axios";
 import {scrollDone} from "@/script/scrollManager";
 import {mapGetters} from "vuex";
-import {PaginationRes} from "@/types";
 import SubscribeBtn from "@/components/pages/community/_subscribeBtn.vue";
 import UniCons from '@iconscout/vue-unicons'
 
@@ -224,9 +223,9 @@ export default class Community extends Vue {
     //fetch data object
     private limit: number = 20;
     private offset: number = 0;
-    private community: string = null;
+    private community: string = '';
     private sort: string = '';
-    private show: string = null
+    private show: string = ''
     private isAddData: boolean = false;
 
 
@@ -255,8 +254,11 @@ export default class Community extends Vue {
             sort: this.sort,
             show: this.show
         }
+
         this.$api.communityList(obj)
-            .then((res: PaginationRes) => {
+            .then((res: any) => {
+                //todo:중첩 데이터 수정해야됨
+                console.log('fetch',this.isAddData)
                 if (this.isAddData) {
                     if (res.length > 0) {
                         this.communityList = [...this.communityList, ...res]
@@ -312,23 +314,23 @@ export default class Community extends Vue {
         this.isAddData = false
         this.limit = 20;
         this.offset = 0;
-        this.community = null;
-        this.sort = null;
-        this.show = null;
+        this.community = '';
+        this.sort = '';
+        this.show = '';
         this.searchInput = '';
     }
 
-    joinCommunity() {
-        console.log('join!')
-        this.$api.subscribe({user_id: this.user.id, community_id: this.communityId})
-            .then((res: AxiosResponse) => {
-                console.log(res)
-            }).catch((err: AxiosError) => {
-            if (err.message) {
-                alert(err.message)
-            }
-        })
-    }
+    // joinCommunity() {
+    //     console.log('join!')
+    //     this.$api.subscribe({user_id: this.user.id, community_id: this.communityId})
+    //         .then((res: AxiosResponse) => {
+    //             console.log(res)
+    //         }).catch((err: AxiosError) => {
+    //         if (err.message) {
+    //             alert(err.message)
+    //         }
+    //     })
+    // }
 }
 </script>
 

@@ -66,7 +66,7 @@ export default class ImageUploaderBtn extends Vue {
 
     uploadFile() {
         if (this.$store.getters.audioArr.length > 0 || this.$store.getters.video.file) {
-            this.$refs['alertModal'].show()
+            (this.$refs['alertModal'] as any).show()
         }
         else {
             (this.$refs.image as HTMLElement).click();
@@ -78,14 +78,14 @@ export default class ImageUploaderBtn extends Vue {
         if (isReset) {
             this.$store.dispatch('resetAttFiles')
         }
-        this.$refs['alertModal'].hide()
+        (this.$refs['alertModal']as any).hide()
 
     }
 
     toggleModal() {
         // We pass the ID of the button that we want to return focus to
         // when the modal has hidden
-        this.$refs['my-modal'].toggle('#toggle-btn')
+        (this.$refs['my-modal'] as any).toggle('#toggle-btn')
     }
 
     onSelectFile() {

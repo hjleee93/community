@@ -11,7 +11,7 @@
 
             <h1 class="landing-info-title">Zempie</h1>
 
-            <p class="landing-info-text">설명설명설명</p>
+            <p class="landing-info-text">누구나 게임을 업로드하고 플레이할 수 있는 게임공유플랫폼 젬파이</p>
 
             <div class="tab-switch">
                 <p

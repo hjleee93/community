@@ -42,12 +42,14 @@ import { Component, Prop, Vue } from "vue-property-decorator";
     components: {},
 })
 export default class GameScreenshot extends Vue {
-    @Prop() gameId!: number;
+    @Prop() gamePath!: number;
     private imgList: file[] = [];
     private imgSrc: string = "";
 
+
+
     async mounted() {
-        this.imgList = await this.$api.screenshot(this.gameId);
+        // this.imgList = await this.$api.screenshot(this.gamePath);
     }
     openImgModal(imgSrc: string) {
         console.log("?", imgSrc);

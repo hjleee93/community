@@ -31,14 +31,13 @@
                         <div
                             :key="game.id"
                             class="user-status-list"
-                            @click="moveGameChannel(game.game)"
-                            :id="game.id"
+                            @click="moveGameChannel(game.pathname)"
                         >
-                            <span class="game-title">{{ game.name }}</span>
+                            <span class="game-title">{{ game.title }}</span>
 
                             <div
                                 :style="`background: url(${
-                            game.picture_webp ||
+                            game.url_thumb_webp ||
                             game.picture ||
                             'img/default.png'
                         }) center center / cover no-repeat;`"
@@ -47,15 +46,15 @@
                         </div>
                     </template>
                     <router-link
-                        v-if="games.length > 5"
+                        v-if="totalGameCnt > 5"
                         class="user-status-list all-btn"
                         :to="`/channel/${userUid}/games`"
                     >View all
                     </router-link
                     >
-                    <div v-if="games.length === 0">
+                    <div v-if="totalGameCnt === 0">
                         <p @click="addGame" style="cursor: pointer">
-                            게임 등록 하실래요?
+                            게임 등록 하실래요?dd
                         </p>
                     </div>
                 </div>
@@ -66,8 +65,60 @@
             <!-- 타임라인 -->
             <Timeline :currPage="'user'" :key="this.$route.query.media"></Timeline>
         </div>
+        <!-- 가입한 그룹 리스트 -->
         <div class="grid-column">
-            <joined-community :userUid="userUid"></joined-community>
+            <div class="widget-box">
+                <p class="widget-box-title">Groups</p>
+                <div class="widget-box-content">
+                    <div class="user-status-list" v-if="communityList">
+                        <div
+                            v-for="community in communityList"
+                            :key="community.id"
+                            class="user-status"
+                        >
+                            <router-link
+                                class="user-status-avatar"
+                                :to="`/community/${community.id}/timeline`"
+                            >
+                                <div class="user-avatar small no-border" >
+                                    <div class="user-avatar-content">
+                                        <b-img  v-if="community.profile_img" :src="community.profile_img"  style="
+                                        width: 40px;
+                                        height: 44px;
+                                        position: relative;
+                                        border-radius: 10px;
+                                    "/>
+                                        <b-img v-else src="/img/default.png"  style="
+                                        width: 40px;
+                                        height: 44px;
+                                        position: relative;
+                                        border-radius: 10px;
+                                    "/>
+
+                                    </div>
+                                </div>
+
+                            </router-link>
+
+                            <p class="user-status-title text-left">
+                                <router-link
+                                    class="bold"
+                                    :to="`/community/${community.id}/timeline`"
+                                >{{ community.name }}
+                                </router-link
+                                >
+                            </p>
+
+                            <p class="user-status-text small text-left">
+                                {{ community.member_cnt }} members
+                            </p>
+                        </div>
+                    </div>
+                    <div class="user-status-list" v-else>
+                        groups
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -81,7 +132,6 @@ import Hexagon from "@/plugins/hexagon";
 import PostBox from "@/components/layout/PostBox.vue";
 import Feed from "@/components/timeline/Feed.vue";
 import WhoToFollow from "@/components/pages/user/WhoToFollow.vue";
-import JoinedCommunity from "@/components/pages/user/JoinedCommunity.vue";
 import Portfolio from "@/components/pages/user/PortfolioList.vue";
 
 
@@ -97,7 +147,6 @@ import {AxiosError, AxiosResponse} from "axios";
         Feed,
         WhoToFollow,
         Portfolio,
-        JoinedCommunity,
         Timeline
     },
 })
@@ -106,18 +155,48 @@ export default class UserPage extends Vue {
     private hexagon: Hexagon = new Hexagon();
     private userUid = this.$route.params.channel_id;
     private games: any[] = [];
+    private totalGameCnt = 0;
     private user!: any;
+    private communityList: {
+        id: number;
+        name: string;
+        profile_img: string;
+        state: string;
+        member_cnt: number;
+    }[] = [];
+    userId = 0;
 
-    mounted() {
+   async mounted() {
         this.dropdown.init();
         this.hexagon.init();
-        this.gameListfetch();
+        await this.$store.dispatch("loginState");
+        this.gameListFetch();
+
     }
 
-    gameListfetch() {
-        this.$api.gameList()
-            .then((res: AxiosResponse) => {
-                this.games = res;
+    gameListFetch() {
+        // this.$api.gameList()
+        this.$api.userChannel(this.userUid)
+            .then((res: any) => {
+                const { target } = res;
+                const {games} = target;
+                this.userId = target.id
+                this.$store.commit('gameList', games)
+                this.totalGameCnt = games.length;
+                this.games = games.slice(0,5)
+                this.communityFetch();
+            })
+            .catch((err: AxiosError) => {
+                console.log('err', err)
+            })
+
+
+    }
+
+    communityFetch() {
+        this.$api.joinedCommunityList(this.userId)
+            .then((res: any) => {
+                this.communityList = res;
             })
             .catch((err: AxiosError) => {
 
@@ -126,8 +205,8 @@ export default class UserPage extends Vue {
 
     }
 
-    moveGameChannel(game: any) {
-        this.$router.push(`/timeline/game/${game.pathname}`);
+    moveGameChannel(gamePath: string) {
+        this.$router.push(`/timeline/game/${gamePath}`);
     }
 
     addGame() {

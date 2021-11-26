@@ -21,6 +21,7 @@ export default {
         redirectRouter: null,
         googleAccountInfo: null,
         fcmToken:null,
+        needLogin:false,
     },
     getters: {
         loginState(state: any) {
@@ -67,6 +68,9 @@ export default {
         },
         fcmToken(state:any){
             return state.fcmToken;
+        },
+        needLogin(state:any){
+            return state.needLogin;
         }
     },
 
@@ -128,6 +132,9 @@ export default {
         },
         fcmToken(state:any, payload:any){
             state.fcmToken = payload;
+        },
+        needLogin(state:any, payload:any){
+            state.needLogin = payload;
         }
     },
 

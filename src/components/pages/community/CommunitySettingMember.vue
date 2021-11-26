@@ -41,15 +41,38 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 import MemberCard from "@/components/pages/community/MemberCard.vue";
+import {AxiosError} from "axios";
 @Component({
     components: { MemberCard },
 })
 export default class CommunitySettingMember extends Vue {
-    private communityId = parseInt(this.$route.params.community_id);
+    private communityId = this.$route.params.community_id;
     private memberList: any = [];
+    private totalMembers: number = 0;
+    private limit: number = 10;
+    private offset: number = 0;
 
-    created() {
-        this.memberList = this.$api.getCommunityMember(this.communityId);
+    mounted() {
+        this.fetch();
+    }
+
+
+    fetch() {
+        const obj = {
+            limit: this.limit,
+            offset: this.offset
+        }
+
+        this.$api.communityMembers(this.communityId, obj)
+            .then((res: any) => {
+                this.totalMembers = res.totalCount;
+                this.memberList = res.result;
+            })
+            .catch((err: AxiosError) => {
+
+            })
+
+
     }
     blockMember() {}
     outMember() {}

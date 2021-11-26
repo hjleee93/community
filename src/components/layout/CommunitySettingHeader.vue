@@ -44,9 +44,9 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 })
 export default class CommunitySettingHeader extends Vue {
     private community: any;
-    private communityId = parseInt(this.$route.params.community_id);
+    private communityId = this.$route.params.community_id;
     created() {
-        this.community = this.$api.getCommunityInfo(this.communityId);
+        // this.community = this.$api.getCommunityInfo(this.communityId);
     }
 }
 </script>

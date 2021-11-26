@@ -188,11 +188,11 @@ export default class Modal extends Vue {
       this.isValidateError = true;
     } else {
       (this.$refs.closeModal as HTMLElement).click();
-      const result = this.$api.sendReport(this.reportId, 1, this.pickedReason);
-      if (result) {
-        this.isReportDone = true;
-        // this.inputInit();
-      }
+      // const result = this.$api.sendReport(this.reportId, 1, this.pickedReason);
+      // if (result) {
+      //   this.isReportDone = true;
+      //   // this.inputInit();
+      // }
     }
   }
 }

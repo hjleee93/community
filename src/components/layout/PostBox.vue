@@ -56,35 +56,6 @@
                 </template>
             </post>
         </b-modal>
-        <b-modal
-            ref="loginModal"
-            class="modal-container"
-            centered
-            hide-header
-            hide-footer
-            no-close-on-backdrop
-        >
-            <p class="my-4 text-center" style="color: #000">
-                로그인 후 사용하시겠습니끼?
-            </p>
-
-            <div class="button-container">
-                <button
-                    class="popup-box-action half button tertiary"
-                    style="width: 47%"
-                    @click="goLoginPage(true)"
-                >
-                    Login
-                </button>
-                <button
-                    class="popup-box-action half button"
-                    style="width: 47%"
-                    @click="goLoginPage(false)"
-                >
-                    Cancel
-                </button>
-            </div>
-        </b-modal>
     </div>
 </template>
 
@@ -111,17 +82,11 @@ export default class PostBox extends Vue {
         if (this.user) {
             this.show = true;
         } else {
-            (this.$refs.loginModal as any).show();
+            this.$store.commit('needLogin', true)
         }
     }
 
-    goLoginPage(state: boolean) {
-        if (state) {
-            this.$router.push("/login");
-        } else {
-            (this.$refs["loginModal"] as any).hide();
-        }
-    }
+
 
     closePostModal(){
         (this.$refs.editModal as any).hide();

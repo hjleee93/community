@@ -173,18 +173,18 @@ export default class ChannelCreate extends Vue {
         if (this.$v.form.$anyError) {
             return;
         }
-        const result = await this.$api.createChannel(
-            this.communityId,
-            this.form.channelName,
-            this.form.description,
-            this.isPrivate,
-            this.form.profileImgSrc
-        );
-
-        //todo: 백엔드 연결 후 분기 처리
-        if (result) {
-            this.$router.push(`/community/${this.communityId}/setting/channel`);
-        }
+        // const result = await this.$api.createChannel(
+        //     this.communityId,
+        //     this.form.channelName,
+        //     this.form.description,
+        //     this.isPrivate,
+        //     this.form.profileImgSrc
+        // );
+        //
+        // //todo: 백엔드 연결 후 분기 처리
+        // if (result) {
+        //     this.$router.push(`/community/${this.communityId}/setting/channel`);
+        // }
     }
 
     validateState(name) {

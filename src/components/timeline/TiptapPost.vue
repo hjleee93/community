@@ -90,7 +90,7 @@ export default class TiptapPost extends Vue {
 
     @Watch("user")
     async watchUser() {
-        this.mentionList = await this.$api.followingList(this.user.uid);
+        // this.mentionList = await this.$api.followingList(this.user.uid);
     }
 
     async created() {

@@ -41,11 +41,11 @@
                         >
                     </li>
                     <li class="menu-main-item">
-                        <router-link
+                        <div
                             class="menu-main-item-link"
-                            to="/community/list"
+                            @click="moveGameList"
                         >Games
-                        </router-link
+                        </div
                         >
                     </li>
                 </ul>
@@ -138,7 +138,7 @@
                     </div>
                 </div>
                 <!-- 커뮤니티 검색  -->
-                <!-- <div v-if="groupList.length > 0">
+                <div v-if="groupList&&groupList.length > 0">
                     <div class="dropdown-box-category">
                         <p class="dropdown-box-category-title">Groups</p>
                     </div>
@@ -190,7 +190,7 @@
                             </div>
                         </router-link>
                     </div>
-                </div> -->
+                </div>
 
                 <div v-if="gameList && gameList.length > 0">
                     <div class="dropdown-box-category">
@@ -247,7 +247,9 @@
         <div class="header-actions" v-else>
             <div class="login" @click="login">login</div>
         </div>
+        <AlertModal v-if="$store.getters.needLogin" @needLogin="$store.commit('needLogin', false)"></AlertModal>
     </header>
+
 </template>
 
 <script lang="ts">
@@ -261,11 +263,12 @@ import router from "@/router";
 import ProfileMenu from "@/components/layout/navigator/ProfileMenu.vue";
 import Header from "@/script/header";
 import Hexagon from "@/plugins/hexagon";
-import {Group, PaginationRes, User} from "@/types";
+import {Group, User} from "@/types";
 import {AxiosError, AxiosResponse} from "axios";
+import AlertModal from "@/components/common/AlertModal.vue";
 
 @Component({
-    components: {ProfileMenu},
+    components: {ProfileMenu, AlertModal},
     directives: {
         ClickOutside,
     },
@@ -283,6 +286,7 @@ export default class Navtigator extends Vue {
     private gameList: any[] = [];
 
     private timer: number = 0;
+    private needLogin = false;
 
     async mounted() {
         this.hexagon.init();
@@ -311,65 +315,69 @@ export default class Navtigator extends Vue {
     }
 
     async searchType(event) {
-        this.listReset();
 
-        //   this.$refs.searchDropbox.style.display = 'block'
-        if (event.keyCode === 27) {
-            this.searchInput = "";
-        }
-
-        let query: string = "";
-        //유저 검색
-        if (this.searchInput.charAt(0) === "@") {
-            query = this.searchInput.substring(1);
-
-            const obj = {
-                username: query,
-                limit: 5
-            };
-
-            console.log('query obj', obj)
-
-            if (query.length > 0) {
-                this.$api.search(obj)
-                    .then((res: PaginationRes) => {
-                        this.userList=res.result;
-                    })
-                    .catch((err: AxiosError) => {
-
-                    })
+        if(this.searchInput) {
+            this.listReset();
+            //   this.$refs.searchDropbox.style.display = 'block'
+            if (event.keyCode === 27) {
+                this.searchInput = "";
             }
-        }
-        //게임 검색
-        else if (this.searchInput.charAt(0) === "#") {
-            query = this.searchInput.substring(1);
-            let result = await this.$api.hashtags(query);
-            this.gameList = result.tags;
-            // this. = this.$api.search(query, "hashtag");
-            console.log("gameList", this.gameList);
-        }
-        //모두 검색
-        else {
-            // todo: hexagon delay backend 연결후 확인
-            query = this.searchInput;
-            const obj = {
-                q: query,
-                limit: 5
-            };
 
-            console.log('query obj', obj)
-            this.$api.search(obj)
-                .then((res: AxiosResponse) => {
-                    console.log(res)
-                })
-                .catch((err: AxiosError) => {
+            let query: string = "";
+            //유저 검색
+            if (this.searchInput.charAt(0) === "@") {
+                query = this.searchInput.substring(1);
 
-                })
+                const obj = {
+                    username: query,
+                    limit: 5
+                };
+
+                console.log('query obj', obj)
+
+                if (query.length > 0) {
+                    this.$api.search(obj)
+                        .then((res: any) => {
+                            this.userList = res.result;
+                        })
+                        .catch((err: AxiosError) => {
+
+                        })
+                }
+            }
+            //게임 검색
+            else if (this.searchInput.charAt(0) === "#") {
+                query = this.searchInput.substring(1);
+                // let result = await this.$api.hashtags(query);
+                // this.gameList = result.tags;
+                // this. = this.$api.search(query, "hashtag");
+                console.log("gameList", this.gameList);
+            }
+            //모두 검색
+            else {
+                // todo: hexagon delay backend 연결후 확인
+                query = this.searchInput;
+                const obj = {
+                    q: query,
+                    limit: 5
+                };
+
+                console.log('query obj', obj)
+                this.$api.search(obj)
+                    .then((res: any) => {
+                        console.log('all search', res)
+                        this.groupList = res.community
+
+                    })
+                    .catch((err: any) => {
+
+                    })
 
 
-            // let result2 = await this.$api.hashtags(query);
-            // this.userList = result.user;
-            // this.gameList = result2.tags;
+                // let result2 = await this.$api.hashtags(query);
+                // this.userList = result.user;
+                // this.gameList = result2.tags;
+            }
         }
     }
 
@@ -377,6 +385,10 @@ export default class Navtigator extends Vue {
         (this.$refs.closeDropbox as HTMLElement).click();
         this.searchInput = "";
         this.timer = 0;
+    }
+    moveGameList(){
+
+        window.open(this.$store.getters.homeUrl);
     }
 
     // blur() {

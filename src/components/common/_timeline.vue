@@ -7,26 +7,7 @@
                     <div class="form-row">
                         <div class="form-item">
                             <div class="form-textarea entry-post-container">
-                                <div class="user-status-avatar">
-                                    <div class="user-avatar small no-outline">
-                                        <div class="user-avatar-content">
-                                            <div
-                                                class="hexagon-image-30-32"
-                                                :data-src="user && user.picture"
-                                            ></div>
-                                        </div>
-
-                                        <div class="user-avatar-progress">
-                                            <div
-                                                class="hexagon-progress-40-44"
-                                            ></div>
-                                        </div>
-
-                                        <div class="user-avatar-progress-border">
-                                            <div class="hexagon-border-40-44"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <UserAvatar :user="user"/>
                                 <textarea
                                     readonly
                                     @click="openEdit"
@@ -58,36 +39,9 @@
                     </template>
                 </post>
             </b-modal>
-            <b-modal
-                ref="loginModal"
-                class="modal-container"
-                centered
-                hide-header
-                hide-footer
-                no-close-on-backdrop
-            >
-                <p class="my-4 text-center" style="color: #000">
-                    로그인 후 사용하시겠습니끼?
-                </p>
 
-                <div class="button-container">
-                    <button
-                        class="popup-box-action half button tertiary"
-                        style="width: 47%"
-                        @click="goLoginPage(true)"
-                    >
-                        Login
-                    </button>
-                    <button
-                        class="popup-box-action half button"
-                        style="width: 47%"
-                        @click="goLoginPage(false)"
-                    >
-                        Cancel
-                    </button>
-                </div>
-            </b-modal>
         </div>
+        <template v-if="timeline.length > 0">
         <Feed
             class="mt-3"
             data-aos-once="true"
@@ -96,6 +50,10 @@
             :key="feed.id"
             :feed="feed"
         ></Feed>
+        </template>
+        <template v-else>
+            <h2 >No Result</h2>
+        </template>
         <PulseLoader :loading="$store.getters.LoadingStatus"></PulseLoader>
     </div>
 </template>
@@ -104,18 +62,20 @@
 import {Component, Prop, Vue} from "vue-property-decorator";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import Feed from "@/components/timeline/Feed.vue";
-import {AxiosError, AxiosResponse} from "axios";
+import {AxiosError} from "axios";
 import {scrollDone} from "@/script/scrollManager";
 import {mapGetters} from "vuex";
-import {PaginationRes, User} from "@/types";
+import { User} from "@/types";
 import Post from "@/components/timeline/Post.vue";
+import UserAvatar from "@/components/common/_userAvatar.vue";
 
 @Component({
     computed: {...mapGetters(["user"])},
-    components: {Feed, PulseLoader, Post},
+    components: {Feed, PulseLoader, Post, UserAvatar},
 })
 export default class Timeline extends Vue {
     @Prop() currPage!: string;
+    @Prop() id!: any;
     private timeline: any = [];
     private show: boolean = false;
     private user!: User;
@@ -141,10 +101,12 @@ export default class Timeline extends Vue {
     }
 
     fetch() {
+        let obj={}
         switch (this.currPage) {
+
             case 'user':
                 console.log('user timeline')
-                const obj = {
+                obj = {
                     channel_id: this.$route.params.channel_id,
                     limit:this.limit,
                     offset:this.offset,
@@ -152,7 +114,7 @@ export default class Timeline extends Vue {
                     media:this.$route.query.media
                 }
                 this.$api.userTimeline(obj)
-                    .then((res:PaginationRes) => {
+                    .then((res:any) => {
                         if (this.isAddData) {
                             if (res.result.length > 0) {
                                 this.timeline = [...this.timeline, ...res.result]
@@ -177,7 +139,79 @@ export default class Timeline extends Vue {
 
                     })
                 break;
+            case 'game':
+                // console.log('game timeline')
+                obj = {
+                    game_id: this.$route.query.game_id,
+                    limit:this.limit,
+                    offset:this.offset,
+                    sort:this.sort,
+                    media:this.$route.query.media
+                }
+                this.$api.gameTimeline(obj)
+                    .then((res:any) => {
+                        if (this.isAddData) {
+                            if (res.result.length > 0) {
+                                this.timeline = [...this.timeline, ...res.result]
+                            }
+                            else {
+                                console.log('no data')
+                                this.hasData = false
+                                window.removeEventListener("scroll", this.scrollCheck);
 
+                            }
+                        }
+                        else {
+
+                            this.timeline = res.result;
+                            this.isAddData = true
+                        }
+
+
+                    })
+                    .catch((err: AxiosError) => {
+
+
+                    })
+                break;
+            case 'community':
+                console.log('community')
+                obj = {
+                    community_id : this.$route.params.community_id ,
+                    limit:this.limit,
+                    offset:this.offset,
+                    sort:this.sort,
+                    media:this.$route.query.media
+                }
+                console.log(obj, this.timeline)
+                this.$api.communityTimeline(obj)
+                    .then((res:any) => {
+
+                        if (this.isAddData) {
+                            if (res.result.length > 0) {
+                                this.timeline = [...this.timeline, ...res.result]
+                            }
+                            else {
+                                console.log('no data')
+                                this.hasData = false
+                                window.removeEventListener("scroll", this.scrollCheck);
+
+                            }
+                        }
+                        else {
+
+                            this.timeline = res.result;
+                            this.isAddData = true
+                        }
+
+
+                    })
+                    .catch((err: AxiosError) => {
+
+
+                    })
+
+                break;
         }
 
     }
@@ -219,6 +253,7 @@ export default class Timeline extends Vue {
 </script>
 
 <style scoped lang="scss">
+
 .quick-post {
     height: 100px;
     .quick-post-body {

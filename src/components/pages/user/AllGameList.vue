@@ -7,15 +7,16 @@
 
                     <h2 class="section-title">
                         Games<span class="highlighted secondary">{{
-                            gameList.length
+                            gameList && gameList.length
                         }}</span>
                     </h2>
                 </div>
 
                 <div
                     class="section-header-actions"
-                    v-if="user.uid === tlUser.uid"
+
                 >
+                    <!--                    v-if="user.uid === tlUser.uid"-->
                     <p
                         class="
                             section-header-action
@@ -32,8 +33,9 @@
                 <router-link
                     class="album-preview"
                     v-for="game in gameList"
-                    :to="`/timeline/game/${game.pathname}/timeline`"
+                    :to="{path:`/timeline/game/${game.pathname}/timeline`, query:{game_id:game.id}}"
                     :key="game.id"
+                    :game="game"
                 >
                     <figure
                         class="album-preview-image liquid"
@@ -68,12 +70,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { mapGetters } from "vuex";
-import { Game, User } from "@/types";
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
+import {mapGetters} from "vuex";
+import {Game, User} from "@/types";
+import {AxiosError, AxiosResponse} from "axios";
 
 @Component({
-    computed: { ...mapGetters(["user"]) },
+    computed: {...mapGetters(["user"])},
     components: {},
 })
 export default class AllGameList extends Vue {
@@ -83,27 +86,40 @@ export default class AllGameList extends Vue {
 
     async mounted() {
         await this.$store.dispatch("loginState");
-        this.tlUser = this.$store.getters.userInfo;
-        this.gameList = this.$store.getters.userInfo.dev_games;
-
-
+        this.fetch();
     }
-    @Watch("$store.getters.userInfo")
-    watchUserInfo() {
-        console.log("watchUserInfo AllGameLists", this.$store.getters.userInfo);
-        this.gameList = this.$store.getters.userInfo.dev_games;
-    }
-    addGame() {
-        if (this.$store.getters.user.is_developer) {
-            window.location.href =
-                this.$store.getters.studioUrl + "selectStage";
+
+    fetch() {
+        if (this.$store.getters.gameList.length !== 0) {
+            this.gameList = this.$store.getters.gameList;
         }
+        else {
+            const userUid = this.$route.params.channel_id;
+
+            this.$api.userChannel(userUid)
+                .then((res: any) => {
+
+                    const {target} = res;
+                    const {games} = target;
+                    this.gameList = games;
+
+                })
+                .catch((err: any) => {
+                    console.log('err', err)
+                })
+        }
+
+    }
+
+    addGame() {
+        window.location.href =
+            this.$store.getters.studioUrl + "selectStage";
     }
 }
 </script>
 
 <style scoped>
-.section-header{
+.section-header {
     margin-top: 32px;
 }
 </style>

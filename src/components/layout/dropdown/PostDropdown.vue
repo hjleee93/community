@@ -11,12 +11,14 @@
             </div>
 
             <div class="simple-dropdown widget-box-post-settings-dropdown">
+                <template v-if="user && (user.id === feed.user.id)">
                 <p class="simple-dropdown-link" @click="openEdit">
                     포스팅 수정
                 </p>
                 <p class="simple-dropdown-link" @click="deletePost(feed.id)">
                     포스팅 삭제
                 </p>
+                </template>
 <!--                <p class="simple-dropdown-link" @click="retweet(feed.id)">-->
 <!--                    리트윗-->
 <!--                </p>-->
@@ -113,8 +115,10 @@ import { bus } from "@/main";
 
 import Post from "@/components/timeline/Post.vue";
 import { AxiosError, AxiosResponse } from "axios";
+import {mapGetters} from "vuex";
 @Component({
     components: { Modal, DeleteModal, Post },
+    computed: {...mapGetters(["user"])},
 })
 export default class PostDropdown extends Vue {
     @Prop() feed!: any;

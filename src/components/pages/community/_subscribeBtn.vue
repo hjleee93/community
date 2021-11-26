@@ -25,9 +25,10 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import {AxiosError, AxiosResponse} from "axios";
 import {mapGetters} from "vuex";
 import {User} from "@/types";
+import AlertModal from "@/components/common/AlertModal.vue";
 
 @Component({
-    components: {},
+    components: {AlertModal},
     computed: {...mapGetters(["user"])},
 })
 export default class SubscribeBtn extends Vue {
@@ -35,21 +36,29 @@ export default class SubscribeBtn extends Vue {
     private user!: User;
     private communityId = this.$route.params.community_id;
 
+
+
     subscribe() {
-        this.$api.subscribe({user_id: this.user.id, community_id: this.community.id})
-            .then((res:AxiosResponse)=>{
-                console.log(res)
-            }).catch((err:AxiosError)=>{
-            if(err.message){
-                alert(err.message)
-            }
-        })
+        if(this.user) {
+            this.$api.subscribe({user_id: this.user.id, community_id: this.community.id})
+                .then((res: AxiosResponse) => {
+                    this.$emit('joined', true)
+                    console.log(res)
+                }).catch((err: AxiosError) => {
+                if (err.message) {
+                    alert(err.message)
+                }
+            })
+        }else{
+            this.$store.commit('needLogin', true)
+            console.log('need login service')
+        }
     }
 
     unsubscribe(){
         this.$api.unsubscribe({user_id: this.user.id, community_id: this.community.id})
             .then((res:AxiosResponse)=>{
-                console.log(res)
+                this.$emit('joined', false)
             }).catch((err:AxiosError)=>{
             if(err.message){
                 alert(err.message)

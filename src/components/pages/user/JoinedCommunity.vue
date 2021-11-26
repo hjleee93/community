@@ -2,8 +2,8 @@
     <div class="widget-box">
         <p class="widget-box-title">Groups</p>
 
-        <div class="widget-box-content">
-            <div class="user-status-list">
+        <div class="widget-box-content" >
+            <div class="user-status-list" v-if="communityList">
                 <div
                     v-for="community in communityList"
                     :key="community.id"
@@ -40,6 +40,9 @@
                     </p>
                 </div>
             </div>
+            <div class="user-status-list" v-else>
+                groups
+            </div>
         </div>
     </div>
 </template>
@@ -75,7 +78,7 @@ export default class JoinedCommunity extends Vue {
 
     fetch() {
         this.$api.joinedCommunityList(this.$store.getters.channelUserInfo.id)
-            .then((res: AxiosResponse) => {
+            .then((res: any) => {
                 console.log('joinedCommunityList', res)
                 this.communityList = res;
             })
