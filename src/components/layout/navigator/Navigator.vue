@@ -269,9 +269,6 @@ import AlertModal from "@/components/common/AlertModal.vue";
 
 @Component({
     components: {ProfileMenu, AlertModal},
-    directives: {
-        ClickOutside,
-    },
 })
 export default class Navtigator extends Vue {
     private dropdown: Dropdown = new Dropdown();
