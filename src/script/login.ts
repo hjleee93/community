@@ -24,7 +24,7 @@ class Login {
                 store.commit('idToken', idToken);
 
                 // console.log(idToken);
-
+                //@ts-ignore
                 const cookie = Cookie.read( cookieName );
                 // console.log( cookie, currentUser.uid, cookie === currentUser.uid );
                 if( cookie && cookie === currentUser.uid ) {
@@ -52,6 +52,7 @@ class Login {
                 }
             }
             else {
+                //@ts-ignore
                 const cookie = Cookie.read(cookieName);
                 if( cookie ) {
                     const result = await Vue.$api.session();
@@ -93,6 +94,7 @@ class Login {
 
     static async login() {
         store.commit('loginState', LoginState.login );
+        //@ts-ignore
         Cookie.write( cookieName, store.getters.user.uid, 30, process.env.VUE_APP_COOKIE_DOMAIN );
 
         Vue.$api.saveFcmToken(store.getters.user.id, store.getters.fcmToken)
@@ -105,10 +107,11 @@ class Login {
     }
 
     static async logout() {
-        console.log('logout')
+        console.log('logout',store.getters.user)
         await firebase.auth().signOut();
         await store.dispatch('logout');
         // await store.commit('clearMail');
+        //@ts-ignore
         Cookie.delete( cookieName, process.env.VUE_APP_COOKIE_DOMAIN );
         if(store.getters.user) {
             Vue.$api.removeFcmToken(store.getters.user.id)

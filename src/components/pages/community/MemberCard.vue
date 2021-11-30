@@ -1,7 +1,8 @@
 <template>
     <div class="user-preview">
-        <figure class="user-preview-cover liquid">
-            <img src="../../../img/cover/04.jpg" alt="cover-04" />
+        <figure class="user-preview-cover liquid" style="background-color: #F97316">
+<!--            <div></div>-->
+<!--            <b-img :src="bannerImg" alt="cover-04" />-->
         </figure>
 
         <div class="user-preview-info">
@@ -17,7 +18,7 @@
                     <div class="user-avatar-content">
                         <div
                             class="hexagon-image-82-90"
-                            :data-src="member.profile_img"
+                            :data-src="member.profile_img || defaultProfile"
                         ></div>
                     </div>
 
@@ -37,13 +38,14 @@
                         >{{ member.name }}</router-link
                     >
                 </p>
-                 <p class="user-nickname">
-                    <router-link
-                        :to="`/channel/${member.uid}/timeline`"
-                        style="color: #616161"
-                        >@{{ member.nickname }}</router-link
-                    >
-                </p>
+                <!--                        todo: 백엔드 수정되면 업데이트, 회원 정보 젬파이 api 수정해야됨 -->
+<!--                 <p class="user-nickname">-->
+<!--                    <router-link-->
+<!--                        :to="`/channel/${member.uid}/timeline`"-->
+<!--                        style="color: #616161"-->
+<!--                        >@{{ member.nickname }}</router-link-->
+<!--                    >-->
+<!--                </p>-->
             </div>
 
             <div
@@ -52,11 +54,12 @@
             >
                 <div class="user-preview-stats-slide">
                     <div class="user-stats">
-                        <div class="user-stat">
-                            <p class="user-stat-title">{{ member.post_cnt }}</p>
+<!--                        todo: 백엔드 수정되면 업데이트, post_cnt 누락됨-->
+<!--                        <div class="user-stat">-->
+<!--                            <p class="user-stat-title">{{ member.post_cnt }}</p>-->
 
-                            <p class="user-stat-text">posts</p>
-                        </div>
+<!--                            <p class="user-stat-text">posts</p>-->
+<!--                        </div>-->
 
                         <div class="user-stat">
                             <p class="user-stat-title">
@@ -64,6 +67,13 @@
                             </p>
 
                             <p class="user-stat-text">followers</p>
+                        </div>
+                        <div class="user-stat">
+                            <p class="user-stat-title">
+                                {{ member.followings_cnt }}
+                            </p>
+
+                            <p class="user-stat-text">followings</p>
                         </div>
                     </div>
                 </div>
@@ -87,6 +97,8 @@ import { User } from "@/types/index";
 export default class MemberCard extends Vue {
     @Prop() member!: User;
     private hexagon: Hexagon = new Hexagon();
+    defaultProfile = 'img/default_profile.png'
+    bannerImg = 'img/channel_banner.png'
 
     mounted() {
         this.hexagon.init();

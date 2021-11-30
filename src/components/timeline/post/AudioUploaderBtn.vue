@@ -65,9 +65,10 @@ export default class AudioUploaderBtn extends Vue {
     @Prop() activeTab!: string;
     private remainFileSize: number = mbToByte(40); //40mb (binary);
     private fileList: any[] = [];
+    private maxFileNum: number = 5;
 
     uploadFile() {
-        if (this.$store.getters.audioArr.length > 0 || this.$store.getters.imgArr.length>0) {
+        if (this.$store.getters.imgArr.length>0) {
             (this.$refs['alertModal'] as any).show()
         }else{
             (this.$refs.audio as HTMLElement).click();
@@ -75,8 +76,24 @@ export default class AudioUploaderBtn extends Vue {
     }
 
     onSelectFile() {
-        const input:any = this.$refs.audio;
+        const input:any = this.$refs['audio'];
+        if (this.activeTab === 'SNS') {
+            onSelectFile(input.files, this.maxFileNum, 'audioArr')
+        }
+        else if (this.activeTab === 'BLOG') {
 
+            const formData = new FormData();
+
+            for (let i = 0; i < input.files.length; i++) {
+                formData.append(input.files[i].name, input.files[i]);
+            }
+
+            this.$api.fileUploader(formData)
+                .then((res: any) => {
+                    this.$store.commit('blogAudioArr', res)
+                    console.log(res)
+                })
+        }
     }
 
     resetAttr(isReset: boolean) {
@@ -85,12 +102,6 @@ export default class AudioUploaderBtn extends Vue {
         }
         (this.$refs['alertModal'] as any).hide()
 
-    }
-
-    toggleModal() {
-        // We pass the ID of the button that we want to return focus to
-        // when the modal has hidden
-        (this.$refs['my-modal'] as any).toggle('#toggle-btn')
     }
 
 }

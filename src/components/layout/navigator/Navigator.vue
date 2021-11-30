@@ -55,6 +55,7 @@
         <div class="header-actions search-bar" v-click-outside="hide">
             <div class="interactive-input dark" ref="input">
                 <input
+
                     type="text"
                     id="search-main"
                     name="search_main"
@@ -178,8 +179,8 @@
 
                                 <p class="user-status-title">
                                     <span class="bold username">{{
-                                        group.name
-                                    }}</span>
+                                            group.name
+                                        }}</span>
                                 </p>
 
                                 <div class="user-status-icon">
@@ -254,7 +255,6 @@
 
 <script lang="ts">
 import {Component, Prop, Vue, Watch} from "vue-property-decorator";
-import ClickOutside from "vue-click-outside";
 import Dropdown from "@/plugins/dropdown";
 
 import plugins from "@/plugins/plugins";
@@ -316,13 +316,11 @@ export default class Navtigator extends Vue {
 
     async searchType(event) {
 
-        if(this.searchInput) {
+        if (this.searchInput) {
             this.listReset();
-            //   this.$refs.searchDropbox.style.display = 'block'
             if (event.keyCode === 27) {
                 this.searchInput = "";
             }
-
             let query: string = "";
             //유저 검색
             if (this.searchInput.charAt(0) === "@") {
@@ -333,29 +331,44 @@ export default class Navtigator extends Vue {
                     limit: 5
                 };
 
-                console.log('query obj', obj)
-
                 if (query.length > 0) {
                     this.$api.search(obj)
                         .then((res: any) => {
                             this.userList = res.result;
+                            this.$store.commit('userData', this.userList)
+                            if(event.key === 'Enter'){
+                                // this.$router.push(`/search?username=${query}`)
+                            }
                         })
                         .catch((err: AxiosError) => {
 
                         })
                 }
             }
-            //게임 검색
+            //해시태그 검색
             else if (this.searchInput.charAt(0) === "#") {
                 query = this.searchInput.substring(1);
-                // let result = await this.$api.hashtags(query);
-                // this.gameList = result.tags;
-                // this. = this.$api.search(query, "hashtag");
-                console.log("gameList", this.gameList);
+                const obj = {
+                    hashtag: query,
+                    limit: 5
+                };
+                if (query.length > 0) {
+                    this.$api.search(obj)
+                        .then((res: any) => {
+                            this.userList = res.result;
+                            this.$store.commit('userData', this.userList)
+                            if(event.key === 'Enter'){
+                                // this.$router.push(`/search?username=${query}`)
+                            }
+                        })
+                        .catch((err: AxiosError) => {
+
+                        })
+                }
+
             }
             //모두 검색
             else {
-                // todo: hexagon delay backend 연결후 확인
                 query = this.searchInput;
                 const obj = {
                     q: query,
@@ -365,19 +378,18 @@ export default class Navtigator extends Vue {
                 console.log('query obj', obj)
                 this.$api.search(obj)
                     .then((res: any) => {
-                        console.log('all search', res)
+                        this.$store.commit('researchData', res)
                         this.groupList = res.community
-
+                        if(event.key === 'Enter'){
+                            this.$router.push(`/search?q=${query}`)
+                        }
                     })
                     .catch((err: any) => {
 
                     })
-
-
-                // let result2 = await this.$api.hashtags(query);
-                // this.userList = result.user;
-                // this.gameList = result2.tags;
             }
+
+
         }
     }
 
@@ -386,15 +398,11 @@ export default class Navtigator extends Vue {
         this.searchInput = "";
         this.timer = 0;
     }
-    moveGameList(){
 
+    moveGameList() {
         window.open(this.$store.getters.homeUrl);
     }
 
-    // blur() {
-    //     console.log("blur");
-    //     (this.$refs.closeDropbox as HTMLElement).click();
-    // }
 }
 </script>
 

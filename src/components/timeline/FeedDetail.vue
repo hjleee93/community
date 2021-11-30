@@ -13,13 +13,13 @@
                     </router-link>
 
                 </template>
-                <div class="forum-post-user-title">
+                <div class="forum-post-user-title ml-3">
                     <router-link :to="`${feed.user.uid}`"
                     >{{ feed.user.name }}
 <!--                        @{{ feed.user.nickname}}-->
                     </router-link
                     >
-                    <span>{{ createdDate }}</span>
+                    <small style="color:ghostwhite">{{ createdDate }}</small>
                 </div>
                 <FollowBtn :member="feed.user"></FollowBtn>
             </div>
@@ -34,7 +34,14 @@
             </div>
             <template v-if="feed.post_type==='SNS' && feed.attatchment_files">
                 <div v-for="file in feed.attatchment_files" :key="file.id">
-                    <img class="sns-img" v-if="file.type === 'image' " :src="file.url"/>
+                    <img  @click="contentClicked" class="sns-img" v-if="file.type === 'image' " :src="file.url"/>
+                    <video
+                        class="sns-img"
+                        v-if="file.type === 'video' "
+                        width="320"
+                        height="240"
+                        controls
+                        :src="file.url"></video>
                 </div>
             </template>
 
@@ -226,7 +233,6 @@ export default class FeedDetail extends Vue {
     margin-right: 30px;
     display: flex;
     height: 100px;
-    justify-content: space-around;
     align-items: center;
 
     .forum-post-user-title {

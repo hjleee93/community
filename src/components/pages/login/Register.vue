@@ -486,24 +486,22 @@ export default class Register extends Vue {
 
     agreement1() {
         this.form.policyAgreement1 = true;
-        this.$refs['policy1'].hide()
-        this.show = false;
+        (this.$refs['policy1'] as any).hide()
     }
 
     disagreement1() {
         this.form.policyAgreement1 = false;
-        this.$refs['policy1'].hide()
+        (this.$refs['policy1'] as any).hide()
     }
 
     agreement2() {
         this.form.policyAgreement2 = true;
-        this.$refs['policy2'].hide()
-        this.show = false;
+        (this.$refs['policy2'] as any).hide()
     }
 
     disagreement2() {
         this.form.policyAgreement2= false;
-        this.$refs['policy2'].hide()
+        (this.$refs['policy2'] as any).hide()
     }
 }
 </script>

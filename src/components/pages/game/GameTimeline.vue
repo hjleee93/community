@@ -96,7 +96,7 @@ export default class GameTimeline extends Vue {
 
 
     mounted() {
-        console.log('game timeline1', this.gamePath)
+        console.log('game timeline1', this.$route)
         this.dropdown.init();
         this.hexagon.init();
         this.fetch();

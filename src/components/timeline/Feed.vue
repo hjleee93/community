@@ -12,6 +12,7 @@
                 <post-dropdown
                     :feed="feed"
                     @postEdit="postEdit"
+                    @refreshFeed="refreshFeed"
                 ></post-dropdown>
 
                 <div class="widget-box-status">
@@ -23,11 +24,10 @@
                                 <UserAvatar :user="feed.user"/>
                             </router-link>
 
-
-                            <p class="user-status-title medium">
-                                <a class="bold" href="profile-timeline.html">{{
-                                        feed.user && feed.user.name
-                                    }}</a>
+                            <p class="user-status-title medium" v-if="feed.user">
+                                <router-link :to="`/channel/${feed.user.channel_id}`" class="bold">{{
+                                        feed.user.name
+                                    }}</router-link>
                                 uploaded a
                                 <span class="bold"
                                 >{{ feed.post_type }} post</span
@@ -43,9 +43,9 @@
                             v-html="feed.content"
                             @click="contentClicked"
                         ></div>
-                        <template v-if="attachedFile">
+                        <template v-if="attachedFile && feed.post_type === 'SNS'">
                             <div v-for="file in attachedFile">
-                                <b-img v-if="file.type === 'image'" :src="file.url" class="feed-img mt-3"></b-img>
+                                <b-img  @click="contentClicked" v-if="file.type === 'image'" :src="file.url" class="feed-img mt-3"></b-img>
                                 <video
                                     width="320"
                                     height="240"
@@ -59,13 +59,13 @@
 
                     <div class="widget-box-status-content">
                         <div class="tag-list">
-                            <router-link
+                            <div
                                 class="tag-item secondary"
-                                :to="`/search?hashtag=${hashtag}`"
+                                @click="moveHashtag(hashtag)"
                                 v-for="hashtag in hashtags"
-
+                                :key="hashtag"
                             >{{ hashtag }}
-                            </router-link
+                            </div
                             >
                         </div>
                         <b-modal
@@ -189,19 +189,22 @@
                                         <use xlink:href="#svg-share"></use>
                                     </svg>
                                 </div>
-                                <div
-                                    style="margin-left: auto"
-                                    class="post-option copy-url-tooltip"
-                                    data-title="pin"
-                                    @click="pinPost"
-                                >
-                                    <svg
-                                        class="icon-pinned"
-                                        :class="feed.is_pinned ? 'active' : ''"
-                                    >
-                                        <use xlink:href="#svg-pinned"></use>
-                                    </svg>
-                                </div>
+
+<!--                                todo: 핀기능 테스트 후 넣기 -->
+<!--                                <div-->
+<!--                                    style="margin-left: auto"-->
+<!--                                    class="post-option copy-url-tooltip"-->
+<!--                                    data-title="pin"-->
+<!--                                    @click="pinPost"-->
+<!--                                >-->
+<!--                                    <svg-->
+<!--                                        class="icon-pinned"-->
+<!--                                        :class="feed.is_pinned ? 'active' : ''"-->
+<!--                                    >-->
+<!--                                        <use xlink:href="#svg-pinned"></use>-->
+<!--                                    </svg>-->
+<!--                                </div>-->
+
                             </div>
                         </div>
                     </div>
@@ -336,11 +339,14 @@ export default class Feed extends Vue {
 
 
     }
+    refreshFeed(){
+        this.$emit('refreshFeed', true)
+    }
 
     copyUrl() {
         let input = document.body.appendChild(document.createElement("input"));
         input.value = window.location.href;
-        input.focus();
+        // input.focus();
         input.select();
         document.execCommand("copy");
         input.parentNode?.removeChild(input);
@@ -370,7 +376,9 @@ export default class Feed extends Vue {
             this.$router.push(`/feed/${this.feed.id}`);
         }
     }
-
+    moveHashtag(hashtag: string ){
+        this.$router.push(`/search?hashtag=${hashtag}`)
+    }
     postEdit(val: number) {
         this.isEdit = val;
         this.show = true;
@@ -392,6 +400,7 @@ export default class Feed extends Vue {
     pinPost() {
         console.log("pinned");
     }
+
 }
 </script>
 

@@ -1,9 +1,7 @@
 <template>
-    <div v-if="user">
-        <p class="button secondary" @click="follow" v-if="user.id !== member.id">follow</p>
-        <p class="button secondary" @click="follow" v-if="user.id !== member.id && this.member.is_following">
-            followed</p>
-    </div>
+    <p class="button secondary" @click="follow" v-if="user && user.id !== member.id && !member.is_following">follow</p>
+    <p class="button secondary" @click="unfollow" v-else-if="user && user.id !== member.id && member.is_following">
+        followed</p>
 </template>
 
 <script lang="ts">
@@ -19,17 +17,21 @@ export default class FollowBtn extends Vue {
     @Prop() member!: any;
     user!: any;
 
-
-    mounted() {
-        console.log(this.member)
-        console.log(this.user)
-    }
-
-
     follow() {
         this.$api.follow(this.member.id)
             .then((res: AxiosResponse) => {
                 console.log(res)
+                this.$emit('memberFetch')
+            })
+            .catch((err: AxiosError) => {
+
+            })
+    }
+
+    unfollow() {
+        this.$api.unfollow(this.member.id)
+            .then((res: AxiosResponse) => {
+                this.$emit('memberFetch')
             })
             .catch((err: AxiosError) => {
 
@@ -40,4 +42,7 @@ export default class FollowBtn extends Vue {
 </script>
 
 <style scoped lang="scss">
+.button {
+    width: 100%;
+}
 </style>

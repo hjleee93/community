@@ -108,6 +108,7 @@ export default class Api {
     }
 
     async channelTimeline(community_id:string, channel_id: string, obj:any){
+        console.log(community_id,channel_id)
         return await this.request('get', `${this.communityApi}timeline/${community_id}/channel/${channel_id}`, obj, false);
     }
 
@@ -213,6 +214,9 @@ export default class Api {
     }
     async follow(user_id:number){
         return await this.request('post', `${this.communityApi}user/${user_id}/follow`, undefined, false);
+    }
+    async unfollow(user_id:number){
+        return await this.request('post', `${this.communityApi}user/${user_id}/unfollow`, undefined, false);
     }
     async followingList(obj:any, user_id:number){
         return await this.request('get', `${this.communityApi}user/${user_id}/list/following`, obj, false);

@@ -22,15 +22,15 @@
                     "
                     :to="`/community/${community.id}/timeline`"
                 >
-                    <div class="user-avatar-border">
-                        <div class="hexagon-120-130"></div>
-                    </div>
 
+
+                    <!--todo: 퍼블리싱 오면 수정-->
                     <div class="user-avatar-content">
-                        <div
+                        <b-img
                             class="hexagon-image-100-110"
-                            :data-src="community.profile_img"
-                        ></div>
+                            style="border-radius: 12px"
+                            :src="profileImg"
+                        ></b-img>
                     </div>
                 </router-link>
 
@@ -66,9 +66,17 @@ export default class CommunityCard extends Vue {
     private hexagon: Hexagon = new Hexagon();
 
     private bannerImg: string = "img/community_banner_default.jpg";
+    private profileImg: string ='';
 
     mounted() {
         this.hexagon.init();
+        console.log('profile_img', this.community.profile_img)
+        if(this.community.profile_img){
+            this.profileImg = this.community.profile_img;
+        }else{
+            this.profileImg ='img/zempy.png'
+        }
+
     }
 }
 </script>

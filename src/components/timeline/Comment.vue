@@ -4,23 +4,11 @@
         <div class="post-comment">
             <!-- {{userInfo}} -->
             <router-link
+                v-if="!isEditing"
                 class="user-avatar small no-outline"
                 :to="`/channel/${userInfo && userInfo.uid}/timeline`"
             >
-                <div class="user-avatar-content">
-                    <div
-                        class="hexagon-image-30-32"
-                        :data-src="userInfo && userInfo.picture"
-                    ></div>
-                </div>
-
-                <div class="user-avatar-progress">
-                    <div class="hexagon-progress-40-44"></div>
-                </div>
-
-                <div class="user-avatar-progress-border">
-                    <div class="hexagon-border-40-44"></div>
-                </div>
+                <UserAvatar :user="user" style="top: 0px"/>
             </router-link>
 
             <p class="post-comment-text">
@@ -77,7 +65,7 @@
 
                     <div class="meta-line" @click="openReply(comment)">
                         <p
-                            class="meta-line-link light comment"
+                            class="meta-line-link light comment mr-3"
                             :class="isOpenReply ? 'active' : ''"
                         >
                             Reply
@@ -89,55 +77,55 @@
 
 <!--                    수정, 삭제-->
                     <div class="meta-line" v-if="user.id === comment.user_id">
-                        <button @click="deleteComment(comment.id)">삭제</button>
-                        <button @click="editComment">수정</button>
+                        <button class='comment-btn mr-3' @click="deleteComment(comment.id)">삭제</button>
+                        <button class='comment-btn'  @click="editComment">수정</button>
                     </div>
 
 
-                    <div class="meta-line settings">
-                        <div class="post-settings-wrap">
-                            <div
-                                class="
-                                    post-settings post-settings-dropdown-trigger
-                                "
-                                ref="dropbox"
-                            >
-                                <svg class="post-settings-icon icon-more-dots">
-                                    <use xlink:href="#svg-more-dots"></use>
-                                </svg>
-                            </div>
+<!--                    <div class="meta-line settings">-->
+<!--                        <div class="post-settings-wrap">-->
+<!--                            <div-->
+<!--                                class="-->
+<!--                                    post-settings post-settings-dropdown-trigger-->
+<!--                                "-->
+<!--                                ref="dropbox"-->
+<!--                            >-->
+<!--                                <svg class="post-settings-icon icon-more-dots">-->
+<!--                                    <use xlink:href="#svg-more-dots"></use>-->
+<!--                                </svg>-->
+<!--                            </div>-->
 
 
-                            <!--                            <div-->
-                            <!--                                class="simple-dropdown post-settings-dropdown"-->
-                            <!--                                ref="dropboxList"-->
-                            <!--                            >-->
-                            <!--                                <p-->
-                            <!--                                    class="-->
-                            <!--                                        simple-dropdown-link-->
-                            <!--                                        popup-event-creation-trigger-->
-                            <!--                                    "-->
-                            <!--                                    v-b-modal="comment.id.toString()"-->
-                            <!--                                    @click="reportComment"-->
-                            <!--                                >-->
-                            <!--                                    Report Comment-->
-                            <!--                                </p>-->
-                            <!--                                <p-->
-                            <!--                                    class="simple-dropdown-link"-->
-                            <!--                                    @click="editPost"-->
-                            <!--                                >-->
-                            <!--                                    Edit Comment-->
-                            <!--                                </p>-->
-                            <!--                                <p-->
-                            <!--                                    class="simple-dropdown-link"-->
-                            <!--                                    @click="deleteComment(comment.id)"-->
-                            <!--                                >-->
-                            <!--                                    Delete Comment-->
-                            <!--                                </p>-->
-                            <!--                            </div>-->
+<!--                            &lt;!&ndash;                            <div&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                class="simple-dropdown post-settings-dropdown"&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                ref="dropboxList"&ndash;&gt;-->
+<!--                            &lt;!&ndash;                            >&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                <p&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                    class="&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                        simple-dropdown-link&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                        popup-event-creation-trigger&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                    "&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                    v-b-modal="comment.id.toString()"&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                    @click="reportComment"&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                >&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                    Report Comment&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                </p>&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                <p&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                    class="simple-dropdown-link"&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                    @click="editPost"&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                >&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                    Edit Comment&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                </p>&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                <p&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                    class="simple-dropdown-link"&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                    @click="deleteComment(comment.id)"&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                >&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                    Delete Comment&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                </p>&ndash;&gt;-->
+<!--                            &lt;!&ndash;                            </div>&ndash;&gt;-->
 
-                        </div>
-                    </div>
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
             </div>
         </div>
@@ -171,10 +159,11 @@ import Modal from "@/components/common/Modal.vue";
 import CommentInput from "@/components/timeline/CommentInput.vue";
 import {AxiosError, AxiosResponse} from "axios";
 import {mapGetters} from "vuex";
+import UserAvatar from "@/components/common/_userAvatar.vue";
 
 @Component({
     computed: {...mapGetters(["user"])},
-    components: {CommentInput, Modal},
+    components: {CommentInput, Modal, UserAvatar},
 })
 export default class Comment extends Vue {
     @Prop() comment!: any;
@@ -210,12 +199,13 @@ export default class Comment extends Vue {
 
     editDone() {
         this.isEditing = false;
+        this.$emit('sendComment')
     }
 
     deleteComment(commentId: string) {
         this.$api.deleteComment(this.postId, commentId)
             .then((res: AxiosResponse) => {
-
+                this.$emit('sendComment')
             })
             .catch((err: AxiosError) => {
 
@@ -250,6 +240,7 @@ export default class Comment extends Vue {
         this.isOpenReply = !this.isOpenReply;
         this.parentId = this.comment.id;
     }
+
 }
 </script>
 
@@ -260,5 +251,9 @@ export default class Comment extends Vue {
 
 .comment.active {
     color: #4ff461;
+}
+.comment-btn{
+    color:#9aa4bf;
+    background: none;
 }
 </style>

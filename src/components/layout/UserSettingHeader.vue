@@ -25,7 +25,7 @@
             <router-link
                 class="simple-tab-item"
                 :class="$route.name === 'FollowerList' ? 'active' : ''"
-                :to="`/user/${user.uid}/follwers`"
+                :to="`/user/${user.uid}/followers`"
                 >팔로워</router-link
             >
             <router-link

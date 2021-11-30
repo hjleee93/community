@@ -19,11 +19,11 @@
                     :member="member"
                 >
                     <template v-slot:action-button1 v-if="user">
-                        <FollowBtn :member="member"></FollowBtn>
+                        <FollowBtn :member="member" @memberFetch="fetch"></FollowBtn>
                     </template>
-<!--                    <template v-slot:action-button2 v-if="user">-->
-<!--                        <p class="button primary">Send Message</p>-->
-<!--                    </template>-->
+                    <!--                    <template v-slot:action-button2 v-if="user">-->
+                    <!--                        <p class="button primary">Send Message</p>-->
+                    <!--                    </template>-->
                 </member-card>
             </div>
         </section>
@@ -52,6 +52,7 @@ export default class MemberList extends Vue {
     private offset: number = 0;
 
     mounted() {
+        //todo: 새로고침하면 데이터 변환 할건지 아니면 탈퇴시 바로 변환할건지
         this.fetch();
     }
 
@@ -65,6 +66,7 @@ export default class MemberList extends Vue {
             .then((res: any) => {
                 this.totalMembers = res.totalCount;
                 this.memberList = res.result;
+                console.log(res)
             })
             .catch((err: AxiosError) => {
 

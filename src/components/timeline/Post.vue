@@ -76,12 +76,16 @@
                                 :key="activeTab"
                             ></tiptap-sns>
 
-                            <image-preview
-                                :feed="feed"
-                                :editFileLoader="fileLoader"
-                            ></image-preview>
-
-
+                            <!-- 이미지 미리보기 -->
+                            <div class="img-preview-container">
+                                <div class="img-preview" v-for="(img, idx) in imgPreviewArr" :key="idx">
+                                    <svg class="icon-cross" @click="deletePreviewImg(idx)">
+                                        <use xlink:href="#svg-cross-thin"></use>
+                                    </svg>
+                                    <b-img-lazy :src="img.url"></b-img-lazy>
+                                </div>
+                            </div>
+                            <!-- /이미지 미리보기 -->
 
                             <div
                                 class="video-container"
@@ -99,19 +103,22 @@
                                 ></video>
                             </div>
                             <!-- <p>{{ feed.attatchment_files }}</p> -->
-                            <audio-preview :feed="feed"></audio-preview>
-                            <!-- <div
-                                v-for="(audio, idx) in audioPreviewArr"
-                                :key="idx"
-                            >
-                                <svg
-                                    class="icon-cross"
-                                    @click="deletePreviewAudio(idx)"
+                            <!--                            <audio-preview :feed="feed"></audio-preview>-->
+
+                            <!-- 오디오 미리보기 -->
+                            <div class="audio-preview-container">
+                                <div
+                                    class="audio-preview"
+                                    v-for="(audio, idx) in audioPreviewArr"
+                                    :key="idx"
                                 >
-                                    <use xlink:href="#svg-cross-thin"></use>
-                                </svg>
-                                <audio controls :src="audio"></audio>
-                            </div> -->
+                                    <svg class="icon-cross" @click="deletePreviewAudio(idx)">
+                                        <use xlink:href="#svg-cross-thin"></use>
+                                    </svg>
+                                    <audio controls :src="audio.url"></audio>
+                                </div>
+                            </div>
+                            <!-- /오디오 미리보기 -->
                         </div>
                     </div>
                 </div>
@@ -216,7 +223,7 @@
                 <!-- upload pic -->
 
                 <image-uploader-btn
-                    @fileCheckDone="getFileList('img')"
+                    @imgFile="getFileList"
                     :activeTab="activeTab"
                 ></image-uploader-btn>
 
@@ -271,23 +278,24 @@
                         <use xlink:href="#svg-blog-posts"></use>
                     </svg>
                 </div> -->
-                <div class="checkbox-wrap">
-                    <input
-                        type="checkbox"
-                        :id="feed ? `checkbox${feed.id}` : 'checkbox'"
-                        v-model="isPrivate"
-                    />
+                <!-- todo: 비공개글  -->
+<!--                <div class="checkbox-wrap">-->
+<!--                    <input-->
+<!--                        type="checkbox"-->
+<!--                        :id="feed ? `checkbox${feed.id}` : 'checkbox'"-->
+<!--                        v-model="isPrivate"-->
+<!--                    />-->
 
-                    <div class="checkbox-box">
-                        <svg class="icon-check">
-                            <use xlink:href="#svg-check"></use>
-                        </svg>
-                    </div>
+<!--                    <div class="checkbox-box">-->
+<!--                        <svg class="icon-check">-->
+<!--                            <use xlink:href="#svg-check"></use>-->
+<!--                        </svg>-->
+<!--                    </div>-->
 
-                    <label :for="feed ? `checkbox${feed.id}` : 'checkbox'"
-                    >private</label
-                    >
-                </div>
+<!--                    <label :for="feed ? `checkbox${feed.id}` : 'checkbox'"-->
+<!--                    >private</label-->
+<!--                    >-->
+<!--                </div>-->
             </div>
 
             <div class="quick-post-footer-actions">
@@ -327,7 +335,6 @@
             centered
             hide-header
             hide-footer
-            no-close-on-backdrop
         >
             <p class="my-4" style="color: #000">
                 작성중인 글은 저장되지 않고 사라집니다. 작성을 끝내시겠습니까?
@@ -366,15 +373,12 @@ import {Editor, EditorContent, HTMLElement, VueRenderer} from "@tiptap/vue-2";
 
 import moment from "moment";
 import {FileLoader} from "@/script/fileLoader";
-import {mbToByte} from "@/script/fileManager";
 import ImageUploaderBtn from "@/components/timeline/post/ImageUploaderBtn.vue";
-import ImagePreview from "@/components/timeline/post/ImagePreview.vue";
 import VideoUploaderBtn from "@/components/timeline/post/VideoUploaderBtn.vue";
 import AudioUploaderBtn from "@/components/timeline/post/AudioUploaderBtn.vue";
-import AudioPreview from "@/components/timeline/post/AudioPreview.vue";
 
 import AlertModal from "@/components/common/AlertModal.vue";
-import { User} from "@/types";
+import {User} from "@/types";
 
 import Messages from "@/components/pages/user/Messages.vue";
 
@@ -383,6 +387,7 @@ import CustomTooltip from "@/components/layout/tooltip/Tooltip.vue";
 import {fileObjWtUrl} from "@/types/file/file";
 import {AxiosError, AxiosResponse} from "axios";
 import {OverlayScrollbarsComponent} from "overlayscrollbars-vue";
+
 @Component({
     computed: {...mapGetters(["user"])},
     components: {
@@ -391,14 +396,13 @@ import {OverlayScrollbarsComponent} from "overlayscrollbars-vue";
         EditorContent,
         Modal,
         ImageUploaderBtn,
-        ImagePreview,
         TiptapSns,
         TiptapPost,
         AlertModal,
         CustomTooltip,
         VideoUploaderBtn,
         AudioUploaderBtn,
-        AudioPreview,
+
     },
 })
 export default class Post extends Vue {
@@ -501,35 +505,48 @@ export default class Post extends Vue {
         this.tooltip.init();
         this.dropdown.init();
 
+        if (this.feed) {
+            this.prefill();
+        }
         this.fetch();
-
-
-
-
     }
 
-    prefill(){
+    prefill() {
+        this.$store.dispatch('resetAttFiles')
 
-            // console.log()
-            // this.selectedCategory = (
-            //     await this.$api.getPostedAt(this.feed.id)
-            // ).community;
-            console.log(this.feed);
+        for (const file of this.feed.attatchment_files) {
+            console.log(file)
+            if (file.type === 'image') {
+                this.imgPreviewArr.push(file);
+                console.log(this.imgPreviewArr)
+            }
+        }
 
-            if (this.feed.attatchment_files.img) {
-                this.fileLoader.fileObj.img = this.feed.attatchment_files.img;
-            }
-            else if (this.feed.attatchment_files.audio) {
-                this.fileLoader.fileObj.audio =
-                    this.feed.attatchment_files.audio;
-            }
-            else if (this.feed.attatchment_files.video) {
-                this.fileLoader.fileObj.video =
-                    this.feed.attatchment_files.video;
+        this.$store.commit('imgArr', this.imgPreviewArr)
+        console.log('store', this.$store.getters.imgArr)
+
+        if (this.feed.attatchment_files.type === 'image') {
+            this.imgPreviewArr = this.feed.attatchment_files.img;
+            console.log(this.imgPreviewArr)
+        }
+        else if (this.feed.attatchment_files.audio) {
+            this.fileLoader.fileObj.audio =
+                this.feed.attatchment_files.audio;
+        }
+        else if (this.feed.attatchment_files.video) {
+            this.fileLoader.fileObj.video =
+                this.feed.attatchment_files.video;
 
 
         }
     }
+
+    deletePreviewImg(idx: number) {
+        this.$store.getters.imgArr.splice(idx, 1)
+        this.imgPreviewArr = this.$store.getters.imgArr
+        // this.$store.dispatch('imageArrChg', imgArr)
+    }
+
     fetch() {
         const obj = {
             user_id: this.user.id,
@@ -575,12 +592,14 @@ export default class Post extends Vue {
         }
         else {
             this.tempType = type;
+            // console.log(this.$store.getters.postContents)
+            // console.log(            !this.isEditorEmpty)
+            // console.log(   this.attFiles.length !== 0 )
             if (
-                this.postingText ||
-                this.imgSrc ||
-                this.audioSrc ||
-                this.videoSrc ||
-                !this.isEditorEmpty
+                this.attFiles.length !== 0 ||
+                !this.isEditorEmpty ||
+                this.$store.getters.imgArr.length>0 ||
+                this.$store.getters.audioArr.length>0
             ) {
                 (this.$refs["alertModal"] as any).show();
             }
@@ -612,9 +631,9 @@ export default class Post extends Vue {
     }
 
     deletePreviewAudio(idx: number) {
-        this.remainAudioSize += this.fileList[idx].size;
-        this.audioPreviewArr.splice(idx, 1);
-        this.fileList.audio.splice(idx, 1);
+        this.$store.getters.audioArr.splice(idx, 1)
+
+        this.audioPreviewArr = this.$store.getters.audioArr
     }
 
     @Watch("reserved_time")
@@ -636,9 +655,49 @@ export default class Post extends Vue {
 
         let date = this.reserved_date + "T" + this.reserved_time;
         let scheduledTime = moment(date).valueOf();
-        this.attFiles = await this.uploadAtt()
+        // console.log(this.)
+        // this.attFiles = await this.uploadAtt()
 
         console.log(document.querySelectorAll('.hashtag'))
+
+        console.log(this.$store.getters.postContents)
+
+        //blog
+        let div = document.createElement("html");
+        div.innerHTML = this.$store.getters.postContents;
+
+        let imgFiles = div.getElementsByClassName( 'attr-img' )
+        let videoFiles= div.getElementsByTagName( 'iframe' )
+        let audioFiles= div.getElementsByTagName( 'audio' )
+        // console.log('videoFiles', videoFiles.src)
+
+        for (const imgFile of imgFiles) {
+            this.attFiles.push(  {
+                priority: 0,
+                //@ts-ignore
+                url: imgFile.src,
+                type: "image"
+            })
+        }
+
+        for (const video of videoFiles) {
+            this.attFiles.push(  {
+                priority: 0,
+                url: video.src,
+                type: "video"
+            })
+        }
+        for (const audio of audioFiles) {
+            console.log('audio, ', audio)
+            this.attFiles.push(  {
+                priority: 0,
+                url: audio.src,
+                type: "sound"
+            })
+        }
+        //
+        // console.log('text', div.getElementsByClassName( 'attr-img' ))
+
 
         const obj = {
             user_uid: this.user.uid,
@@ -665,50 +724,54 @@ export default class Post extends Vue {
         console.log(obj)
 
         this.$api.uploadPost(obj)
-        .then((res: AxiosResponse) => {
-            this.init();
-            this.$emit("closePostModal");
-            this.$toasted.show("포스팅이 완료되었습니다.", {
-                fullWidth: true,
-                fitToScreen: true,
-                theme: "outline",
-                position: "top-center",
-                className: "toast-success",
-                duration: 3000,
-                type: "success",
-                action: {
-                    text: "X",
-                    onClick: (e, toastObject) => {
-                        toastObject.goAway(0);
+            .then((res: AxiosResponse) => {
+                this.init();
+                this.$emit("closePostModal");
+                this.$toasted.show("포스팅이 완료되었습니다.", {
+                    fullWidth: true,
+                    fitToScreen: true,
+                    theme: "outline",
+                    position: "top-center",
+                    className: "toast-success",
+                    duration: 3000,
+                    type: "success",
+                    action: {
+                        text: "X",
+                        onClick: (e, toastObject) => {
+                            toastObject.goAway(0);
+                        },
                     },
-                },
-            });
-        })
-        .catch((err: AxiosError) => {
-            this.$toasted.show("업로드에 실패하였습니다.", {
-                fullWidth: true,
-                fitToScreen: true,
-                theme: "outline",
-                position: "top-center",
-                className: "toast-error",
-                duration: 3000,
-                type: "error",
-                action: {
-                    text: "X",
-                    onClick: (e, toastObject) => {
-                        toastObject.goAway(0);
+                });
+            })
+            .catch((err: AxiosError) => {
+                this.$toasted.show("업로드에 실패하였습니다.", {
+                    fullWidth: true,
+                    fitToScreen: true,
+                    theme: "outline",
+                    position: "top-center",
+                    className: "toast-error",
+                    duration: 3000,
+                    type: "error",
+                    action: {
+                        text: "X",
+                        onClick: (e, toastObject) => {
+                            toastObject.goAway(0);
+                        },
                     },
-                },
-            });
-        })
+                });
+            })
+            .finally(() => {
+                this.$store.commit('postContents', '')
+            })
 
 
     }
 
+
     //포스팅 수정
-    async updatePost(){
+    async updatePost() {
         const obj = {
-            post_id:this.feed.id,
+            post_id: this.feed.id,
             user_uid: this.user.uid,
             post_state: this.activeTab,
             attatchment_files: this.attFiles,
@@ -780,20 +843,22 @@ export default class Post extends Vue {
             formData.append(audioFiles[i].name, audioFiles[i]);
         }
 
-        if(this.videoSrc.file){
+        if (this.videoSrc.file) {
             formData.append(this.videoSrc.file.name, this.videoSrc.file)
         }
 
+if(formData){
+    return await this.$api.fileUploader(formData)
+}
 
-        return await this.$api.fileUploader(formData)
 
     }
 
 
     @Watch('$store.getters.video')
-    watchImg(){
+    watchImg() {
         this.videoSrc = this.$store.getters.video
-        console.log('watch',  this.videoSrc)
+        console.log('watch', this.videoSrc)
     }
 
     stringToHTML = (str: any) => {
@@ -839,23 +904,37 @@ export default class Post extends Vue {
         console.log(text);
     }
 
+    @Watch('$store.getters.imgArr')
+    imgArr() {
+        this.imgPreviewArr = this.$store.getters.imgArr
+        console.log('imgPreviewArr', this.imgPreviewArr)
+    }
+
+    @Watch('$store.getters.audioArr')
+    audioArr() {
+        this.audioPreviewArr = this.$store.getters.audioArr
+        console.log('audioPreviewArr', this.audioPreviewArr)
+    }
+
+
     //emit
-    getFileList(fileType: string) {
+    getFileList(file: any) {
+        // this.fileList = file;
+        // this.imgPreviewArr =this.$store.getters.imgArr
+        // console.log(this.imgPreviewArr)
         // todo: 블로그 이미지
-        console.log("getFileList", this.fileList);
-        console.log("fileLoader", this.fileLoader);
-        if (fileType === "img") {
-            this.fileList.img = this.fileLoader.fileObj.img;
-        }
-        else if (fileType === "video") {
-            this.fileList.video = this.fileLoader.fileObj.video;
-        }
-        else if (fileType === "audio") {
-            this.fileList.audio = this.fileLoader.fileObj.audio;
-        }
-        // console.log("getFileList", this.fileLoader.fileObj, value);
-        // this.fileList = files;
-        console.log("getFileList", this.fileList);
+        // if (fileType === "img") {
+        //     this.fileList.img = this.fileLoader.fileObj.img;
+        // }
+        // else if (fileType === "video") {
+        //     this.fileList.video = this.fileLoader.fileObj.video;
+        // }
+        // else if (fileType === "audio") {
+        //     this.fileList.audio = this.fileLoader.fileObj.audio;
+        // }
+        // // console.log("getFileList", this.fileLoader.fileObj, value);
+        // // this.fileList = files;
+        // console.log("getFileList", this.fileList);
     }
 
     editorState(state: boolean) {
@@ -882,6 +961,46 @@ export default class Post extends Vue {
 </script>
 
 <style lang="scss" scoped>
+.video-container{
+    video{
+        margin-top: 15px;
+        width: 100%;
+    }
+
+}
+.audio-preview-container {
+    // background-color: #68cef8;
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    // border-top: 2px solid #616161;
+
+    .audio-preview {
+        margin: 5px;
+        height: 70px;
+        width: 100%;
+        border-radius: 10px;
+        position: relative;
+        overflow: hidden;
+
+        .icon-cross {
+            position: absolute;
+            top: 0px;
+            right: 10px;
+            cursor: pointer;
+        }
+
+
+        audio {
+            margin-top: 15px;
+            display: block;
+            border-radius: 10px;
+            width: 100%;
+            //height: 100px;
+        }
+    }
+}
+
 .positive {
     margin-right: 4px;
     display: -ms-flexbox;

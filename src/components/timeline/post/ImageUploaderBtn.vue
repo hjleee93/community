@@ -78,19 +78,31 @@ export default class ImageUploaderBtn extends Vue {
         if (isReset) {
             this.$store.dispatch('resetAttFiles')
         }
-        (this.$refs['alertModal']as any).hide()
+        (this.$refs['alertModal'] as any).hide()
 
-    }
-
-    toggleModal() {
-        // We pass the ID of the button that we want to return focus to
-        // when the modal has hidden
-        (this.$refs['my-modal'] as any).toggle('#toggle-btn')
     }
 
     onSelectFile() {
         const input: any = this.$refs.image;
-        onSelectFile(input.files, this.maxFileNum, 'imgArr')
+        if (this.activeTab === 'SNS') {
+            onSelectFile(input.files, this.maxFileNum, 'imgArr')
+        }
+        else if (this.activeTab === 'BLOG') {
+
+            const formData = new FormData();
+
+            for (let i = 0; i < input.files.length; i++) {
+                formData.append(input.files[i].name, input.files[i]);
+            }
+
+            this.$api.fileUploader(formData)
+                .then((res: any) => {
+                    this.$store.commit('blogImgArr', res)
+                    console.log(res)
+                })
+            // console.log('blogImgArr', this.$store.getters.blogImgArr)
+        }
+
     }
 }
 </script>

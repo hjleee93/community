@@ -76,7 +76,7 @@ const routes: Array<RouteConfig> = [
                 component: () => import("@/views/ChangePassword.vue"),
             },
             {
-                path: '/user/:userUid/follwers',
+                path: '/user/:userUid/followers',
                 name: 'FollowerList',
                 component: () => import("@/components/pages/user/FollowerList.vue"),
             },
@@ -195,7 +195,7 @@ const routes: Array<RouteConfig> = [
                 component: () => import("@/components/pages/user/UserPage.vue"),
             },
             {
-                path: '/channel/:channel_id/follwers',
+                path: '/channel/:channel_id/followers',
                 name: 'Followers',
                 component: () => import("@/components/pages/user/FollowerList.vue"),
             },
@@ -279,6 +279,7 @@ const routes: Array<RouteConfig> = [
 
 const router = new VueRouter({
     scrollBehavior: () => ({ x: 0, y: 0 }),
+    //@ts-ignore
     mode: process.env.VUE_ROUTER_MODE,
     base: process.env.VUE_ROUTER_BASE,
     routes

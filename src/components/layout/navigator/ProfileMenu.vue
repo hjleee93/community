@@ -85,21 +85,6 @@
                 >Game Studio</a
                 >
 
-                <p class="dropdown-navigation-category">Account</p>
-
-                <!-- <a
-                        class="dropdown-navigation-link"
-                        href="hub-account-info.html"
-                        >Account Info</a
-                    > -->
-                <router-link
-                    class="dropdown-navigation-link"
-                    :to="`/user/${user.uid}/changePassword`"
-                    @click.native="routerClick"
-                >Change Password
-                </router-link
-                >
-
                 <router-link
                     class="dropdown-navigation-link"
                     :to="`/user/${user.uid}/settings`"

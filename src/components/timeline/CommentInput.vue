@@ -1,20 +1,7 @@
 <template>
     <div class="post-comment-form">
         <div class="user-avatar small no-outline">
-            <div class="user-avatar-content">
-                <div
-                    class="hexagon-image-30-32"
-                    data-src="../../img/avatar/01.jpg"
-                ></div>
-            </div>
-
-            <div class="user-avatar-progress">
-                <div class="hexagon-progress-40-44"></div>
-            </div>
-
-            <div class="user-avatar-progress-border">
-                <div class="hexagon-border-40-44"></div>
-            </div>
+            <UserAvatar :user="user" style="top: 0px"/>
         </div>
         <div class="form-row" v-if="parentId">
             <div class="form-item reply-container">
@@ -29,9 +16,9 @@
                     >Your Reply</label
                     >
                     <input
-                        class="reply-input"
+                        class="reply-input popup-post-reply"
                         type="text"
-                        id="popup-post-reply"
+
                         v-model="content"
                     />
                     <div class="reply-send-wrapper" @click="sendComment">
@@ -87,23 +74,23 @@
                         </svg>
                     </div>
                 </div>
-                <div class="checkbox-wrap">
-                    <input
-                        type="checkbox"
-                        :id="'commentState' + commentId"
-                        v-model="isPrivate"
-                    />
+<!--                <div class="checkbox-wrap">-->
+<!--                    <input-->
+<!--                        type="checkbox"-->
+<!--                        :id="'commentState' + commentId"-->
+<!--                        v-model="isPrivate"-->
+<!--                    />-->
 
-                    <div class="checkbox-box">
-                        <svg class="icon-check">
-                            <use xlink:href="#svg-check"></use>
-                        </svg>
-                    </div>
+<!--                    <div class="checkbox-box">-->
+<!--                        <svg class="icon-check">-->
+<!--                            <use xlink:href="#svg-check"></use>-->
+<!--                        </svg>-->
+<!--                    </div>-->
 
-                    <label :for="'commentState' + commentId"
-                    >Private Comment</label
-                    >
-                </div>
+<!--                    <label :for="'commentState' + commentId"-->
+<!--                    >Private Comment</label-->
+<!--                    >-->
+<!--                </div>-->
             </div>
         </div>
     </div>
@@ -115,10 +102,11 @@ import Form from "@/script/form";
 import {mapGetters} from "vuex";
 import {AxiosError, AxiosResponse} from "axios";
 import {User} from "@/types";
+import UserAvatar from "@/components/common/_userAvatar.vue";
 
 @Component({
     computed: {...mapGetters(["user"])},
-    components: {},
+    components: {UserAvatar},
 })
 export default class CommentInput extends Vue {
     @Prop() postId!: any;
@@ -159,7 +147,8 @@ export default class CommentInput extends Vue {
             }
             this.$api.updateComment(obj)
                 .then((res: AxiosResponse) => {
-                    console.log(res)
+                    console.log('updata', res)
+                    this.$emit('sendComment')
 
                 })
                 .catch((err: AxiosError) => {
@@ -188,7 +177,7 @@ export default class CommentInput extends Vue {
             }
             this.$api.sendComment(obj)
                 .then((res: AxiosResponse) => {
-
+                    this.$emit('sendComment')
                 })
                 .catch((err: AxiosError) => {
 

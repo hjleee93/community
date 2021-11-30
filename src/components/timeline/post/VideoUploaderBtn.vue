@@ -71,7 +71,22 @@ export default class ImageUploaderBtn extends Vue {
 
     onSelectFile() {
         const input:any = this.$refs.video;
-        onSelectFile(input.files, this.maxFileNum, 'video')
+        if (this.activeTab === 'SNS') {
+            onSelectFile(input.files, this.maxFileNum, 'video')
+        }
+        else if (this.activeTab === 'BLOG') {
+            const formData = new FormData();
+
+            for (let i = 0; i < input.files.length; i++) {
+                formData.append(input.files[i].name, input.files[i]);
+            }
+
+            this.$api.fileUploader(formData)
+                .then((res: any) => {
+                    this.$store.commit('blogVideoArr', res)
+                    console.log(res)
+                })
+        }
     }
 
 

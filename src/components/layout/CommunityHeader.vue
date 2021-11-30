@@ -11,21 +11,14 @@
 
             <div class="profile-header-info">
                 <div class="user-short-description big">
+                    <!-- todo: 퍼블리싱 오면 고치면됨 -->
                     <div
                         class="
                             user-short-description-avatar user-avatar
                             big
-                            no-stats
-                        "
-                    >
-                        <div class="user-avatar-border">
-                            <div class="hexagon-148-164"></div>
-                        </div>
+                            no-stats">
                         <div class="user-avatar-content">
-                            <div
-                                class="hexagon-image-124-136"
-                                :data-src="community.profile_img"
-                            ></div>
+                            <b-img class="hexagon-image-124-136" :src="profileImg"/>
                         </div>
                     </div>
                     <div
@@ -44,7 +37,7 @@
                         <div class="user-avatar-content">
                             <div
                                 class="hexagon-image-100-110"
-                                :data-src="community.profile_img"
+                                :data-src="profileImg"
                             ></div>
                         </div>
                     </div>
@@ -202,17 +195,6 @@
 
                 <router-link
                     class="section-menu-item"
-                    :to="`/community/${community.id}/members`"
-                    :class="$route.name === 'MemberList' ? 'active' : ''"
-                >
-                    <svg class="section-menu-item-icon icon-members">
-                        <use xlink:href="#svg-members"></use>
-                    </svg>
-
-                    <p class="section-menu-item-text">Members</p>
-                </router-link>
-                <router-link
-                    class="section-menu-item"
                     :to="`/community/${community.id}/timeline?media=image`"
                     :class="$route.query.media === 'image' ? 'active' : ''"
                 >
@@ -233,6 +215,18 @@
                     </svg>
 
                     <p class="section-menu-item-text">Videos</p>
+                </router-link>
+
+                <router-link
+                    class="section-menu-item"
+                    :to="`/community/${community.id}/members`"
+                    :class="$route.name === 'MemberList' ? 'active' : ''"
+                >
+                    <svg class="section-menu-item-icon icon-members">
+                        <use xlink:href="#svg-members"></use>
+                    </svg>
+
+                    <p class="section-menu-item-text">Members</p>
                 </router-link>
             </div>
 
@@ -279,25 +273,36 @@ export default class CommunityHeader extends Vue {
     private community: any = {};
     private user!: User;
 
+    profileImg = '';
+
     mounted() {
         this.dropdown.init();
         this.hexagon.init()
-
-
-        this.fetch()
-
+        this.$store.dispatch("loginState")
+            .then(()=>{
+                this.fetch()
+            })
     }
 
     fetch() {
-        this.$api.communityInfo(this.communityId)
-            .then((res: AxiosResponse) => {
-                console.log("postCnt", res)
-                this.$store.commit('communityInfo', res);
-                this.community = res
-            })
-            .catch((err: AxiosError) => {
-                console.log(err)
-            })
+        if (!this.$store.getters.communityInfo.id) {
+            this.$api.communityInfo(this.communityId)
+                .then((res: any) => {
+                    this.$store.commit('communityInfo', res);
+                    this.community = res
+                    if(res.profile_img){
+                        this.profileImg = res.profile_img
+                    }else{
+                        this.profileImg = 'img/zempy.png'
+                    }
+                })
+                .catch((err: any) => {
+                    console.log(err)
+                })
+        }
+        else{
+            this.community = this.$store.getters.communityInfo;
+        }
     }
 
 

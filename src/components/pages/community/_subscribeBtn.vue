@@ -37,6 +37,9 @@ export default class SubscribeBtn extends Vue {
     private communityId = this.$route.params.community_id;
 
 
+    mounted(){
+        console.log('subscribe', this.community)
+    }
 
     subscribe() {
         if(this.user) {

@@ -5,6 +5,7 @@
                 :commentId="null"
                 :postId="postId"
                 class="bordered-top"
+                @sendComment="commentDone"
             ></comment-input>
             <overlay-scrollbars ref="commentContainer" class="widget-box-scrollable"
                                 :options="{ callbacks: {
@@ -12,6 +13,7 @@
                                     onScrollStart: null}}">
                 <div class="post-comment-list">
                     <comment
+                        @sendComment="commentDone"
                         v-for="comment in comments"
                         :key="comment.id"
                         :comment="comment"
@@ -74,6 +76,7 @@ export default class TimelineComments extends Vue {
 
 
     fetch() {
+        console.log('comment fetch')
         const obj = {
             limit: this.limit,
             offset: this.offset,
@@ -124,6 +127,10 @@ export default class TimelineComments extends Vue {
         this.sort = '';
     }
 
+    commentDone(){
+        this.init();
+        this.fetch();
+    }
 
 }
 </script>

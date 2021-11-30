@@ -51,14 +51,14 @@ export default class AudioPreview extends Vue {
 
 <style lang="scss" scoped>
 // image preview of post
-.img-preview-container {
+.audio-preview-container {
     // background-color: #68cef8;
     align-items: center;
     display: flex;
     flex-wrap: wrap;
     // border-top: 2px solid #616161;
 
-    .img-preview {
+    .audio-preview {
         margin: 5px;
         height: auto;
         width: calc(100% * (1 / 5) - 10px - 1px);
@@ -71,7 +71,7 @@ export default class AudioPreview extends Vue {
             right: 10px;
             cursor: pointer;
         }
-        img {
+        audio {
             display: block;
             border-radius: 10px;
             width: 100%;

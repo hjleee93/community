@@ -1,5 +1,5 @@
 <template>
-    <div class="content-grid">
+    <div class="content-grid" :key="this.$route.fullPath">
         <div class="profile-header">
             <figure class="profile-header-cover liquid">
                 <div
@@ -9,71 +9,25 @@
 
             <div class="profile-header-info">
                 <div class="user-short-description big">
-                    <a class="user-short-description-avatar user-avatar big">
-                        <div class="user-avatar-border">
-                            <div class="hexagon-148-164"></div>
-                        </div>
+                    <div class="user-short-description-avatar user-avatar big" v-if="userInfo">
 
-                        <div
-                            class="user-avatar-content"
-                            v-if="userInfo && userInfo.picture"
-                        >
-                            <div
-                                class="hexagon-image-100-110"
-                                :data-src="userInfo && userInfo.picture"
-                            ></div>
-                        </div>
-                        <!-- <div class="user-avatar-content" v-else-if='!userInfo || !userInfo.picture'>
-                            <div
-                                class="hexagon-image-100-110"
-                                data-src="img/default_profile.png"
-                            ></div>
-                        </div> -->
-                        <div class="user-avatar-progress">
-                            <div class="hexagon-progress-124-136"></div>
-                        </div>
 
-                        <div class="user-avatar-progress-border">
-                            <div class="hexagon-border-124-136"></div>
-                        </div>
-                    </a>
+                        <b-img
+                            style="border-radius: 12px; width: 100%; height: 100%"
+                            :src="profileImg"
+                        ></b-img>
 
-                    <a
-                        class="
-                            user-short-description-avatar
-                            user-short-description-avatar-mobile
-                            user-avatar
-                            medium
-                        "
-                        href="profile-timeline.html"
-                    >
-                        <div class="user-avatar-border">
-                            <div class="hexagon-120-132"></div>
-                        </div>
+                    </div>
 
-                        <div class="user-avatar-content">
-                            <div
-                                class="hexagon-image-82-90"
-                                :data-src="userInfo.picture"
-                            ></div>
-                        </div>
-
-                        <div class="user-avatar-progress">
-                            <div class="hexagon-progress-100-110"></div>
-                        </div>
-
-                        <div class="user-avatar-progress-border">
-                            <div class="hexagon-border-100-110"></div>
-                        </div>
-                    </a>
 
                     <p class="user-short-description-title">
                         {{ userInfo.name }}
                     </p>
 
-                    <p class="user-short-description-text">
-                        @{{ userInfo.nickname }}
-                    </p>
+                    <!-- todo: zempie 백엔드 nickname 추가후 수정-->
+                    <!--                    <p class="user-short-description-text">-->
+                    <!--                        @{{ userInfo.nickname }}-->
+                    <!--                    </p>-->
                 </div>
 
                 <div class="user-stats">
@@ -87,11 +41,12 @@
 
                         <p class="user-stat-text">posts</p>
                     </div>
-
+                    <!--todo :젬파이 백엔드 following_cnt 수정해야댐-->
                     <div class="user-stat big">
                         <router-link
                             class="user-stat-title"
-                            :to="`/channel/${userInfo.uid}/follwers`"
+                            :to="{path:`/channel/${userInfo.uid}/followers`, query:{user_id:userInfo.id}}"
+
                         >{{ followerCnt }}
                         </router-link
                         >
@@ -100,7 +55,8 @@
                     <div class="user-stat big">
                         <router-link
                             class="user-stat-title"
-                            :to="`/channel/${userInfo.uid}/followings`"
+                            :to="{path:`/channel/${userInfo.uid}/followings`, query:{user_id:userInfo.id}}"
+
                         >{{ followingCnt }}
                         </router-link
                         >
@@ -108,21 +64,13 @@
                         <p class="user-stat-text">Followings</p>
                     </div>
                 </div>
-
                 <div
                     class="profile-header-info-actions"
                     v-if="user && user.uid !== userInfo.uid"
                 >
-                    <p
-                        class="profile-header-info-action button secondary"
-                        @click="followUser"
-                    >
-                        Follow +
-                    </p>
+                    <!--                    todo:following 여부 백엔드 추가 필요 -->
+                    <FollowBtn :member="userInfo" @memberFetch="fetch"/>
 
-<!--                    <p class="profile-header-info-action button primary">-->
-<!--                        <span class="hide-text-mobile">Send</span> Message-->
-<!--                    </p>-->
                 </div>
             </div>
         </div>
@@ -253,10 +201,11 @@ import Hexagon from "@/plugins/hexagon";
 import {User} from "@/types";
 import plugins from "@/plugins/plugins";
 import {AxiosError, AxiosResponse} from "axios";
+import FollowBtn from "@/components/pages/user/_followBtn.vue";
 
 @Component({
     computed: {...mapGetters(["user"])},
-    components: {},
+    components: {FollowBtn},
 })
 export default class UserHeader extends Vue {
     private hexagon: Hexagon = new Hexagon();
@@ -268,48 +217,61 @@ export default class UserHeader extends Vue {
     private followerCnt: number = 0;
     private user!: User;
 
-    async created() {
-        const result = await this.$api.channel(this.userUid);
-        this.userInfo = result.target;
-        this.$store.commit("channelUserInfo", this.userInfo);
-        console.log("userinfo in header", this.$store.getters.channelUserInfo);
-    }
+    profileImg: string = '';
 
-    async mounted() {
+    mounted() {
         this.fetch();
     }
 
 
     fetch() {
-        if(this.$store.getters.channelUserInfo.id) {
-            this.$api.userPostCnt(this.$store.getters.channelUserInfo.id)
-                .then((res: number) => {
-                    this.postCnt = res;
-                })
-                .catch((err: AxiosError) => {
+        this.$api.channel(this.userUid)
+            .then((res: any) => {
+                this.userInfo = res.target;
+                this.$store.commit("channelUserInfo", this.userInfo);
+                if (res.picture) {
+                    this.profileImg = this.userInfo.picture
+                }
+                else {
+                    this.profileImg = 'img/default_profile.png'
+                }
+            })
+            .then(()=>{
 
-                })
-        }
+                this.postCntFetch(this.userInfo.id);
+            })
+            .catch((err: any) => {
 
-
+            })
     }
 
-    @Watch("userInfo", {immediate: true})
-    watchImg(val: any) {
-        console.log("watch userInfo", val);
-        this.$nextTick(() => {
-            this.hexagon.init();
-        });
+    postCntFetch(userId: number) {
+        this.$api.userPostCnt(userId)
+            .then((res: number) => {
+                console.log('count!!!!!!',res)
+                this.postCnt = res;
+            })
+            .catch((err: AxiosError) => {
+
+            })
+    }
+
+    @Watch("$route.fullPath")
+    watchUserUid(val: any) {
+        this.fetch()
     }
 
     followUser() {
         this.$api.follow(this.userInfo.id)
-            .then((res: AxiosResponse) => {
+            .then((res: any) => {
                 //todo: follow 버튼 새로고침 처리
-                console.log(res)
+                //todo: 백엔드 수정해야됨
+                if (res.is_following) {
+                    console.log('following...')
+                }
 
             })
-            .catch((err: AxiosError) => {
+            .catch((err: any) => {
 
             })
 

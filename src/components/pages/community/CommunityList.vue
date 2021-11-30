@@ -188,7 +188,7 @@
                             <!--                                </p>-->
                             <!--                            </router-link>-->
                             <!--                        </template>-->
-                            <SubscribeBtn class="button secondary full" :community="community"></SubscribeBtn>
+                            <SubscribeBtn class="button secondary full" :community="community" @joined="joined"></SubscribeBtn>
                         </div>
                     </template>
                 </community-card>
@@ -331,6 +331,11 @@ export default class Community extends Vue {
     //         }
     //     })
     // }
+
+    joined() {
+        this.initData();
+        this.fetch();
+    }
 }
 </script>
 

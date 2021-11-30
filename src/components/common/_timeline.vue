@@ -1,7 +1,10 @@
 <template>
     <div>
         <!-- 포스트 박스 -->
-        <div class="quick-post mb-3">
+
+        <!--        todo:내채널, 커뮤니티, 내 게임은 글 작성 가능
+                        남의 채널 남의 게임은 글 작성 불가 : v-if="this.user.uid === this.$route.params.channel_id" -->
+        <div class="quick-post mb-3" v-if="!this.block">
             <div class="quick-post-body">
                 <div class="form">
                     <div class="form-row">
@@ -18,6 +21,7 @@
                     </div>
                 </div>
             </div>
+
             <b-modal
                 modal-class="post-edit-modal"
                 centered
@@ -25,6 +29,7 @@
                 hide-footer
                 v-model="show"
                 ref="editModal"
+                @hidden="closeModal()"
             >
                 <post @closePostModal="closePostModal">
                     <template v-slot:closeBtn>
@@ -41,31 +46,35 @@
             </b-modal>
 
         </div>
+        <p class="block-alarm" v-else>
+            블락으로 인해 해당 커뮤니티에 글을 작성하실 수 없습니다.
+        </p>
         <template v-if="timeline.length > 0">
-        <Feed
-            class="mt-3"
-            data-aos-once="true"
-            data-aos="fade"
-            v-for="feed in timeline"
-            :key="feed.id"
-            :feed="feed"
-        ></Feed>
+            <Feed
+                class="mt-3"
+                data-aos-once="true"
+                data-aos="fade"
+                v-for="feed in timeline"
+                :key="feed.id"
+                :feed="feed"
+                @refreshFeed="refreshFeed"
+            ></Feed>
         </template>
         <template v-else>
-            <h2 >No Result</h2>
+            <h2>No Result</h2>
         </template>
         <PulseLoader :loading="$store.getters.LoadingStatus"></PulseLoader>
     </div>
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue} from "vue-property-decorator";
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import Feed from "@/components/timeline/Feed.vue";
 import {AxiosError} from "axios";
 import {scrollDone} from "@/script/scrollManager";
 import {mapGetters} from "vuex";
-import { User} from "@/types";
+import {User} from "@/types";
 import Post from "@/components/timeline/Post.vue";
 import UserAvatar from "@/components/common/_userAvatar.vue";
 
@@ -76,6 +85,7 @@ import UserAvatar from "@/components/common/_userAvatar.vue";
 export default class Timeline extends Vue {
     @Prop() currPage!: string;
     @Prop() id!: any;
+    @Prop() block!: any;
     private timeline: any = [];
     private show: boolean = false;
     private user!: User;
@@ -88,11 +98,11 @@ export default class Timeline extends Vue {
 
     //state
     private isAddData: boolean = false;
-    private hasData:boolean = true;
+    private hasData: boolean = true;
 
     mounted() {
-        this.fetch();
-
+        this.fetch()
+console.log(this.$route)
         window.addEventListener("scroll", this.scrollCheck);
     }
 
@@ -100,21 +110,40 @@ export default class Timeline extends Vue {
         window.removeEventListener("scroll", this.scrollCheck);
     }
 
+    refreshFeed() {
+        console.log('refreshFeed')
+        this.initData()
+        this.fetch()
+    }
+
+    initData() {
+        this.isAddData = false
+        this.hasData = false
+
+        this.limit = 10;
+        this.offset = 0;
+        this.timeline = [];
+        this.sort = '';
+        this.media = '';
+    }
+
     fetch() {
-        let obj={}
+        let obj = {}
         switch (this.currPage) {
 
             case 'user':
                 console.log('user timeline')
                 obj = {
                     channel_id: this.$route.params.channel_id,
-                    limit:this.limit,
-                    offset:this.offset,
-                    sort:this.sort,
-                    media:this.$route.query.media
+                    limit: this.limit,
+                    offset: this.offset,
+                    sort: this.sort,
+                    media: this.$route.query.media
                 }
                 this.$api.userTimeline(obj)
-                    .then((res:any) => {
+                    .then((res: any) => {
+
+                        console.log(res)
                         if (this.isAddData) {
                             if (res.result.length > 0) {
                                 this.timeline = [...this.timeline, ...res.result]
@@ -140,16 +169,17 @@ export default class Timeline extends Vue {
                     })
                 break;
             case 'game':
-                // console.log('game timeline')
+
                 obj = {
                     game_id: this.$route.query.game_id,
-                    limit:this.limit,
-                    offset:this.offset,
-                    sort:this.sort,
-                    media:this.$route.query.media
+                    limit: this.limit,
+                    offset: this.offset,
+                    sort: this.sort,
+                    media: this.$route.query.media
                 }
+                console.log('game timel', obj)
                 this.$api.gameTimeline(obj)
-                    .then((res:any) => {
+                    .then((res: any) => {
                         if (this.isAddData) {
                             if (res.result.length > 0) {
                                 this.timeline = [...this.timeline, ...res.result]
@@ -177,15 +207,15 @@ export default class Timeline extends Vue {
             case 'community':
                 console.log('community')
                 obj = {
-                    community_id : this.$route.params.community_id ,
-                    limit:this.limit,
-                    offset:this.offset,
-                    sort:this.sort,
-                    media:this.$route.query.media
+                    community_id: this.$route.params.community_id,
+                    limit: this.limit,
+                    offset: this.offset,
+                    sort: this.sort,
+                    media: this.$route.query.media
                 }
                 console.log(obj, this.timeline)
                 this.$api.communityTimeline(obj)
-                    .then((res:any) => {
+                    .then((res: any) => {
 
                         if (this.isAddData) {
                             if (res.result.length > 0) {
@@ -212,30 +242,68 @@ export default class Timeline extends Vue {
                     })
 
                 break;
+            case 'channel':
+                console.log('channel', this.$store.getters.currPage.community.id)
+
+                obj = {
+                    limit: this.limit,
+                    offset: this.offset,
+                    sort: this.sort,
+                    media: this.media
+                }
+
+                this.$api.channelTimeline(this.$store.getters.currPage.community[0].id, this.$store.getters.currPage.community[0].channel_id, obj)
+                    .then((res: any) => {
+                        console.log(res)
+                        if (this.isAddData) {
+                            if (res.result.length > 0) {
+                                this.timeline = [...this.timeline, ...res.result]
+                            }
+                            else {
+                                console.log('no data')
+                                this.hasData = false
+
+                            }
+                        }
+                        else {
+
+                            this.timeline = res.result;
+                            this.isAddData = true
+                        }
+
+
+                    })
+                    .catch((err: AxiosError) => {
+
+
+                    })
+
+                break;
         }
 
     }
-
 
 
     openEdit() {
         this.$store.dispatch('resetAttFiles')
         if (this.user) {
             this.show = true;
-        } else {
-            (this.$refs.loginModal as any).show();
+        }
+        else {
+            this.$store.commit('needLogin', true)
         }
     }
 
     goLoginPage(state: boolean) {
         if (state) {
             this.$router.push("/login");
-        } else {
+        }
+        else {
             (this.$refs["loginModal"] as any).hide();
         }
     }
 
-    closePostModal(){
+    closePostModal() {
         console.log('modal close~', this.currPage);
         this.fetch();
         this.isAddData = false;
@@ -249,6 +317,19 @@ export default class Timeline extends Vue {
         }
     }
 
+    closeModal() {
+        this.$store.commit('postContents', '')
+        this.$store.dispatch('resetAttFiles')
+        this.$store.dispatch('resetBlogImgArr')
+    }
+
+    @Watch('$route.query')
+    watchMedia() {
+        this.initData()
+        console.log("?")
+        this.fetch();
+    }
+
 }
 </script>
 
@@ -256,14 +337,17 @@ export default class Timeline extends Vue {
 
 .quick-post {
     height: 100px;
+
     .quick-post-body {
         height: 100%;
         display: flex;
     }
+
     .form-row {
         height: 100%;
     }
 }
+
 .entry-post-container {
     border-radius: 10px;
     display: flex;
@@ -271,12 +355,24 @@ export default class Timeline extends Vue {
     align-items: center;
     height: 100%;
 }
+
 .user-avatar {
     display: flex;
 }
+
 textarea {
     height: 57px !important;
     width: 500px !important;
     padding: 14px 18px;
+}
+
+
+.block-alarm {
+    background-color: red;
+    border-radius: 5px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 </style>

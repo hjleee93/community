@@ -3,8 +3,6 @@
         <section class="section">
             <div class="section-header">
                 <div class="section-header-info">
-                    <!-- <p class="section-pretitle">Browse {{ tlUser.name }}'s</p> -->
-
                     <h2 class="section-title">
                         Games<span class="highlighted secondary">{{
                             gameList && gameList.length
@@ -14,14 +12,11 @@
 
                 <div
                     class="section-header-actions"
-
-                >
-                    <!--                    v-if="user.uid === tlUser.uid"-->
+                v-if="user">
                     <p
                         class="
                             section-header-action
-                            popup-album-creation-trigger
-                        "
+                            popup-album-creation-trigger"
                         @click="addGame"
                     >
                         Add Game +
@@ -29,7 +24,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-3-3-3-3">
+            <div class="grid grid-3-3-3-3" v-if="gameList && gameList.length > 0">
                 <router-link
                     class="album-preview"
                     v-for="game in gameList"
@@ -65,6 +60,9 @@
                     </div>
                 </router-link>
             </div>
+            <p v-else>
+                게임 없음
+            </p>
         </section>
     </div>
 </template>
@@ -112,8 +110,10 @@ export default class AllGameList extends Vue {
     }
 
     addGame() {
-        window.location.href =
-            this.$store.getters.studioUrl + "selectStage";
+        // this.$store.commit('needLogin', true)
+        if(this.user && (this.user.uid === this.userUid)) {
+            window.location.href = this.$store.getters.studioUrl + "selectStage";
+        }
     }
 }
 </script>

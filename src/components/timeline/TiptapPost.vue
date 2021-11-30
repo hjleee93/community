@@ -326,6 +326,25 @@ export default class TiptapPost extends Vue {
             this.editor.chain().focus().setAudio({ src: url }).run();
         });
     }
+
+    @Watch('$store.getters.blogImgArr')
+    blogImgArr() {
+        for (const img of this.$store.getters.blogImgArr) {
+            this.editor.chain().focus().setImage({ src: img.url }).run();
+        }
+    }
+    @Watch('$store.getters.blogVideoArr')
+    blogVideoArr() {
+        for (const video of this.$store.getters.blogVideoArr) {
+            this.editor.chain().focus().setIframe({ src: video.url }).run();
+        }
+    }
+    @Watch('$store.getters.blogAudioArr')
+    blogAudioArr() {
+        for (const audio of this.$store.getters.blogAudioArr) {
+            this.editor.chain().focus().setAudio({ src: audio.url }).run();
+        }
+    }
     destroyed() {
         bus.$off("imgUrl");
     }

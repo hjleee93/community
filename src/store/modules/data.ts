@@ -11,6 +11,11 @@ export default {
         postContents: '',
         isClearEditor: false,
         channelUserInfo: [],
+        blogImgArr:[],
+        blogVideoArr:[],
+        blogAudioArr:[],
+        researchData:{},
+        userData:[]
     },
     getters: {
 
@@ -44,6 +49,22 @@ export default {
         channelUserInfo(state: any) {
             return state.channelUserInfo;
         },
+        blogImgArr(state: any) {
+            return state.blogImgArr;
+        },
+        blogVideoArr(state: any) {
+            return state.blogVideoArr;
+        },
+        blogAudioArr(state: any) {
+            return state.blogAudioArr;
+        },
+        researchData(state: any) {
+            return state.researchData;
+        },
+        userData(state: any) {
+            return state.userData;
+        },
+
     },
 
     mutations: {
@@ -79,6 +100,27 @@ export default {
         channelUserInfo(state: any, payload: any) {
             state.channelUserInfo = payload;
         },
+        blogImgArr(state: any, payload: any) {
+            state.blogImgArr =payload;
+            // state.blogImgArr.push(payload);
+        },
+        blogVideoArr(state: any, payload: any) {
+            state.blogVideoArr =payload;
+
+        },
+        blogAudioArr(state: any, payload: any) {
+            state.blogAudioArr =payload;
+
+        },
+
+        researchData(state: any, payload: any) {
+            state.researchData =payload;
+
+        },
+        userData(state: any, payload: any) {
+            state.userData =payload;
+
+        },
     },
     actions: {
         resetEditor(context: any) {
@@ -91,8 +133,15 @@ export default {
             context.state.imgArr =[];
             context.state.audioArr =[];
             context.state.video =[];
-
+        },
+        resetBlogImgArr(context:any){
+            context.state.blogImgArr =[];
+        },
+        resetResearchData(context:any){
+            context.state.researchData ={};
+            context.state.userData =[]
         }
+
 
     }
 }

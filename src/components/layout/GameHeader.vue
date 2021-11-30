@@ -65,16 +65,17 @@
                     </p>
 
                     <div class="tag-list">
-                        <router-link
+                        <div
                             class="tag-item secondary"
-                            :to="`/search?hashtag=${hashtag}`"
+                            @click="moveHashtag(hashtag)"
                             v-for="hashtag in hashtags"
                             :key="hashtag"
                         >{{ hashtag }}
-                        </router-link
+                        </div
                         >
                     </div>
                 </div>
+
 
                 <div class="profile-header-info-actions">
                     <router-link
@@ -235,6 +236,9 @@ export default class GameHeader extends Vue {
             })
 
 
+    }
+    moveHashtag(hashtag: string ){
+        this.$router.push(`/search?hashtag=${hashtag}`)
     }
 
     subscribe() {

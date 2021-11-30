@@ -1,12 +1,12 @@
 
 export default {
     state: {
-        LoadingStatus: false
+        LoadingStatus: false,
     },
     getters: {
         LoadingStatus(state:any){
             return state.LoadingStatus;
-        },
+        }
     },
 
     mutations: {
@@ -15,7 +15,7 @@ export default {
         },
         endSpinner(state:any){
             state.LoadingStatus = false;
-        }
+        },
 
 
     },

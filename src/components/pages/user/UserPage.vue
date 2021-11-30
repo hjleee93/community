@@ -54,7 +54,7 @@
                     >
                     <div v-if="totalGameCnt === 0">
                         <p @click="addGame" style="cursor: pointer">
-                            게임 등록 하실래요?dd
+                            등록된 게임이 없습니다.
                         </p>
                     </div>
                 </div>
@@ -182,7 +182,10 @@ export default class UserPage extends Vue {
                 const {games} = target;
                 this.userId = target.id
                 this.$store.commit('gameList', games)
-                this.totalGameCnt = games.length;
+                if(games.length > 0){
+                    this.totalGameCnt = games.length;
+                }
+
                 this.games = games.slice(0,5)
                 this.communityFetch();
             })
@@ -210,9 +213,10 @@ export default class UserPage extends Vue {
     }
 
     addGame() {
-        // if (this.$store.getters.user.is_developer) {
-        window.location.href = this.$store.getters.studioUrl + "selectStage";
-        // }
+        console.log('addGame', this.user)
+        if(this.user && (this.user.uid === this.userUid)) {
+            window.location.href = this.$store.getters.studioUrl + "selectStage";
+        }
     }
 
 
