@@ -97,7 +97,7 @@ import Dropdown from "@/plugins/dropdown";
 import PostDropdown from "@/components/layout/dropdown/PostDropdown.vue";
 import {dateFormat} from "@/script/moment";
 import {AxiosError, AxiosResponse} from "axios";
-import FollowBtn from "@/components/pages/user/_followBtn.vue";
+import FollowBtn from "@/components/user/_followBtn.vue";
 import AlertModal from "@/components/common/AlertModal.vue";
 import {mapGetters} from "vuex";
 import {User} from "@/types";

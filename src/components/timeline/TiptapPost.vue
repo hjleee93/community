@@ -1,11 +1,11 @@
 <template>
-    <div>
+    <div style="height: 100%">
         <editor-content
             :editor="editor"
             class="editor-container"
             v-model="postingText"
         />
-        <div class="character-count">ggggg
+        <div class="character-count">
             <p>{{ charCnt }}/{{ limit }}</p>
         </div>
     </div>
@@ -357,6 +357,7 @@ export default class TiptapPost extends Vue {
 <style lang="scss" scoped>
 @use "sass:math";
 .editor-container {
+    background-color: dimgrey;
     text-align: left;
     padding: 15px;
     .iframe-wrapper {
@@ -380,7 +381,6 @@ export default class TiptapPost extends Vue {
 
     .audio-wrapper {
         position: relative;
-
         overflow: hidden;
         width: 360px;
         height: 100px;

@@ -55,13 +55,12 @@
         <div class="header-actions search-bar" v-click-outside="hide">
             <div class="interactive-input dark" ref="input">
                 <input
-
                     type="text"
                     id="search-main"
                     name="search_main"
-                    ref="searchBar"
+                    ref="searchInput"
                     v-model="searchInput"
-                    @keyup="searchType"
+                    @keyup="debounceSearchInput"
                     placeholder="Search here for people or groups"
                 />
 
@@ -90,7 +89,7 @@
                     <div class="dropdown-box-list small no-scroll">
                         <router-link
                             class="dropdown-box-list-item"
-                            :to="`/channel/${user.uid}/timeline`"
+                            :to="`/channel/${user.uid}/timeline?userId=${this.$store.getters.user.id}`"
                             v-for="user in userList"
                             :key="user.id"
                             @click.native="closeDropbox"
@@ -99,33 +98,17 @@
                                 <div class="user-status-avatar">
                                     <div class="user-avatar small no-outline">
                                         <div class="user-avatar-content">
-                                            <div
+                                            <b-img
                                                 class="hexagon-image-30-32"
-                                                :data-src="user.profile_img"
-                                            ></div>
-                                        </div>
-
-                                        <div class="user-avatar-progress">
-                                            <div
-                                                class="hexagon-progress-40-44"
-                                            ></div>
-                                        </div>
-
-                                        <div
-                                            class="user-avatar-progress-border"
-                                        >
-                                            <div
-                                                class="hexagon-border-40-44"
-                                            ></div>
+                                                :src="user.profile_img"
+                                            ></b-img>
                                         </div>
                                     </div>
                                 </div>
 
                                 <p class="user-status-title">
                                     <span class="bold username"
-                                    >{{ user.name }}@{{
-                                            user.nickname
-                                        }}</span
+                                    >{{ user.name }}</span
                                     >
                                 </p>
 
@@ -207,17 +190,11 @@
                         >
                             <div class="user-status no-padding-top">
                                 <div class="user-status-avatar">
-                                    <!-- <figure class="picture small round liquid">
-                                        <img
-                                            src="img/marketplace/items/07.jpg"
-                                            alt="item-07"
-                                        />
-                                    </figure> -->
                                 </div>
 
                                 <p class="user-status-title">
                                     <span class="bold username">{{
-                                            game.tag
+                                            game.title
                                         }}</span>
                                 </p>
                                 <div class="user-status-icon">
@@ -242,7 +219,17 @@
                 </div>
             </div>
         </div>
-
+        <!--       todo: 언어 선택-->
+        <!--        <div class="lang-selector form-select dropbox-container">-->
+        <!--            <b-form-select-->
+        <!--                name="sub-manager" class="dropbox"-->
+        <!--                v-model="lanSelected"-->
+        <!--                :options="langList"-->
+        <!--                value-field="item"-->
+        <!--                text-field="name"-->
+        <!--                disabled-field="notEnabled"-->
+        <!--            ></b-form-select>-->
+        <!--        </div>-->
         <profile-menu v-if="$store.getters.user"></profile-menu>
 
         <div class="header-actions" v-else>
@@ -267,6 +254,7 @@ import {Group, User} from "@/types";
 import {AxiosError, AxiosResponse} from "axios";
 import AlertModal from "@/components/common/AlertModal.vue";
 
+
 @Component({
     components: {ProfileMenu, AlertModal},
 })
@@ -282,13 +270,21 @@ export default class Navtigator extends Vue {
     // todo: gameList 연결하기
     private gameList: any[] = [];
 
-    private timer: number = 0;
     private needLogin = false;
+
+    private lanSelected = 'ko'
+    private langList = [
+        {item: 'ko', name: '한국어'},
+        {item: 'en', name: 'English'},
+    ];
+
+    debounce:any = '';
 
     async mounted() {
         this.hexagon.init();
         this.dropdown.init();
         this.header.searchDropdown();
+
     }
 
     hide() {
@@ -308,16 +304,35 @@ export default class Navtigator extends Vue {
     }
 
     beforeDestroy() {
-        this.timer = 0;
+        clearTimeout(this.debounce);
     }
 
-    async searchType(event) {
+    debounceSearchInput(event?:any) {
+        if (this.searchInput.length !== 0) {
+            console.log('this.searchInput', this.searchInput)
+            clearTimeout(this.debounce);
+            this.debounce = setTimeout(() => {
+               this.searchType(event)
+            }, 180);
+        }
+        else {
+            clearTimeout(this.debounce);
+            this.debounce = setTimeout(() => {
+                this.listReset();
+                this.searchInput = '';
+            }, 180);
+        }
+    }
 
-        if (this.searchInput) {
+
+    async searchType(event?: any) {
+        if (event.keyCode === 27) {
+            this.searchInput = "";
+        }
+        else if (this.searchInput) {
             this.listReset();
-            if (event.keyCode === 27) {
-                this.searchInput = "";
-            }
+            //code 27 : esc
+
             let query: string = "";
             //유저 검색
             if (this.searchInput.charAt(0) === "@") {
@@ -333,7 +348,7 @@ export default class Navtigator extends Vue {
                         .then((res: any) => {
                             this.userList = res.result;
                             this.$store.commit('userData', this.userList)
-                            if(event.key === 'Enter'){
+                            if (event.key === 'Enter') {
                                 // this.$router.push(`/search?username=${query}`)
                             }
                         })
@@ -354,7 +369,7 @@ export default class Navtigator extends Vue {
                         .then((res: any) => {
                             this.userList = res.result;
                             this.$store.commit('userData', this.userList)
-                            if(event.key === 'Enter'){
+                            if (event.key === 'Enter') {
                                 // this.$router.push(`/search?username=${query}`)
                             }
                         })
@@ -377,23 +392,28 @@ export default class Navtigator extends Vue {
                     .then((res: any) => {
                         this.$store.commit('researchData', res)
                         this.groupList = res.community
-                        if(event.key === 'Enter'){
+                        this.userList = res.users;
+                        this.gameList = res.games;
+                        if (event.key === 'Enter') {
                             this.$router.push(`/search?q=${query}`)
                         }
+
                     })
                     .catch((err: any) => {
 
                     })
+
             }
 
 
         }
+
     }
+
 
     closeDropbox() {
         (this.$refs.closeDropbox as HTMLElement).click();
         this.searchInput = "";
-        this.timer = 0;
     }
 
     moveGameList() {
@@ -431,5 +451,27 @@ export default class Navtigator extends Vue {
     border: none !important;
     background-color: #5538b5 !important;
     color: #fff !important;
+}
+
+
+.lang-selector {
+    display: flex;
+    align-items: center;
+    height: 80px;
+    width: 100px;
+
+    .custom-select {
+        height: 38px;
+        border: none !important;
+        background: #7750f8 url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px !important;
+    }
+
+    .custom-select:focus {
+        box-shadow: none !important;
+    }
+
+    .custom-select::after {
+        color: #fff;
+    }
 }
 </style>

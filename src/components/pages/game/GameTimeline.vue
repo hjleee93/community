@@ -96,7 +96,7 @@ export default class GameTimeline extends Vue {
 
 
     mounted() {
-        console.log('game timeline1', this.$route)
+
         this.dropdown.init();
         this.hexagon.init();
         this.fetch();
@@ -114,6 +114,11 @@ export default class GameTimeline extends Vue {
                 this.$store.commit('currPage', {
                     game_id: game.id
                 })
+                //@ts-ignore
+                Vue.$gtag.event('visit_game_page', {
+                    'gameId' : game.id,
+                });
+                console.log('vue', game.id)
 
             })
             .catch((err: any) => {

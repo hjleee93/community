@@ -1,16 +1,7 @@
 <template>
     <div class="header-actions">
         <!-- <div class="login" @click="logout">logout</div> -->
-        <div class="lang-selector form-select dropbox-container">
-            <b-form-select
-                name="sub-manager" class="dropbox"
-                v-model="lanSelected"
-                :options="langList"
-                value-field="item"
-                text-field="name"
-                disabled-field="notEnabled"
-            ></b-form-select>
-        </div>
+
         <div class="action-list dark">
             <!-- messages -->
             <notification></notification>
@@ -82,6 +73,7 @@
                     > -->
 
                 <a class="dropdown-navigation-link" @click="moveGameDashBoard"
+
                 >Game Studio</a
                 >
 
@@ -146,11 +138,11 @@ export default class ProfileMenu extends Vue {
     async logout() {
         this.$store.state.pathName = "logout";
         await Login.logout();
-        this.$router.push("/guestPage");
+        this.$router.push("/landing");
     }
 
     moveGameDashBoard() {
-        window.location.href = this.$store.getters.studioUrl + "dashboard";
+        window.location.href = this.$store.getters.studioUrl;
     }
 
     routerClick() {

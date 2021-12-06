@@ -78,13 +78,12 @@
 
 
                 <div class="profile-header-info-actions">
-                    <router-link
-                        target="_blank"
+                    <div
                         class="profile-header-info-action button primary"
-                        :to="`/play/${game.pathname}`"
+                        @click="playGame(game.pathname)"
                     >
                         Play game
-                    </router-link>
+                    </div>
                     <!-- v-if="user && user.uid !== game.user.uid" -->
                     <p
                         v-if="loginUser"
@@ -194,10 +193,18 @@ import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import Hexagon from "@/plugins/hexagon";
 import {AxiosResponse} from "axios";
 
+enum eStage {
+    Dev = 1,
+    Early,
+    Complete,
+    Monetization
+}
+
 @Component({
     components: {},
 })
 export default class GameHeader extends Vue {
+
     private hexagon: Hexagon = new Hexagon();
 
     private gamePath = this.$route.params.gamePath;
@@ -211,15 +218,17 @@ export default class GameHeader extends Vue {
     private followingCnt: number = 0;
     private followerCnt: number = 0;
 
+    gameId = this.$route.query.game_id
+
+
     async mounted() {
         this.hexagon.init();
         this.fetch()
         this.loginUser = this.$store.getters.user
+
     }
 
     fetch() {
-        // this.$api.getProject(this.gameId)
-
         this.$api.gameInfo(this.gamePath)
             .then((res: any) => {
                 const {result} = res;
@@ -234,10 +243,18 @@ export default class GameHeader extends Vue {
 
 
             })
+        this.$api.getProject(Number(this.gameId))
+            .then((res: any) => {
+                console.log('getProject',  eStage[res.stage] )
+            })
+            .catch((err: any) => {
+
+            })
 
 
     }
-    moveHashtag(hashtag: string ){
+
+    moveHashtag(hashtag: string) {
         this.$router.push(`/search?hashtag=${hashtag}`)
     }
 
@@ -246,12 +263,11 @@ export default class GameHeader extends Vue {
         console.log(this.game.id);
     }
 
-    playGame() {
-        console.log("?");
-        let routerLink = this.$router.resolve({
-            path: `/play/${this.game.pathname}`,
-        });
-        window.open(routerLink.href, "_blank");
+    playGame(pathname: string) {
+
+        window.open(
+            this.$store.getters.homeUrl + `play/${pathname}`, "_blank");
+
     }
 
     @Watch("game", {immediate: true})

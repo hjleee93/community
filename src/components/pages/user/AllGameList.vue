@@ -1,69 +1,38 @@
 <template>
-    <div class="grid-column">
-        <section class="section">
-            <div class="section-header">
-                <div class="section-header-info">
-                    <h2 class="section-title">
-                        Games<span class="highlighted secondary">{{
-                            gameList && gameList.length
-                        }}</span>
-                    </h2>
+    <div>
+        <dl class="area-title">
+            <dt>Game <span>{{
+                    gameList && gameList.length
+                }}</span></dt>
+            <dd>
+
+                <a @click="addGame" v-if="user && (user.uid === $route.params.channel_id)" class="btn-default-samll">Add
+                    Game <i
+                        class="uil uil-plus"></i></a>
+            </dd>
+        </dl>
+        <ul class="card-portfolio" v-if="gameList && gameList.length > 0">
+            <li v-for="game in gameList"
+                :to="{path:`/timeline/game/${game.pathname}/timeline`, query:{game_id:game.id}}"
+                :key="game.id"
+                :game="game">
+                <div class="cp-img" :style="{'background' : 'url(' +  game.url_thumb_webp ||
+                game.url_thumb ||
+                'img/default.png' + ') center no-repeat', 'background-size' : 'cover'}"></div>
+                <div class="cp-info">
+                    <h3>게임게임게임</h3>
+                    <p>@zempieeeee</p>
+                    <p> {{ game.count_heart }}</p>
+                    <p>{{ game.title }}</p>
+                    <p> Version {{ game.version }}</p>
                 </div>
+            </li>
+        </ul>
+        <div class="no-result" v-else>
+            <h1> 게임 없음</h1>
+            <img src="../../../assets/images/not-found.png" width="100px" height="100px"/>
+        </div>
 
-                <div
-                    class="section-header-actions"
-                v-if="user">
-                    <p
-                        class="
-                            section-header-action
-                            popup-album-creation-trigger"
-                        @click="addGame"
-                    >
-                        Add Game +
-                    </p>
-                </div>
-            </div>
-
-            <div class="grid grid-3-3-3-3" v-if="gameList && gameList.length > 0">
-                <router-link
-                    class="album-preview"
-                    v-for="game in gameList"
-                    :to="{path:`/timeline/game/${game.pathname}/timeline`, query:{game_id:game.id}}"
-                    :key="game.id"
-                    :game="game"
-                >
-                    <figure
-                        class="album-preview-image liquid"
-                        :style="`background: url('${
-                            game.url_thumb_webp ||
-                            game.url_thumb ||
-                            'img/default.png'
-                        }') center center / cover no-repeat;`"
-                    >
-                        <img
-                            :src="game.url_thumb"
-                            alt="album-image-01"
-                            style="display: none"
-                        />
-                    </figure>
-
-                    <p class="text-sticker small negative">
-                        {{ game.count_heart }}
-                    </p>
-
-                    <div class="album-preview-info">
-                        <p class="album-preview-title">{{ game.title }}</p>
-
-                        <p class="album-preview-text">
-                            Version {{ game.version }}
-                        </p>
-                    </div>
-                </router-link>
-            </div>
-            <p v-else>
-                게임 없음
-            </p>
-        </section>
     </div>
 </template>
 
@@ -81,6 +50,8 @@ export default class AllGameList extends Vue {
     private gameList: Game[] = [];
     private tlUser: any = "";
     private user!: User;
+
+    userUid = this.$route.params.channel_id;
 
     async mounted() {
         await this.$store.dispatch("loginState");
@@ -111,7 +82,7 @@ export default class AllGameList extends Vue {
 
     addGame() {
         // this.$store.commit('needLogin', true)
-        if(this.user && (this.user.uid === this.userUid)) {
+        if (this.user && (this.user.uid === this.userUid)) {
             window.location.href = this.$store.getters.studioUrl + "selectStage";
         }
     }

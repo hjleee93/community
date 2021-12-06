@@ -11,13 +11,12 @@ import 'tiny-slider'
 import '@/script/utils/svg-loader'
 
 import {BootstrapVue, BootstrapVueIcons} from 'bootstrap-vue'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+// import 'bootstrap/dist/css/bootstrap.css'
+// import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 
-import "./css/styles.css";
 import 'remixicon/fonts/remixicon.css'
 
 import Vuelidate from 'vuelidate'
@@ -50,6 +49,26 @@ Vue.config.productionTip = false
 import VueMeta from 'vue-meta'
 
 Vue.use(VueMeta)
+
+//modal
+import VModal from 'vue-js-modal'
+Vue.use(VModal)
+
+//ga
+import './plugins/analytics';
+
+//퍼블리싱
+import VuePageTransition from 'vue-page-transition'
+import vSelect from 'vue-select'
+import DropdownMenu from 'v-dropdown-menu'
+
+import 'swiper/css/swiper.css'
+import 'vue-select/dist/vue-select.css';
+import 'v-dropdown-menu/dist/v-dropdown-menu.css';
+
+Vue.use(VuePageTransition);
+Vue.component('v-select', vSelect);
+Vue.use(DropdownMenu);
 
 
 new Vue({

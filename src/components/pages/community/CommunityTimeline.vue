@@ -1,117 +1,54 @@
 <template>
-    <div class="grid grid-3-6-3 mobile-prefer-content">
-        <div class="grid-column">
-            <div class="widget-box">
-                <p class="widget-box-title">Channels</p>
-                <div class="widget-box-content">
-                    <div
-                        class="user-status-list"
-                        :class="{ active: isActive(-1) }"
-                        @click="allPost"
-                    >
-                        <!-- todo: 이미지 있없 -->
-                        <span class="channel-title">All Posts</span>
-                        <div class="all-post-container"></div>
-                        <!-- <img  /> -->
-                    </div>
+    <dl class="three-area">
+        <dt>
+            <div class="ta-channel-list">
+                <h2>Game</h2>
 
-                    <div @click="isActive">
-                        <!-- 채널리스트 -->
-                        <div
-                            v-for="channel in community.channels"
-                            :class="{ active: isActive(channel.id) }"
-                            class="user-status-list"
-                            @click="openChannelTl(channel.id)"
-                            :id="channel.id"
-                        >
-                            <span class="channel-title">{{ channel.title }}</span>
-                            <div
-                                :style="`background: url(${channel.profile_img || 'img/default.png'}) center center / cover no-repeat;`"
-                                class="thumb img channel-img"
-                            />
-                        </div>
-                        <!-- /채널리스트 -->
-                    </div>
-                </div>
+                <ul @click="isActive">
+                    <li :class="{ active: isActive(-1) }"
+                        @click="allPost">
+                        <span>All Posts</span>
+                    </li>
+                    <li v-for="channel in community.channels"
+                        :class="{ active: isActive(channel.id) }"
+                        @click="openChannelTl(channel.id)"
+                        :id="channel.id"
+                        :style="`background: url(${channel.profile_img || 'img/default.png'}) center center / cover no-repeat;`">
+                        <span>{{ channel.title }}</span>
+                    </li>
+
+                </ul>
+
             </div>
-        </div>
-        <div class="grid-column">
-                <Timeline :currPage="currPage" :key="generateKey()" :block="community.user_block"></Timeline>
-        </div>
-        <div class="grid-column">
-            <!-- 커뮤니티 설명-->
-            <div class="widget-box">
-                <p class="widget-box-title">About Us</p>
-                <div class="widget-box-content">
-                    <p class="paragraph">
-                        {{ community.description }}
-                    </p>
+        </dt>
 
-                    <div class="information-line-list">
-                        <!--                        <div class="information-line">-->
-                        <!--                            <p class="information-line-title">Owner</p>-->
-                        <!--                            <router-link-->
-                        <!--                                class="user-status-avatar"-->
-                        <!--                                :to="`/channel/${this.community.owner_uid}/timeline`"-->
-                        <!--                            >-->
-                        <!--                                <div class="user-avatar small no-outline">-->
-                        <!--                                    <div class="user-avatar-content">-->
-                        <!--                                        <div-->
-                        <!--                                            class="hexagon-image-24-26"-->
-                        <!--                                            :data-src="ownerInfo.picture"-->
-                        <!--                                        ></div>-->
-                        <!--                                    </div>-->
-                        <!--                                </div>-->
-                        <!--                            </router-link>-->
+        <dd>
+            <Timeline :currPage="currPage" :key="generateKey()" :block="community.user_block"></Timeline>
+        </dd>
 
-                        <!--                            <router-link-->
-                        <!--                                :to="`/channel/${ownerInfo.uid}/timeline`"-->
-                        <!--                                class="information-line-text nickname-link"-->
-                        <!--                            >-->
-                        <!--                                (@닉네임)-->
-                        <!--                            </router-link>-->
-                        <!--                        </div>-->
-                        <!--                        <div class="information-line">-->
-                        <!--                            <p class="information-line-title">Manager</p>-->
-                        <!--                            <router-link-->
-                        <!--                                class="user-status-avatar"-->
-                        <!--                                :to="`/channel/${this.community.manager_uid}/timeline`"-->
-                        <!--                            >-->
-                        <!--                                <div class="user-avatar small no-outline">-->
-                        <!--                                    <div class="user-avatar-content">-->
-                        <!--                                        <div-->
-                        <!--                                            class="hexagon-image-24-26"-->
-                        <!--                                            :data-src="managerInfo.picture"-->
-                        <!--                                        ></div>-->
-                        <!--                                    </div>-->
-
-
-                        <!--                                </div>-->
-                        <!--                            </router-link>-->
-
-                        <!--                            <router-link-->
-                        <!--                                :to="`/channel/${managerInfo.uid}/timeline`"-->
-                        <!--                                class="information-line-text nickname-link"-->
-                        <!--                            >-->
-                        <!--                                (@닉네임)-->
-                        <!--                            </router-link>-->
-                        <!--                        </div>-->
-
-                        <div class="information-line">
-                            <p class="information-line-title">Created</p>
-
-                            <p class="information-line-text">
-                                {{ createdDate }}
-                            </p>
-                        </div>
-                    </div>
+        <!-- 커뮤니티 설명-->
+        <dt>
+            <div class="ta-about">
+                <h2>About Us</h2>
+                <div>
+                    {{ community.description }}
                 </div>
+                <dl>
+                    <!--                <dt>Owner</dt>-->
+                    <!--                <dd>바람의 소환사@</dd>-->
+                    <!--                <dt>Manager</dt>-->
+                    <!--                <dd>noH피디</dd>-->
+                    <dt>Created</dt>
+                    <dd> {{ createdDate }}</dd>
+                </dl>
             </div>
-            <!-- /커뮤니티 설명-->
-        </div>
+        </dt>
 
 
-    </div>
+        <!-- /커뮤니티 설명-->
+
+
+    </dl>
 </template>
 
 <script lang="ts">
@@ -153,7 +90,7 @@ export default class CommunityTimeline extends Vue {
     private isLoading: boolean = false;
     private hasData: boolean = true;
 
-    currPage:string = '';
+    currPage: string = '';
 
     private user!: any;
     show = false;
@@ -166,7 +103,7 @@ export default class CommunityTimeline extends Vue {
         this.currPage = 'community';
 
         this.$store.dispatch("loginState")
-            .then(()=>{
+            .then(() => {
                 this.communityFetch();
                 this.createdDate = dateFormat(this.community.createdAt);
                 this.$store.commit('currPage', {
@@ -193,7 +130,8 @@ export default class CommunityTimeline extends Vue {
                 .catch((err: any) => {
                     console.log(err)
                 })
-        }else{
+        }
+        else {
             this.community = this.$store.getters.communityInfo;
         }
     }
@@ -225,12 +163,10 @@ export default class CommunityTimeline extends Vue {
     }
 
 
-
     isActive(id?: any) {
         console.log('active', id === this.channelId)
         return id === this.channelId;
     }
-
 
 
     openEdit() {
@@ -260,10 +196,12 @@ export default class CommunityTimeline extends Vue {
     }
 
 
-    generateKey(){
+    generateKey() {
 
         return this.currPage;
     }
+
+
 }
 </script>
 

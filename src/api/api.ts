@@ -186,14 +186,15 @@ export default class Api {
         const response = await this.request('get', `${studioApi}studio/project`, undefined, false);
         return response.result || response;
     }
-    async getProject(id) {
-        const response = await this.request('get', `${studioApi}studio/project/${id}`, undefined, false);
+    async getProject(id: number) {
+        const response = await this.request('get', `${zempieApi}community/project/${id}`, undefined, false);
         return response.result || response;
     }
     async userChannel(channel_id) {
         const response = await this.request( 'get', `${zempieApi}channel/${channel_id}`, undefined, false );
         return response.result || response;
     }
+    //getProjects
     async gameInfo(pathname: string){
         return await this.request('get', `/launch/game/${pathname}`, undefined, false)
     }
@@ -218,10 +219,12 @@ export default class Api {
     async unfollow(user_id:number){
         return await this.request('post', `${this.communityApi}user/${user_id}/unfollow`, undefined, false);
     }
-    async followingList(obj:any, user_id:number){
+    async followingList(obj:any, user_id:any){
+        console.log('user_uid',user_id)
         return await this.request('get', `${this.communityApi}user/${user_id}/list/following`, obj, false);
     }
-    async followerList(obj:any, user_id: number){
+    async followerList(obj:any, user_id: any){
+
         return await this.request('get', `${this.communityApi}user/${user_id}/list/follower`, obj, false);
     }
 
@@ -246,8 +249,18 @@ export default class Api {
     }
 
     async channel(channel_id: any) {
-        const response = await this.request('get', `/channel/${channel_id}`, undefined, false);
-        return response.result || response;
+        const stringCheck = /^[0-9+]*$/;
+       let result;
+        if(!stringCheck.test(channel_id)  ){
+            result= this.request('get', `/community/channel/${channel_id}`, undefined, false);
+        }else{
+            result= this.request('get', `/community/user/${channel_id}`, undefined, false);
+        }
+        // if(){
+        //
+        // }
+      return result;
+
     }
 
     async verifyChannelId(channel_id: any) {

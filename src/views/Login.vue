@@ -1,269 +1,139 @@
 <template>
-    <div class="landing">
-        <div class="landing-decoration"></div>
+    <!--    <div class="landing">-->
+    <div class="login-bg ">
 
-        <div class="landing-info">
-            <div class="logo">
-                <b-img-lazy src="img/zempie_logo.png" />
-            </div>
 
-            <h2 class="landing-info-pretitle">Welcome to</h2>
-
-            <h1 class="landing-info-title">Zempie</h1>
-
-            <p class="landing-info-text">누구나 게임을 업로드하고 플레이할 수 있는 게임공유플랫폼 젬파이</p>
-
-            <div class="tab-switch">
-                <p
-                    ref="loginBtn"
-                    class="tab-switch-button login-register-form-trigger"
-                >
-                    Login
-                </p>
-
-                <p
-                    class="tab-switch-button login-register-form-trigger"
-                    ref="googleRegisterBtn"
-                    style="visibility: hidden; width: 0px; border: 0px"
-                >
-                    googleRegister
-                </p>
-
-                <p
-                    ref="registerBtn"
-                    class="tab-switch-button login-register-form-trigger"
-                >
-                    Register
-                </p>
-            </div>
+        <div class="login-logo">
+            <router-link to="/"><img src="../assets/images/zempie_logo.png" alt="" title=""/></router-link>
         </div>
-        <div class="landing-form">
-            <div class="form-box login-register-form-element">
-                <img
-                    class="form-box-decoration overflowing"
-                    src="../img/landing/rocket.png"
-                    alt="rocket"
-                />
 
-                <h2 class="form-box-title">Account Login</h2>
+        <div class="login-area">
+            <div class="la-logo">
+                <router-link to="#"><img src="../assets/images/logo.svg" width="140" alt="" title=""/></router-link>
+            </div>
+            <div class="la-title">
+                <h3>젬파이에 오신것을 환영합니다.</h3>
+                <p>젬파이 회원가입으로 다양한 혜택을 누려보세요!</p>
+            </div>
+            <div class="la-content">
+                <b-form>
+                    <b-form-group>
+                        <b-form-input v-model="$v.form.email.$model" type="text"
+                                      name="login-email"
+                                      title=""
+                                      placeholder="이메일 주소 또는 아이디"
+                                      class="w100p h60"
+                                      :state="login?validateState('email') :undefined"
+                                      @keydown="checkLogin"/>
 
-                <b-form style="margin-top: 76px">
-                    <div class="form-row">
-                        <div class="form-item">
-                            <div class="form-input">
-                                <b-form-group
-                                    label="Username or Email"
-                                    label-for="login-username"
-                                >
-                                    <b-form-input
-                                        class="form-control"
-                                        type="text"
-                                        name="login-username"
-                                        v-model="$v.form.email.$model"
-                                        :state="
-                                            onSubmit
-                                                ? validateState('email')
-                                                : undefined
-                                        "
-                                        @keydown="checkLogin"
-                                    ></b-form-input>
-                                    <!-- aria-describedby="input-1-live-feedback" -->
-
-                                    <b-form-invalid-feedback
-                                        >올바른 이메일 형식으로 작성해주세요
-                                    </b-form-invalid-feedback>
-                                </b-form-group>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-item">
-                            <div class="form-input">
-                                <b-form-group
-                                    label="Password"
-                                    label-for="login-password"
-                                >
-                                    <b-form-input
-                                        class="form-control"
-                                        type="password"
-                                        name="login-password"
-                                        v-model="$v.form.password.$model"
-                                        :state="
-                                            onSubmit
-                                                ? validateState('password')
-                                                : undefined
-                                        "
-                                        @keydown="checkLogin"
-                                    ></b-form-input>
-
-                                    <b-form-invalid-feedback
-                                        >영문과 최소 1개의 숫자 혹은 특수 문자를
-                                        포함한 6~20자리 비밀번호를
-                                        입력해주세요.</b-form-invalid-feedback
-                                    >
-                                </b-form-group>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-row" style="justify-content: flex-end">
-                        <!-- <div class="form-item">
-                            <div class="checkbox-wrap">
-                                <input
-                                    type="checkbox"
-                                    id="login-remember"
-                                    name="login_remember"
-                                    checked
-                                />
-
-                                <div class="checkbox-box">
-                                    <svg class="icon-cross">
-                                        <use xlink:href="#svg-cross"></use>
-                                    </svg>
-                                </div>
-
-                                <label for="login-remember">Remember Me</label>
-                            </div>
-                        </div> -->
-                        <p
-                            id="forgotPwdBtn"
-                            ref="forgotPwdBtn"
-                            class="
-                                tab-switch-button
-                                login-register-form-trigger
-                            "
-                            style="color: #fff"
+                        <!--                        <h2><i class="uil uil-check"></i> 이메일 주소를 입력하세요.</h2>-->
+                        <b-form-invalid-feedback
+                            v-if="!$v.form.email.emailValidator"
+                        ><i class="uil uil-check"></i> 올바른 이메일 형식을
+                            작성해주세요
+                        </b-form-invalid-feedback
                         >
-                            <!-- style="visibility: hidden; width: 1px; border: 0px" -->
-                            Forgot Password
-                        </p>
-                    </div>
+                        <b-form-invalid-feedback
+                            v-if="!$v.form.email.required"
+                        ><i class="uil uil-check"></i> 이메일을 입력해주세요
+                        </b-form-invalid-feedback
+                        >
+                    </b-form-group>
 
-                    <div class="form-row">
-                        <div class="form-item">
-                            <b-button
-                                class="button medium secondary login-submit-btn"
-                                @click="onSubmit"
-                            >
-                                Login to your Account!</b-button
-                            >
-                        </div>
-                    </div>
+                    <b-form-group>
+                        <b-form-input v-model="$v.form.password.$model"
+                                      :state="login ? validateState('password'): undefined"
+                                      type="password"
+                                      name="login-password"
+                                      title="" placeholder="비밀번호를 입력하세요."
+                                      class="w100p h60"
+                                      @keydown="checkLogin">
+                        </b-form-input>
+
+                        <b-form-invalid-feedback
+                            v-if="!$v.form.password.pwdValidator"
+                        ><i class="uil uil-check"></i> 영문과 최소 1개의 숫자 혹은 특수 문자를
+                            포함한 6~20자리 비밀번호를
+                            입력해주세요.
+                        </b-form-invalid-feedback>
+                        <b-form-invalid-feedback
+                            v-if="!$v.form.password.required"
+                        ><i class="uil uil-check"></i> 비밀번호를 입력해주세요
+                        </b-form-invalid-feedback>
+                    </b-form-group>
                 </b-form>
+                <!--                <div>-->
+                <!--                    <input type="checkbox" name="" title="" id="id-save"/> <label for="id-save"><i-->
+                <!--                    class="uil uil-check"></i></label>&nbsp; <span><label for="id-save">아이디저장</label></span>-->
+                <!--                    <input type="checkbox" name="" title="" id="auto-login"/> <label for="id-save"><i-->
+                <!--                    class="uil uil-check"></i></label>&nbsp; <span><label for="auto-login">자동로그인</label></span>-->
+                <!--                </div>-->
+                <p><a  @click="login" class="btn-default-big">로그인</a></p>
 
-                <p class="lined-text">Login with your Social Account</p>
 
-                <div
-                    class="social-links"
-                    @click="google"
-                    @mouseenter="goolgeBtnHover"
-                    @mouseout="goolgeBtnOut"
-                >
-                    <!-- <a class="social-link google" style="width:100%"> -->
-                    <b-img-lazy :src="googleBtn"></b-img-lazy>
-                    <!-- <svg class="icon-google">
-                            <use xlink:href="#svg-google"></use>
-                        </svg> -->
-                    <!-- </a> -->
-                </div>
+                <dl>
+                    <!--                    <dt>-->
+                    <!--                        <router-link to="#">아이디찾기</router-link>-->
+                    <!--                    </dt>-->
+                    <!--                    <dd>|</dd>-->
+                    <dt>
+                        <router-link to="PasswordSearch">비밀번호 재설정</router-link>
+                    </dt>
+                    <dd>|</dd>
+                    <dt>
+                        <router-link to="join">회원가입</router-link>
+                    </dt>
+                </dl>
             </div>
-
-            <!-- google register -->
-            <div class="form-box login-register-form-element" style="top: 27%">
-                <img
-                    class="form-box-decoration"
-                    src="../img/landing/rocket.png"
-                    alt="rocket"
-                />
-
-                <h2 class="form-box-title">Create your Account with Google</h2>
-
-                <form class="form">
-                    <div class="form-row">
-                        <div class="form-item">
-                            <div class="form-input active">
-                                <label for="googleEmail">Your Email</label>
-                                <input
-                                    readonly
-                                    type="text"
-                                    id="googleEmail"
-                                    name="googleEmail"
-                                    v-model="googleForm.googleEmail"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-item">
-                            <div class="form-input active">
-                                <label for="googleUsername">Username</label>
-                                <input
-                                    type="text"
-                                    id="googleUsername"
-                                    name="googleUsername"
-                                    v-model="googleForm.googleUsername"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-item">
-                            <div class="form-input active">
-                                <label for="googleNickname ">Nickname</label>
-                                <input
-                                    type="text"
-                                    id="googleNickname"
-                                    v-model="googleForm.googleNickname"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-item">
-                            <button
-                                class="button medium primary"
-                                @click="googleRegisterDone"
-                            >
-                                Register Now!
-                            </button>
-                        </div>
-                    </div>
-                </form>
-
-                <p class="form-text">
-                    You'll receive a confirmation email in your inbox with a
-                    link to activate your account. If you have any problems,
-                    <a href="#">contact us</a>!
+            <div class="la-bottom">
+                <dl>
+                    <dt></dt>
+                    <dd>또는 다른 서비스 계정으로 로그인</dd>
+                    <dt></dt>
+                </dl>
+                <ul>
+                    <!--                    <li>-->
+                    <!--                        <router-link to="#"><img src="../assets/images/kakao_icon.png" alt="" title=""/></router-link>-->
+                    <!--                    </li>-->
+                    <li>
+                        <img @click="google" src="../assets/images/google_icon.png" alt="" title=""/>
+                    </li>
+                    <!--                    <li>-->
+                    <!--                        <router-link to="#"><img src="../assets/images/naver_icon.png" alt="" tile=""/></router-link>-->
+                    <!--                    </li>-->
+                    <!--                    <li>-->
+                    <!--                        <router-link to="#"><img src="../assets/images/facebook_icon.png" alt="" title=""/>-->
+                    <!--                        </router-link>-->
+                    <!--                    </li>-->
+                    <!--                    <li>-->
+                    <!--                        <router-link to="#"><img src="../assets/images/twitter_icon.png" alt="" title=""/></router-link>-->
+                    <!--                    </li>-->
+                </ul>
+                <p>
+                    <span><i class="uil uil-info-circle" style="font-size:16px; line-height:24px;"></i></span> &nbsp;SNS계정으로
+                    간편하게 가입하여 서비스를 이용하실 수 있습니다.
                 </p>
             </div>
-            <!-- /google register -->
-
-            <register :googleForm="googleForm"></register>
-            <reset-password></reset-password>
         </div>
+
     </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import Form from "@/script/form";
 
 import firebase from "firebase/app";
-import { LoginState } from "@/store/modules/user";
-import store from "src/store";
+import {LoginState} from "@/store/modules/user";
 import LoginManager from "@/script/login";
-import { UrlHelper } from "@/script/utils/util";
+import {UrlHelper} from "@/script/utils/util";
 import plugins from "@/plugins/plugins";
 
-import { validationMixin } from "vuelidate";
-import { required, minLength, maxLength } from "vuelidate/lib/validators";
-import { helpers } from "vuelidate/lib/validators";
+import {validationMixin} from "vuelidate";
+import {required, minLength, maxLength} from "vuelidate/lib/validators";
+import {helpers} from "vuelidate/lib/validators";
 import Register from "@/components/pages/login/Register.vue";
 import ResetPassword from "@/components/pages/login/ResetPassword.vue";
-import { HTMLElement } from "@tiptap/core";
 
 const emailValidator = helpers.regex(
     "emailValidator",
@@ -275,7 +145,7 @@ const pwdValidator = helpers.regex(
     /^(?=.*\d)(?=.*[a-z])(?=.*[a-zA-Z])(?=.*[!@#\$%\^&\*]).{6,20}$/
 );
 @Component({
-    components: { Register, ResetPassword },
+    components: {Register, ResetPassword},
     mixins: [validationMixin],
     validations: {
         form: {
@@ -294,10 +164,8 @@ const pwdValidator = helpers.regex(
 })
 export default class Login extends Vue {
     private redirect: string = "";
-    private form = { email: "", password: "" };
+    private form = {email: "", password: ""};
 
-    private emailError: string = "";
-    private passwordError: string = "";
     private googleForm = {
         googleNickname: "@",
         googleUsername: "",
@@ -309,29 +177,30 @@ export default class Login extends Vue {
     private isGoolgeLoginDone: boolean = false;
     // private isClickedRegisterTab: boolean = false;
 
-    private googleBtn: string = "img/btn_google_signin_dark_normal_web.png";
+    // private googleBtn: string = "img/btn_google_signin_dark_normal_web.png";
 
     goolgeBtnHover() {
-        this.googleBtn = "img/btn_google_signin_dark_focus_web.png";
+        // this.googleBtn = "img/btn_google_signin_dark_focus_web.png";
     }
+
     goolgeBtnOut() {
-        this.googleBtn = "img/btn_google_signin_dark_normal_web.png";
+        // this.googleBtn = "img/btn_google_signin_dark_normal_web.png";
     }
 
     // vuelidate
     validateState(name) {
-        const { $dirty, $error } = this.$v.form[name]!;
+        const {$dirty, $error} = this.$v.form[name]!;
         return $dirty ? !$error : null;
     }
 
     //login enter key event
     checkLogin(event) {
         if (event.which === 13) {
-            this.onSubmit();
+            this.login();
         }
     }
 
-    async onSubmit() {
+    async login() {
         this.$v.form.$touch();
         if (this.$v.form.$anyError) {
             return;
@@ -362,7 +231,7 @@ export default class Login extends Vue {
                     return;
                 }
 
-                const { user } = result;
+                const {user} = result;
                 this.$store.commit("user", user);
                 await LoginManager.login();
                 // this.$store.commit('loginState', LoginState.login );
@@ -371,15 +240,18 @@ export default class Login extends Vue {
                     const router = this.$store.getters.redirectRouter;
                     this.$store.commit("redirectRouter", null);
                     await this.$router.replace(router);
-                } else if (this.$store.getters.redirectUrl) {
+                }
+                else if (this.$store.getters.redirectUrl) {
                     const url = this.$store.getters.redirectUrl;
                     this.$store.commit("redirectUrl", null);
                     window.location.href = url;
-                } else {
+                }
+                else {
                     await this.$router.replace("/");
                 }
             }
-        } catch (e) {
+        }
+        catch (e) {
             console.log(e);
 
             const code = e.code;
@@ -427,23 +299,8 @@ export default class Login extends Vue {
         }
     }
 
-    // @Watch("email")
-    // watchEmail() {
-    //     if (this.email) {
-    //         this.emailError = "";
-    //     }
-    // }
-
-    // @Watch("password")
-    // watchPassword() {
-    //     if (this.password) {
-    //         this.passwordError = "";
-    //     }
-    // }
 
     async google() {
-        // this.isClickedLoginTab = false;
-        // this.googleRegister = true;
         await this.$store.dispatch("loginState");
 
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -451,48 +308,59 @@ export default class Login extends Vue {
         this.googleForm.googleUsername = result.user.displayName;
         this.googleForm.googleEmail = result.user.email;
 
-        console.log("google", result);
+
         if (result.user) {
             const token = await firebase.auth().currentUser?.getIdToken();
             this.$store.commit("idToken", token);
+            Vue.$api.user()
+            .then(async (res:any)=>{
+                const {user} = result;
+                this.$store.commit("user", user);
+                console.log("user", user);
+                await LoginManager.login();
+                // this.$store.commit('loginState', LoginState.login );
+                // await this.$router.replace('/');
+                if (this.$store.getters.redirectRouter) {
+                    console.log(
+                        "redirectRouter",
+                        this.$store.getters.redirectRouter
+                    );
+                    const router = this.$store.getters.redirectRouter;
+                    this.$store.commit("redirectRouter", null);
+                    await this.$router.replace(router);
+                }
+                else if (this.$store.getters.redirectUrl) {
+                    console.log("redirectUrl", this.$store.getters.redirectUrl);
+                    const url = this.$store.getters.redirectUrl;
+                    this.$store.commit("redirectUrl", null);
+                    window.location.href = url;
+                }
+                else {
+                    console.log("replace");
+                    await this.$router.push(
+                        `/channel/${this.$store.getters.user.uid}/timeline`
+                    );
+                }
 
-            const result = await Vue.$api.user();
-            console.log(result);
-            // if( result.error && result.error && result.error.message === '잘 못 된 유저 아이디입니다' ) {
-            if (result?.error?.code === 20001) {
-                (this.$refs.googleRegisterBtn as any).click();
+            })
+        .catch((err:any)=>{
+            console.log('err',err)
+            if (err.error.code === 20001) {
+                this.$modal.show('example')
+                // (this.$refs.googleRegisterBtn as any).click();
                 // alert(this.$t("login.googleJoinError") as string);
                 this.$store.commit("loginState", LoginState.no_user);
                 this.$store.commit("googleAccountInfo", this.googleForm);
-                // await this.$router.replace("/join");
+                 this.$router.replace("/join");
                 return;
             }
+            })
 
-            const { user } = result;
-            this.$store.commit("user", user);
-            console.log("user", user);
-            await LoginManager.login();
-            // this.$store.commit('loginState', LoginState.login );
-            // await this.$router.replace('/');
-            if (this.$store.getters.redirectRouter) {
-                console.log(
-                    "redirectRouter",
-                    this.$store.getters.redirectRouter
-                );
-                const router = this.$store.getters.redirectRouter;
-                this.$store.commit("redirectRouter", null);
-                await this.$router.replace(router);
-            } else if (this.$store.getters.redirectUrl) {
-                console.log("redirectUrl", this.$store.getters.redirectUrl);
-                const url = this.$store.getters.redirectUrl;
-                this.$store.commit("redirectUrl", null);
-                window.location.href = url;
-            } else {
-                console.log("replace");
-                await this.$router.push(
-                    `/channel/${this.$store.getters.user.uid}/timeline`
-                );
-            }
+            // const result = await Vue.$api.user();
+            // if( result.error && result.error && result.error.message === '잘 못 된 유저 아이디입니다' ) {
+
+
+
         }
     }
 
@@ -513,10 +381,12 @@ export default class Login extends Vue {
             },
         });
     }
+
     findPwd() {
         document.getElementById("forgotPwdBtn")!.click();
         (this.$refs.forgotPwdBtn as any).click();
     }
+
     googleRegisterDone() {
         (this.$refs.registerBtn as any).click();
         this.isGoolgeLoginDone = !this.isGoolgeLoginDone;
@@ -535,24 +405,25 @@ export default class Login extends Vue {
 }
 </script>
 
-<style scoped>
-.login-submit-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+<style scoped lang="scss">
+
+//.btn-default-big {
+//    width: 100%;
+//    border-radius: 30px;
+//}
+
+.form-control {
+    margin: 10px 0 10px 0;
 }
-.form-control:valid {
-    background-color: #1d2333 !important;
-    color: #fff !important;
+
+.form-control + .invalid-feedback {
+    display: none;
+    color: #999;
 }
-.form-control:focus {
-    box-shadow: none;
-}
-.forgot-pwd-btn {
-    margin-left: auto;
-    cursor: pointer;
-}
-.forgot-pwd-btn p:hover {
-    color: #4ff461;
+
+.is-invalid + .invalid-feedback {
+    font-size:12px;
+    display: inline-block;
+    color: red;
 }
 </style>

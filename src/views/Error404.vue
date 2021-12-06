@@ -1,32 +1,22 @@
 <template>
     <div class="error-section">
-        <p class="error-section-title">404</p>
-
-        <div class="error-section-info">
-            <p class="error-section-subtitle">Oops!!...</p>
-
-            <p class="error-section-text">
-                Seems that you made a wrong turn and encountered a web black
-                hole that absorbed the page you were looking for! But don't
-                panic because you can go back!
-            </p>
-
-            <p class="error-section-text">
-                If the problem persists, please send us an email to our support
-                team at <a :href="'mailto:' +  $store.getters.supportEmail" style="color: #30a6d8">
-                                        {{ $store.getters.supportEmail }}
-                                    </a>
-            </p>
-
-            <a class="button medium primary" @click="$router.go(-1)"
-                >Go Back</a
-            >
+        <div class="login-logo">
+            <router-link to="/"><img src="../assets/images/zempie_logo.png" alt="" title=""/></router-link>
         </div>
+        <img class="img404" src="../assets/images/404.png"/>
+        <button class='btn-default' @click="$router.go(-1)">뒤로가기</button>
+<!--        <p class="error-section-text">-->
+<!--            If the problem persists, please send us an email to our support-->
+<!--            team at <a :href="'mailto:' +  $store.getters.supportEmail" style="color: #30a6d8">-->
+<!--            {{ $store.getters.supportEmail }}-->
+<!--        </a>-->
+<!--        </p>-->
+
     </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import {Component, Prop, Vue} from "vue-property-decorator";
 
 @Component({
     components: {},
@@ -36,4 +26,18 @@ export default class Error404 extends Vue {
 </script>
 
 <style scoped>
+.error-section {
+    height: 100vh;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.img404 {
+    display: flex;
+    margin: 0 auto;
+
+}
 </style>

@@ -40,7 +40,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 
-import MemberCard from "@/components/pages/community/MemberCard.vue";
+import MemberCard from "@/components/community/_memberCard.vue";
 import {AxiosError} from "axios";
 @Component({
     components: { MemberCard },
