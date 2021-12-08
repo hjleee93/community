@@ -115,7 +115,20 @@
                 </p>
             </div>
         </div>
+        <modal
+            name="noUser"
+            centered
+            hide-header
+            no-close-on-backdrop
+        >
+            <div class="modal-text">
+                작성하신 이메일로 비밀번호 재설정 메일을 보냈습니다.<br />메일함을
+                확인해주세요.
+            </div>
+            <button class="btn-default"    @click="closeModal">OK</button>
 
+
+        </modal>
     </div>
 </template>
 
@@ -142,7 +155,7 @@ const emailValidator = helpers.regex(
 
 const pwdValidator = helpers.regex(
     "pwdValidator",
-    /^(?=.*\d)(?=.*[a-z])(?=.*[a-zA-Z])(?=.*[!@#\$%\^&\*]).{6,20}$/
+    /^(?=.*[a-zA-Z])((?=.*\d)|(?=.*\W)).{6,20}$/
 );
 @Component({
     components: {Register, ResetPassword},
@@ -252,7 +265,7 @@ export default class Login extends Vue {
             }
         }
         catch (e) {
-            console.log(e);
+
 
             const code = e.code;
             // console.log(code);
@@ -263,6 +276,7 @@ export default class Login extends Vue {
                         // this.passwordError = '잘못된 비밀번호 입니다. 다시 입력하세요.'
                         break;
                     case "auth/user-not-found":
+                        this.$modal.show('noUser')
                         // alert(this.$t('login.firebaseError.userNotFound') as string);
                         break;
                     default:
@@ -391,17 +405,9 @@ export default class Login extends Vue {
         (this.$refs.registerBtn as any).click();
         this.isGoolgeLoginDone = !this.isGoolgeLoginDone;
     }
-
-    // clickedLoginTab() {
-    //     this.googleRegister = false;
-    //     this.isClickedLoginTab = true;
-    //     this.isClickedRegisterTab = false;
-    // }
-    // clickedRegisterTab() {
-    //     this.googleRegister = false;
-    //     this.isClickedLoginTab = false;
-    //     this.isClickedRegisterTab = true;
-    // }
+    closeModal(){
+        this.$modal.hide('noUser')
+    }
 }
 </script>
 
@@ -425,5 +431,9 @@ export default class Login extends Vue {
     font-size:12px;
     display: inline-block;
     color: red;
+}
+.modal-text{
+    display: flex;
+    justify-content: center;
 }
 </style>

@@ -173,7 +173,7 @@ export default class Community extends Vue {
                     this.profileImg = this.community.profile_img;
                 }
                 else {
-                    this.profileImg = '/src/assets/images/zempy.png'
+                    this.profileImg = '/zempie/community/img/zempy.png'
                 }
             })
             .catch((err: any) => {

@@ -1,11 +1,11 @@
 <template>
     <div class="content-grid">
         <div class="section-banner">
-            <img
-                class="section-banner-icon"
-                src="../../img/banner/accounthub-icon.png"
-                alt="accounthub-icon"
-            />
+<!--            <img-->
+<!--                class="section-banner-icon"-->
+<!--                src="../../img/banner/accounthub-icon.png"-->
+<!--                alt="accounthub-icon"-->
+<!--            />-->
 
             <p class="section-banner-title">Manage Group</p>
         </div>

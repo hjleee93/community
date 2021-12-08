@@ -108,4 +108,7 @@ export default class ImageUploaderBtn extends Vue {
 </script>
 
 <style scoped>
+.quick-post-footer-action{
+    cursor:pointer
+}
 </style>

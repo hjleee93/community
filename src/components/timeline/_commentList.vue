@@ -1,12 +1,16 @@
 <template>
     <div>
-        <div class="widget-box no-padding">
-            <comment-input
-                :commentId="null"
-                :postId="postId"
-                class="bordered-top"
-                @sendComment="commentDone"
-            ></comment-input>
+        <div class="comment-box">
+        <p><span
+            style="background:url('https://i.pinimg.com/236x/47/73/c7/4773c7b87bbe9f7d92d54a0c8f6364d4.jpg') center; background-size:cover;"></span>
+        </p>
+            <dl>
+                <dt><input type="text" name="" title=""
+
+                           placeholder="댓글을 작성해 주세요"/></dt>
+                <dd><a href="#"><i class="uil uil-message"></i></a></dd>
+            </dl>
+        </div>
             <overlay-scrollbars ref="commentContainer" class="widget-box-scrollable"
                                 :options="{ callbacks: {
                                     onScroll:handleComplete,
@@ -26,7 +30,6 @@
             <!-- comment input -->
 
 
-        </div>
     </div>
 </template>
 
@@ -143,4 +146,57 @@ export default class TimelineComments extends Vue {
 .post-comment-list {
     max-height: 500px !important;
 }
+
+
+.comment-box {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 20px 20px;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.comment-box > p {
+    width: 12%;
+}
+
+.comment-box > p span {
+    display: inline-block;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+
+.comment-box > dl {
+    display: flex;
+    align-items: center;
+    width: 88%;
+    border: #e5e5e5 1px solid;
+    border-radius: 10px;
+}
+
+.comment-box > dl dt {
+    width: 80%;
+    padding: 0 5px;
+}
+
+.comment-box > dl dt input {
+    width: 100%;
+    border: none;
+}
+
+.comment-box > dl dt input:focus {
+    border: none;
+    box-shadow: none;
+}
+
+.comment-box > dl dd {
+    width: 20%;
+    padding-right: 15px;
+    text-align: right;
+    font-size: 20px;
+}
+
+
 </style>

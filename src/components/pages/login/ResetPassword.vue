@@ -1,10 +1,10 @@
 <template>
     <div class="form-box login-register-form-element" style="top: 70%">
-        <img
-            class="form-box-decoration overflowing"
-            src="../../../img/landing/rocket.png"
-            alt="rocket"
-        />
+<!--        <img-->
+<!--            class="form-box-decoration overflowing"-->
+<!--            src="../../../img/landing/rocket.png"-->
+<!--            alt="rocket"-->
+<!--        />-->
 
         <h2 class="form-box-title">Reset Password</h2>
 

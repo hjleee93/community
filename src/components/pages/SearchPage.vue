@@ -7,16 +7,18 @@
         <div class="tab-search-swiper">
             <swiper class="swiper-area" :options="TSSswiperOption">
                 <swiper-slide>
-                    <router-link to="#" class="active">ALL <span>99+</span></router-link>
+                    <router-link to="#" class="active">ALL</router-link>
                 </swiper-slide>
                 <swiper-slide>
-                    <router-link to="#">Communities <span>10</span></router-link>
+                    <router-link to="#">Communities
+<!--                        <span>10</span>-->
+                    </router-link>
                 </swiper-slide>
                 <swiper-slide>
-                    <router-link to="#">Users <span>10</span></router-link>
+                    <router-link to="#">Users</router-link>
                 </swiper-slide>
                 <swiper-slide>
-                    <router-link to="#">Games <span>10</span></router-link>
+                    <router-link to="#">Games</router-link>
                 </swiper-slide>
             </swiper>
         </div>
@@ -27,7 +29,7 @@
             <li v-for="member in memberList" :key="member.id" @click="userPage(member.uid)">
                 <div class="cf-img" ></div>
 <!--                todo: zempy s3에 올려서 url 따서 넣기-->
-                <p :style="{'background' : 'url(' +member.picture === null ?  '/src/assets/images/zempy.png': member.picture  + ') center center no-repeat', 'background-size' : 'cover'}"></p>
+                <p :style="{'background' : 'url(' +member.picture === null ?  '/zempie/community/img/zempy.png': member.picture  + ') center center no-repeat', 'background-size' : 'cover'}"></p>
                 <div class="cf-info">
                     <h3>{{ member.name }}</h3>
                     <p> </p>
@@ -57,14 +59,14 @@
 
         <ul class="card-game" >
             <li v-for="game in games" :key="game.id">
-                <div style="background: url('https://i.pinimg.com/564x/58/c1/0b/58c10bac820efecdcaf3d74f116e634b.jpg') center center no-repeat; background-size: cover;"></div>
+                <div :style="`background: url( ${game && game.url_thumb_webp} ) center center no-repeat; background-size: cover;`"></div>
                 <dl>
                     <dt>
-                        <P style="background: url('https://i.pinimg.com/564x/c8/73/80/c873800d7a80266bc1bd4797671caaae.jpg') center center no-repeat; background-size: cover;"></P>
+                        <P :style="`background: url('https://i.pinimg.com/564x/c8/73/80/c873800d7a80266bc1bd4797671caaae.jpg') center center no-repeat; background-size: cover;`"></P>
                     </dt>
                     <dd>
-                        <h2>Bunny Roulette</h2>
-                        <p>미니게임팩토리</p>
+                        <h2>{{ game && game.title  }}</h2>
+                        <p>{{ game.user && game.user.name  }}</p>
                         <ul>
 <!--                            <li><img src="../../assets/images/charge_game_icon.svg" alt=""></li>-->
 <!--                            <li><img src="../../assets/images/hot_game_icon.svg" alt=""></li>-->
@@ -75,19 +77,19 @@
             </li>
 
 
-            <li class="more-card" v-if="games && games.length>3">
-                <div>
-                    <h3><i class="uil uil-plus"></i></h3>
-                    <p>모두보기</p>
-                </div>
-            </li>
+<!--            <li class="more-card" v-if="games && games.length>3">-->
+<!--                <div>-->
+<!--                    <h3><i class="uil uil-plus"></i></h3>-->
+<!--                    <p>모두보기</p>-->
+<!--                </div>-->
+<!--            </li>-->
         </ul>
 
         <dl class="area-title">
             <dt>Posts <span>{{ posts.length }}</span></dt>
         </dl>
 
-        <div class="post-wrap">
+        <div class="post-wrap" v-if="posts.length > 0">
             <ul class="post-list">
                 <!--포스트 반복 -->
                 <li v-for="post in posts" :key="post.id">
@@ -131,43 +133,7 @@
             </div> -->
         </div>
 
-        <div class="grid grid-9-3 mobile-prefer-content">
-            <div class="forum-content grid-column">
-                <template>
-                    <h3 style="margin-bottom: 16px" class="text-left">Users</h3>
-                    <div class="grid grid-3-3-3-3">
 
-                    </div>
-
-                </template>
-                <h3 style="margin-bottom: 16px" class="text-left">Posts</h3>
-
-                <template v-if="posts && posts.length > 0">
-                    <feed v-for="feed in posts" :key="feed.id" :feed="feed"></feed>
-                </template>
-                <template v-else>
-                    <p>검색된 포스팅이 없습니다. </p>
-                </template>
-
-            </div>
-            <!-- todo: game search  -->
-            <div class="forum-content grid-column">
-                <h3 style="margin-bottom: 16px" class="text-left">Games</h3>
-                <template v-if="games && games.length > 0">
-                    <div @click="toGamePage(game.pathname, game.id)" class="stats-decoration" v-for="game in games"
-                         :key="game.id" :style="`border-radius:12px; background: url('${game.url_thumb_webp}') center
-                                center / cover no-repeat;display: flex;justify-content: center;align-items: center; cursor:pointer` ">
-
-                        <p class="stats-decoration-title">{{ game.title }}</p>
-
-                    </div>
-                </template>
-                <template v-else>
-                    <p> 검색된 게임이 없습니다.</p>
-
-                </template>
-            </div>
-        </div>
     </div>
 </template>
 

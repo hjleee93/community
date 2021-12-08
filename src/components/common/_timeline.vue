@@ -61,14 +61,17 @@
 
 
         <ul class="ta-post" v-if="timeline.length > 0">
+
             <Feed
+
                 class="mt-3"
                 data-aos-once="true"
                 data-aos="fade"
                 v-for="feed in timeline"
                 :key="feed.id"
                 :feed="feed"
-                @refreshFeed="refreshFeed"
+                @refetch="refetch"
+                @deleteFeed="deleteFeed"
             ></Feed>
         </ul>
 
@@ -81,7 +84,7 @@
 <!--        </div>-->
 <!--        <PulseLoader :loading="$store.getters.LoadingStatus"></PulseLoader>-->
     </dd>
-        <modal name="writingModal">
+        <modal name="writingModal"  classes="post-modal">
             <post @closePostModal="closePostModal">
 <!--            <template v-slot:closeBtn>-->
 <!--                <div class="modal-close-container">-->
@@ -94,6 +97,28 @@
 <!--                <p class="button small secondary">post</p>-->
 <!--            </template>-->
         </post>
+        </modal>
+
+        <modal
+            name="deleteModal"
+            centered
+            classes="vue-modal"
+            no-close-on-backdrop
+        >
+            <slot name="modalContent"></slot>
+            <div class="pw-reset">
+                <div class="pr-title">
+                    <h3>포스팅 삭제</h3>
+
+                </div>
+                <div class="pr-content">
+                    <div>삭제하신 포스팅은 복구하실 수 없습니다.<br/>정말 삭제하시겠습니까?</div>
+                    <p><a @click="yesDeletePost" class="btn-default-big">네</a><a @click="closeModal"
+                                                                                 class="btn-default-big">아니요</a></p>
+                </div>
+            </div>
+
+
         </modal>
     </ul>
 </template>
@@ -131,6 +156,8 @@ export default class Timeline extends Vue {
     private isAddData: boolean = false;
     private hasData: boolean = true;
 
+    private feedId = '';
+
     mounted() {
         this.fetch()
         console.log(this.$route)
@@ -141,8 +168,8 @@ export default class Timeline extends Vue {
         window.removeEventListener("scroll", this.scrollCheck);
     }
 
-    refreshFeed() {
-        console.log('refreshFeed')
+    refetch() {
+
         this.initData()
         this.fetch()
     }
@@ -150,7 +177,6 @@ export default class Timeline extends Vue {
     initData() {
         this.isAddData = false
         this.hasData = false
-
         this.limit = 10;
         this.offset = 0;
         this.timeline = [];
@@ -337,12 +363,13 @@ export default class Timeline extends Vue {
     }
 
     openEdit() {
-        this.$modal.show('writingModal')
+
         this.$store.dispatch('resetAttFiles')
         if (this.user) {
-            this.show = true;
+            this.$modal.show('writingModal')
         }
         else {
+            this.$modal.show('needLogin')
             this.$store.commit('needLogin', true)
         }
     }
@@ -373,7 +400,44 @@ export default class Timeline extends Vue {
         console.log("?")
         this.fetch();
     }
+    deleteFeed(feedId:any){
+        this.feedId = feedId;
+        this.$modal.show('deleteModal')
+    }
 
+    yesDeletePost() {
+        this.$modal.hide('deleteModal')
+
+
+        this.$api.deletePost(this.feedId)
+            .then((res: any) => {
+                console.log(res)
+                if(res.success){
+                    this.$toasted.clear();
+                    this.$toasted.show("포스팅이 삭제되었습니다.", {
+                        singleton: true,
+                        fullWidth: false,
+                        fitToScreen: true,
+                        theme: "outline",
+                        position: "bottom-left",
+                        className: "toast-danger",
+                        duration: 3000,
+                        action: {
+                            text: "X",
+                            onClick: (e, toastObject) => {
+                                toastObject.goAway(0);
+                            },
+                        },
+                    });
+                }
+                this.timeline = []
+                this.fetch();
+            })
+            .catch((err: any) => {
+
+            })
+
+    }
 }
 </script>
 

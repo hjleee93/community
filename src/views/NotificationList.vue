@@ -207,11 +207,11 @@
                                 >Sarah Diamond</a
                             >
                             left a like
-                            <img
-                                class="reaction"
-                                src="../img/reaction/like.png"
-                                alt="reaction-like"
-                            />
+<!--                            <img-->
+<!--                                class="reaction"-->
+<!--                                src="../img/reaction/like.png"-->
+<!--                                alt="reaction-like"-->
+<!--                            />-->
                             reaction on your
                             <a class="highlighted" href="profile-timeline.html"
                                 >status update</a

@@ -114,7 +114,7 @@
                 </template> -->
             </post>
         </b-modal>
-        
+
     </div>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-    <div style="height: 100%">
+    <div style="height: 200px">
         <editor-content
             :editor="editor"
             class="editor-container"
@@ -356,8 +356,13 @@ export default class TiptapPost extends Vue {
 
 <style lang="scss" scoped>
 @use "sass:math";
+.character-count {
+    display: flex;
+    justify-content: flex-end;
+    padding: 5px 5px 0px 0px;
+}
 .editor-container {
-    background-color: dimgrey;
+    height: 100%;
     text-align: left;
     padding: 15px;
     .iframe-wrapper {

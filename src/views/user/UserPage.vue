@@ -15,9 +15,9 @@
                     </li>
 
                 </ul>
-                <div v-else>
-                    등록된 게임이 없습니다.
-                </div>
+                <ul v-else class="no-game">
+                    <li>등록된 게임이 없습니다.</li>
+                </ul>
             </div>
         </dt>
 
@@ -28,60 +28,57 @@
         </dd>
         <!-- 가입한 그룹 리스트 -->
         <dt>
-        <div class="ta-about">
-            <div class="widget-box">
-                <p class="widget-box-title">Groups</p>
-                <div class="widget-box-content">
-                    <div class="user-status-list" v-if="communityList">
-                        <div
-                            v-for="community in communityList"
-                            :key="community.id"
-                            class="user-status"
-                        >
-                            <router-link
-                                class="user-status-avatar"
-                                :to="`/community/${community.id}/timeline`"
-                            >
-                                <div class="user-avatar small no-border">
-                                    <div class="user-avatar-content">
-                                        <b-img v-if="community.profile_img" :src="community.profile_img" style="
-                                        width: 40px;
-                                        height: 44px;
-                                        position: relative;
-                                        border-radius: 10px;
-                                    "/>
-                                        <b-img v-else src="/img/default.png" style="
-                                        width: 40px;
-                                        height: 44px;
-                                        position: relative;
-                                        border-radius: 10px;
-                                    "/>
 
-                                    </div>
-                                </div>
 
-                            </router-link>
+            <div class="ta-channel-list">
+                <h2>Group</h2>
+                <ul v-if="communityList && communityList.length > 0">
+                    <li
+                        v-for="community in communityList"
+                        :key="community.id"
+                        @click="moveGroupPage(community.id)"
+                        :style="`background:url(${
+                           community.profile_img ||
+                            'img/default.png'
+                        }) center; background-size:cover;`" >
+                        <span>{{community.name}}</span>
+                    </li>
 
-                            <p class="user-status-title text-left">
-                                <router-link
-                                    class="bold"
-                                    :to="`/community/${community.id}/timeline`"
-                                >{{ community.name }}
-                                </router-link
-                                >
-                            </p>
-
-                            <p class="user-status-text small text-left">
-                                {{ community.member_cnt }} members
-                            </p>
-                        </div>
-                    </div>
-                    <div class="user-status-list" v-else>
-                        groups
-                    </div>
-                </div>
+                </ul>
+                <ul v-else class="no-channel">
+                    <li>가입한 그룹이 없습니다. </li>
+                </ul>
             </div>
-        </div>
+<!--            <div class="widget-box">-->
+<!--                <p class="widget-box-title">Groups</p>-->
+<!--                <div class="widget-box-content">-->
+<!--                    <div class="user-status-list" v-if="communityList">-->
+<!--                        <div-->
+<!--                            v-for="community in communityList"-->
+<!--                            :key="community.id"-->
+<!--                            class="user-status"-->
+<!--                        >-->
+
+<!--                            <p class="user-status-title text-left">-->
+<!--                                <router-link-->
+<!--                                    class="bold"-->
+<!--                                    :to="`/community/${community.id}/timeline`"-->
+<!--                                >{{ community.name }}-->
+<!--                                </router-link-->
+<!--                                >-->
+<!--                            </p>-->
+
+<!--                            <p class="user-status-text small text-left">-->
+<!--                                {{ community.member_cnt }} members-->
+<!--                            </p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="user-status-list" v-else>-->
+<!--                        groups-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
         </dt>
     </dl>
 </template>
@@ -170,6 +167,9 @@ export default class UserPage extends Vue {
     moveGameChannel(gamePath: string) {
         this.$router.push(`/timeline/game/${gamePath}`);
     }
+    moveGroupPage(id:any){
+        this.$router.push(`/community/${id}/timeline`);
+    }
 
     addGame() {
         console.log('addGame', this.user)
@@ -247,5 +247,10 @@ export default class UserPage extends Vue {
 .all-btn:hover {
     color: #1d2333;
     background: #fff;
+}
+.no-game, .no-channel{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>

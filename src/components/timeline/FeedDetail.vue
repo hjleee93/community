@@ -1,5 +1,5 @@
 <template>
-    <article class="post-open" v-if="feed">
+    <article class="content" v-if="feed">
         <div
             class="post-open-body pt-0"
             style="margin-top: 80px; height: 100vh"

@@ -2,14 +2,16 @@
     <dl class="three-area">
         <dt>
             <div class="ta-channel-list">
-                <h2>Game</h2>
+                <h2>Channel</h2>
 
                 <ul @click="isActive">
                     <li :class="{ active: isActive(-1) }"
+                        class="channel"
                         @click="allPost">
                         <span>All Posts</span>
                     </li>
                     <li v-for="channel in community.channels"
+                        class="channel"
                         :class="{ active: isActive(channel.id) }"
                         @click="openChannelTl(channel.id)"
                         :id="channel.id"
@@ -206,7 +208,12 @@ export default class CommunityTimeline extends Vue {
 </script>
 
 <style scoped>
-
+.channel{
+    background-color: #f39800;
+}
+.channel:hover{
+    cursor: pointer;
+}
 .quick-post {
     height: 100px;
     border-radius: 12px;

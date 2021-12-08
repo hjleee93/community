@@ -1,10 +1,10 @@
 <template>
     <div class="form-box login-register-form-element" style="top: 10%">
-        <img
-            class="form-box-decoration"
-            src="../../../img/landing/rocket.png"
-            alt="rocket"
-        />
+<!--        <img-->
+<!--            class="form-box-decoration"-->
+<!--            src="../../../img/landing/rocket.png"-->
+<!--            alt="rocket"-->
+<!--        />-->
 
         <h2 class="form-box-title">Create your Account!</h2>
 
@@ -316,7 +316,7 @@ const emailValidator = helpers.regex(
 
 const pwdValidator = helpers.regex(
     "pwdValidator",
-    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*[!@#\$%\^&\*]).{6,20}$/
+    /^(?=.*[a-zA-Z])((?=.*\d)|(?=.*\W)).{6,20}$/
 );
 
 @Component({

@@ -211,7 +211,7 @@ export default {
                 if (this.user.picture) {
                     this.profileImg = this.user.picture
                 } else {
-                    this.profileImg = '/src/assets/images/zempy.png'
+                    this.profileImg = '/zempie/community/img/zempy.png'
                 }
             })
             .catch((err) => {

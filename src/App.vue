@@ -5,6 +5,27 @@
                 <router-view />
             </vue-page-transition>
         </component>
+        <modal
+            name="needLogin"
+            centered
+            maxHeight="362px"
+            classes="vue-modal"
+            no-close-on-backdrop
+        >
+            <slot name="modalContent"></slot>
+            <div class="pw-reset">
+                <div class="pr-title">
+                    <h3>로그인</h3>
+
+                </div>
+                <div class="pr-content">
+                    <div>로그인 하신 후 이용하실 수 있습니다 </div>
+                    <p><a @click="moveLogin" class="btn-default-big">로그인하기</a></p>
+                </div>
+            </div>
+
+
+        </modal>
     </div>
 </template>
 
@@ -36,12 +57,17 @@ export default class App extends Vue {
         //     await this.$router.replace('/login');
         // }
     }
+    moveLogin(){
+        this.$modal.hide('needLogin')
+        this.$router.push('/login')
+    }
 
 
 }
 </script>
 
 <style lang="scss">
+@use "sass:math";
 // @import "./css/styles.css";
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap");
 
@@ -78,6 +104,10 @@ export default class App extends Vue {
     color: #F97316 !important;
     border-color: #F97316 !important;
 }
+.toast-danger{
+    color:#dc3545 !important;
+    border-color: #dc3545 !important;
+}
 //common
 .min-vh-100{
     min-height: 100vh;
@@ -100,5 +130,58 @@ export default class App extends Vue {
         margin: 0 auto
     }
 
+}
+
+.vue-modal{
+    border-radius: 20px !important;
+}
+.post-modal{
+    height: 400px;
+    border-radius: 10px !important;
+}
+//timeline
+.attr-img{
+    max-width: 100%;
+}
+
+//tiptap
+
+.editor-container {
+    height: 100%;
+    text-align: left;
+    padding: 15px;
+    border-bottom:1px solid #777777;
+    .ProseMirror{
+
+        height:100%
+    }
+    .iframe-wrapper {
+        position: relative;
+        padding-bottom: math.div(100, 16) * 9%;
+        height: 0;
+        overflow: hidden;
+        width: 100%;
+        height: auto;
+        &.ProseMirror-selectednode {
+            outline: 3px solid #68cef8;
+        }
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    .audio-wrapper {
+        position: relative;
+        overflow: hidden;
+        width: 360px;
+        height: 100px;
+        &.ProseMirror-selectednode {
+            outline: 3px solid #68cef8;
+        }
+    }
 }
 </style>

@@ -419,6 +419,11 @@ const routes: Array<RouteConfig> = [
     {
         path: '/feed/:feedId',
         name: 'feedDetail',
+        meta: {
+            layout: LayoutDefault,
+            title: 'GameTimeline',
+            transition: 'fade-in-down'
+        },
         component: () => import("@/components/timeline/FeedDetail.vue")
     },
     {
@@ -439,11 +444,12 @@ const routes: Array<RouteConfig> = [
         },
     },
     {
-        path: '/terms1',
+        path: '/terms',
+        name: 'Terms',
         component: () => import('@/views/user/Terms.vue'),
         meta: {
             layout: LayoutDefault,
-            title: 'Home',
+            title: 'Terms',
             transition: 'fade-in-down'
         },
     },

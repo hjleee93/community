@@ -5,7 +5,6 @@
             <!-- {{userInfo}} -->
             <router-link
                 v-if="!isEditing"
-                class="user-avatar small no-outline"
                 :to="`/channel/${userInfo && userInfo.uid}/timeline`"
             >
                 <UserAvatar :user="user" style="top: 0px"/>
@@ -38,11 +37,11 @@
                             <div class="reaction-item"></div>
 
                             <div class="reaction-item">
-                                <img
-                                    class="reaction-image"
-                                    src="../../img/reaction/love.png"
-                                    alt="reaction-love"
-                                />
+<!--                                <img-->
+<!--                                    class="reaction-image"-->
+<!--                                    src="../../img/reaction/love.png"-->
+<!--                                    alt="reaction-love"-->
+<!--                                />-->
                             </div>
                         </div>
 
@@ -245,6 +244,17 @@ export default class Comment extends Vue {
 </script>
 
 <style lang='scss' scoped>
+.post-comment-text{
+
+    position: absolute;
+    width: 520px;
+    height: 98px;
+    left: 0px;
+    top: 55.5px;
+}
+.post-comment-text-author{
+
+}
 .post-comment-text {
     text-align: left;
 }

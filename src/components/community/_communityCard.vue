@@ -42,7 +42,7 @@ export default class CommunityCard extends Vue {
     @Prop() community!: any;
 
     private bannerImg: string = "img/community_banner_default.jpg";
-    private profileImg: string = '/src/assets/images/zempy.png';
+    private profileImg: string = '/zempie/community/img/zempy.png';
 
     mounted() {
         if (this.community.banner_img) this.bannerImg = this.community.banner_img;

@@ -34,7 +34,7 @@ export default class SubscribeBtn extends Vue {
             })
         }else{
             this.$store.commit('needLogin', true)
-            console.log('need login service')
+            this.$modal.show('needLogin')
         }
     }
 

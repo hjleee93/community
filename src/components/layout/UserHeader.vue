@@ -226,7 +226,7 @@ export default class UserHeader extends Vue {
         }
     }
     mounted() {
-        console.log("uis header?")
+        console.log("uis header?", process.env.VUE_APP_ROUTER_MODE)
         this.$store.dispatch("loginState")
             .then(() => {
                 this.fetch()
@@ -251,7 +251,7 @@ export default class UserHeader extends Vue {
                     this.profileImg = this.userInfo.picture
                 }
                 else {
-                    this.profileImg = 'img/default_profile.png'
+                    this.profileImg = '/img/default_profile.png'
                 }
             })
             .then(() => {

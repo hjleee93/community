@@ -1,13 +1,28 @@
 <template>
     <div >
-        <button>sns</button>
-        <button>blog</button>
+        <button class="btn-default post-btn"  @click="isActive('SNS')" :class="activeTab === 'SNS' ? 'active' : ''" >sns</button>
+        <button class="btn-default post-btn"  @click="isActive('BLOG')"  :class="activeTab === 'BLOG' ? 'active' : ''">blog</button>
         <tiptap-post
             :postType="activeTab"
             @isEmpty="editorState"
             :key="activeTab"
         ></tiptap-post>
-        <button @click="uploadPost">post</button>
+
+                        <image-uploader-btn
+                            @imgFile="getFileList"
+                            :activeTab="activeTab"
+                        ></image-uploader-btn>
+
+                                    <div class="img-preview-container">
+                                        <div class="img-preview" v-for="(img, idx) in imgPreviewArr" :key="idx">
+                                            <svg class="icon-cross" @click="deletePreviewImg(idx)">
+                                                <use xlink:href="#svg-cross-thin"></use>
+                                            </svg>
+                                            <b-img-lazy :src="img.url"></b-img-lazy>
+                                        </div>
+                                    </div>
+                                    <!-- /이미지 미리보기 -->
+        <button class="btn-default-samll post-btn" @click="uploadPost">post</button>
     </div>
 <!--    <div class="quick-post" id="postContainer">-->
 <!--        <div class="quick-post-header">-->
@@ -971,6 +986,26 @@ if(formData){
 </script>
 
 <style lang="scss" scoped>
+.btn-default-samll{
+    width: 30%;
+    float: right;
+    padding: 5px 5px 0px 0px;
+}
+.btn-default{
+    border-radius: 0px !important;
+    width: 50%;
+}
+.btn-default.post-btn.active{
+    color: #fff;
+    background: #F97316;
+}
+.btn-default.post-btn{
+    background: #fff;
+    color: #F97316;
+/* border-color: #F97316; */
+    border-bottom: 1px solid #F97316;
+}
+
 .video-container{
     video{
         margin-top: 15px;
