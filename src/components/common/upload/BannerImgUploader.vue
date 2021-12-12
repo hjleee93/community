@@ -15,8 +15,6 @@
 </template>
 
 <script lang="ts">
-import { bus } from "@/main";
-import { FileLoader } from "@/script/fileLoader";
 import { FileSizeCheck } from "@/script/fileManager";
 import { Component, Prop, Vue } from "vue-property-decorator";
 
@@ -24,8 +22,6 @@ import { Component, Prop, Vue } from "vue-property-decorator";
     components: {},
 })
 export default class BannerImgUploader extends Vue {
-    private fileLoader: FileLoader = new FileLoader();
-
     uploadFile() {
         (this.$refs.bannerImg as HTMLElement).click();
     }
@@ -35,16 +31,7 @@ export default class BannerImgUploader extends Vue {
     }
 
     inputFile(files: File) {
-        if (FileSizeCheck(files[0], 15)) {
-            this.fileLoader.getFileUrl(files[0], (e) => {
-                this.$emit("bannerImgSrc", e.target!.result);
-                bus.$emit("bannerImgSrc", e.target!.result);
-            });
-        } else {
-            alert("5mb 이하의 사진으로 업로드해주세요");
-        }
-        // let file = files[0];
-        // this.filename = file.name;
+
     }
 }
 </script>

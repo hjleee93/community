@@ -28,15 +28,15 @@ const routes: Array<RouteConfig> = [
             switch (loginState) {
                 case LoginState.login:
                     console.log("login")
-                    await router.push(`/channel/${store.getters.user.uid}/timeline`)
+                    await router.push(`/MyChannel`)
                     break;
                 case LoginState.no_user:
                     console.log("no_user")
-                    await  router.push('/landing')
+                    // await  router.push('/landing')
                     break;
                 case LoginState.logout:
                     console.log("logout")
-                    await router.push('/landing')
+                    // await router.push('/landing')
                     break;
                 default:
                     next();
@@ -92,10 +92,10 @@ const routes: Array<RouteConfig> = [
         name: 'UserSettingHeader',
         meta: {
             layout: LayoutDefault,
-            title: 'UserSettingHeader',
+            title: 'UserSetting.vue',
             transition: 'fade-in-down'
         },
-        component: () => import("@/components/layout/UserSettingHeader.vue"),
+        component: () => import("@/views/user/UserSetting.vue"),
         children: [
             {
                 path: '/user/:userUid/settings',
@@ -179,7 +179,7 @@ const routes: Array<RouteConfig> = [
             title: 'GameTimeline',
             transition: 'fade-in-down'
         },
-        component: () => import("@/components/layout/CommunitySettingHeader.vue"),
+        component: () => import("@/views/group/CommunitySetting.vue"),
         children: [
             {
                 path: '/community/:community_id/setting',
@@ -290,18 +290,10 @@ const routes: Array<RouteConfig> = [
         //   },
         // ]
     },
-
-
-    // /api/v1/timeline/:community_id/channel/:channel_id
-    {
-        path: '/community/:community_id/channel/:channel_id',
-        name: 'Channel',
-        component: () => import("@/components/pages/community/Channel.vue"),
-    },
     {
         path: '/channel/:channel_id',
         name: 'UserChannel',
-        component: () => import("@/components/layout/UserHeader.vue"),
+        component: () => import("@/views/user/User.vue"),
         redirect: '/channel/:channel_id/timeline',
         meta: {
             layout: LayoutDefault,
@@ -311,8 +303,8 @@ const routes: Array<RouteConfig> = [
         children: [
             {
                 path: '/channel/:channel_id/timeline',
-                name: 'UserPage',
-                component: () => import("@/views/user/UserPage.vue"),
+                name: 'UserTimeline.vue',
+                component: () => import("@/components/pages/user/UserTimeline.vue"),
                 meta: {
                     layout: LayoutDefault,
                     title: 'UserTimeline',
@@ -376,7 +368,7 @@ const routes: Array<RouteConfig> = [
     {
         path: '/timeline/game/:gamePath',
         name: 'Game',
-        component: () => import("@/components/layout/GameHeader.vue"),
+        component: () => import("@/views/game/Game.vue"),
         redirect: '/timeline/game/:gamePath/timeline',
         meta: {
             layout: LayoutDefault,
@@ -424,7 +416,7 @@ const routes: Array<RouteConfig> = [
             title: 'GameTimeline',
             transition: 'fade-in-down'
         },
-        component: () => import("@/components/timeline/FeedDetail.vue")
+        component: () => import("@/views/post/FeedDetail.vue")
     },
     {
         path: '/play/:pathname',
@@ -446,14 +438,33 @@ const routes: Array<RouteConfig> = [
     {
         path: '/terms',
         name: 'Terms',
-        component: () => import('@/views/user/Terms.vue'),
+        component: () => import('@/views/Terms.vue'),
         meta: {
             layout: LayoutDefault,
             title: 'Terms',
             transition: 'fade-in-down'
         },
     },
-
+    {
+        path: '/gameListOffical',
+        name: 'GameListOffical',
+        component: () => import('@/views/GameListOffical.vue'),
+        meta: {
+            layout: LayoutDefault,
+            title: 'GameListOffical',
+            transition: 'fade-in-down'
+        },
+    },
+    {
+        path: '/myChannel',
+        name: 'MyChannel',
+        component: () => import('@/views/user/MyChannel.vue'),
+        meta: {
+            layout: LayoutDefault,
+            title: 'MyChannel',
+            transition: 'fade-in-down'
+        },
+    },
 
 
 ]

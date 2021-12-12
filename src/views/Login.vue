@@ -1,8 +1,6 @@
 <template>
     <!--    <div class="landing">-->
-    <div class="login-bg ">
-
-
+    <div class="login-bg pt50 pb50 ">
         <div class="login-logo">
             <router-link to="/"><img src="../assets/images/zempie_logo.png" alt="" title=""/></router-link>
         </div>
@@ -134,19 +132,16 @@
 
 <script lang="ts">
 import {Component, Prop, Vue, Watch} from "vue-property-decorator";
-import Form from "@/script/form";
+
 
 import firebase from "firebase/app";
 import {LoginState} from "@/store/modules/user";
 import LoginManager from "@/script/login";
-import {UrlHelper} from "@/script/utils/util";
-import plugins from "@/plugins/plugins";
+import {UrlHelper} from "@/script/util";
 
 import {validationMixin} from "vuelidate";
 import {required, minLength, maxLength} from "vuelidate/lib/validators";
 import {helpers} from "vuelidate/lib/validators";
-import Register from "@/components/pages/login/Register.vue";
-import ResetPassword from "@/components/pages/login/ResetPassword.vue";
 
 const emailValidator = helpers.regex(
     "emailValidator",
@@ -158,7 +153,7 @@ const pwdValidator = helpers.regex(
     /^(?=.*[a-zA-Z])((?=.*\d)|(?=.*\W)).{6,20}$/
 );
 @Component({
-    components: {Register, ResetPassword},
+    components: {},
     mixins: [validationMixin],
     validations: {
         form: {
@@ -227,6 +222,8 @@ export default class Login extends Vue {
                     this.form.password
                 );
 
+            console.log('rest', result)
+
             // await this.$router.replace('/');
 
             if (result.user) {
@@ -288,7 +285,6 @@ export default class Login extends Vue {
     }
 
     async mounted() {
-        this.createTab();
 
         //로그인
         const loginState = await this.$store.dispatch("loginState");
@@ -378,23 +374,7 @@ export default class Login extends Vue {
         }
     }
 
-    createTab() {
-        Form.formInput();
 
-        plugins.createTab({
-            triggers: ".login-register-form-trigger",
-            elements: ".login-register-form-element",
-            animation: {
-                type: "slide-in-right",
-            },
-            onTabChange: function (activeTab: {
-                querySelector: (arg0: string) => any;
-            }) {
-                const firstInput = activeTab.querySelector("input");
-                firstInput.focus();
-            },
-        });
-    }
 
     findPwd() {
         document.getElementById("forgotPwdBtn")!.click();
@@ -413,27 +393,27 @@ export default class Login extends Vue {
 
 <style scoped lang="scss">
 
-//.btn-default-big {
-//    width: 100%;
-//    border-radius: 30px;
+////.btn-default-big {
+////    width: 100%;
+////    border-radius: 30px;
+////}
+//
+//.form-control {
+//    margin: 10px 0 10px 0;
 //}
-
-.form-control {
-    margin: 10px 0 10px 0;
-}
-
-.form-control + .invalid-feedback {
-    display: none;
-    color: #999;
-}
-
-.is-invalid + .invalid-feedback {
-    font-size:12px;
-    display: inline-block;
-    color: red;
-}
-.modal-text{
-    display: flex;
-    justify-content: center;
-}
+//
+//.form-control + .invalid-feedback {
+//    display: none;
+//    color: #999;
+//}
+//
+//.is-invalid + .invalid-feedback {
+//    font-size:12px;
+//    display: inline-block;
+//    color: red;
+//}
+//.modal-text{
+//    display: flex;
+//    justify-content: center;
+//}
 </style>

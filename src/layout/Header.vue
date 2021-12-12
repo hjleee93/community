@@ -156,8 +156,8 @@
                         <div>
                             <h2>내 프로필</h2>
                             <div>
-                                <router-link to="/"><i class="uil uil-user"></i> 내채널</router-link>
-                                <a @click="moveGameDashBoard" ><i class="uil uil-robot"></i> 게임스튜디오</a>
+                                <router-link to="/myChannel"><i class="uil uil-user"></i>내 채널</router-link>
+                                <a @click="moveGameDashBoard" ><i class="uil uil-robot"></i>게임스튜디오</a>
                                 <router-link :to="`/user/${user.uid}/settings`"><i class="uil uil-setting"></i> 계정설정
                                 </router-link>
                             </div>
@@ -211,7 +211,7 @@ export default {
                 if (this.user.picture) {
                     this.profileImg = this.user.picture
                 } else {
-                    this.profileImg = '/zempie/community/img/zempy.png'
+                    this.profileImg = 'img/zempy.png'
                 }
             })
             .catch((err) => {
@@ -250,7 +250,8 @@ export default {
     },
     methods: {
         moveGameList() {
-            window.open(this.$store.getters.homeUrl);
+            this.$router.push('/gameListOffical')
+            // window.open(this.$store.getters.homeUrl);
         },
         moveGameDashBoard() {
             window.open(this.$store.getters.studioUrl );
@@ -279,6 +280,12 @@ export default {
                     this.isOpenSearch = false
                 }, 150);
             }
+        },
+        playGame(pathname) {
+
+            window.open(
+                this.$store.getters.homeUrl + `play/${pathname}`, "_blank");
+
         },
         listReset() {
             this.isOpenSearch = false;

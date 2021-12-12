@@ -161,7 +161,6 @@ import {Component, Prop, Vue} from "vue-property-decorator";
 import PageLoader from "@/components/common/PageLoader.vue";
 import CommunityCard from "@/components/community/_communityCard.vue";
 
-import Form from "@/script/form";
 import {AxiosError, AxiosResponse} from "axios";
 import {scrollDone} from "@/script/scrollManager";
 import {mapGetters} from "vuex";
@@ -196,7 +195,6 @@ export default class CommunityList extends Vue {
 
     mounted() {
         this.fetch();
-        Form.formInput();
         window.addEventListener("scroll", this.scrollCheck);
     }
 
@@ -370,4 +368,5 @@ svg {
         margin-bottom: 10px;
     }
 }
+
 </style>

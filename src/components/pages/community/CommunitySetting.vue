@@ -183,8 +183,6 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { mapGetters } from "vuex";
-import Dropdown from "@/plugins/dropdown";
-import Hexagon from "@/plugins/hexagon";
 
 import { validationMixin } from "vuelidate";
 import { required, minLength, maxLength } from "vuelidate/lib/validators";
@@ -215,8 +213,6 @@ import { User } from "@/types";
     },
 })
 export default class CommunitySetting extends Vue {
-    private dropdown: Dropdown = new Dropdown();
-    private hexagon: Hexagon = new Hexagon();
 
     private form = {
         groupName: "",
@@ -263,8 +259,6 @@ export default class CommunitySetting extends Vue {
         return $dirty ? !$error : null;
     }
     mounted() {
-        this.hexagon.init();
-        this.dropdown.init();
         this.description = this.community.description;
         this.communityName = this.community.name;
     }

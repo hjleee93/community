@@ -20,15 +20,9 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { mapGetters } from "vuex";
-import Dropdown from "@/plugins/dropdown";
-import Hexagon from "@/plugins/hexagon";
 
-import PostBox from "@/components/layout/PostBox.vue";
 import Post from "@/components/timeline/Post.vue";
-import Feed from "@/components/timeline/Feed.vue";
-import WhoToFollow from "@/components/pages/user/WhoToFollow.vue";
-import JoinedCommunity from "@/components/pages/user/JoinedCommunity.vue";
-import Portfolio from "@/components/pages/user/PortfolioList.vue";
+import Feed from "@/components/timeline/_feed.vue";
 
 import { User } from "@/types";
 
@@ -37,15 +31,10 @@ import { User } from "@/types";
     components: {
         Post,
         Feed,
-        WhoToFollow,
-        JoinedCommunity,
         // GameList,
-        PostBox,
     },
 })
 export default class PortfolioTimeline extends Vue {
-    private dropdown: Dropdown = new Dropdown();
-    private hexagon: Hexagon = new Hexagon();
     private userUid = this.$route.params.channel_id;
 
     private timeline: any = "";
@@ -58,10 +47,7 @@ export default class PortfolioTimeline extends Vue {
         //     parseInt(this.$route.params.porfolio_id)
         // );
     }
-    mounted() {
-        this.dropdown.init();
-        this.hexagon.init();
-    }
+
 }
 </script>
 

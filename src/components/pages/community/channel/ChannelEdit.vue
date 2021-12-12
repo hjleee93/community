@@ -226,8 +226,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { mapGetters } from "vuex";
-import Form from "@/script/form";
-import Hexagon from "@/plugins/hexagon";
 
 import { validationMixin } from "vuelidate";
 import { required, minLength, maxLength } from "vuelidate/lib/validators";
@@ -260,7 +258,7 @@ export default class ChannelEdit extends Vue {
         description: "",
         profileImgSrc: "",
     };
-    private hexagon: Hexagon = new Hexagon();
+
     private user!: any;
     private isPrivate: boolean = false;
     private communityId: number = parseInt(this.$route.params.community_id);
@@ -270,8 +268,7 @@ export default class ChannelEdit extends Vue {
     private isMoveChannel: boolean = false;
 
     async mounted() {
-        this.hexagon.init();
-        Form.formInput();
+
         // this.channelInfo = await this.$api.getChannelInfo(
         //     this.communityId,
         //     this.channelId

@@ -6,6 +6,7 @@ export default {
         mailPopupMobile: false,
         ajaxBar: false,
         homeUrl: process.env.VUE_APP_ZEMPIE_URL,
+        communityUrl:process.env.VUE_APP_COMMUNITY_URL,
         studioUrl: process.env.VUE_APP_STUDIO_URL,
         supportUrl: process.env.VUE_APP_SERVICE_CENTER_URL,
         launcherUrl: process.env.VUE_APP_LAUNCHER_URL,
@@ -41,8 +42,8 @@ export default {
         tosUrl(state) {
             return state.tosUrl;
         },
-        policyUrl(state) {
-            return state.policyUrl;
+        communityUrl(state) {
+            return state.communityUrl;
         },
         fromRouterName(state) {
             return state.fromRouterName;

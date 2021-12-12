@@ -39,7 +39,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import Hexagon from "@/plugins/hexagon";
+ ;
 import { Portfolio } from "@/types/index";
 import { dateFormat } from "@/script/moment";
 @Component({
@@ -47,10 +47,10 @@ import { dateFormat } from "@/script/moment";
 })
 export default class PortfolioCard extends Vue {
     @Prop() portfolio!: Portfolio;
-    private hexagon: Hexagon = new Hexagon();
+
     private latestDate: string = "";
     mounted() {
-        this.hexagon.init();
+
         console.log(this.portfolio)
         this.latestDate = dateFormat(this.portfolio.latest_update!);
     }

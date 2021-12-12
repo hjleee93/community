@@ -2664,7 +2664,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { mapGetters } from "vuex";
-import Hexagon from "@/plugins/hexagon";
+ ;
 import { User } from "@/types";
 
 @Component({
@@ -2672,10 +2672,10 @@ import { User } from "@/types";
     computed: { ...mapGetters(["user"]) },
 })
 export default class MessageList extends Vue {
-    private hexagon: Hexagon = new Hexagon();
+
     private user!: User;
     mounted() {
-        this.hexagon.init();
+
     }
 }
 </script>

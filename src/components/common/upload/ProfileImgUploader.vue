@@ -32,15 +32,13 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { FileSizeCheck } from "@/script/fileManager";
-import { FileLoader } from "@/script/fileLoader";
-import { bus } from "@/main";
 import {mapGetters} from "vuex";
 @Component({
     computed: { ...mapGetters(["user"]) },
     components: {},
 })
 export default class ProfileImgUploader extends Vue {
-    private fileLoader: FileLoader = new FileLoader();
+
     private fileName: string = "";
 
     uploadFile() {
@@ -50,22 +48,9 @@ export default class ProfileImgUploader extends Vue {
     onFileChange(event: { target: { files: any } }) {
         this.inputFile(event.target.files);
         this.fileName =event.target.files[0].name
-        console.log(event.target.files[0].name)
     }
 
     inputFile(files: File) {
-        if (FileSizeCheck(files[0], 5)) {
-            this.fileLoader.getFileUrl(files[0], (e) => {
-                bus.$emit("profileImgSrc", e.target!.result);
-                this.$emit("profileImgSrc", e.target!.result);
-            });
-        } else {
-            alert("5mb 이하의 사진으로 업로드해주세요");
-        }
-        // let file = files[0];
-        // this.filename = file.name;
-    }
-    123() {
 
     }
 }

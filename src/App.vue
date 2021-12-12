@@ -1,66 +1,64 @@
 <template>
-    <div id="app" class="no-drag ">
-        <component :is="this.$route.meta.layout || 'div'">
-            <vue-page-transition class="h100p">
-                <router-view />
-            </vue-page-transition>
-        </component>
-        <modal
-            name="needLogin"
-            centered
-            maxHeight="362px"
-            classes="vue-modal"
-            no-close-on-backdrop
-        >
-            <slot name="modalContent"></slot>
-            <div class="pw-reset">
-                <div class="pr-title">
-                    <h3>로그인</h3>
+  <div id="app" class="no-drag ">
+    <component :is="this.$route.meta.layout || 'div'">
+      <vue-page-transition class="h100p">
+        <router-view/>
+      </vue-page-transition>
+    </component>
+    <modal
+        name="needLogin"
+        centered
+        classes="vue-modal"
+        no-close-on-backdrop
+    >
+      <slot name="modalContent"></slot>
+      <div class="pw-reset">
+        <div class="pr-title">
+          <h3>로그인</h3>
 
-                </div>
-                <div class="pr-content">
-                    <div>로그인 하신 후 이용하실 수 있습니다 </div>
-                    <p><a @click="moveLogin" class="btn-default-big">로그인하기</a></p>
-                </div>
-            </div>
+        </div>
+        <div class="pr-content">
+          <div>로그인 하신 후 이용하실 수 있습니다</div>
+          <p><a @click="moveLogin" class="btn-default-big">로그인하기</a></p>
+        </div>
+      </div>
 
 
-        </modal>
-    </div>
+    </modal>
+  </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import {Component, Vue} from "vue-property-decorator";
 
-import Navigator from "@/components/layout/navigator/Navigator.vue";
-
-import MetaSetting from "@/utils/meta"
+import MetaSetting from "@/plugins/meta"
 
 @Component({
-    components: { Navigator },
+  components: {},
 })
 export default class App extends Vue {
-    // metaInfo:{
-    //     title:'ZEMPIE',
-    //     titleTemplate:'게임 공유 플랫폼',
-    // }
-    async mounted() {
-        console.log('process.env.VUE_ROUTER_MODE', process.env.VUE_APP_ROUTER_MODE)
-        await this.$store.dispatch("loginState");
+  // metaInfo:{
+  //     title:'ZEMPIE',
+  //     titleTemplate:'게임 공유 플랫폼',
+  // }
+  async mounted() {
+    console.log('process.env.VUE_ROUTER_MODE', process.env.VUE_APP_ROUTER_MODE)
+    await this.$store.dispatch("loginState");
 
-        //  if( state === LoginState.login ) {
-        //     if( !this.$store.getters.user.is_developer ) {
-        //         await this.$router.replace('/signup').catch(()=>{});
-        //     }
-        // }
-        // else {
-        //     await this.$router.replace('/login');
-        // }
-    }
-    moveLogin(){
-        this.$modal.hide('needLogin')
-        this.$router.push('/login')
-    }
+    //  if( state === LoginState.login ) {
+    //     if( !this.$store.getters.user.is_developer ) {
+    //         await this.$router.replace('/signup').catch(()=>{});
+    //     }
+    // }
+    // else {
+    //     await this.$router.replace('/login');
+    // }
+  }
+
+  moveLogin() {
+    this.$modal.hide('needLogin')
+    this.$router.push('/login')
+  }
 
 
 }
@@ -82,106 +80,123 @@ export default class App extends Vue {
 @import "https://cdn.jsdelivr.net/npm/xeicon@2.3.3/xeicon.min.css";
 
 #app {
-    font-family: "Noto Sans KR", "sans-serif";
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    //text-align: center;
-    //color: #2c3e50;
+  font-family: "Noto Sans KR", "sans-serif";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  //text-align: center;
+  //color: #2c3e50;
 
-    // margin-top: 60px;
+  // margin-top: 60px;
 }
 
 .no-drag {
-    -ms-user-select: none;
-    -moz-user-select: -moz-none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
 }
 
 //toast
-.toast-success{
-    color: #F97316 !important;
-    border-color: #F97316 !important;
+.toast-success {
+  color: #F97316 !important;
+  border-color: #F97316 !important;
 }
-.toast-danger{
-    color:#dc3545 !important;
-    border-color: #dc3545 !important;
+
+.toast-danger {
+  color: #dc3545 !important;
+  border-color: #dc3545 !important;
 }
+
 //common
-.min-vh-100{
-    min-height: 100vh;
+.min-vh-100 {
+  min-height: 100vh;
 }
 
 .no-result {
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    flex-direction: column;
-    flex-wrap: wrap;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
+  flex-wrap: wrap;
 
-    h1 {
-        color: #333;
-        font-size: 18px;
-        margin-bottom: 10px;
-    }
+  h1 {
+    color: #333;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
 
-    img {
-        margin: 0 auto
-    }
+  img {
+    margin: 0 auto
+  }
 
 }
 
-.vue-modal{
-    border-radius: 20px !important;
+.vue-modal {
+  border-radius: 20px !important;
 }
-.post-modal{
-    height: 400px;
-    border-radius: 10px !important;
+
+.post-modal {
+  height: 418px !important;
+  border-radius: 10px !important;
 }
+
 //timeline
-.attr-img{
-    max-width: 100%;
+.attr-img {
+  max-width: 100%;
 }
 
 //tiptap
 
 .editor-container {
-    height: 100%;
-    text-align: left;
-    padding: 15px;
-    border-bottom:1px solid #777777;
-    .ProseMirror{
+  height: 100%;
+  text-align: left;
+  padding: 15px;
 
-        height:100%
-    }
-    .iframe-wrapper {
-        position: relative;
-        padding-bottom: math.div(100, 16) * 9%;
-        height: 0;
-        overflow: hidden;
-        width: 100%;
-        height: auto;
-        &.ProseMirror-selectednode {
-            outline: 3px solid #68cef8;
-        }
-        iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
+  .ProseMirror {
+
+    height: 100%
+  }
+
+  .ProseMirror:focus-visible {
+    outline-color: transparent;
+  }
+
+
+  .iframe-wrapper {
+    position: relative;
+    padding-bottom: math.div(100, 16) * 9%;
+    height: 0;
+    overflow: hidden;
+    width: 100%;
+    height: auto;
+
+    &.ProseMirror-selectednode {
+      outline: 3px solid #68cef8;
     }
 
-    .audio-wrapper {
-        position: relative;
-        overflow: hidden;
-        width: 360px;
-        height: 100px;
-        &.ProseMirror-selectednode {
-            outline: 3px solid #68cef8;
-        }
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
     }
+  }
+
+  .audio-wrapper {
+    position: relative;
+    overflow: hidden;
+    width: 360px;
+    height: 100px;
+
+    &.ProseMirror-selectednode {
+      outline: 3px solid #68cef8;
+    }
+  }
+}
+
+.ct-info {
+  background-color: red;
 }
 </style>

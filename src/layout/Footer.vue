@@ -21,7 +21,7 @@
           <p>
             <a href="https://fromthered.com/ " target="_blank">회사소개</a>
 <!--            <a href="#">서비스소개</a>-->
-            <a href="#">약관</a>
+            <router-link to="/terms">약관</router-link>
 <!--            <a href="#">개인정보처리방침</a>-->
 <!--            <a href="#">고객센터</a>-->
           </p>
