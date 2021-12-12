@@ -15,6 +15,9 @@ declare module 'vue/types/vue' {
 
 let config = {
   baseURL: process.env.VUE_APP_BASE_API || process.env.baseURL || process.env.apiUrl || '',
+  validateStatus: function (status) {
+    return status < 300 && status >= 200; // Resolve only if the status code is less than 500
+  }
 };
 const _axios = axios.create(config);
 
