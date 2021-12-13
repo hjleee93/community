@@ -8,7 +8,6 @@ import './plugins/axios'
 import 'vuedraggable'
 
 import 'tiny-slider'
-import '@/script/utils/svg-loader'
 
 import {BootstrapVue, BootstrapVueIcons} from 'bootstrap-vue'
 // import 'bootstrap/dist/css/bootstrap.css'
@@ -52,11 +51,10 @@ Vue.use(VueMeta)
 
 //modal
 import VModal from 'vue-js-modal'
-Vue.use(VModal)
+Vue.use(VModal, { dynamic: true });
 
 //ga
 import './plugins/analytics';
-
 //퍼블리싱
 import VuePageTransition from 'vue-page-transition'
 import vSelect from 'vue-select'

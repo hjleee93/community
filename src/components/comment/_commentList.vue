@@ -46,7 +46,6 @@
 <script lang="ts">
 import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 
-import Dropdown from "@/plugins/dropdown";
 import Comment from "@/components/timeline/Comment.vue";
 import CommentInput from "@/components/comment/_commentInput.vue";
 import {AxiosError, AxiosResponse} from "axios";

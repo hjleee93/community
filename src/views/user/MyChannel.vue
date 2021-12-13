@@ -206,7 +206,7 @@ import {Swiper, SwiperSlide} from 'vue-awesome-swiper'
 import {Component, Prop, Vue} from "vue-property-decorator";
 import {mapGetters} from "vuex";
 import {AxiosError} from "axios";
-import Timeline from "@/components/common/_timeline.vue";
+import Timeline from "@/components/timeline/_timeline.vue";
 
 @Component({
     components: {

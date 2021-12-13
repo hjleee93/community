@@ -55,25 +55,21 @@
 
 <script lang="ts">
 import {Component, Prop, Vue, Watch} from "vue-property-decorator";
-import Dropdown from "@/plugins/dropdown";
 
-import PostBox from "@/components/layout/PostBox.vue";
+
 import Post from "@/components/timeline/Post.vue";
-import Channel from "@/components/pages/community/Channel.vue";
-import Feed from "@/components/timeline/Feed.vue";
+import Feed from "@/components/timeline/_feed.vue";
 import {AxiosError, AxiosResponse} from "axios";
-import {scrollDone} from "@/script/scrollManager";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import {mapGetters} from "vuex";
-import Timeline from "@/components/common/_timeline.vue";
+import Timeline from "@/components/timeline/_timeline.vue";
 import {dateFormat} from "@/script/moment";
 
 @Component({
     computed: {...mapGetters(["user"])},
-    components: {Post, Channel, Feed, PostBox, PulseLoader, Timeline},
+    components: {Post, Feed,  PulseLoader, Timeline},
 })
 export default class CommunityTimeline extends Vue {
-    private dropdown: Dropdown = new Dropdown();
     private communityId = this.$route.params.community_id;
     private community: any = this.$store.getters.communityInfo;
     private timeline: any = [];
@@ -101,7 +97,6 @@ export default class CommunityTimeline extends Vue {
     mounted() {
 
         this.isAllPosts = true;
-        this.dropdown.init();
         this.currPage = 'community';
 
         this.$store.dispatch("loginState")
@@ -278,43 +273,11 @@ textarea {
     justify-content: space-between;
 }
 
-.all-post-container {
-    border-radius: 7px;
+.channel{
+  opacity: 50%;
+}
+.channel.active,.channel:hover{
+  opacity: 100%;
 }
 
-
-.channel-img {
-    width: 100%;
-    height: 65px;
-    border-radius: 7px;
-    margin-bottom: 10px;
-    opacity: 50%;
-}
-
-.channel-img:hover,
-.user-status-list.active .channel-img {
-    opacity: 100%;
-    cursor: pointer;
-}
-
-.user-status-list.active .channel-title {
-    background-color: #fff;
-    color: #1d2333;
-}
-
-.channel-title {
-    border-radius: 6px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    font-weight: 600;
-    padding: 2px 6px;
-    background-color: #1d2333;
-    color: #fff;
-    position: absolute;
-    z-index: 3;
-    margin: 8px;
-    display: flex;
-    justify-content: space-between;
-}
 </style>

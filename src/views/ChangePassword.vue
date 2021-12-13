@@ -101,7 +101,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import Form from "@/script/form";
 import firebase from "firebase/app";
 
 import { LoginState } from "@/store/modules/user";
@@ -114,7 +113,6 @@ export default class ChangePassword extends Vue {
     private email = this.$store.getters.user.email;
 
     async mounted() {
-        Form.formInput();
         // const loginState = await this.$store.dispatch("loginState");
         // console.log("loginState", loginState);
         // switch (loginState) {

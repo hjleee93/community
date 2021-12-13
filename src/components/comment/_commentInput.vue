@@ -15,11 +15,10 @@
 
 <script lang="ts">
 import {Component, Prop, Vue, Watch} from "vue-property-decorator";
-import Form from "@/script/form";
 import {mapGetters} from "vuex";
 import {AxiosError, AxiosResponse} from "axios";
 import {User} from "@/types";
-import UserAvatar from "@/components/common/_userAvatar.vue";
+import UserAvatar from "@/components/user/_userAvatar.vue";
 
 @Component({
     computed: {...mapGetters(["user"])},
@@ -41,7 +40,6 @@ export default class CommentInput extends Vue {
     private user!: User;
 
     mounted() {
-        Form.formInput();
         if (this.editContent) {
             this.content = this.editContent;
         }

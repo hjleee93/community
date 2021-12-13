@@ -70,11 +70,8 @@
 </template>
 
 <script lang="ts">
-import { bus } from "@/main";
-import plugins from "@/plugins/plugins";
-import { ProgressPlugin } from "bootstrap-vue";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import Hexagon from "@/plugins/hexagon";
+
 
 @Component({
     components: {},

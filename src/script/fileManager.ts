@@ -23,11 +23,21 @@ function byteToMb(byte = 1) {
     return byte / 1024 / 1024;
 }
 
-function onSelectFile(files, maxFileNum, storeArr) {
+function onSelectFile(files, maxFileNum, maxFileSize, storeArr) {
+    const limitSize = maxFileSize;
     if (files && files[0]) {
         if(files.length> maxFileNum){
-            alert('최대 파일 개수 초과')
+            alert(`최대 파일 개수는 ${maxFileNum}개입니다.`)
             return;
+        }else{
+            let maxSize: number = 1024 * 1024 * maxFileSize;
+            for (const file of files) {
+                maxSize -= file.size;
+                if (maxSize < 0) {
+                    alert(`총 업로드 크기는 ${limitSize}mb입니다.`)
+                    return;
+                }
+            }
         }
         for (const file of files) {
             const reader = new FileReader();

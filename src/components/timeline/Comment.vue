@@ -161,19 +161,17 @@
 
 <script lang="ts">
 import {Component, Prop, Vue} from "vue-property-decorator";
-import Hexagon from "@/plugins/hexagon";
-import PopupPlugin from "@/plugins/popup";
+
 
 import {dateFormat} from "@/script/moment";
-import Modal from "@/components/common/Modal.vue";
 import CommentInput from "@/components/comment/_commentInput.vue";
 import {AxiosError, AxiosResponse} from "axios";
 import {mapGetters} from "vuex";
-import UserAvatar from "@/components/common/_userAvatar.vue";
+import UserAvatar from "@/components/user/_userAvatar.vue";
 
 @Component({
     computed: {...mapGetters(["user"])},
-    components: {CommentInput, Modal, UserAvatar},
+    components: {CommentInput, UserAvatar},
 })
 export default class Comment extends Vue {
     @Prop() comment!: any;

@@ -30,7 +30,7 @@ import {Component, Prop, Vue} from "vue-property-decorator";
 
 import MemberCard from "@/components/community/_memberCard.vue";
 import {mapGetters} from "vuex";
-import UserCard from "@/components/pages/user/_userCard.vue";
+import UserCard from "@/components/user/_userCard.vue";
 
 @Component({
     computed: {...mapGetters(["user"])},

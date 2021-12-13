@@ -1,20 +1,18 @@
 export default {
     state: {
-
         userTagList: [],
+        //첨부파일
         imgArr: [],
         audioArr: [],
-        video:[],
-        previewAudioArr: [],
-        previewVideo: '',
-        imageList: [],
-        postContents: '',
-        isClearEditor: false,
-        channelUserInfo: [],
-        postImgArr:[],
+        videoArr:[],
         blogImgArr:[],
         blogVideoArr:[],
         blogAudioArr:[],
+        //tiptap
+        postContents: '',
+        isClearEditor: false,
+        //검색
+        channelUserInfo: [],
         researchData:{},
         userData:[],
         feed:null
@@ -27,20 +25,11 @@ export default {
         imgArr(state: any) {
             return state.imgArr;
         },
-        video(state:any){
-            return state.video
+        videoArr(state:any){
+            return state.videoArr;
         },
         audioArr(state: any) {
             return state.audioArr;
-        },
-        previewAudioArr(state: any) {
-            return state.previewAudioArr;
-        },
-        previewVideo(state: any) {
-            return state.previewVideo;
-        },
-        imageList(state: any) {
-            return state.imageList;
         },
         postContents(state: any) {
             return state.postContents;
@@ -53,9 +42,6 @@ export default {
         },
         blogImgArr(state: any) {
             return state.blogImgArr;
-        },
-        postImgArr(state: any) {
-            return state.postImgArr;
         },
         blogVideoArr(state: any) {
             return state.blogVideoArr;
@@ -83,21 +69,11 @@ export default {
         imgArr(state: any, payload: any) {
             state.imgArr.push(payload);
         },
-        video(state: any, payload: any) {
-            state.video = payload;
+        videoArr(state: any, payload: any) {
+            state.videoArr = payload;
         },
         audioArr(state: any, payload: any) {
             state.audioArr.push(payload);
-        },
-        previewAudioArr(state: any, payload: any) {
-            state.previewAudioArr.push(payload);
-        },
-        previewVideo(state: any, payload: any) {
-            state.previewVideo = payload;
-        },
-
-        imageList(state: any, payload: any) {
-            state.imageList.push(payload);
         },
         postContents(state: any, payload: any) {
             state.postContents = payload;
@@ -111,10 +87,6 @@ export default {
         blogImgArr(state: any, payload: any) {
             state.blogImgArr =payload;
             // state.blogImgArr.push(payload);
-        },
-        postImgArr(state: any, payload: any) {
-            // state.postImgArr =payload;
-            state.postImgArr.push(payload);
         },
         blogVideoArr(state: any, payload: any) {
             state.blogVideoArr =payload;
@@ -138,15 +110,18 @@ export default {
     },
     actions: {
         resetEditor(context: any) {
-            context.state.postImgArr = [];
             context.state.userTagList = [];
             context.state.postContents = '';
             context.state.isClearEditor = true;
+            context.state.imgArr =[];
+            context.state.audioArr =[];
+            context.state.videoArr =[];
+
         },
         resetAttFiles(context:any){
             context.state.imgArr =[];
             context.state.audioArr =[];
-            context.state.video =[];
+            context.state.videoArr =[];
         },
         resetBlogImgArr(context:any){
             context.state.blogImgArr =[];

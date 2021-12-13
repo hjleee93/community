@@ -1,487 +1,169 @@
 <template>
-    <div>
-        <button class="btn-default post-btn" @click="isActive('SNS')" :class="activeTab === 'SNS' ? 'active' : ''">sns
-        </button>
-        <button class="btn-default post-btn" @click="isActive('BLOG')" :class="activeTab === 'BLOG' ? 'active' : ''">
-            blog
-        </button>
-        <tiptap-sns
-            v-if="activeTab === 'SNS'"
-            @isEmpty="editorState"
-            :key="activeTab"
-        ></tiptap-sns>
-        <tiptap-post
-            v-if="activeTab === 'BLOG'"
-            :postType="activeTab"
-            @isEmpty="editorState"
-            :key="activeTab"
-        ></tiptap-post>
-
-        <image-uploader-btn
-            @imgFile="getFileList"
-            :activeTab="activeTab"
-        ></image-uploader-btn>
-
-        <div class="img-preview-container">
-            <div class="img-preview" v-for="(img, idx) in imgPreviewArr" :key="idx">
-                <svg class="icon-cross" @click="deletePreviewImg(idx)">
-                    <use xlink:href="#svg-cross-thin"></use>
-                </svg>
-                <img :src="img.url"></img>
-
-            </div>
+    <div class="modal-post">
+        <ul class="mp-header">
+            <li :class="activeTab === 'SNS' ? 'active' : ''" @click="isActive('SNS')"><i
+                class="uil uil-file-landscape"></i>
+                Post
+            </li>
+            <li :class="activeTab === 'BLOG' ? 'active' : ''" @click="isActive('BLOG')"><i
+                class="uil uil-files-landscapes"></i> Blog Post
+            </li>
+        </ul>
+        <div class="mp-editer">
+            <TiptapSns
+                v-if="activeTab === 'SNS'"
+                @isEmpty="editorState"
+                :key="activeTab"
+            ></TiptapSns>
+            <TiptapBlog
+                v-if="activeTab === 'BLOG'"
+                @isEmpty="editorState"
+                :key="activeTab"
+            ></TiptapBlog>
         </div>
+        <template v-if="activeTab === 'SNS'">
+            <div class="mp-image">
+                <dd>
+                    <swiper class="swiper-area" :options="MPIswiperOption">
+                        <swiper-slide
+                            v-for="(img, idx) in imgPreviewArr" :key="idx"
+                            :style="`background: url(${img.url}) center center no-repeat; background-size:cover;`">
+                            <span @click="deletePreviewImg(idx)"><i class="uis uis-times-circle"></i></span>
+                        </swiper-slide>
+
+                    </swiper>
+                </dd>
+            </div>
+            <div class="mp-midi" v-if="videoSrc.url ||audioPreviewArr.length > 0 ">
+                <div v-if="videoSrc.url">
+                    <span @click="deleteVideo" class="delete-btn"><i class="uis uis-times-circle"></i></span>
+                    <video width="100%" height="315" :src="videoSrc.url" title="YouTube video player"
+                           frameborder="0"
+                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                           allowfullscreen></video>
+                </div>
+                <ul v-if="audioPreviewArr.length > 0" v-for="audio in audioPreviewArr">
+                    <audio controls :src="audio.url"></audio>
+                    <span class="audio-cancel-btn" @click="deleteAudio"><i class="uis uis-times-circle"></i></span>
+                </ul>
+            </div>
+        </template>
+        <dl class="mp-category">
+        </dl>
+        <dl class="mp-type">
+            <dt>
+                <image-uploader-btn
+                    :activeTab="activeTab"
+                ></image-uploader-btn>
+                <video-uploader-btn
+                    :activeTab="activeTab"
+                ></video-uploader-btn>
+                <audio-uploader-btn
+                    :activeTab="activeTab">
+                </audio-uploader-btn>
+
+            </dt>
+            <dd>
+                <button class="btn-default-samll w100" @click="updatePost" v-if="feed">Update</button>
+                <button class="btn-default-samll w100" @click="uploadPost" v-else>Post</button>
+                <button class="btn-default-samll w100 cancel-btn" @click="hideModal">Cancel</button>
+            </dd>
+        </dl>
+
         <!-- /이미지 미리보기 -->
-        <button class="btn-default-samll post-btn" @click="updatePost" v-if="feed">Update</button>
-        <button class="btn-default-samll post-btn" @click="uploadPost" v-else>post</button>
 
-        <button class="btn-default-samll post-btn" @click="hideModal">cancel</button>
+        <!--    모달-->
+        <modal :clickToClose="false" class="modal-area-type" name="alertModal" width="90%" height="auto" :maxWidth="380"
+               :adaptive="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('alertModal')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2> 작성중인 글은 저장되지 않고 사라집니다. 작성을 끝내시겠습니까?</h2>
+                    <div>
+                        <button class="btn-default w48p" @click="leavePost(true)">네</button>
+                        <button class="btn-gray w48p" @click="leavePost(false)">아니오</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
+
+        <modal :clickToClose="false" class="modal-area-type" name="alertAttrModal" width="90%" height="auto"
+               :maxWidth="380"
+               :adaptive="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('alertAttrModal')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2>한가지 형식의 첨부파일만 입력이 가능합니다. 여러가지 첨부파일을 업로드 하고 싶은 경우 블로그 포스팅을 이용해주세요.</h2>
+                    <p>기존 첨부파일을 지우시겠습니까?</p>
+                    <div>
+                        <button class="btn-default w48p" @click="resetAttr(false)">아니오</button>
+                        <button class="btn-gray w48p" @click="resetAttr(true)">네</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
+
+
     </div>
-    <!--    <div class="quick-post" id="postContainer">-->
-    <!--        <div class="quick-post-header">-->
-    <!--            <div class="option-items">-->
-    <!--                <div-->
-    <!--                    class="option-item"-->
-    <!--                    @click="isActive('SNS')"-->
-    <!--                    :class="activeTab === 'SNS' ? 'active' : ''"-->
-    <!--                >-->
-    <!--                    <svg class="option-item-icon icon-status">-->
-    <!--                        <use xlink:href="#svg-status"></use>-->
-    <!--                    </svg>-->
-
-    <!--                    <p class="option-item-title">Post</p>-->
-    <!--                </div>-->
-    <!--                <div-->
-    <!--                    class="option-item"-->
-    <!--                    @click="isActive('BLOG')"-->
-    <!--                    :class="activeTab === 'BLOG' ? 'active' : ''"-->
-    <!--                >-->
-    <!--                    <svg class="option-item-icon icon-status">-->
-    <!--                        <use xlink:href="#svg-status"></use>-->
-    <!--                    </svg>-->
-
-    <!--                    <p class="option-item-title">Blog Post</p>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--        </div>-->
-
-    <!--        &lt;!&ndash; blog post &ndash;&gt;-->
-    <!--        <div class="quick-post-body" v-if="activeTab === 'BLOG'">-->
-    <!--            <div class="form">-->
-    <!--                <div class="form-row">-->
-    <!--                    <div class="form-item">-->
-    <!--                        <div class="form-textarea">-->
-    <!--                            &lt;!&ndash; tiptap &ndash;&gt;-->
-    <!--                            <tiptap-post-->
-    <!--                                :postType="activeTab"-->
-    <!--                                @isEmpty="editorState"-->
-    <!--                                :key="activeTab"-->
-    <!--                            ></tiptap-post>-->
-
-    <!--                            &lt;!&ndash; <video-->
-    <!--                                width="320"-->
-    <!--                                height="240"-->
-    <!--                                controls-->
-    <!--                                v-if="videoSrc"-->
-    <!--                            >-->
-    <!--                                <source-->
-    <!--                                    :src="videoSrc"-->
-    <!--                                    :type="`video/${fileExt}`"-->
-    <!--                                    :key="videoSrc"-->
-    <!--                                />-->
-    <!--                            </video> &ndash;&gt;-->
-    <!--                            &lt;!&ndash; <audio controls v-if="audioSrc">-->
-    <!--                                <source-->
-    <!--                                    :src="audioSrc"-->
-    <!--                                    :type="`audio/${fileExt}`"-->
-    <!--                                    :key="audioSrc"-->
-    <!--                                />-->
-    <!--                            </audio> &ndash;&gt;-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--        </div>-->
-    <!--        &lt;!&ndash; sns post &ndash;&gt;-->
-    <!--        <div class="quick-post-body" v-else-if="activeTab === 'SNS'">-->
-    <!--            <div class="form">-->
-    <!--                <div class="form-row">-->
-    <!--                    <div class="form-item">-->
-    <!--                        <div class="form-textarea">-->
-    <!--                            <tiptap-sns-->
-    <!--                                :feed="feed"-->
-    <!--                                @isEmpty="editorState"-->
-    <!--                                :key="activeTab"-->
-    <!--                            ></tiptap-sns>-->
-
-    <!--                            &lt;!&ndash; 이미지 미리보기 &ndash;&gt;-->
-    <!--                            <div class="img-preview-container">-->
-    <!--                                <div class="img-preview" v-for="(img, idx) in imgPreviewArr" :key="idx">-->
-    <!--                                    <svg class="icon-cross" @click="deletePreviewImg(idx)">-->
-    <!--                                        <use xlink:href="#svg-cross-thin"></use>-->
-    <!--                                    </svg>-->
-    <!--                                    <b-img-lazy :src="img.url"></b-img-lazy>-->
-    <!--                                </div>-->
-    <!--                            </div>-->
-    <!--                            &lt;!&ndash; /이미지 미리보기 &ndash;&gt;-->
-
-    <!--                            <div-->
-    <!--                                class="video-container"-->
-    <!--                                v-if="videoSrc.url"-->
-    <!--                            >-->
-    <!--                                <svg class="icon-cross" @click="deleteVideo">-->
-    <!--                                    <use xlink:href="#svg-cross-thin"></use>-->
-    <!--                                </svg>-->
-
-    <!--                                <video-->
-    <!--                                    width="320"-->
-    <!--                                    height="240"-->
-    <!--                                    controls-->
-    <!--                                    :src="videoSrc.url"-->
-    <!--                                ></video>-->
-    <!--                            </div>-->
-    <!--                            &lt;!&ndash; <p>{{ feed.attatchment_files }}</p> &ndash;&gt;-->
-    <!--                            &lt;!&ndash;                            <audio-preview :feed="feed"></audio-preview>&ndash;&gt;-->
-
-    <!--                            &lt;!&ndash; 오디오 미리보기 &ndash;&gt;-->
-    <!--                            <div class="audio-preview-container">-->
-    <!--                                <div-->
-    <!--                                    class="audio-preview"-->
-    <!--                                    v-for="(audio, idx) in audioPreviewArr"-->
-    <!--                                    :key="idx"-->
-    <!--                                >-->
-    <!--                                    <svg class="icon-cross" @click="deletePreviewAudio(idx)">-->
-    <!--                                        <use xlink:href="#svg-cross-thin"></use>-->
-    <!--                                    </svg>-->
-    <!--                                    <audio controls :src="audio.url"></audio>-->
-    <!--                                </div>-->
-    <!--                            </div>-->
-    <!--                            &lt;!&ndash; /오디오 미리보기 &ndash;&gt;-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--        </div>-->
-
-    <!--        <overlay-scrollbars>-->
-    <!--            <div-->
-    <!--                @mousewheel="disableWheel"-->
-    <!--                class="-->
-    <!--                    custom-scroll-->
-    <!--                    quick-post-footer-->
-    <!--                    post-select-->
-    <!--                    category-select-->
-    <!--                "-->
-    <!--            >-->
-    <!--                &lt;!&ndash; todo: user id send &ndash;&gt;-->
-    <!--                &lt;!&ndash; <p>{{ feed.posted_at }}</p> &ndash;&gt;-->
-    <!--                &lt;!&ndash;                <custom-tooltip&ndash;&gt;-->
-    <!--                &lt;!&ndash;                    @channel="getChannel"&ndash;&gt;-->
-    <!--                &lt;!&ndash;                    @community="getCommunity"&ndash;&gt;-->
-    <!--                &lt;!&ndash;                ></custom-tooltip>&ndash;&gt;-->
-
-    <!--                <div-->
-    <!--                    class="category-listing"-->
-    <!--                    v-for="(category, idx) in selectedCategory"-->
-    <!--                    :key="idx"-->
-    <!--                >-->
-    <!--                    <button class="selected-category" ref="categoryBtn">-->
-    <!--                        <div class="category-title pl-2">-->
-    <!--                            <p>{{ category.name }}</p>-->
-    <!--                        </div>-->
-    <!--                        <div class="diagonal-border mx-2"></div>-->
-    <!--                        <div class="category-title">-->
-    <!--                            <p>{{ category.channel.name }}</p>-->
-    <!--                        </div>-->
-    <!--                        <div class="mx-2" @click="deleteCategory(idx)">-->
-    <!--                            <svg class="icon-cross">-->
-    <!--                                <use xlink:href="#svg-cross-thin"></use>-->
-    <!--                            </svg>-->
-    <!--                        </div>-->
-    <!--                    </button>-->
-    <!--                </div>-->
-
-    <!--                &lt;!&ndash; <div-->
-    <!--                    class="category-listing"-->
-    <!--                    v-for="(category, idx) in selectedCategory"-->
-    <!--                    :key="idx"-->
-    <!--                >-->
-    <!--                    <button class="selected-category" ref="categoryBtn">-->
-    <!--                        <div class="category-title pl-2">-->
-    <!--                            <p>{{ category.community.name }}</p>-->
-    <!--                        </div>-->
-    <!--                        <div class="diagonal-border mx-2"></div>-->
-    <!--                        <div class="category-title">-->
-    <!--                            <p>{{ category.channel.name }}</p>-->
-    <!--                        </div>-->
-    <!--                        <div class="mx-2" @click="deleteCategory(idx)">-->
-    <!--                            <svg class="icon-cross">-->
-    <!--                                <use xlink:href="#svg-cross-thin"></use>-->
-    <!--                            </svg>-->
-    <!--                        </div>-->
-    <!--                    </button>-->
-    <!--                </div> &ndash;&gt;-->
-
-    <!--                &lt;!&ndash; <div class="form-select dropdown-container">-->
-    <!--                <select class="dropbox dropdown-item" @change="selectCommunity">-->
-    <!--                    <option value="communities">My games</option>-->
-
-    <!--                    <option>game</option>-->
-    <!--                </select>-->
-    <!--            </div>-->
-    <!--            <div class="form-select dropdown-container">-->
-    <!--                <select class="dropbox dropdown-item" @change="selectCommunity">-->
-    <!--                    <option value="communities">Portfolios</option>-->
-
-    <!--                    <option>Portfolio</option>-->
-    <!--                </select>-->
-    <!--            </div> &ndash;&gt;-->
-    <!--            </div>-->
-    <!--        </overlay-scrollbars>-->
-    <!--        &lt;!&ndash; <div class="quick-post-footer checkbox">-->
-    <!--            <div class="checkbox-wrap">-->
-    <!--                <input-->
-    <!--                    type="checkbox"-->
-    <!--                    id="event-add-end-time"-->
-    <!--                    name="event_add-end-time"-->
-    <!--                />-->
-
-    <!--                <div class="checkbox-box">-->
-    <!--                    <svg class="icon-check">-->
-    <!--                        <use xlink:href="#svg-check"></use>-->
-    <!--                    </svg>-->
-    <!--                </div>-->
-
-    <!--                <label for="event-add-end-time">private</label>-->
-    <!--            </div>-->
-    <!--        </div> &ndash;&gt;-->
-
-    <!--        <div class="quick-post-footer attachment">-->
-    <!--            <div class="quick-post-footer-actions">-->
-    <!--                &lt;!&ndash; upload pic &ndash;&gt;-->
-
-    <!--                <image-uploader-btn-->
-    <!--                    @imgFile="getFileList"-->
-    <!--                    :activeTab="activeTab"-->
-    <!--                ></image-uploader-btn>-->
-
-    <!--                &lt;!&ndash; upload video &ndash;&gt;-->
-    <!--                <video-uploader-btn-->
-    <!--                    @fileCheckDone="getFileList('video')"-->
-    <!--                    :activeTab="activeTab"-->
-    <!--                ></video-uploader-btn>-->
-
-    <!--                &lt;!&ndash; /upload video  &ndash;&gt;-->
-    <!--                &lt;!&ndash; upload audio &ndash;&gt;-->
-    <!--                <audio-uploader-btn-->
-    <!--                    @fileCheckDone="getFileList('audio')"-->
-    <!--                    :activeTab="activeTab"-->
-    <!--                >-->
-    <!--                </audio-uploader-btn>-->
-    <!--                &lt;!&ndash; /upload audio &ndash;&gt;-->
-    <!--                &lt;!&ndash; <div-->
-    <!--                    class="quick-post-footer-action text-tooltip-tft-medium"-->
-    <!--                    data-title="Insert Link"-->
-    <!--                >-->
-    <!--                    <svg-->
-    <!--                        xmlns="http://www.w3.org/2000/svg"-->
-    <!--                        viewBox="0 0 24 24"-->
-    <!--                        width="24"-->
-    <!--                        height="24"-->
-    <!--                    >-->
-    <!--                        <path fill="none" d="M0 0h24v24H0z" />-->
-    <!--                        <path-->
-    <!--                            d="M13.06 8.11l1.415 1.415a7 7 0 0 1 0 9.9l-.354.353a7 7 0 0 1-9.9-9.9l1.415 1.415a5 5 0 1 0 7.071 7.071l.354-.354a5 5 0 0 0 0-7.07l-1.415-1.415 1.415-1.414zm6.718 6.011l-1.414-1.414a5 5 0 1 0-7.071-7.071l-.354.354a5 5 0 0 0 0 7.07l1.415 1.415-1.415 1.414-1.414-1.414a7 7 0 0 1 0-9.9l.354-.353a7 7 0 0 1 9.9 9.9z"-->
-    <!--                            fill="rgba(97,106,130,1)"-->
-    <!--                        />-->
-    <!--                    </svg>-->
-    <!--                </div> &ndash;&gt;-->
-
-    <!--                &lt;!&ndash; 투표 &ndash;&gt;-->
-    <!--                &lt;!&ndash; <div-->
-    <!--                    class="quick-post-footer-action text-tooltip-tft-medium"-->
-    <!--                    data-title="Poll"-->
-    <!--                >-->
-    <!--                    <svg class="option-item-icon icon-poll">-->
-    <!--                        <use xlink:href="#svg-poll"></use>-->
-    <!--                    </svg>-->
-    <!--                </div> &ndash;&gt;-->
-    <!--                &lt;!&ndash; scheduled post &ndash;&gt;-->
-    <!--                &lt;!&ndash; <div-->
-    <!--                    class="quick-post-footer-action text-tooltip-tft-medium"-->
-    <!--                    data-title="Schedule Post"-->
-    <!--                    @click="isScheduledPost = !isScheduledPost"-->
-    <!--                >-->
-    <!--                    <svg class="option-item-icon icon-blog-posts">-->
-    <!--                        <use xlink:href="#svg-blog-posts"></use>-->
-    <!--                    </svg>-->
-    <!--                </div> &ndash;&gt;-->
-    <!--                &lt;!&ndash; todo: 비공개글  &ndash;&gt;-->
-    <!--&lt;!&ndash;                <div class="checkbox-wrap">&ndash;&gt;-->
-    <!--&lt;!&ndash;                    <input&ndash;&gt;-->
-    <!--&lt;!&ndash;                        type="checkbox"&ndash;&gt;-->
-    <!--&lt;!&ndash;                        :id="feed ? `checkbox${feed.id}` : 'checkbox'"&ndash;&gt;-->
-    <!--&lt;!&ndash;                        v-model="isPrivate"&ndash;&gt;-->
-    <!--&lt;!&ndash;                    />&ndash;&gt;-->
-
-    <!--&lt;!&ndash;                    <div class="checkbox-box">&ndash;&gt;-->
-    <!--&lt;!&ndash;                        <svg class="icon-check">&ndash;&gt;-->
-    <!--&lt;!&ndash;                            <use xlink:href="#svg-check"></use>&ndash;&gt;-->
-    <!--&lt;!&ndash;                        </svg>&ndash;&gt;-->
-    <!--&lt;!&ndash;                    </div>&ndash;&gt;-->
-
-    <!--&lt;!&ndash;                    <label :for="feed ? `checkbox${feed.id}` : 'checkbox'"&ndash;&gt;-->
-    <!--&lt;!&ndash;                    >private</label&ndash;&gt;-->
-    <!--&lt;!&ndash;                    >&ndash;&gt;-->
-    <!--&lt;!&ndash;                </div>&ndash;&gt;-->
-    <!--            </div>-->
-
-    <!--            <div class="quick-post-footer-actions">-->
-    <!--                &lt;!&ndash; <p class="button small">임시 저장</p> &ndash;&gt;-->
-    <!--                <p class="button small secondary" @click="updatePost" v-if="feed">Update</p>-->
-    <!--                <p class="button small secondary" @click="uploadPost" v-else>Post</p>-->
-    <!--            </div>-->
-    <!--        </div>-->
-    <!--        <div v-if="isScheduledPost" class="date-container">-->
-    <!--            <b-form-datepicker-->
-    <!--                today-button-->
-    <!--                :min="minDate"-->
-    <!--                class="datepicker"-->
-    <!--                v-model="reserved_date"-->
-    <!--            >-->
-    <!--            </b-form-datepicker>-->
-    <!--            <b-form-timepicker-->
-    <!--                class="timepicker"-->
-    <!--                v-model="reserved_time"-->
-    <!--            ></b-form-timepicker>-->
-    <!--        </div>-->
-    <!--        <iframe-->
-    <!--            v-for="link in youtubeLink"-->
-    <!--            :key="link.id"-->
-    <!--            width="560"-->
-    <!--            height="315"-->
-    <!--            :src="`https://www.youtube.com/embed/${link}`"-->
-    <!--            title="YouTube video player"-->
-    <!--            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"-->
-    <!--            allowfullscreen-->
-    <!--        ></iframe>-->
-
-    <!--        <div v-html="content"></div>-->
-    <!--        <b-modal-->
-    <!--            ref="alertModal"-->
-    <!--            class="modal-container"-->
-    <!--            centered-->
-    <!--            hide-header-->
-    <!--            hide-footer-->
-    <!--        >-->
-    <!--            <p class="my-4" style="color: #000">-->
-    <!--                작성중인 글은 저장되지 않고 사라집니다. 작성을 끝내시겠습니까?-->
-    <!--            </p>-->
-
-    <!--            <div>-->
-    <!--                <button-->
-    <!--                    class="popup-box-action half button tertiary"-->
-    <!--                    style="width: 47%"-->
-    <!--                    @click="postDone(true)"-->
-    <!--                >-->
-    <!--                    OK-->
-    <!--                </button>-->
-    <!--                <button-->
-    <!--                    class="popup-box-action half button"-->
-    <!--                    style="width: 47%"-->
-    <!--                    @click="postDone(false)"-->
-    <!--                >-->
-    <!--                    Cancel-->
-    <!--                </button>-->
-    <!--            </div>-->
-    <!--        </b-modal>-->
-    <!--    </div>-->
 </template>
 
 <script lang="ts">
 import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import {mapGetters} from "vuex";
-import Tooltip from "@/plugins/tooltip";
-import FileUpload from "@/components/common/FileUpload.vue";
-import TiptapSns from "@/components/timeline/TiptapSns.vue";
-import TiptapPost from "@/components/timeline/TiptapPost.vue";
-import Modal from "@/components/common/Modal.vue";
-
-import {Editor, EditorContent, HTMLElement, VueRenderer} from "@tiptap/vue-2";
-
+import TiptapSns from "@/components/timeline/_tiptapSns.vue";
+import TiptapBlog from "@/components/timeline/_tiptapBlog.vue";
 import moment from "moment";
-import {FileLoader} from "@/script/fileLoader";
-import ImageUploaderBtn from "@/components/timeline/post/ImageUploaderBtn.vue";
-import VideoUploaderBtn from "@/components/timeline/post/VideoUploaderBtn.vue";
-import AudioUploaderBtn from "@/components/timeline/post/AudioUploaderBtn.vue";
-
-import AlertModal from "@/components/common/AlertModal.vue";
+import ImageUploaderBtn from "@/components/timeline/post/_imageUploaderBtn.vue";
+import VideoUploaderBtn from "@/components/timeline/post/_videoUploaderBtn.vue";
+import AudioUploaderBtn from "@/components/timeline/post/_audioUploaderBtn.vue";
 import {User} from "@/types";
 
 import Messages from "@/components/pages/user/Messages.vue";
-
-import Dropdown from "@/plugins/dropdown";
-import CustomTooltip from "@/components/layout/tooltip/Tooltip.vue";
-import {fileObjWtUrl} from "@/types/file/file";
 import {AxiosError, AxiosResponse} from "axios";
-import {OverlayScrollbarsComponent} from "overlayscrollbars-vue";
+import {Swiper, SwiperSlide} from "vue-awesome-swiper";
+import Toast from "@/script/message";
 
 @Component({
     computed: {...mapGetters(["user"])},
     components: {
         Messages,
-        FileUpload,
-        EditorContent,
-        Modal,
         ImageUploaderBtn,
         TiptapSns,
-        TiptapPost,
-        AlertModal,
-        CustomTooltip,
+        TiptapBlog,
         VideoUploaderBtn,
         AudioUploaderBtn,
-
+        Swiper,
+        SwiperSlide,
     },
 })
 export default class Post extends Vue {
+    toast = new Toast();
     feed: any = {};
-    private dropdown: Dropdown = new Dropdown();
-    private tooltip: Tooltip = new Tooltip();
-    private fileLoader: FileLoader = new FileLoader();
-    private editor!: Editor;
-    private postEditor!: Editor;
-    private postingText: string = "";
     private isEditorEmpty: boolean = true;
-
-    private content: string = "";
     private youtubeLink: string[] = [];
 
     private communityList: any[] = [];
     private isChannelOn: boolean = false;
     private communities: string = "Communities";
-    private channelList: any[] = [];
     private channels: string = "Channels";
 
     // 첨부파일
     private imgPreviewArr: any[] = [];
     private videoSrc: any = {};
-    private fileList: {
-        img: fileObjWtUrl[];
-        video: fileObjWtUrl[];
-        audio: fileObjWtUrl[];
-    } = {
-        img: [],
-        video: [],
-        audio: [],
-    };
-    private remainFileSize: number = 20971520; //20mb (binary);
     private audioPreviewArr: any[] = [];
-    private remainAudioSize: number = 41943040; //40mb
 
     private user!: User;
 
-    private tempType: string = "";
-    private imageSrcArr: ImageData[] = [];
     private selectedFileType: string = "";
 
     // follow 공개 여부
@@ -491,8 +173,6 @@ export default class Post extends Vue {
 
     private selectedCommunityId: number = -1;
     private selectedChannelId: number = -1;
-    private selectedGameId: number = -1;
-    private selectedPfId: number = -1;
 
     // 예약 포스팅
     private minDate = new Date();
@@ -502,26 +182,11 @@ export default class Post extends Vue {
     //community
     private isCommunityClick: boolean = false;
 
-    //postring
-    private isResetEditor: boolean = false;
-
     private selectedCommunity: any = "";
     private selectedCategory: any[] = [];
 
     private attFiles: any[] = [];
 
-    //scroll
-    ops = {
-        scrollPanel: {
-            scrollingY: false,
-        },
-
-        bar: {
-            background: "rgb(119, 80, 248)",
-            opacity: 1,
-            keepShow: true,
-        },
-    };
 
     textPreview: any = "";
     tempKey: string = "";
@@ -531,6 +196,32 @@ export default class Post extends Vue {
     audioSrc: string = "";
     imgSrc: string = "";
     activeTab: string = "SNS";
+    sliderValue = 200
+    MPIswiperOption = {
+        slidesPerView: 4,
+        spaceBetween: 10,
+        breakpoints: {
+            300: {
+                slidesPerView: 3
+            },
+            480: {
+                slidesPerView: 4
+            },
+            768: {
+                slidesPerView: 4
+            },
+            992: {
+                slidesPerView: 4
+            },
+            1200: {
+                //slidesPerView: 7
+            }
+        }
+    }
+    MPCswiperOption = {
+        slidesPerView: 'auto',
+        spaceBetween: 5,
+    }
 
     // 해시태그 멘션
     private hasTagSuggestion: boolean = false;
@@ -538,21 +229,16 @@ export default class Post extends Vue {
 
     async mounted() {
         await this.$store.dispatch("loginState");
-        // console.log(this.$store.getters.currPage)
-        // console.log(this.feed);
-        this.feed = this.$store.getters.feed
-
-        if (this.feed) {
+        if (this.$store.getters.feed) {
+            this.feed = this.$store.getters.feed
             this.prefill();
-
         }
-        this.fetch();
+        // this.fetch();
     }
 
     beforeDestroy() {
         this.$store.commit('feed', null)
     }
-
 
     prefill() {
         this.$store.dispatch('resetAttFiles')
@@ -566,29 +252,8 @@ export default class Post extends Vue {
 
         this.$store.commit('postContents', this.feed.content);
 
-        // this.$store.commit('imgArr', this.imgPreviewArr)
-        // console.log('store', this.$store.getters.imgArr)
-        //
-        // if (this.feed.attatchment_files.type === 'image') {
-        //     this.imgPreviewArr = this.feed.attatchment_files.img;
-        //     console.log(this.imgPreviewArr)
-        // }
-        // else if (this.feed.attatchment_files.audio) {
-        //     this.fileLoader.fileObj.audio =
-        //         this.feed.attatchment_files.audio;
-        // }
-        // else if (this.feed.attatchment_files.video) {
-        //     this.fileLoader.fileObj.video =
-        //         this.feed.attatchment_files.video;
-        // }
-
     }
 
-    deletePreviewImg(idx: number) {
-        this.$store.getters.imgArr.splice(idx, 1)
-        this.imgPreviewArr = this.$store.getters.imgArr
-        // this.$store.dispatch('imageArrChg', imgArr)
-    }
 
     fetch() {
         const obj = {
@@ -603,61 +268,71 @@ export default class Post extends Vue {
             .catch((err: AxiosError) => {
 
             })
-
-
-    }
-
-    disableWheel(e) {
-        e.stopPropagation();
     }
 
     init() {
         console.log("init");
-        this.fileLoader.deletePreviewImg("all");
-        this.fileLoader.deletePreviewAudio("all");
-        this.fileLoader.fileObj.video = [];
         this.selectedCategory = [];
         this.imgSrc = "";
         this.audioSrc = "";
         this.videoSrc = "";
         this.imgPreviewArr = [];
         this.audioPreviewArr = [];
-        this.remainFileSize = 20971520;
-        this.remainAudioSize = 41943040;
-        this.fileList = {img: [], video: [], audio: []};
         this.$store.dispatch("resetEditor");
-        this.isResetEditor = true;
     }
 
     isActive(type: string) {
-        if (!this.user) {
-            (this.$refs["loginModal"] as any).show();
+        //todo: 주석 제거(회사)
+        // if (!this.user) {
+        //   this.$modal.show('needLogin')
+        // }
+        // else {
+        // console.log(this.$store.getters.postContents)
+        // console.log(            !this.isEditorEmpty)
+        // console.log(   this.attFiles.length !== 0 )
+        this.isPostEmpty() ? this.activeTab = type : this.$modal.show('alertModal')
+
+    }
+
+    // }
+
+    isPostEmpty() {
+        console.log('this.feed', this.feed)
+        if (
+            this.attFiles.length !== 0 ||
+            !this.isEditorEmpty ||
+            this.$store.getters.imgArr.length > 0 ||
+            this.$store.getters.audioArr.length > 0 ||
+            !(Object.keys(this.feed).length === 0)
+        ) {
+            // console.log(this.attFiles.length !== 0)
+            // console.log(!this.isEditorEmpty)
+            // console.log(this.$store.getters.imgArr.length)
+            // console.log(this.$store.getters.audioArr.length)
+            return false;
         }
         else {
-            this.tempType = type;
-            // console.log(this.$store.getters.postContents)
-            // console.log(            !this.isEditorEmpty)
-            // console.log(   this.attFiles.length !== 0 )
-            if (
-                this.attFiles.length !== 0 ||
-                !this.isEditorEmpty ||
-                this.$store.getters.imgArr.length > 0 ||
-                this.$store.getters.audioArr.length > 0
-            ) {
-                (this.$refs["alertModal"] as any).show();
-            }
-            else {
-                this.activeTab = type;
-            }
+            return true;
         }
     }
 
-    postDone(state: boolean) {
+    leavePost(state: boolean) {
         if (state) {
+            if (this.activeTab === 'SNS') {
+                this.activeTab = 'BLOG'
+            }
+            else {
+                this.activeTab = 'SNS'
+            }
             this.init();
-            this.activeTab = this.tempType;
         }
-        (this.$refs["alertModal"] as any).hide();
+
+        this.$modal.hide('alertModal')
+    }
+
+    hideModal() {
+        this.$store.dispatch('resetEditor')
+        this.$modal.hide('modalPost')
     }
 
     //첨부파일 업로드
@@ -667,31 +342,6 @@ export default class Post extends Vue {
         // (this.$refs[fileType] as HTMLElement).click();
     }
 
-    deleteVideo() {
-        this.fileList.video = [];
-        console.log(this.fileList);
-        this.videoSrc = "";
-    }
-
-    deletePreviewAudio(idx: number) {
-        this.$store.getters.audioArr.splice(idx, 1)
-
-        this.audioPreviewArr = this.$store.getters.audioArr
-    }
-
-    @Watch("reserved_time")
-    watchTime(time: Date) {
-        let today = moment().format("yyyy-MM-DD");
-        let currentTime = moment().format("HH:MM:SS");
-        let newTime = moment().add(1, "h").format("HH:MM:SS");
-
-        if (today === this.reserved_date) {
-            if (currentTime >= this.reserved_time) {
-                alert("현재시간 이전은 선택이 불가능합니다.");
-                this.reserved_time = newTime;
-            }
-        }
-    }
 
     //포스팅 업로드
     async uploadPost() {
@@ -701,44 +351,9 @@ export default class Post extends Vue {
         // console.log(this.)
         this.attFiles = await this.uploadAtt()
 
-
-        console.log(this.$store.getters.postImgArr)
-
         //blog
         let div = document.createElement("html");
         div.innerHTML = this.$store.getters.postContents;
-
-        let imgFiles = div.getElementsByClassName('attr-img')
-        let videoFiles = div.getElementsByTagName('iframe')
-        let audioFiles = div.getElementsByTagName('audio')
-        // console.log('videoFiles', videoFiles.src)
-
-        for (const imgFile of this.$store.getters.postImgArr) {
-            // this.attFiles.push({
-            //     priority: 0,
-            //     //@ts-ignore
-            //     url: imgFile[0].url,
-            //     type: "image"
-            // })
-        }
-
-        for (const video of videoFiles) {
-            this.attFiles.push({
-                priority: 0,
-                url: video.src,
-                type: "video"
-            })
-        }
-        for (const audio of audioFiles) {
-            console.log('audio, ', audio)
-            this.attFiles.push({
-                priority: 0,
-                url: audio.src,
-                type: "sound"
-            })
-        }
-        //
-        // console.log('text', div.getElementsByClassName( 'attr-img' ))
 
         console.log('this.attFiles', this.attFiles)
 
@@ -768,45 +383,15 @@ export default class Post extends Vue {
 
         this.$api.uploadPost(obj)
             .then((res: AxiosResponse) => {
-                this.init();
-                this.$modal.hide("writingModal");
                 this.$emit('refetch')
-                this.$toasted.show("포스팅이 완료되었습니다.", {
-                    fullWidth: true,
-                    fitToScreen: true,
-                    theme: "outline",
-                    position: "top-center",
-                    className: "toast-success",
-                    duration: 3000,
-                    type: "success",
-                    action: {
-                        text: "X",
-                        onClick: (e, toastObject) => {
-                            toastObject.goAway(0);
-                        },
-                    },
-                });
+                this.toast.successToast("포스팅이 완료되었습니다.")
             })
             .catch((err: AxiosError) => {
-                this.$modal.hide("writingModal");
-                this.init();
-                this.$toasted.show("업로드에 실패하였습니다.", {
-                    fullWidth: true,
-                    fitToScreen: true,
-                    theme: "outline",
-                    position: "top-center",
-                    className: "toast-error",
-                    duration: 3000,
-                    type: "error",
-                    action: {
-                        text: "X",
-                        onClick: (e, toastObject) => {
-                            toastObject.goAway(0);
-                        },
-                    },
-                });
+                this.toast.failToast("업로드에 실패하였습니다.")
             })
             .finally(() => {
+                this.$modal.hide("modalPost");
+                this.init();
                 this.$store.commit('postContents', '')
             })
 
@@ -838,41 +423,57 @@ export default class Post extends Vue {
 
         this.$api.updatePost(obj)
             .then((res: AxiosResponse) => {
-                this.init();
-                this.$emit("closePostModal");
-                this.$toasted.show("포스팅 수정이 완료되었습니다.", {
-                    fullWidth: true,
-                    fitToScreen: true,
-                    theme: "outline",
-                    position: "top-center",
-                    className: "toast-success",
-                    duration: 3000,
-                    type: "success",
-                    action: {
-                        text: "X",
-                        onClick: (e, toastObject) => {
-                            toastObject.goAway(0);
-                        },
-                    },
-                });
+                this.toast.successToast("포스팅 수정이 완료되었습니다.")
             })
             .catch((err: AxiosError) => {
-                this.$toasted.show("포스팅 수정에 실패하였습니다.", {
-                    fullWidth: true,
-                    fitToScreen: true,
-                    theme: "outline",
-                    position: "top-center",
-                    className: "toast-error",
-                    duration: 3000,
-                    type: "error",
-                    action: {
-                        text: "X",
-                        onClick: (e, toastObject) => {
-                            toastObject.goAway(0);
-                        },
-                    },
-                });
+                this.toast.failToast("포스팅 수정에 실패하였습니다.")
             })
+            .finally(() => {
+                this.init();
+                this.$modal.hide("modalPost");
+                this.$store.commit('postContents', '')
+            })
+    }
+
+
+    editorState(state: boolean) {
+        this.isEditorEmpty = state;
+    }
+
+
+    /**
+     * 첨부파일
+     * */
+    @Watch('$store.getters.imgArr')
+    imgArr() {
+        this.imgPreviewArr = this.$store.getters.imgArr
+        console.log('imgPreviewArr', this.imgPreviewArr)
+    }
+
+    @Watch('$store.getters.audioArr')
+    audioArr() {
+        this.audioPreviewArr = this.$store.getters.audioArr
+        console.log('audioPreviewArr', this.audioPreviewArr)
+    }
+
+    @Watch('$store.getters.videoArr')
+    watchImg() {
+        this.videoSrc = this.$store.getters.videoArr
+        console.log('watch', this.videoSrc)
+    }
+
+    deletePreviewImg(idx: number) {
+        this.$store.getters.imgArr.splice(idx, 1)
+        this.imgPreviewArr = this.$store.getters.imgArr
+        // this.$store.dispatch('imageArrChg', imgArr)
+    }
+
+    deleteVideo() {
+        this.videoSrc = "";
+    }
+
+    deleteAudio(idx: number) {
+        this.$store.getters.audioArr.splice(idx, 1)
     }
 
     async uploadAtt() {
@@ -897,33 +498,38 @@ export default class Post extends Vue {
         if (formData) {
             return await this.$api.fileUploader(formData)
         }
+    }
+
+    resetAttr(isReset: boolean) {
+        if (isReset) {
+            this.$store.dispatch('resetAttFiles')
+        }
+        this.$modal.hide('alertAttrModal')
 
 
     }
 
+    /**
+     * 예약 포스팅
+     * */
 
-    // @Watch('$store.getters.video')
-    // watchImg() {
-    //     this.videoSrc = this.$store.getters.video
-    //     console.log('watch', this.videoSrc)
-    // }
+    @Watch("reserved_time")
+    watchTime(time: Date) {
+        let today = moment().format("yyyy-MM-DD");
+        let currentTime = moment().format("HH:MM:SS");
+        let newTime = moment().add(1, "h").format("HH:MM:SS");
 
-    stringToHTML = (str: any) => {
-        var dom = document.createElement("div");
-        dom.innerHTML = str;
-        console.log(str);
-        for (let i = 0; i < dom.getElementsByTagName("a").length; i++) {
-            this.youtubeLink.push(
-                dom
-                    .getElementsByTagName("a")
-                    [i].href.match(
-                    /(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/
-                )![1]
-            );
+        if (today === this.reserved_date) {
+            if (currentTime >= this.reserved_time) {
+                alert("현재시간 이전은 선택이 불가능합니다.");
+                this.reserved_time = newTime;
+            }
         }
-        return dom;
-    };
+    }
 
+    /**
+     * 포스팅 카테고리 선택
+     * */
     // select category
     selectCommunity(e) {
         let selectedItem = e.target.value;
@@ -944,53 +550,6 @@ export default class Post extends Vue {
         this.channels = selectedItem.name;
         this.selectedChannelId = selectedItem.id;
         // console.log(selectedItem);
-    }
-
-    // keyup
-    checkText(text: string) {
-        console.log(text);
-    }
-
-    // @Watch('$store.getters.imgArr')
-    // imgArr() {
-    //     this.imgPreviewArr = this.$store.getters.imgArr
-    //     console.log('imgPreviewArr', this.imgPreviewArr)
-    // }
-
-    @Watch('$store.getters.audioArr')
-    audioArr() {
-        this.audioPreviewArr = this.$store.getters.audioArr
-        console.log('audioPreviewArr', this.audioPreviewArr)
-    }
-
-    hideModal() {
-
-        this.$store.dispatch('resetEditor')
-        this.$modal.hide('writingModal')
-    }
-
-    //emit
-    getFileList(file: any) {
-        // this.fileList = file;
-        // this.imgPreviewArr =this.$store.getters.imgArr
-        // console.log(this.imgPreviewArr)
-        // todo: 블로그 이미지
-        // if (fileType === "img") {
-        //     this.fileList.img = this.fileLoader.fileObj.img;
-        // }
-        // else if (fileType === "video") {
-        //     this.fileList.video = this.fileLoader.fileObj.video;
-        // }
-        // else if (fileType === "audio") {
-        //     this.fileList.audio = this.fileLoader.fileObj.audio;
-        // }
-        // // console.log("getFileList", this.fileLoader.fileObj, value);
-        // // this.fileList = files;
-        // console.log("getFileList", this.fileList);
-    }
-
-    editorState(state: boolean) {
-        this.isEditorEmpty = state;
     }
 
     getChannel(channel) {
@@ -1019,10 +578,6 @@ export default class Post extends Vue {
     padding: 5px 5px 0px 0px;
 }
 
-.btn-default {
-    border-radius: 0px !important;
-    width: 50%;
-}
 
 .btn-default.post-btn.active {
     color: #fff;
@@ -1262,5 +817,36 @@ export default class Post extends Vue {
             outline: 3px solid #68cef8;
         }
     }
+}
+
+.mp-category {
+    padding: 0;
+    border-bottom: 0px;
+}
+
+.cancel-btn {
+    margin-right: 10px;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+}
+
+.delete-btn:hover, .audio-cancel-btn:hover {
+    color: #F97316;
+}
+
+.audio-cancel-btn {
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    justify-content: flex-end;
+    width: 37%;
 }
 </style>

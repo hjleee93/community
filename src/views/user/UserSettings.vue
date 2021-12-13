@@ -89,14 +89,10 @@
 import {Component, Prop, Vue} from "vue-property-decorator";
 import {mapGetters} from "vuex";
 
-import Hexagon from "@/plugins/hexagon";
+ ;
 import ImgPreview from "@/components/common/upload/ImgPreview.vue";
 import ProfileImgUploader from "@/components/common/upload/ProfileImgUploader.vue";
 import BannerImgUploader from "@/components/common/upload/BannerImgUploader.vue";
-import {User} from "@/types";
-import {FileSizeCheck} from "@/script/fileManager";
-import {bus} from "@/main";
-import {FileLoader} from "@/script/fileLoader";
 
 @Component({
     computed: {...mapGetters(["user"])},
@@ -107,7 +103,6 @@ import {FileLoader} from "@/script/fileLoader";
     },
 })
 export default class UserSettings extends Vue {
-    private fileLoader: FileLoader = new FileLoader();
     private user!: any;
     private isCommentOn: boolean = false;
     private isLikeOn: boolean = false;
@@ -119,7 +114,6 @@ export default class UserSettings extends Vue {
     private fileName: string = "";
     private prevProfile: string = ''
 
-    private isUploadRun = false;
 
     private form = {
         // bannerImgSrc: "",
@@ -180,18 +174,7 @@ export default class UserSettings extends Vue {
     }
 
     inputFile(files: File) {
-        if (FileSizeCheck(files[0], 5)) {
-            this.fileLoader.getFileUrl(files[0], (e) => {
-                this.prevProfile = e.target!.result;
-                // bus.$emit("profileImgSrc", e.target!.result);
-                // this.$emit("profileImgSrc", e.target!.result);
-            });
-        }
-        else {
-            alert("5mb 이하의 사진으로 업로드해주세요");
-        }
-        // let file = files[0];
-        // this.filename = file.name;
+
     }
 
     deleteImg() {

@@ -97,8 +97,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { mapGetters } from "vuex";
-import Form from "@/script/form";
-import Hexagon from "@/plugins/hexagon";
 
 import { validationMixin } from "vuelidate";
 import { required, minLength, maxLength } from "vuelidate/lib/validators";
@@ -131,14 +129,9 @@ export default class CreatePortfolio extends Vue {
     description: "",
     thumbnailImgSrc: "",
   };
-  private hexagon: Hexagon = new Hexagon();
   private user!: any;
   private isPrivate: boolean = false;
 
-  mounted() {
-    this.hexagon.init();
-    Form.formInput();
-  }
 
   validateState(name: string | number) {
     const { $dirty, $error } = this.$v.form[name]!;

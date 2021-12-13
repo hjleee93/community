@@ -9,10 +9,9 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import {AxiosError, AxiosResponse} from "axios";
 import {mapGetters} from "vuex";
 import {User} from "@/types";
-import AlertModal from "@/components/common/AlertModal.vue";
 
 @Component({
-    components: {AlertModal},
+    components: {},
     computed: {...mapGetters(["user"])},
 })
 export default class SubscribeBtn extends Vue {

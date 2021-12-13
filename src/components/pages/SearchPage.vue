@@ -140,10 +140,11 @@
 
 <script lang="ts">
 import {Component, Prop, Vue, Watch} from "vue-property-decorator";
-import Feed from "@/components/timeline/Feed.vue";
+import Feed from "@/components/timeline/_feed.vue";
 import MemberCard from "@/components/community/_memberCard.vue";
 import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
-import {copyUrl} from "@/script/utils";
+import {execCommandCopy} from "@/script/util";
+import Toast from "@/script/message";
 @Component({
     components: {
         Feed,
@@ -153,11 +154,12 @@ import {copyUrl} from "@/script/utils";
     },
 })
 export default class SearchPage extends Vue {
-    private type: string = Object.keys(this.$route.query)[0];
-    private query: any = this.$route.query[Object.keys(this.$route.query)[0]];
-    private posts: any = [];
-    private games: any = [];
-    private memberList: any = [];
+    toast = new Toast();
+    type: string = Object.keys(this.$route.query)[0];
+    query: any = this.$route.query[Object.keys(this.$route.query)[0]];
+    posts: any = [];
+    games: any = [];
+    memberList: any = [];
 
     keyword: string | (string | null)[] = '';
     TSSswiperOption = {
@@ -248,24 +250,11 @@ export default class SearchPage extends Vue {
 
     }
 
+
     copyUrl() {
-        copyUrl()
-        this.$toasted.clear();
-        this.$toasted.show("Link copied to clipboard", {
-            singleton: true,
-            fullWidth: false,
-            fitToScreen: true,
-            theme: "outline",
-            position: "bottom-left",
-            className: "toast-success",
-            duration: 3000,
-            action: {
-                text: "X",
-                onClick: (e, toastObject) => {
-                    toastObject.goAway(0);
-                },
-            },
-        });
+      execCommandCopy(window.location.href)
+      this.toast.clear();
+      this.toast.successToast("Link copied to clipboard")
     }
 
 }

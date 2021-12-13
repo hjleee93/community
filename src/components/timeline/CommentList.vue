@@ -28,7 +28,6 @@
 <script lang="ts">
 import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 
-import Dropdown from "@/plugins/dropdown";
 import Comment from "@/components/timeline/Comment.vue";
 import CommentInput from "@/components/comment/_commentInput.vue";
 import {AxiosError, AxiosResponse} from "axios";
@@ -39,7 +38,6 @@ import {scrollDone} from "@/script/scrollManager";
 })
 export default class CommentList extends Vue {
     @Prop() postId!: any;
-    private dropdown: Dropdown = new Dropdown();
 
     private comments: any = [];
     private isOpenReport: boolean = false;
@@ -54,7 +52,6 @@ export default class CommentList extends Vue {
     mounted() {
 
         this.fetch()
-        this.dropdown.init();
         window.addEventListener("scroll", this.scrollCheck);
     }
     beforeDestroy() {
