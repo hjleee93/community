@@ -94,6 +94,7 @@ class Login {
 
     static async login() {
         store.commit('loginState', LoginState.login );
+        localStorage.setItem('z_uid', store.getters.user.uid)
         //@ts-ignore
         Cookie.write( cookieName, store.getters.user.uid, 30, process.env.VUE_APP_COOKIE_DOMAIN );
 
@@ -111,17 +112,18 @@ class Login {
         await firebase.auth().signOut();
         await store.dispatch('logout');
         // await store.commit('clearMail');
+        localStorage.removeItem('z_uid')
         //@ts-ignore
         Cookie.delete( cookieName, process.env.VUE_APP_COOKIE_DOMAIN );
-        if(store.getters.user) {
-            Vue.$api.removeFcmToken(store.getters.user.id)
-                .then((res: AxiosResponse) => {
-                    console.log('fcm token is deleted')
-                })
-                .catch((err: AxiosError) => {
-
-                })
-        }
+        // if(store.getters.user) {
+        //     Vue.$api.removeFcmToken(store.getters.user.id)
+        //         .then((res: AxiosResponse) => {
+        //             console.log('fcm token is deleted')
+        //         })
+        //         .catch((err: AxiosError) => {
+        //
+        //         })
+        // }
     }
     
 

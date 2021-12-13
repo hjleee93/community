@@ -8,7 +8,6 @@
         <modal
             name="needLogin"
             centered
-            maxHeight="362px"
             classes="vue-modal"
             no-close-on-backdrop
         >
@@ -136,7 +135,7 @@ export default class App extends Vue {
     border-radius: 20px !important;
 }
 .post-modal{
-    height: 400px;
+    height: 418px !important;
     border-radius: 10px !important;
 }
 //timeline

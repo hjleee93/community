@@ -11,11 +11,13 @@ export default {
         postContents: '',
         isClearEditor: false,
         channelUserInfo: [],
+        postImgArr:[],
         blogImgArr:[],
         blogVideoArr:[],
         blogAudioArr:[],
         researchData:{},
-        userData:[]
+        userData:[],
+        feed:null
     },
     getters: {
 
@@ -52,6 +54,9 @@ export default {
         blogImgArr(state: any) {
             return state.blogImgArr;
         },
+        postImgArr(state: any) {
+            return state.postImgArr;
+        },
         blogVideoArr(state: any) {
             return state.blogVideoArr;
         },
@@ -63,6 +68,9 @@ export default {
         },
         userData(state: any) {
             return state.userData;
+        },
+        feed(state: any) {
+            return state.feed;
         },
 
     },
@@ -104,6 +112,10 @@ export default {
             state.blogImgArr =payload;
             // state.blogImgArr.push(payload);
         },
+        postImgArr(state: any, payload: any) {
+            // state.postImgArr =payload;
+            state.postImgArr.push(payload);
+        },
         blogVideoArr(state: any, payload: any) {
             state.blogVideoArr =payload;
 
@@ -119,17 +131,19 @@ export default {
         },
         userData(state: any, payload: any) {
             state.userData =payload;
-
+        },
+        feed(state: any, payload: any) {
+            state.feed =payload;
         },
     },
     actions: {
         resetEditor(context: any) {
+            context.state.postImgArr = [];
             context.state.userTagList = [];
             context.state.postContents = '';
             context.state.isClearEditor = true;
         },
         resetAttFiles(context:any){
-            console.log('reset!!!!')
             context.state.imgArr =[];
             context.state.audioArr =[];
             context.state.video =[];

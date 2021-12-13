@@ -80,7 +80,6 @@ import Hexagon from "@/plugins/hexagon";
     components: {},
 })
 export default class ImgPreview extends Vue {
-    private hexagon: Hexagon = new Hexagon();
     @Prop() profileImg!: string;
     @Prop() bannerImg!: string;
     private profileImgSrc: string = this.profileImg;
@@ -88,23 +87,15 @@ export default class ImgPreview extends Vue {
 
     mounted() {
         console.log(this.bannerImg)
-        bus.$on("profileImgSrc", (src: string) => {
-            this.profileImgSrc = src;
-        });
-        bus.$on("bannerImgSrc", (src: string) => {
-            this.bannerImgSrc = src;
-        });
+
     }
     beforeDestroy() {
-        bus.$off("profileImgSrc");
-        bus.$off("bannerImgSrc");
+
     }
     @Watch("profileImgSrc", { immediate: true })
     watchImg(val: any) {
         console.log("watch imgSrc", val);
-        this.$nextTick(() => {
-            this.hexagon.init();
-        });
+
     }
 }
 </script>

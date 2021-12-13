@@ -28,7 +28,7 @@ const routes: Array<RouteConfig> = [
             switch (loginState) {
                 case LoginState.login:
                     console.log("login")
-                    await router.push(`/channel/${store.getters.user.uid}/timeline`)
+                    await router.push(`/MyChannel`)
                     break;
                 case LoginState.no_user:
                     console.log("no_user")
@@ -453,7 +453,26 @@ const routes: Array<RouteConfig> = [
             transition: 'fade-in-down'
         },
     },
-
+    {
+        path: '/gameListOffical',
+        name: 'GameListOffical',
+        component: () => import('@/views/GameListOffical.vue'),
+        meta: {
+            layout: LayoutDefault,
+            title: 'GameListOffical',
+            transition: 'fade-in-down'
+        },
+    },
+    {
+        path: '/myChannel',
+        name: 'MyChannel',
+        component: () => import('@/views/user/MyChannel.vue'),
+        meta: {
+            layout: LayoutDefault,
+            title: 'MyChannel',
+            transition: 'fade-in-down'
+        },
+    },
 
 
 ]

@@ -88,6 +88,8 @@ export default class TiptapPost extends Vue {
     ];
     // tiptap
 
+    feed!:any;
+
     @Watch("user")
     async watchUser() {
         // this.mentionList = await this.$api.followingList(this.user.uid);
@@ -316,6 +318,10 @@ export default class TiptapPost extends Vue {
         });
     }
     mounted() {
+        this.feed = this.$store.getters.feed
+        if (this.feed) {
+            this.prefill();
+        }
         bus.$on("imgUrl", (url) => {
             this.editor.chain().focus().setImage({ src: url }).run();
         });
@@ -325,6 +331,35 @@ export default class TiptapPost extends Vue {
         bus.$on("audioUrl", (url) => {
             this.editor.chain().focus().setAudio({ src: url }).run();
         });
+    }
+    prefill() {
+
+        this.$store.dispatch('resetAttFiles')
+        console.log(this.feed)
+        for (const file of this.feed.attatchment_files) {
+            console.log(file)
+            if (file.type === 'image') {
+                this.imgPreviewArr.push(file);
+                console.log(this.imgPreviewArr)
+            }
+        }
+
+        this.$store.commit('imgArr', this.imgPreviewArr)
+
+        if (this.feed.attatchment_files.type === 'image') {
+            this.imgPreviewArr = this.feed.attatchment_files.img;
+            console.log(this.imgPreviewArr)
+        }
+        else if (this.feed.attatchment_files.audio) {
+            this.fileLoader.fileObj.audio =
+                this.feed.attatchment_files.audio;
+        }
+        else if (this.feed.attatchment_files.video) {
+            this.fileLoader.fileObj.video =
+                this.feed.attatchment_files.video;
+        }
+        this.postingText = this.feed.content
+        console.log('this.postingText', this.postingText)
     }
 
     @Watch('$store.getters.blogImgArr')

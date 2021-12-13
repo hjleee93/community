@@ -203,9 +203,17 @@ export default class Api {
         return await this.request('get', `${this.communityApi}timeline/game/${obj.game_id}`, obj,false)
 
     }
+    async officalGameList(obj){
+        return await this.request( 'get', `${zempieApi}games`, obj, false );
+    }
 
     /* /game */
 
+    /* report */
+    async reportPost(obj){
+        return await this.request( 'post', `${this.communityApi}post/${obj.post_id}/report`, obj, false );
+    }
+    /* /report */
 
 
 
@@ -220,17 +228,19 @@ export default class Api {
         return await this.request('post', `${this.communityApi}user/${user_id}/unfollow`, undefined, false);
     }
     async followingList(obj:any, user_id:any){
-        console.log('user_uid',user_id)
         return await this.request('get', `${this.communityApi}user/${user_id}/list/following`, obj, false);
     }
     async followerList(obj:any, user_id: any){
-
         return await this.request('get', `${this.communityApi}user/${user_id}/list/follower`, obj, false);
     }
-
     async userTimeline(obj:any){
         return await this.request('get', `${this.communityApi}timeline/channel/${obj.channel_id}`, obj,false)
-
+    }
+    async userMute(user_id: number){
+        return await this.request('post', `${this.communityApi}member/${user_id}/mute`, undefined, false)
+    }
+    async userBlock(user_id: number){
+        return await this.request('post', `${this.communityApi}member/${user_id}/mute`, undefined, false)
     }
 
     async session() {

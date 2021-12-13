@@ -108,34 +108,30 @@ export default class CommunityTimeline extends Vue {
             .then(() => {
                 this.communityFetch();
                 this.createdDate = dateFormat(this.community.createdAt);
+
                 this.$store.commit('currPage', {
                     community: [{
                         id: this.communityId
                     }]
                 })
+
             })
     }
 
-
     communityFetch() {
-        if (!this.$store.getters.communityInfo.id) {
-            this.$api.communityInfo(this.communityId)
-                .then((res: any) => {
-                    console.log('fetch user', this.user)
-                    console.log("postCnt", res.profile_img)
-                    this.$store.commit('communityInfo', res);
-                    this.community = res
-                    this.createdDate = dateFormat(res.createdAt);
+        this.$api.communityInfo(this.communityId)
+            .then((res: any) => {
+                console.log('fetch user', this.user)
+                console.log("postCnt", res.block)
+                this.$store.commit('communityInfo', res);
+                this.community = res
+                this.createdDate = dateFormat(res.createdAt);
 
+            })
+            .catch((err: any) => {
+                console.log(err)
+            })
 
-                })
-                .catch((err: any) => {
-                    console.log(err)
-                })
-        }
-        else {
-            this.community = this.$store.getters.communityInfo;
-        }
     }
 
 
@@ -208,12 +204,14 @@ export default class CommunityTimeline extends Vue {
 </script>
 
 <style scoped>
-.channel{
+.channel {
     background-color: #f39800;
 }
-.channel:hover{
+
+.channel:hover {
     cursor: pointer;
 }
+
 .quick-post {
     height: 100px;
     border-radius: 12px;

@@ -74,8 +74,9 @@
         <!--                </div>-->
         <!--            </div>-->
         <!--        </div>-->
+
         <div class="visual-info-center"
-             :key="userInfo.id"
+             :key="$route.params.channel_id"
              :style="{'background' : 'url(' + require('../../assets/images/banner_white.png') + ') center no-repeat', 'background-size' : 'cover'}">
             <dl>
                 <dt>
@@ -225,8 +226,8 @@ export default class UserHeader extends Vue {
             }
         }
     }
+
     mounted() {
-        console.log("uis header?", process.env.VUE_APP_ROUTER_MODE)
         this.$store.dispatch("loginState")
             .then(() => {
                 this.fetch()
@@ -235,9 +236,8 @@ export default class UserHeader extends Vue {
             .finally(() => {
 
             })
-
-        // Object.keys($route.query).length === 0
     }
+
 
 
     fetch() {
@@ -251,7 +251,7 @@ export default class UserHeader extends Vue {
                     this.profileImg = this.userInfo.picture
                 }
                 else {
-                    this.profileImg = '/img/default_profile.png'
+                    this.profileImg = 'img/default_profile.png'
                 }
             })
             .then(() => {
@@ -289,6 +289,7 @@ export default class UserHeader extends Vue {
 
     }
 
+
     currPage(routeName: string){
 
         console.log(this.$route.name)
@@ -305,7 +306,6 @@ export default class UserHeader extends Vue {
     }
 
     refetch() {
-
         this.fetch();
     }
     movePage(page:string){
@@ -318,6 +318,10 @@ export default class UserHeader extends Vue {
         }else if(page === 'follower'){
             this.$router.push(`/channel/${this.userInfo && this.userInfo.id}/followers`)
         }
+    }
+    @Watch('$route.params.channel_id')
+    watchParams(){
+        this.fetch();
     }
 }
 </script>

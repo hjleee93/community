@@ -1,388 +1,401 @@
 <template>
-    <div >
-        <button class="btn-default post-btn"  @click="isActive('SNS')" :class="activeTab === 'SNS' ? 'active' : ''" >sns</button>
-        <button class="btn-default post-btn"  @click="isActive('BLOG')"  :class="activeTab === 'BLOG' ? 'active' : ''">blog</button>
+    <div>
+        <button class="btn-default post-btn" @click="isActive('SNS')" :class="activeTab === 'SNS' ? 'active' : ''">sns
+        </button>
+        <button class="btn-default post-btn" @click="isActive('BLOG')" :class="activeTab === 'BLOG' ? 'active' : ''">
+            blog
+        </button>
+        <tiptap-sns
+            v-if="activeTab === 'SNS'"
+            @isEmpty="editorState"
+            :key="activeTab"
+        ></tiptap-sns>
         <tiptap-post
+            v-if="activeTab === 'BLOG'"
             :postType="activeTab"
             @isEmpty="editorState"
             :key="activeTab"
         ></tiptap-post>
 
-                        <image-uploader-btn
-                            @imgFile="getFileList"
-                            :activeTab="activeTab"
-                        ></image-uploader-btn>
+        <image-uploader-btn
+            @imgFile="getFileList"
+            :activeTab="activeTab"
+        ></image-uploader-btn>
 
-                                    <div class="img-preview-container">
-                                        <div class="img-preview" v-for="(img, idx) in imgPreviewArr" :key="idx">
-                                            <svg class="icon-cross" @click="deletePreviewImg(idx)">
-                                                <use xlink:href="#svg-cross-thin"></use>
-                                            </svg>
-                                            <b-img-lazy :src="img.url"></b-img-lazy>
-                                        </div>
-                                    </div>
-                                    <!-- /이미지 미리보기 -->
-        <button class="btn-default-samll post-btn" @click="uploadPost">post</button>
+        <div class="img-preview-container">
+            <div class="img-preview" v-for="(img, idx) in imgPreviewArr" :key="idx">
+                <svg class="icon-cross" @click="deletePreviewImg(idx)">
+                    <use xlink:href="#svg-cross-thin"></use>
+                </svg>
+                <img :src="img.url"></img>
+
+            </div>
+        </div>
+        <!-- /이미지 미리보기 -->
+        <button class="btn-default-samll post-btn" @click="updatePost" v-if="feed">Update</button>
+        <button class="btn-default-samll post-btn" @click="uploadPost" v-else>post</button>
+
+        <button class="btn-default-samll post-btn" @click="hideModal">cancel</button>
     </div>
-<!--    <div class="quick-post" id="postContainer">-->
-<!--        <div class="quick-post-header">-->
-<!--            <div class="option-items">-->
-<!--                <div-->
-<!--                    class="option-item"-->
-<!--                    @click="isActive('SNS')"-->
-<!--                    :class="activeTab === 'SNS' ? 'active' : ''"-->
-<!--                >-->
-<!--                    <svg class="option-item-icon icon-status">-->
-<!--                        <use xlink:href="#svg-status"></use>-->
-<!--                    </svg>-->
+    <!--    <div class="quick-post" id="postContainer">-->
+    <!--        <div class="quick-post-header">-->
+    <!--            <div class="option-items">-->
+    <!--                <div-->
+    <!--                    class="option-item"-->
+    <!--                    @click="isActive('SNS')"-->
+    <!--                    :class="activeTab === 'SNS' ? 'active' : ''"-->
+    <!--                >-->
+    <!--                    <svg class="option-item-icon icon-status">-->
+    <!--                        <use xlink:href="#svg-status"></use>-->
+    <!--                    </svg>-->
 
-<!--                    <p class="option-item-title">Post</p>-->
-<!--                </div>-->
-<!--                <div-->
-<!--                    class="option-item"-->
-<!--                    @click="isActive('BLOG')"-->
-<!--                    :class="activeTab === 'BLOG' ? 'active' : ''"-->
-<!--                >-->
-<!--                    <svg class="option-item-icon icon-status">-->
-<!--                        <use xlink:href="#svg-status"></use>-->
-<!--                    </svg>-->
+    <!--                    <p class="option-item-title">Post</p>-->
+    <!--                </div>-->
+    <!--                <div-->
+    <!--                    class="option-item"-->
+    <!--                    @click="isActive('BLOG')"-->
+    <!--                    :class="activeTab === 'BLOG' ? 'active' : ''"-->
+    <!--                >-->
+    <!--                    <svg class="option-item-icon icon-status">-->
+    <!--                        <use xlink:href="#svg-status"></use>-->
+    <!--                    </svg>-->
 
-<!--                    <p class="option-item-title">Blog Post</p>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
+    <!--                    <p class="option-item-title">Blog Post</p>-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--        </div>-->
 
-<!--        &lt;!&ndash; blog post &ndash;&gt;-->
-<!--        <div class="quick-post-body" v-if="activeTab === 'BLOG'">-->
-<!--            <div class="form">-->
-<!--                <div class="form-row">-->
-<!--                    <div class="form-item">-->
-<!--                        <div class="form-textarea">-->
-<!--                            &lt;!&ndash; tiptap &ndash;&gt;-->
-<!--                            <tiptap-post-->
-<!--                                :postType="activeTab"-->
-<!--                                @isEmpty="editorState"-->
-<!--                                :key="activeTab"-->
-<!--                            ></tiptap-post>-->
+    <!--        &lt;!&ndash; blog post &ndash;&gt;-->
+    <!--        <div class="quick-post-body" v-if="activeTab === 'BLOG'">-->
+    <!--            <div class="form">-->
+    <!--                <div class="form-row">-->
+    <!--                    <div class="form-item">-->
+    <!--                        <div class="form-textarea">-->
+    <!--                            &lt;!&ndash; tiptap &ndash;&gt;-->
+    <!--                            <tiptap-post-->
+    <!--                                :postType="activeTab"-->
+    <!--                                @isEmpty="editorState"-->
+    <!--                                :key="activeTab"-->
+    <!--                            ></tiptap-post>-->
 
-<!--                            &lt;!&ndash; <video-->
-<!--                                width="320"-->
-<!--                                height="240"-->
-<!--                                controls-->
-<!--                                v-if="videoSrc"-->
-<!--                            >-->
-<!--                                <source-->
-<!--                                    :src="videoSrc"-->
-<!--                                    :type="`video/${fileExt}`"-->
-<!--                                    :key="videoSrc"-->
-<!--                                />-->
-<!--                            </video> &ndash;&gt;-->
-<!--                            &lt;!&ndash; <audio controls v-if="audioSrc">-->
-<!--                                <source-->
-<!--                                    :src="audioSrc"-->
-<!--                                    :type="`audio/${fileExt}`"-->
-<!--                                    :key="audioSrc"-->
-<!--                                />-->
-<!--                            </audio> &ndash;&gt;-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        &lt;!&ndash; sns post &ndash;&gt;-->
-<!--        <div class="quick-post-body" v-else-if="activeTab === 'SNS'">-->
-<!--            <div class="form">-->
-<!--                <div class="form-row">-->
-<!--                    <div class="form-item">-->
-<!--                        <div class="form-textarea">-->
-<!--                            <tiptap-sns-->
-<!--                                :feed="feed"-->
-<!--                                @isEmpty="editorState"-->
-<!--                                :key="activeTab"-->
-<!--                            ></tiptap-sns>-->
+    <!--                            &lt;!&ndash; <video-->
+    <!--                                width="320"-->
+    <!--                                height="240"-->
+    <!--                                controls-->
+    <!--                                v-if="videoSrc"-->
+    <!--                            >-->
+    <!--                                <source-->
+    <!--                                    :src="videoSrc"-->
+    <!--                                    :type="`video/${fileExt}`"-->
+    <!--                                    :key="videoSrc"-->
+    <!--                                />-->
+    <!--                            </video> &ndash;&gt;-->
+    <!--                            &lt;!&ndash; <audio controls v-if="audioSrc">-->
+    <!--                                <source-->
+    <!--                                    :src="audioSrc"-->
+    <!--                                    :type="`audio/${fileExt}`"-->
+    <!--                                    :key="audioSrc"-->
+    <!--                                />-->
+    <!--                            </audio> &ndash;&gt;-->
+    <!--                        </div>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--        &lt;!&ndash; sns post &ndash;&gt;-->
+    <!--        <div class="quick-post-body" v-else-if="activeTab === 'SNS'">-->
+    <!--            <div class="form">-->
+    <!--                <div class="form-row">-->
+    <!--                    <div class="form-item">-->
+    <!--                        <div class="form-textarea">-->
+    <!--                            <tiptap-sns-->
+    <!--                                :feed="feed"-->
+    <!--                                @isEmpty="editorState"-->
+    <!--                                :key="activeTab"-->
+    <!--                            ></tiptap-sns>-->
 
-<!--                            &lt;!&ndash; 이미지 미리보기 &ndash;&gt;-->
-<!--                            <div class="img-preview-container">-->
-<!--                                <div class="img-preview" v-for="(img, idx) in imgPreviewArr" :key="idx">-->
-<!--                                    <svg class="icon-cross" @click="deletePreviewImg(idx)">-->
-<!--                                        <use xlink:href="#svg-cross-thin"></use>-->
-<!--                                    </svg>-->
-<!--                                    <b-img-lazy :src="img.url"></b-img-lazy>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            &lt;!&ndash; /이미지 미리보기 &ndash;&gt;-->
+    <!--                            &lt;!&ndash; 이미지 미리보기 &ndash;&gt;-->
+    <!--                            <div class="img-preview-container">-->
+    <!--                                <div class="img-preview" v-for="(img, idx) in imgPreviewArr" :key="idx">-->
+    <!--                                    <svg class="icon-cross" @click="deletePreviewImg(idx)">-->
+    <!--                                        <use xlink:href="#svg-cross-thin"></use>-->
+    <!--                                    </svg>-->
+    <!--                                    <b-img-lazy :src="img.url"></b-img-lazy>-->
+    <!--                                </div>-->
+    <!--                            </div>-->
+    <!--                            &lt;!&ndash; /이미지 미리보기 &ndash;&gt;-->
 
-<!--                            <div-->
-<!--                                class="video-container"-->
-<!--                                v-if="videoSrc.url"-->
-<!--                            >-->
-<!--                                <svg class="icon-cross" @click="deleteVideo">-->
-<!--                                    <use xlink:href="#svg-cross-thin"></use>-->
-<!--                                </svg>-->
+    <!--                            <div-->
+    <!--                                class="video-container"-->
+    <!--                                v-if="videoSrc.url"-->
+    <!--                            >-->
+    <!--                                <svg class="icon-cross" @click="deleteVideo">-->
+    <!--                                    <use xlink:href="#svg-cross-thin"></use>-->
+    <!--                                </svg>-->
 
-<!--                                <video-->
-<!--                                    width="320"-->
-<!--                                    height="240"-->
-<!--                                    controls-->
-<!--                                    :src="videoSrc.url"-->
-<!--                                ></video>-->
-<!--                            </div>-->
-<!--                            &lt;!&ndash; <p>{{ feed.attatchment_files }}</p> &ndash;&gt;-->
-<!--                            &lt;!&ndash;                            <audio-preview :feed="feed"></audio-preview>&ndash;&gt;-->
+    <!--                                <video-->
+    <!--                                    width="320"-->
+    <!--                                    height="240"-->
+    <!--                                    controls-->
+    <!--                                    :src="videoSrc.url"-->
+    <!--                                ></video>-->
+    <!--                            </div>-->
+    <!--                            &lt;!&ndash; <p>{{ feed.attatchment_files }}</p> &ndash;&gt;-->
+    <!--                            &lt;!&ndash;                            <audio-preview :feed="feed"></audio-preview>&ndash;&gt;-->
 
-<!--                            &lt;!&ndash; 오디오 미리보기 &ndash;&gt;-->
-<!--                            <div class="audio-preview-container">-->
-<!--                                <div-->
-<!--                                    class="audio-preview"-->
-<!--                                    v-for="(audio, idx) in audioPreviewArr"-->
-<!--                                    :key="idx"-->
-<!--                                >-->
-<!--                                    <svg class="icon-cross" @click="deletePreviewAudio(idx)">-->
-<!--                                        <use xlink:href="#svg-cross-thin"></use>-->
-<!--                                    </svg>-->
-<!--                                    <audio controls :src="audio.url"></audio>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            &lt;!&ndash; /오디오 미리보기 &ndash;&gt;-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
+    <!--                            &lt;!&ndash; 오디오 미리보기 &ndash;&gt;-->
+    <!--                            <div class="audio-preview-container">-->
+    <!--                                <div-->
+    <!--                                    class="audio-preview"-->
+    <!--                                    v-for="(audio, idx) in audioPreviewArr"-->
+    <!--                                    :key="idx"-->
+    <!--                                >-->
+    <!--                                    <svg class="icon-cross" @click="deletePreviewAudio(idx)">-->
+    <!--                                        <use xlink:href="#svg-cross-thin"></use>-->
+    <!--                                    </svg>-->
+    <!--                                    <audio controls :src="audio.url"></audio>-->
+    <!--                                </div>-->
+    <!--                            </div>-->
+    <!--                            &lt;!&ndash; /오디오 미리보기 &ndash;&gt;-->
+    <!--                        </div>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--        </div>-->
 
-<!--        <overlay-scrollbars>-->
-<!--            <div-->
-<!--                @mousewheel="disableWheel"-->
-<!--                class="-->
-<!--                    custom-scroll-->
-<!--                    quick-post-footer-->
-<!--                    post-select-->
-<!--                    category-select-->
-<!--                "-->
-<!--            >-->
-<!--                &lt;!&ndash; todo: user id send &ndash;&gt;-->
-<!--                &lt;!&ndash; <p>{{ feed.posted_at }}</p> &ndash;&gt;-->
-<!--                &lt;!&ndash;                <custom-tooltip&ndash;&gt;-->
-<!--                &lt;!&ndash;                    @channel="getChannel"&ndash;&gt;-->
-<!--                &lt;!&ndash;                    @community="getCommunity"&ndash;&gt;-->
-<!--                &lt;!&ndash;                ></custom-tooltip>&ndash;&gt;-->
+    <!--        <overlay-scrollbars>-->
+    <!--            <div-->
+    <!--                @mousewheel="disableWheel"-->
+    <!--                class="-->
+    <!--                    custom-scroll-->
+    <!--                    quick-post-footer-->
+    <!--                    post-select-->
+    <!--                    category-select-->
+    <!--                "-->
+    <!--            >-->
+    <!--                &lt;!&ndash; todo: user id send &ndash;&gt;-->
+    <!--                &lt;!&ndash; <p>{{ feed.posted_at }}</p> &ndash;&gt;-->
+    <!--                &lt;!&ndash;                <custom-tooltip&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    @channel="getChannel"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    @community="getCommunity"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                ></custom-tooltip>&ndash;&gt;-->
 
-<!--                <div-->
-<!--                    class="category-listing"-->
-<!--                    v-for="(category, idx) in selectedCategory"-->
-<!--                    :key="idx"-->
-<!--                >-->
-<!--                    <button class="selected-category" ref="categoryBtn">-->
-<!--                        <div class="category-title pl-2">-->
-<!--                            <p>{{ category.name }}</p>-->
-<!--                        </div>-->
-<!--                        <div class="diagonal-border mx-2"></div>-->
-<!--                        <div class="category-title">-->
-<!--                            <p>{{ category.channel.name }}</p>-->
-<!--                        </div>-->
-<!--                        <div class="mx-2" @click="deleteCategory(idx)">-->
-<!--                            <svg class="icon-cross">-->
-<!--                                <use xlink:href="#svg-cross-thin"></use>-->
-<!--                            </svg>-->
-<!--                        </div>-->
-<!--                    </button>-->
-<!--                </div>-->
+    <!--                <div-->
+    <!--                    class="category-listing"-->
+    <!--                    v-for="(category, idx) in selectedCategory"-->
+    <!--                    :key="idx"-->
+    <!--                >-->
+    <!--                    <button class="selected-category" ref="categoryBtn">-->
+    <!--                        <div class="category-title pl-2">-->
+    <!--                            <p>{{ category.name }}</p>-->
+    <!--                        </div>-->
+    <!--                        <div class="diagonal-border mx-2"></div>-->
+    <!--                        <div class="category-title">-->
+    <!--                            <p>{{ category.channel.name }}</p>-->
+    <!--                        </div>-->
+    <!--                        <div class="mx-2" @click="deleteCategory(idx)">-->
+    <!--                            <svg class="icon-cross">-->
+    <!--                                <use xlink:href="#svg-cross-thin"></use>-->
+    <!--                            </svg>-->
+    <!--                        </div>-->
+    <!--                    </button>-->
+    <!--                </div>-->
 
-<!--                &lt;!&ndash; <div-->
-<!--                    class="category-listing"-->
-<!--                    v-for="(category, idx) in selectedCategory"-->
-<!--                    :key="idx"-->
-<!--                >-->
-<!--                    <button class="selected-category" ref="categoryBtn">-->
-<!--                        <div class="category-title pl-2">-->
-<!--                            <p>{{ category.community.name }}</p>-->
-<!--                        </div>-->
-<!--                        <div class="diagonal-border mx-2"></div>-->
-<!--                        <div class="category-title">-->
-<!--                            <p>{{ category.channel.name }}</p>-->
-<!--                        </div>-->
-<!--                        <div class="mx-2" @click="deleteCategory(idx)">-->
-<!--                            <svg class="icon-cross">-->
-<!--                                <use xlink:href="#svg-cross-thin"></use>-->
-<!--                            </svg>-->
-<!--                        </div>-->
-<!--                    </button>-->
-<!--                </div> &ndash;&gt;-->
+    <!--                &lt;!&ndash; <div-->
+    <!--                    class="category-listing"-->
+    <!--                    v-for="(category, idx) in selectedCategory"-->
+    <!--                    :key="idx"-->
+    <!--                >-->
+    <!--                    <button class="selected-category" ref="categoryBtn">-->
+    <!--                        <div class="category-title pl-2">-->
+    <!--                            <p>{{ category.community.name }}</p>-->
+    <!--                        </div>-->
+    <!--                        <div class="diagonal-border mx-2"></div>-->
+    <!--                        <div class="category-title">-->
+    <!--                            <p>{{ category.channel.name }}</p>-->
+    <!--                        </div>-->
+    <!--                        <div class="mx-2" @click="deleteCategory(idx)">-->
+    <!--                            <svg class="icon-cross">-->
+    <!--                                <use xlink:href="#svg-cross-thin"></use>-->
+    <!--                            </svg>-->
+    <!--                        </div>-->
+    <!--                    </button>-->
+    <!--                </div> &ndash;&gt;-->
 
-<!--                &lt;!&ndash; <div class="form-select dropdown-container">-->
-<!--                <select class="dropbox dropdown-item" @change="selectCommunity">-->
-<!--                    <option value="communities">My games</option>-->
+    <!--                &lt;!&ndash; <div class="form-select dropdown-container">-->
+    <!--                <select class="dropbox dropdown-item" @change="selectCommunity">-->
+    <!--                    <option value="communities">My games</option>-->
 
-<!--                    <option>game</option>-->
-<!--                </select>-->
-<!--            </div>-->
-<!--            <div class="form-select dropdown-container">-->
-<!--                <select class="dropbox dropdown-item" @change="selectCommunity">-->
-<!--                    <option value="communities">Portfolios</option>-->
+    <!--                    <option>game</option>-->
+    <!--                </select>-->
+    <!--            </div>-->
+    <!--            <div class="form-select dropdown-container">-->
+    <!--                <select class="dropbox dropdown-item" @change="selectCommunity">-->
+    <!--                    <option value="communities">Portfolios</option>-->
 
-<!--                    <option>Portfolio</option>-->
-<!--                </select>-->
-<!--            </div> &ndash;&gt;-->
-<!--            </div>-->
-<!--        </overlay-scrollbars>-->
-<!--        &lt;!&ndash; <div class="quick-post-footer checkbox">-->
-<!--            <div class="checkbox-wrap">-->
-<!--                <input-->
-<!--                    type="checkbox"-->
-<!--                    id="event-add-end-time"-->
-<!--                    name="event_add-end-time"-->
-<!--                />-->
+    <!--                    <option>Portfolio</option>-->
+    <!--                </select>-->
+    <!--            </div> &ndash;&gt;-->
+    <!--            </div>-->
+    <!--        </overlay-scrollbars>-->
+    <!--        &lt;!&ndash; <div class="quick-post-footer checkbox">-->
+    <!--            <div class="checkbox-wrap">-->
+    <!--                <input-->
+    <!--                    type="checkbox"-->
+    <!--                    id="event-add-end-time"-->
+    <!--                    name="event_add-end-time"-->
+    <!--                />-->
 
-<!--                <div class="checkbox-box">-->
-<!--                    <svg class="icon-check">-->
-<!--                        <use xlink:href="#svg-check"></use>-->
-<!--                    </svg>-->
-<!--                </div>-->
+    <!--                <div class="checkbox-box">-->
+    <!--                    <svg class="icon-check">-->
+    <!--                        <use xlink:href="#svg-check"></use>-->
+    <!--                    </svg>-->
+    <!--                </div>-->
 
-<!--                <label for="event-add-end-time">private</label>-->
-<!--            </div>-->
-<!--        </div> &ndash;&gt;-->
+    <!--                <label for="event-add-end-time">private</label>-->
+    <!--            </div>-->
+    <!--        </div> &ndash;&gt;-->
 
-<!--        <div class="quick-post-footer attachment">-->
-<!--            <div class="quick-post-footer-actions">-->
-<!--                &lt;!&ndash; upload pic &ndash;&gt;-->
+    <!--        <div class="quick-post-footer attachment">-->
+    <!--            <div class="quick-post-footer-actions">-->
+    <!--                &lt;!&ndash; upload pic &ndash;&gt;-->
 
-<!--                <image-uploader-btn-->
-<!--                    @imgFile="getFileList"-->
-<!--                    :activeTab="activeTab"-->
-<!--                ></image-uploader-btn>-->
+    <!--                <image-uploader-btn-->
+    <!--                    @imgFile="getFileList"-->
+    <!--                    :activeTab="activeTab"-->
+    <!--                ></image-uploader-btn>-->
 
-<!--                &lt;!&ndash; upload video &ndash;&gt;-->
-<!--                <video-uploader-btn-->
-<!--                    @fileCheckDone="getFileList('video')"-->
-<!--                    :activeTab="activeTab"-->
-<!--                ></video-uploader-btn>-->
+    <!--                &lt;!&ndash; upload video &ndash;&gt;-->
+    <!--                <video-uploader-btn-->
+    <!--                    @fileCheckDone="getFileList('video')"-->
+    <!--                    :activeTab="activeTab"-->
+    <!--                ></video-uploader-btn>-->
 
-<!--                &lt;!&ndash; /upload video  &ndash;&gt;-->
-<!--                &lt;!&ndash; upload audio &ndash;&gt;-->
-<!--                <audio-uploader-btn-->
-<!--                    @fileCheckDone="getFileList('audio')"-->
-<!--                    :activeTab="activeTab"-->
-<!--                >-->
-<!--                </audio-uploader-btn>-->
-<!--                &lt;!&ndash; /upload audio &ndash;&gt;-->
-<!--                &lt;!&ndash; <div-->
-<!--                    class="quick-post-footer-action text-tooltip-tft-medium"-->
-<!--                    data-title="Insert Link"-->
-<!--                >-->
-<!--                    <svg-->
-<!--                        xmlns="http://www.w3.org/2000/svg"-->
-<!--                        viewBox="0 0 24 24"-->
-<!--                        width="24"-->
-<!--                        height="24"-->
-<!--                    >-->
-<!--                        <path fill="none" d="M0 0h24v24H0z" />-->
-<!--                        <path-->
-<!--                            d="M13.06 8.11l1.415 1.415a7 7 0 0 1 0 9.9l-.354.353a7 7 0 0 1-9.9-9.9l1.415 1.415a5 5 0 1 0 7.071 7.071l.354-.354a5 5 0 0 0 0-7.07l-1.415-1.415 1.415-1.414zm6.718 6.011l-1.414-1.414a5 5 0 1 0-7.071-7.071l-.354.354a5 5 0 0 0 0 7.07l1.415 1.415-1.415 1.414-1.414-1.414a7 7 0 0 1 0-9.9l.354-.353a7 7 0 0 1 9.9 9.9z"-->
-<!--                            fill="rgba(97,106,130,1)"-->
-<!--                        />-->
-<!--                    </svg>-->
-<!--                </div> &ndash;&gt;-->
+    <!--                &lt;!&ndash; /upload video  &ndash;&gt;-->
+    <!--                &lt;!&ndash; upload audio &ndash;&gt;-->
+    <!--                <audio-uploader-btn-->
+    <!--                    @fileCheckDone="getFileList('audio')"-->
+    <!--                    :activeTab="activeTab"-->
+    <!--                >-->
+    <!--                </audio-uploader-btn>-->
+    <!--                &lt;!&ndash; /upload audio &ndash;&gt;-->
+    <!--                &lt;!&ndash; <div-->
+    <!--                    class="quick-post-footer-action text-tooltip-tft-medium"-->
+    <!--                    data-title="Insert Link"-->
+    <!--                >-->
+    <!--                    <svg-->
+    <!--                        xmlns="http://www.w3.org/2000/svg"-->
+    <!--                        viewBox="0 0 24 24"-->
+    <!--                        width="24"-->
+    <!--                        height="24"-->
+    <!--                    >-->
+    <!--                        <path fill="none" d="M0 0h24v24H0z" />-->
+    <!--                        <path-->
+    <!--                            d="M13.06 8.11l1.415 1.415a7 7 0 0 1 0 9.9l-.354.353a7 7 0 0 1-9.9-9.9l1.415 1.415a5 5 0 1 0 7.071 7.071l.354-.354a5 5 0 0 0 0-7.07l-1.415-1.415 1.415-1.414zm6.718 6.011l-1.414-1.414a5 5 0 1 0-7.071-7.071l-.354.354a5 5 0 0 0 0 7.07l1.415 1.415-1.415 1.414-1.414-1.414a7 7 0 0 1 0-9.9l.354-.353a7 7 0 0 1 9.9 9.9z"-->
+    <!--                            fill="rgba(97,106,130,1)"-->
+    <!--                        />-->
+    <!--                    </svg>-->
+    <!--                </div> &ndash;&gt;-->
 
-<!--                &lt;!&ndash; 투표 &ndash;&gt;-->
-<!--                &lt;!&ndash; <div-->
-<!--                    class="quick-post-footer-action text-tooltip-tft-medium"-->
-<!--                    data-title="Poll"-->
-<!--                >-->
-<!--                    <svg class="option-item-icon icon-poll">-->
-<!--                        <use xlink:href="#svg-poll"></use>-->
-<!--                    </svg>-->
-<!--                </div> &ndash;&gt;-->
-<!--                &lt;!&ndash; scheduled post &ndash;&gt;-->
-<!--                &lt;!&ndash; <div-->
-<!--                    class="quick-post-footer-action text-tooltip-tft-medium"-->
-<!--                    data-title="Schedule Post"-->
-<!--                    @click="isScheduledPost = !isScheduledPost"-->
-<!--                >-->
-<!--                    <svg class="option-item-icon icon-blog-posts">-->
-<!--                        <use xlink:href="#svg-blog-posts"></use>-->
-<!--                    </svg>-->
-<!--                </div> &ndash;&gt;-->
-<!--                &lt;!&ndash; todo: 비공개글  &ndash;&gt;-->
-<!--&lt;!&ndash;                <div class="checkbox-wrap">&ndash;&gt;-->
-<!--&lt;!&ndash;                    <input&ndash;&gt;-->
-<!--&lt;!&ndash;                        type="checkbox"&ndash;&gt;-->
-<!--&lt;!&ndash;                        :id="feed ? `checkbox${feed.id}` : 'checkbox'"&ndash;&gt;-->
-<!--&lt;!&ndash;                        v-model="isPrivate"&ndash;&gt;-->
-<!--&lt;!&ndash;                    />&ndash;&gt;-->
+    <!--                &lt;!&ndash; 투표 &ndash;&gt;-->
+    <!--                &lt;!&ndash; <div-->
+    <!--                    class="quick-post-footer-action text-tooltip-tft-medium"-->
+    <!--                    data-title="Poll"-->
+    <!--                >-->
+    <!--                    <svg class="option-item-icon icon-poll">-->
+    <!--                        <use xlink:href="#svg-poll"></use>-->
+    <!--                    </svg>-->
+    <!--                </div> &ndash;&gt;-->
+    <!--                &lt;!&ndash; scheduled post &ndash;&gt;-->
+    <!--                &lt;!&ndash; <div-->
+    <!--                    class="quick-post-footer-action text-tooltip-tft-medium"-->
+    <!--                    data-title="Schedule Post"-->
+    <!--                    @click="isScheduledPost = !isScheduledPost"-->
+    <!--                >-->
+    <!--                    <svg class="option-item-icon icon-blog-posts">-->
+    <!--                        <use xlink:href="#svg-blog-posts"></use>-->
+    <!--                    </svg>-->
+    <!--                </div> &ndash;&gt;-->
+    <!--                &lt;!&ndash; todo: 비공개글  &ndash;&gt;-->
+    <!--&lt;!&ndash;                <div class="checkbox-wrap">&ndash;&gt;-->
+    <!--&lt;!&ndash;                    <input&ndash;&gt;-->
+    <!--&lt;!&ndash;                        type="checkbox"&ndash;&gt;-->
+    <!--&lt;!&ndash;                        :id="feed ? `checkbox${feed.id}` : 'checkbox'"&ndash;&gt;-->
+    <!--&lt;!&ndash;                        v-model="isPrivate"&ndash;&gt;-->
+    <!--&lt;!&ndash;                    />&ndash;&gt;-->
 
-<!--&lt;!&ndash;                    <div class="checkbox-box">&ndash;&gt;-->
-<!--&lt;!&ndash;                        <svg class="icon-check">&ndash;&gt;-->
-<!--&lt;!&ndash;                            <use xlink:href="#svg-check"></use>&ndash;&gt;-->
-<!--&lt;!&ndash;                        </svg>&ndash;&gt;-->
-<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+    <!--&lt;!&ndash;                    <div class="checkbox-box">&ndash;&gt;-->
+    <!--&lt;!&ndash;                        <svg class="icon-check">&ndash;&gt;-->
+    <!--&lt;!&ndash;                            <use xlink:href="#svg-check"></use>&ndash;&gt;-->
+    <!--&lt;!&ndash;                        </svg>&ndash;&gt;-->
+    <!--&lt;!&ndash;                    </div>&ndash;&gt;-->
 
-<!--&lt;!&ndash;                    <label :for="feed ? `checkbox${feed.id}` : 'checkbox'"&ndash;&gt;-->
-<!--&lt;!&ndash;                    >private</label&ndash;&gt;-->
-<!--&lt;!&ndash;                    >&ndash;&gt;-->
-<!--&lt;!&ndash;                </div>&ndash;&gt;-->
-<!--            </div>-->
+    <!--&lt;!&ndash;                    <label :for="feed ? `checkbox${feed.id}` : 'checkbox'"&ndash;&gt;-->
+    <!--&lt;!&ndash;                    >private</label&ndash;&gt;-->
+    <!--&lt;!&ndash;                    >&ndash;&gt;-->
+    <!--&lt;!&ndash;                </div>&ndash;&gt;-->
+    <!--            </div>-->
 
-<!--            <div class="quick-post-footer-actions">-->
-<!--                &lt;!&ndash; <p class="button small">임시 저장</p> &ndash;&gt;-->
-<!--                <p class="button small secondary" @click="updatePost" v-if="feed">Update</p>-->
-<!--                <p class="button small secondary" @click="uploadPost" v-else>Post</p>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div v-if="isScheduledPost" class="date-container">-->
-<!--            <b-form-datepicker-->
-<!--                today-button-->
-<!--                :min="minDate"-->
-<!--                class="datepicker"-->
-<!--                v-model="reserved_date"-->
-<!--            >-->
-<!--            </b-form-datepicker>-->
-<!--            <b-form-timepicker-->
-<!--                class="timepicker"-->
-<!--                v-model="reserved_time"-->
-<!--            ></b-form-timepicker>-->
-<!--        </div>-->
-<!--        <iframe-->
-<!--            v-for="link in youtubeLink"-->
-<!--            :key="link.id"-->
-<!--            width="560"-->
-<!--            height="315"-->
-<!--            :src="`https://www.youtube.com/embed/${link}`"-->
-<!--            title="YouTube video player"-->
-<!--            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"-->
-<!--            allowfullscreen-->
-<!--        ></iframe>-->
+    <!--            <div class="quick-post-footer-actions">-->
+    <!--                &lt;!&ndash; <p class="button small">임시 저장</p> &ndash;&gt;-->
+    <!--                <p class="button small secondary" @click="updatePost" v-if="feed">Update</p>-->
+    <!--                <p class="button small secondary" @click="uploadPost" v-else>Post</p>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--        <div v-if="isScheduledPost" class="date-container">-->
+    <!--            <b-form-datepicker-->
+    <!--                today-button-->
+    <!--                :min="minDate"-->
+    <!--                class="datepicker"-->
+    <!--                v-model="reserved_date"-->
+    <!--            >-->
+    <!--            </b-form-datepicker>-->
+    <!--            <b-form-timepicker-->
+    <!--                class="timepicker"-->
+    <!--                v-model="reserved_time"-->
+    <!--            ></b-form-timepicker>-->
+    <!--        </div>-->
+    <!--        <iframe-->
+    <!--            v-for="link in youtubeLink"-->
+    <!--            :key="link.id"-->
+    <!--            width="560"-->
+    <!--            height="315"-->
+    <!--            :src="`https://www.youtube.com/embed/${link}`"-->
+    <!--            title="YouTube video player"-->
+    <!--            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"-->
+    <!--            allowfullscreen-->
+    <!--        ></iframe>-->
 
-<!--        <div v-html="content"></div>-->
-<!--        <b-modal-->
-<!--            ref="alertModal"-->
-<!--            class="modal-container"-->
-<!--            centered-->
-<!--            hide-header-->
-<!--            hide-footer-->
-<!--        >-->
-<!--            <p class="my-4" style="color: #000">-->
-<!--                작성중인 글은 저장되지 않고 사라집니다. 작성을 끝내시겠습니까?-->
-<!--            </p>-->
+    <!--        <div v-html="content"></div>-->
+    <!--        <b-modal-->
+    <!--            ref="alertModal"-->
+    <!--            class="modal-container"-->
+    <!--            centered-->
+    <!--            hide-header-->
+    <!--            hide-footer-->
+    <!--        >-->
+    <!--            <p class="my-4" style="color: #000">-->
+    <!--                작성중인 글은 저장되지 않고 사라집니다. 작성을 끝내시겠습니까?-->
+    <!--            </p>-->
 
-<!--            <div>-->
-<!--                <button-->
-<!--                    class="popup-box-action half button tertiary"-->
-<!--                    style="width: 47%"-->
-<!--                    @click="postDone(true)"-->
-<!--                >-->
-<!--                    OK-->
-<!--                </button>-->
-<!--                <button-->
-<!--                    class="popup-box-action half button"-->
-<!--                    style="width: 47%"-->
-<!--                    @click="postDone(false)"-->
-<!--                >-->
-<!--                    Cancel-->
-<!--                </button>-->
-<!--            </div>-->
-<!--        </b-modal>-->
-<!--    </div>-->
+    <!--            <div>-->
+    <!--                <button-->
+    <!--                    class="popup-box-action half button tertiary"-->
+    <!--                    style="width: 47%"-->
+    <!--                    @click="postDone(true)"-->
+    <!--                >-->
+    <!--                    OK-->
+    <!--                </button>-->
+    <!--                <button-->
+    <!--                    class="popup-box-action half button"-->
+    <!--                    style="width: 47%"-->
+    <!--                    @click="postDone(false)"-->
+    <!--                >-->
+    <!--                    Cancel-->
+    <!--                </button>-->
+    <!--            </div>-->
+    <!--        </b-modal>-->
+    <!--    </div>-->
 </template>
 
 <script lang="ts">
@@ -431,7 +444,7 @@ import {OverlayScrollbarsComponent} from "overlayscrollbars-vue";
     },
 })
 export default class Post extends Vue {
-    @Prop() feed!: any;
+    feed: any = {};
     private dropdown: Dropdown = new Dropdown();
     private tooltip: Tooltip = new Tooltip();
     private fileLoader: FileLoader = new FileLoader();
@@ -527,43 +540,48 @@ export default class Post extends Vue {
         await this.$store.dispatch("loginState");
         // console.log(this.$store.getters.currPage)
         // console.log(this.feed);
-        this.tooltip.init();
-        this.dropdown.init();
+        this.feed = this.$store.getters.feed
 
         if (this.feed) {
             this.prefill();
+
         }
         this.fetch();
     }
 
+    beforeDestroy() {
+        this.$store.commit('feed', null)
+    }
+
+
     prefill() {
         this.$store.dispatch('resetAttFiles')
-
         for (const file of this.feed.attatchment_files) {
-            console.log(file)
+            console.log('attatchment_files', file)
             if (file.type === 'image') {
-                this.imgPreviewArr.push(file);
-                console.log(this.imgPreviewArr)
+                this.$store.commit('imgArr', file)
+                this.imgPreviewArr = this.$store.getters.imgArr
             }
         }
 
-        this.$store.commit('imgArr', this.imgPreviewArr)
-        console.log('store', this.$store.getters.imgArr)
+        this.$store.commit('postContents', this.feed.content);
 
-        if (this.feed.attatchment_files.type === 'image') {
-            this.imgPreviewArr = this.feed.attatchment_files.img;
-            console.log(this.imgPreviewArr)
-        }
-        else if (this.feed.attatchment_files.audio) {
-            this.fileLoader.fileObj.audio =
-                this.feed.attatchment_files.audio;
-        }
-        else if (this.feed.attatchment_files.video) {
-            this.fileLoader.fileObj.video =
-                this.feed.attatchment_files.video;
+        // this.$store.commit('imgArr', this.imgPreviewArr)
+        // console.log('store', this.$store.getters.imgArr)
+        //
+        // if (this.feed.attatchment_files.type === 'image') {
+        //     this.imgPreviewArr = this.feed.attatchment_files.img;
+        //     console.log(this.imgPreviewArr)
+        // }
+        // else if (this.feed.attatchment_files.audio) {
+        //     this.fileLoader.fileObj.audio =
+        //         this.feed.attatchment_files.audio;
+        // }
+        // else if (this.feed.attatchment_files.video) {
+        //     this.fileLoader.fileObj.video =
+        //         this.feed.attatchment_files.video;
+        // }
 
-
-        }
     }
 
     deletePreviewImg(idx: number) {
@@ -623,8 +641,8 @@ export default class Post extends Vue {
             if (
                 this.attFiles.length !== 0 ||
                 !this.isEditorEmpty ||
-                this.$store.getters.imgArr.length>0 ||
-                this.$store.getters.audioArr.length>0
+                this.$store.getters.imgArr.length > 0 ||
+                this.$store.getters.audioArr.length > 0
             ) {
                 (this.$refs["alertModal"] as any).show();
             }
@@ -681,32 +699,31 @@ export default class Post extends Vue {
         let date = this.reserved_date + "T" + this.reserved_time;
         let scheduledTime = moment(date).valueOf();
         // console.log(this.)
-        // this.attFiles = await this.uploadAtt()
+        this.attFiles = await this.uploadAtt()
 
-        console.log(document.querySelectorAll('.hashtag'))
 
-        console.log(this.$store.getters.postContents)
+        console.log(this.$store.getters.postImgArr)
 
         //blog
         let div = document.createElement("html");
         div.innerHTML = this.$store.getters.postContents;
 
-        let imgFiles = div.getElementsByClassName( 'attr-img' )
-        let videoFiles= div.getElementsByTagName( 'iframe' )
-        let audioFiles= div.getElementsByTagName( 'audio' )
+        let imgFiles = div.getElementsByClassName('attr-img')
+        let videoFiles = div.getElementsByTagName('iframe')
+        let audioFiles = div.getElementsByTagName('audio')
         // console.log('videoFiles', videoFiles.src)
 
-        for (const imgFile of imgFiles) {
-            this.attFiles.push(  {
-                priority: 0,
-                //@ts-ignore
-                url: imgFile.src,
-                type: "image"
-            })
+        for (const imgFile of this.$store.getters.postImgArr) {
+            // this.attFiles.push({
+            //     priority: 0,
+            //     //@ts-ignore
+            //     url: imgFile[0].url,
+            //     type: "image"
+            // })
         }
 
         for (const video of videoFiles) {
-            this.attFiles.push(  {
+            this.attFiles.push({
                 priority: 0,
                 url: video.src,
                 type: "video"
@@ -714,7 +731,7 @@ export default class Post extends Vue {
         }
         for (const audio of audioFiles) {
             console.log('audio, ', audio)
-            this.attFiles.push(  {
+            this.attFiles.push({
                 priority: 0,
                 url: audio.src,
                 type: "sound"
@@ -723,6 +740,7 @@ export default class Post extends Vue {
         //
         // console.log('text', div.getElementsByClassName( 'attr-img' ))
 
+        console.log('this.attFiles', this.attFiles)
 
         const obj = {
             user_uid: this.user.uid,
@@ -751,7 +769,8 @@ export default class Post extends Vue {
         this.$api.uploadPost(obj)
             .then((res: AxiosResponse) => {
                 this.init();
-                this.$emit("closePostModal");
+                this.$modal.hide("writingModal");
+                this.$emit('refetch')
                 this.$toasted.show("포스팅이 완료되었습니다.", {
                     fullWidth: true,
                     fitToScreen: true,
@@ -769,6 +788,8 @@ export default class Post extends Vue {
                 });
             })
             .catch((err: AxiosError) => {
+                this.$modal.hide("writingModal");
+                this.init();
                 this.$toasted.show("업로드에 실패하였습니다.", {
                     fullWidth: true,
                     fitToScreen: true,
@@ -813,12 +834,13 @@ export default class Post extends Vue {
             ],
             scheduled_for: null
         }
+        console.log(obj)
 
         this.$api.updatePost(obj)
             .then((res: AxiosResponse) => {
                 this.init();
                 this.$emit("closePostModal");
-                this.$toasted.show("포스팅이 완료되었습니다.", {
+                this.$toasted.show("포스팅 수정이 완료되었습니다.", {
                     fullWidth: true,
                     fitToScreen: true,
                     theme: "outline",
@@ -835,7 +857,7 @@ export default class Post extends Vue {
                 });
             })
             .catch((err: AxiosError) => {
-                this.$toasted.show("업로드에 실패하였습니다.", {
+                this.$toasted.show("포스팅 수정에 실패하였습니다.", {
                     fullWidth: true,
                     fitToScreen: true,
                     theme: "outline",
@@ -872,19 +894,19 @@ export default class Post extends Vue {
             formData.append(this.videoSrc.file.name, this.videoSrc.file)
         }
 
-if(formData){
-    return await this.$api.fileUploader(formData)
-}
+        if (formData) {
+            return await this.$api.fileUploader(formData)
+        }
 
 
     }
 
 
-    @Watch('$store.getters.video')
-    watchImg() {
-        this.videoSrc = this.$store.getters.video
-        console.log('watch', this.videoSrc)
-    }
+    // @Watch('$store.getters.video')
+    // watchImg() {
+    //     this.videoSrc = this.$store.getters.video
+    //     console.log('watch', this.videoSrc)
+    // }
 
     stringToHTML = (str: any) => {
         var dom = document.createElement("div");
@@ -929,11 +951,11 @@ if(formData){
         console.log(text);
     }
 
-    @Watch('$store.getters.imgArr')
-    imgArr() {
-        this.imgPreviewArr = this.$store.getters.imgArr
-        console.log('imgPreviewArr', this.imgPreviewArr)
-    }
+    // @Watch('$store.getters.imgArr')
+    // imgArr() {
+    //     this.imgPreviewArr = this.$store.getters.imgArr
+    //     console.log('imgPreviewArr', this.imgPreviewArr)
+    // }
 
     @Watch('$store.getters.audioArr')
     audioArr() {
@@ -941,6 +963,11 @@ if(formData){
         console.log('audioPreviewArr', this.audioPreviewArr)
     }
 
+    hideModal() {
+
+        this.$store.dispatch('resetEditor')
+        this.$modal.hide('writingModal')
+    }
 
     //emit
     getFileList(file: any) {
@@ -986,33 +1013,37 @@ if(formData){
 </script>
 
 <style lang="scss" scoped>
-.btn-default-samll{
+.btn-default-samll {
     width: 30%;
     float: right;
     padding: 5px 5px 0px 0px;
 }
-.btn-default{
+
+.btn-default {
     border-radius: 0px !important;
     width: 50%;
 }
-.btn-default.post-btn.active{
+
+.btn-default.post-btn.active {
     color: #fff;
     background: #F97316;
 }
-.btn-default.post-btn{
+
+.btn-default.post-btn {
     background: #fff;
     color: #F97316;
-/* border-color: #F97316; */
+    /* border-color: #F97316; */
     border-bottom: 1px solid #F97316;
 }
 
-.video-container{
-    video{
+.video-container {
+    video {
         margin-top: 15px;
         width: 100%;
     }
 
 }
+
 .audio-preview-container {
     // background-color: #68cef8;
     align-items: center;
@@ -1110,15 +1141,15 @@ if(formData){
 // image preview of post
 .img-preview-container {
     // background-color: #68cef8;
-    align-items: center;
     display: flex;
-    flex-wrap: wrap;
+    /* flex-direction: row; */
+    flex-wrap: nowrap;
     // border-top: 2px solid #616161;
 
     .img-preview {
         margin: 5px;
         height: auto;
-        width: calc(100% * (1 / 5) - 10px - 1px);
+        width: 100px;
         border-radius: 10px;
         position: relative;
         overflow: hidden;

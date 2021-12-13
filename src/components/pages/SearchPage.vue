@@ -23,13 +23,13 @@
             </swiper>
         </div>
         <dl class="area-title">
-            <dt>Users <span>{{ memberList.length }}</span></dt>
+            <dt>Users <span>{{ memberList && memberList.length }}</span></dt>
         </dl>
-        <ul class="card-follow" >
+        <ul class="card-follow" v-if="memberList">
             <li v-for="member in memberList" :key="member.id" @click="userPage(member.uid)">
                 <div class="cf-img" ></div>
 <!--                todo: zempy s3에 올려서 url 따서 넣기-->
-                <p :style="{'background' : 'url(' +member.picture === null ?  '/zempie/community/img/zempy.png': member.picture  + ') center center no-repeat', 'background-size' : 'cover'}"></p>
+                <p :style="{'background' : 'url(' + member.picture || 'img/zempy.png' + ') center center no-repeat', 'background-size' : 'cover'}"></p>
                 <div class="cf-info">
                     <h3>{{ member.name }}</h3>
                     <p> </p>
@@ -54,15 +54,16 @@
 
 
         <dl class="area-title">
-            <dt>Games <span>{{ games.length }}</span></dt>
+            <dt>Games <span>{{games&& games.length }}</span></dt>
         </dl>
 
-        <ul class="card-game" >
-            <li v-for="game in games" :key="game.id">
-                <div :style="`background: url( ${game && game.url_thumb_webp} ) center center no-repeat; background-size: cover;`"></div>
+        <ul class="card-game" v-if="games">
+            <li v-for="game in games" :key="game.id" @click="playGame(game.pathname)">
+                <div :style="`background: url( ${game && game.url_thumb_webp ||  game.url_thumb} ) center center no-repeat; background-size: cover;`"></div>
                 <dl>
                     <dt>
-                        <P :style="`background: url('https://i.pinimg.com/564x/c8/73/80/c873800d7a80266bc1bd4797671caaae.jpg') center center no-repeat; background-size: cover;`"></P>
+
+                        <P :style="`background: url(${game.user&& game.user.picture || 'img/zempy.png'}) center center no-repeat; background-size: cover;`"></P>
                     </dt>
                     <dd>
                         <h2>{{ game && game.title  }}</h2>
@@ -86,10 +87,10 @@
         </ul>
 
         <dl class="area-title">
-            <dt>Posts <span>{{ posts.length }}</span></dt>
+            <dt>Posts <span>{{ posts && posts.length }}</span></dt>
         </dl>
 
-        <div class="post-wrap" v-if="posts.length > 0">
+        <div class="post-wrap" v-if="posts">
             <ul class="post-list">
                 <!--포스트 반복 -->
                 <li v-for="post in posts" :key="post.id">
@@ -240,6 +241,11 @@ export default class SearchPage extends Vue {
     }
     userPage(userUid: string){
         this.$router.push(`/channel/${userUid}/timeline`)
+    }
+    playGame(pathname: string) {
+        window.open(
+            this.$store.getters.homeUrl + `play/${pathname}`, "_blank");
+
     }
 
     copyUrl() {

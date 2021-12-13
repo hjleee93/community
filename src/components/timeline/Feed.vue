@@ -1,58 +1,5 @@
 <template>
-    <li v-if="feed.id">
-        <dl>
-            <dt>
-                <span
-                    style="background: url('https://i.pinimg.com/564x/70/86/0a/70860a694929c5a615deead4a9c9d259.jpg') center center no-repeat; background-size: cover;"></span>
-            </dt>
-            <dd>
-                <h2>{{ feed.user.name }}uploaded a{{ feed.post_type }} post</h2>
-                <p><i class="uis uis-clock" style="color:#c1c1c1;"></i> {{ postDate }}</p>
-            </dd>
-            <dt v-if="user && (user.id === feed.user.id)">
-                <dropdown-menu :overlay="false" class="feed-dropdown">
-                    <a class="btn-circle-none pt6" slot="trigger"><i class="uil uil-ellipsis-h"></i></a>
-                    <div slot="body" class="vic-more-list">
-                        <a @click="openEdit">포스팅 수정</a>
-                        <a @click="deletePost(feed.id)">포스팅 삭제</a>
-                    </div>
-                </dropdown-menu>
-            </dt>
-        </dl>
 
-
-        <div>
-            <p ref="feedContent"
-               v-html="feed.content"
-            ></p>
-        </div>
-        <ul>
-            <li>
-                <ul>
-                    <li v-if="!feed.liked" @click="sendLike"><i class="xi-heart-o like-icon"
-                                                                style="font-size:22px; color:#ff6e17"></i>&nbsp;
-                        {{ feed.like_cnt }}
-                    </li>
-                    <li v-else @click="sendLike"><i class="xi-heart like-icon"
-                                                    style="font-size:22px; color:#ff6e17"></i>&nbsp; {{ feed.like_cnt }}
-                    </li>
-                    <li @click="openComments"><i class="uil uil-comment-alt-dots comment-icon"
-                                                 style="font-size:22px;"></i>&nbsp; {{ feed.comment_cnt }}
-                    </li>
-                    <!--                    <li><i class="uil uil-eye" style="font-size:22px;"></i>&nbsp;680</li>-->
-                    <li><a @click="copyUrl"><i class="uil uil-share-alt" style="font-size:20px;"></i></a></li>
-                </ul>
-            </li>
-            <!--            <li><router-link to="#"><i class="uil uil-bookmark" style="font-size:24px; color:#ff6e17;"></i></router-link></li>-->
-        </ul>
-        <div  v-if="isOpenedComments">
-
-
-
-                <TimelineComments :postId="feed.id"></TimelineComments>
-
-        </div>
-    </li>
     <!--            <div-->
     <!--                class="widget-box no-padding"-->
     <!--                :style="-->
@@ -271,13 +218,116 @@
     <!--            <TimelineComments :postId="feed.id"></TimelineComments>-->
     <!--        </template>-->
     <!--    </li>-->
+    <li class="tap-list" v-if="feed&& feed.user">
+        <dl class="tapl-title">
+            <dt>
+                <dl>
+                    <UserAvatar :user="feed.user"></UserAvatar>
+
+                    <dd>
+                        <h2>{{ feed.user.name }} uploaded a {{ feed.post_type }} post</h2>
+                        <p><i class="uis uis-clock" style="color:#c1c1c1;"></i> {{ dateFormat(feed.createdAt) }}</p>
+
+                    </dd>
+                </dl>
+            </dt>
+            <dd>
+                <dropdown-menu :overlay="false" class="feed-dropdown">
+                    <a class="btn-circle-none pt6" slot="trigger"><i class="uil uil-ellipsis-h"></i></a>
+                    <div slot="body" class="vic-more-list">
+                        <template v-if="user && (user.id === feed.user.id)">
+
+                            <a @click="openEdit">포스팅 수정</a>
+                            <a @click="deletePost">포스팅 삭제</a>
+                            <a @click="report">포스팅 신고</a>
+                        </template>
+                        <template v-else>
+                            <router-link :to="`/channel/${feed.user.uid}/timeline`">유저 채널 방문</router-link>
+                            <a @click="reportUser">유저 신고</a>
+                        </template>
+                    </div>
+                </dropdown-menu>
+            </dd>
+        </dl>
+
+
+        <div class="tapl-content" v-html="feed.content"></div>
+
+        <template v-if="attachedFile && feed.post_type === 'SNS'">
+            <div v-for="file in attachedFile">
+                <img @click="contentClicked" v-if="file.type === 'image'" :src="file.url"
+                     class="feed-img mt-3"></img>
+            </div>
+        </template>
+
+        <ul class="tapl-option">
+            <li>
+                <ul>
+                    <li v-if="!feed.liked" @click="sendLike"><i class="xi-heart-o like-icon"
+                                                                style="font-size:22px; color:#ff6e17"></i>&nbsp;
+                        {{ feed.like_cnt }}
+                    </li>
+                    <li v-else @click="sendLike"><i class="xi-heart like-icon"
+                                                    style="font-size:22px; color:#ff6e17"></i>&nbsp; {{ feed.like_cnt }}
+                    </li>
+                    <li @click="openComments"><i class="uil uil-comment-alt-dots comment-icon"
+                                                 style="font-size:22px;"></i>&nbsp; {{ feed.comment_cnt }}
+                    </li>
+                    <!--                    <li><i class="uil uil-eye" style="font-size:22px;"></i>&nbsp;680</li>-->
+                    <li><a @click="copyUrl"><i class="uil uil-share-alt" style="font-size:20px;"></i></a></li>
+                </ul>
+            </li>
+            <!--            <li><router-link to="#"><i class="uil uil-bookmark" style="font-size:24px; color:#ff6e17;"></i></router-link></li>-->
+        </ul>
+        <div v-if="isOpenedComments" class="tapl-comment">
+            <ul @scroll="scrollCheck">
+                <li v-for="comment in comments" :key="comment.id">
+                    <dl>
+                        <dt>
+                            <dl>
+                                <dt><span
+                                    style="background: url('https://i.pinimg.com/564x/27/0c/51/270c515a26bb02c232bf0c1cc906ddbb.jpg') center center no-repeat; background-size: cover;"></span>
+                                </dt>
+                                <dd>
+                                    <h2>{{ comment.user_id }} <span>{{dateFormat(comment.createdAt)}}</span></h2>
+                                    <div>
+                                        {{ comment.content }}
+                                    </div>
+                                    <p>
+                                        <a href="#"><i class="uil uil-heart-sign"></i> 좋아요 {{ comment.like_cnt }}개</a>
+                                        <a href="#"><i class="uil uil-edit-alt"></i> 댓글 작성</a>
+                                    </p>
+                                </dd>
+                            </dl>
+                        </dt>
+                        <dd>
+                            <dropdown-menu :overlay="false" class="tapl-more-dropdown">
+                                <router-link to="#" slot="trigger"><i class="uil uil-ellipsis-h font25"></i>
+                                </router-link>
+                                <div slot="body" class="more-list">
+                                    <router-link to="#">댓글 등록</router-link>
+                                    <router-link to="#">댓글 수정</router-link>
+                                    <router-link to="#">댓글 삭제</router-link>
+                                </div>
+                            </dropdown-menu>
+                        </dd>
+                    </dl>
+                </li>
+            </ul>
+
+            <dl>
+                <dt><input type="text" name="" title="" placeholder="댓글달기"/></dt>
+                <dd><a href="#"><i class="uil uil-message"></i></a></dd>
+            </dl>
+
+        </div>
+    </li>
 
 </template>
 
 <script lang="ts">
 import {Component, Prop, Vue} from "vue-property-decorator";
 
-import CommentList from "./CommentList.vue";
 import Hexagon from "@/plugins/hexagon";
 import Dropdown from "@/plugins/dropdown";
 import Tooltip from "@/plugins/tooltip";
@@ -287,12 +337,14 @@ import PostDropdown from "@/components/layout/dropdown/PostDropdown.vue";
 import TiptapSns from "@/components/timeline/TiptapSns.vue";
 import {dateFormat} from "@/script/moment";
 import {AxiosError, AxiosResponse} from "axios";
-import TimelineComments from "@/components/timeline/_commentList.vue";
+import CommentList from "@/components/comment/_commentList.vue";
 import LikeBtn from "@/components/common/_likeBtn.vue";
 import UserAvatar from "@/components/common/_userAvatar.vue";
 
 import {copyUrl} from "@/script/utils";
 import {mapGetters} from "vuex";
+import CustomModal from "@/components/common/Modal.vue";
+import {scrollDone} from "@/script/scrollManager";
 
 @Component({
     components: {
@@ -301,21 +353,19 @@ import {mapGetters} from "vuex";
         Post,
         PostDropdown,
         TiptapSns,
-        TimelineComments,
+        CommentList,
         LikeBtn,
-        UserAvatar
+        UserAvatar,
+        CustomModal
     },
     computed: {...mapGetters(["user"])},
 })
 export default class Feed extends Vue {
     @Prop() feed!: any;
-    private dropdown: Dropdown = new Dropdown();
-    private hexagon: Hexagon = new Hexagon();
-    private tooltip: Tooltip = new Tooltip();
+
     private reportPopup: boolean = false;
     private isOpenedComments: boolean = false;
     private likeList: any = [];
-    private postDate: string = "";
     private isCopied: boolean = false;
     private isEdit: number = 0;
 
@@ -326,16 +376,28 @@ export default class Feed extends Vue {
 
     private originImg: string = "";
 
-    limit = 5;
-    offset = 0;
+    limit: number = 5;
+    offset: number = 0;
+    sort: string = '';
+
+    isAddData: boolean = false;
+    private comments: any = [];
     private user!: any;
 
     mounted() {
-        console.log(this.feed)
         this.attachedFile = this.feed.attatchment_files
         this.hashtags = this.feed.hashtags
-        this.postDate = dateFormat(this.feed.createdAt);
-        // console.log('feed', this.feed)
+    }
+
+    scrollCheck(e) {
+        if (scrollDone(e.target)) {
+            this.offset += this.limit;
+            this.commentFetch();
+        }
+    }
+
+    dateFormat(date:number){
+        return dateFormat(date);
     }
 
     sendLike() {
@@ -371,6 +433,7 @@ export default class Feed extends Vue {
 
     openComments() {
         this.isOpenedComments = !this.isOpenedComments;
+        this.commentFetch()
     }
 
     created() {
@@ -445,9 +508,33 @@ export default class Feed extends Vue {
         this.$router.push(`/search?hashtag=${hashtag}`)
     }
 
-    postEdit(val: number) {
-        this.isEdit = val;
-        this.show = true;
+    commentFetch() {
+        const obj = {
+            limit: this.limit,
+            offset: this.offset,
+            sort: this.sort
+        }
+        this.$api.comments(this.feed.id, obj)
+            .then((res: any) => {
+                if (this.isAddData) {
+                    if (res.result.length > 0) {
+                        this.comments = [...this.comments, ...res.result]
+                    }
+                    else {
+                        console.log('no data')
+                    }
+                }
+                else {
+                    this.comments = res.result;
+                    this.isAddData = true
+                }
+            })
+            .catch((err: AxiosError) => {
+
+            })
+            .finally(() => {
+
+            })
     }
 
     closeImgModal() {
@@ -460,7 +547,10 @@ export default class Feed extends Vue {
     }
 
     openEdit() {
-        console.log("?");
+        this.$modal.show('writingModal')
+        this.$store.commit('feed', this.feed)
+        console.log('writingModal', this.feed)
+        // this.$store.commit('imgPreviewArr', this.feed.attatchment_files)
     }
 
     pinPost() {
@@ -475,6 +565,16 @@ export default class Feed extends Vue {
     deletePost() {
         this.$emit('deleteFeed', this.feed.id)
         this.$modal.show('deleteModal')
+
+    }
+
+    reportUser() {
+        console.log('report')
+    }
+
+    report() {
+        this.$emit('reportPost', this.feed.id)
+        this.$modal.show('reportModal')
 
     }
 
@@ -501,6 +601,10 @@ export default class Feed extends Vue {
 }
 
 <style lang="scss" scoped>
+.tapl-comment > ul{
+    max-height: 500px;
+    overflow: auto;
+}
 
 .like-icon:hover, .comment-icon:hover {
     cursor: pointer;

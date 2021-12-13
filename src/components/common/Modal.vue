@@ -162,7 +162,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 @Component({
   components: {},
 })
-export default class Modal extends Vue {
+export default class CustomModal extends Vue {
   @Prop() reportId!: any;
   @Prop() title!: string;
   private pickedReason: any = null;

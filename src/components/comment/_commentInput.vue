@@ -1,98 +1,15 @@
 <template>
-    <div class="post-comment-form">
-        <div class="user-avatar small no-outline">
-            <UserAvatar :user="user" style="top: 0px"/>
-        </div>
-        <div class="form-row" v-if="parentId">
-            <div class="form-item reply-container">
-                <div class="user-tag" :class="[parentId ? 'active' : '']">
-                    <router-link :to="`/channel/${userTag}/timeline`"
-                    >@{{ parentName }}
-                    </router-link
-                    >
-                </div>
-                <div class="form-input small reply-form">
-                    <label for="popup-post-reply" class="reply-label"
-                    >Your Reply</label
-                    >
-                    <input
-                        class="reply-input popup-post-reply"
-                        type="text"
-
-                        v-model="content"
-                    />
-                    <div class="reply-send-wrapper" @click="sendComment">
-                        <svg class="icon-send-message">
-                            <use xlink:href="#svg-send-message"></use>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-row" v-else>
-            <div class="form-item">
-                <div
-                    class="form-input small"
-                    :class="[
-                        editContent ? 'active' : '',
-                        parentId ? 'active' : '',
-                    ]"
-                >
-                    <!-- todo: css -->
-                    <!-- <div
-          style="display:inline-block"
-            class="quick-post-footer-action text-tooltip-tft-medium"
-            data-title="Insert Image"
-            @click="uploadFile('image')"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-            >
-              <path fill="none" d="M0 0h24v24H0z" />
-              <path
-                d="M4.828 21l-.02.02-.021-.02H2.992A.993.993 0 0 1 2 20.007V3.993A1 1 0 0 1 2.992 3h18.016c.548 0 .992.445.992.993v16.014a1 1 0 0 1-.992.993H4.828zM20 15V5H4v14L14 9l6 6zm0 2.828l-6-6L6.828 19H20v-1.172zM8 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"
-                fill="rgba(97,106,130,1)"
-              />
-            </svg>
-          </div> -->
-                    <label for="popup-post-reply">Your Reply</label>
-
-                    <input
-                        type="text"
-                        id="popup-post-reply"
-                        v-model="content"
-                        @keyup.enter="sendComment"
-                    />
-
-                    <div class="reply-send-wrapper" @click="sendComment">
-                        <svg class="icon-send-message">
-                            <use xlink:href="#svg-send-message"></use>
-                        </svg>
-                    </div>
-                </div>
-<!--                <div class="checkbox-wrap">-->
-<!--                    <input-->
-<!--                        type="checkbox"-->
-<!--                        :id="'commentState' + commentId"-->
-<!--                        v-model="isPrivate"-->
-<!--                    />-->
-
-<!--                    <div class="checkbox-box">-->
-<!--                        <svg class="icon-check">-->
-<!--                            <use xlink:href="#svg-check"></use>-->
-<!--                        </svg>-->
-<!--                    </div>-->
-
-<!--                    <label :for="'commentState' + commentId"-->
-<!--                    >Private Comment</label-->
-<!--                    >-->
-<!--                </div>-->
-            </div>
-        </div>
+    <div class="comment-box">
+        <p v-if="user"><span
+            :style="`background:url(${user && user.picture || 'img/zempy.png'}) center; background-size:cover;`"></span>
+        </p>
+        <dl>
+            <dt><input type="text" name="" title=""
+                       v-model="content"
+                       @keyup.enter="sendComment"
+                       placeholder="댓글을 작성해 주세요"/></dt>
+            <dd @click="sendComment"><i class="uil uil-message"></i></dd>
+        </dl>
     </div>
 </template>
 
@@ -116,6 +33,9 @@ export default class CommentInput extends Vue {
     @Prop() parentName!: string;
 
     private content: string = "";
+ 
+ 
+
     private isPrivate: boolean = false;
     private userTag: string = "";
     private user!: User;
@@ -177,7 +97,7 @@ export default class CommentInput extends Vue {
             }
             this.$api.sendComment(obj)
                 .then((res: AxiosResponse) => {
-                    this.$emit('sendComment')
+                    this.$emit('refetch')
                 })
                 .catch((err: AxiosError) => {
 
@@ -198,6 +118,56 @@ export default class CommentInput extends Vue {
 
 
 <style scoped>
+
+.comment-box {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 20px 20px;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.comment-box > p {
+    width: 12%;
+}
+
+.comment-box > p span {
+    display: inline-block;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+
+.comment-box > dl {
+    display: flex;
+    align-items: center;
+    width: 88%;
+    border: #e5e5e5 1px solid;
+    border-radius: 10px;
+}
+
+.comment-box > dl dt {
+    width: 80%;
+    padding: 0 5px;
+}
+
+.comment-box > dl dt input {
+    width: 100%;
+    border: none;
+}
+
+.comment-box > dl dt input:focus {
+    border: none;
+    box-shadow: none;
+}
+
+.comment-box > dl dd {
+    width: 20%;
+    padding-right: 15px;
+    text-align: right;
+    font-size: 20px;
+}
 .reply-send-wrapper {
     display: flex;
     justify-content: center;

@@ -46,8 +46,8 @@ import { User } from "@/types";
     components: { EditorContent },
 })
 export default class TiptapSns extends Vue {
-    @Prop() feed!: any;
-    @Prop() postType!: any;
+    feed!: any;
+
     private imgPreviewArr: any[] = [];
     private postingText: string = "";
     private editor!: Editor;
@@ -66,28 +66,56 @@ export default class TiptapSns extends Vue {
 
     // tiptap
 
-    @Watch("user")
-    async watchUser() {
-        const obj={}
-        // this.mentionList = await this.$api.followingList(this.user.uid, obj);
-    }
-
 
     @Watch("$store.getters.isClearEditor")
     watchReset() {
         this.editor.commands.clearContent();
     }
+
     async created() {
         this.editorInit();
     }
     async mounted() {
         await this.$store.dispatch("loginState");
         console.log("TiptapSns", this.feed);
+        this.feed = this.$store.getters.feed
+
         if (this.feed) {
             this.editor.commands.setContent(this.feed.content);
             this.charCnt = this.editor.getCharacterCount();
+            this.prefill();
         }
+
     }
+
+    prefill() {
+
+        this.$store.dispatch('resetAttFiles')
+        console.log(this.feed)
+        for (const file of this.feed.attatchment_files) {
+
+            if (file.type === 'image') {
+                this.imgPreviewArr.push(file);
+                console.log(this.imgPreviewArr)
+            }
+        }
+
+        this.$store.commit('imgArr', this.imgPreviewArr)
+
+        if (this.feed.attatchment_files.type === 'image') {
+            this.imgPreviewArr = this.feed.attatchment_files.img;
+            console.log(this.imgPreviewArr)
+        }
+        // else if (this.feed.attatchment_files.audio) {
+        //     this.fileLoader.fileObj.audio =
+        //         this.feed.attatchment_files.audio;
+        // }
+        // else if (this.feed.attatchment_files.video) {
+        //     this.fileLoader.fileObj.video =
+        //         this.feed.attatchment_files.video;
+        // }
+    }
+
     @Watch("user")
     editorInit() {
         console.log("editor init", this.user);

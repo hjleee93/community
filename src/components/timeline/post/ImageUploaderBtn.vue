@@ -1,7 +1,6 @@
 <template>
     <div
         class="quick-post-footer-action text-tooltip-tft-medium"
-        data-title="Insert Image"
         style="width: 30px"
         @click="uploadFile"
     >
@@ -62,7 +61,7 @@ import {onSelectFile} from "@/script/fileManager";
 })
 export default class ImageUploaderBtn extends Vue {
     @Prop() activeTab!: string;
-    private maxFileNum: number = 10;
+
 
     uploadFile() {
         if (this.$store.getters.audioArr.length > 0 || this.$store.getters.video.file) {
@@ -84,12 +83,113 @@ export default class ImageUploaderBtn extends Vue {
 
     onSelectFile() {
         const input: any = this.$refs.image;
+        const formData = new FormData();
+        console.log(this.activeTab)
+
         if (this.activeTab === 'SNS') {
-            onSelectFile(input.files, this.maxFileNum, 'imgArr')
+            const files = input.files;
+
+
+            if (files.length > 5 || this.$store.getters.imgArr.length >= 5) {
+                this.$toasted.show("최대 파일 갯수는 5장입니다.", {
+                    fullWidth: true,
+                    fitToScreen: true,
+                    theme: "outline",
+                    position: "top-center",
+                    className: "toast-success",
+                    duration: 3000,
+                    type: "negative",
+                    action: {
+                        text: "X",
+                        onClick: (e, toastObject) => {
+                            toastObject.goAway(0);
+                        },
+                    },
+                });
+            }
+            else {
+                for (const file of files) {
+                    // if(file.size > 1024 * 1024 * 3){
+                    //
+                    //     this.$toasted.show("최대 파일 크기는 3mb입니다.", {
+                    //         fullWidth: true,
+                    //         fitToScreen: true,
+                    //         theme: "outline",
+                    //         position: "top-center",
+                    //         duration: 3000,
+                    //         type: "negative",
+                    //         action: {
+                    //             text: "X",
+                    //             onClick: (e, toastObject) => {
+                    //                 toastObject.goAway(0);
+                    //             },
+                    //         },
+                    //     });
+                    //     return;
+                    // }else
+                    if (this.$store.getters.imgArr.length > 0) {
+                        let maxFileSize: number = 1024 * 1024 * 15;
+                        for (const img of this.$store.getters.imgArr) {
+                            maxFileSize -= img.size;
+                            console.log('maxFileSize', maxFileSize)
+                            if (maxFileSize < 0) {
+                                this.$toasted.show("총 업로드 크기는 15mb입니다. ", {
+                                    fullWidth: true,
+                                    fitToScreen: true,
+                                    theme: "outline",
+                                    position: "top-center",
+                                    duration: 3000,
+                                    type: "negative",
+                                    action: {
+                                        text: "X",
+                                        onClick: (e, toastObject) => {
+                                            toastObject.goAway(0);
+                                        },
+                                    },
+                                });
+                                return;
+                            }
+                        }
+
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+
+                        const obj = {
+                            file: file,
+                            url: e.target!.result,
+                            size: file.size
+                        }
+                        this.$store.commit('imgArr', obj)
+                    };
+                    reader.readAsDataURL(file);
+
+
+                }
+            }
+
         }
         else if (this.activeTab === 'BLOG') {
-
-            const formData = new FormData();
+            const files = input.files;
+            if (files.length > 20) {
+                this.$toasted.show("최대 파일 갯수는 20장입니다.", {
+                    fullWidth: true,
+                    fitToScreen: true,
+                    theme: "outline",
+                    position: "top-center",
+                    className: "toast-success",
+                    duration: 3000,
+                    type: "negative",
+                    action: {
+                        text: "X",
+                        onClick: (e, toastObject) => {
+                            toastObject.goAway(0);
+                        },
+                    },
+                });
+                return;
+            }
 
             for (let i = 0; i < input.files.length; i++) {
                 formData.append(input.files[i].name, input.files[i]);
@@ -108,7 +208,7 @@ export default class ImageUploaderBtn extends Vue {
 </script>
 
 <style scoped>
-.quick-post-footer-action{
-    cursor:pointer
+.quick-post-footer-action {
+    cursor: pointer
 }
 </style>
