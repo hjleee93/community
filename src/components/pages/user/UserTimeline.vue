@@ -253,9 +253,19 @@ export default class UserPage extends Vue {
   background: #fff;
 }
 
-.no-game, .no-channel {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.no-game{
+    padding: 20px 20px 0 20px;
+    li{
+        display: flex;
+        align-items: center;
+        padding-bottom: 20px;
+        cursor: pointer;
+        height: 40px;
+        margin-top: 0px;
+        padding-bottom: 20px
+    }
+}
+.ta-groups{
+    margin-top: 0px;
 }
 </style>

@@ -15,7 +15,7 @@
                         :class="{ active: isActive(channel.id) }"
                         @click="openChannelTl(channel.id)"
                         :id="channel.id"
-                        :style="`background: url(${channel.profile_img || 'img/default.png'}) center center / cover no-repeat;`">
+                        :style="`background: url(${channel.profile_img || '../../../assets/images/default.png'}) center center / cover no-repeat;`">
                         <span>{{ channel.title }}</span>
                     </li>
 
@@ -95,7 +95,7 @@ export default class CommunityTimeline extends Vue {
     private createdDate: string = dateFormat(this.community.createdAt);
 
     mounted() {
-
+console.log('mount')
         this.isAllPosts = true;
         this.currPage = 'community';
 
@@ -109,6 +109,7 @@ export default class CommunityTimeline extends Vue {
                         id: this.communityId
                     }]
                 })
+
 
             })
     }
@@ -163,7 +164,6 @@ export default class CommunityTimeline extends Vue {
 
 
     openEdit() {
-        console.log('here?')
         if (this.user) {
             this.show = true;
         }
@@ -186,11 +186,11 @@ export default class CommunityTimeline extends Vue {
             }]
         })
 
+
     }
 
 
     generateKey() {
-
         return this.currPage;
     }
 

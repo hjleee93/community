@@ -27,7 +27,7 @@
             :style="`background: url( ${game && game.url_thumb_webp ||  game.picture} ) center center no-repeat; background-size: cover;`"></div>
         <dl>
           <dt>
-            <P :style="`background: url('https://i.pinimg.com/564x/c8/73/80/c873800d7a80266bc1bd4797671caaae.jpg') center center no-repeat; background-size: cover;`"></P>
+            <P :style="`background: url(${game.user && game.user.picture || 'img/zempy.png' }) center center no-repeat; background-size: cover;`"></P>
           </dt>
           <dd>
             <h2>{{ game && game.title }}</h2>
@@ -70,7 +70,7 @@ import Toast from "@/script/message";
     SwiperSlide,
   },
 })
-export default class GameListOffical extends Vue {
+export default class gameList extends Vue {
   toast = new Toast();
   games: any = [];
   category: number = 1;
@@ -138,18 +138,11 @@ export default class GameListOffical extends Vue {
 
   playGame(pathname: string) {
     window.open(
-        this.$store.getters.homeUrl + `play/${pathname}`, "_blank");
-
+        `play/${pathname}`, "_blank")
   }
 
   userPage(userUid: string) {
     this.$router.push(`/channel/${userUid}/timeline`)
-  }
-
-  copyUrl() {
-    execCommandCopy(`${this.$store.getters.communityUrl}/feed/${this.feed.id}`)
-    this.toast.clear();
-    this.toast.successToast("Link copied to clipboard")
   }
 
 }
@@ -190,5 +183,9 @@ export default class GameListOffical extends Vue {
 
 .cf-img {
   background-color: #f39800;
+}
+
+.swiper-slide{
+    cursor: pointer;
 }
 </style>

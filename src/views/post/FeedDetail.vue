@@ -1,94 +1,87 @@
 <template>
-  <article class="content" v-if="feed">
-    <div
-        class="post-open-body pt-0"
-        style="margin-top: 80px; height: 100vh"
-    >
-      <div class="post-top">
+    <article class="content" v-if="feed">
+        <div
+            class="post-open-body pt-0"
+            style="margin-top: 80px; height: 100vh"
+        >
+            <div class="post-top">
 
 
-        <template v-if="feed.user">
-          <router-link :to="`/channel/${feed.user.uid}/timeline`">
-            <UserAvatar :user="feed.user"/>
-          </router-link>
+                <template v-if="feed.user">
+                    <router-link :to="`/channel/${feed.user.uid}/timeline`">
+                        <UserAvatar :user="feed.user"/>
+                    </router-link>
 
-        </template>
-        <div class="forum-post-user-title ml-3">
-          <router-link :to="`${feed.user.uid}`"
-          >{{ feed.user.name }}
-            <!--                        @{{ feed.user.nickname}}-->
-          </router-link
-          >
-          <small style="color:ghostwhite">{{ createdDate }}</small>
+                </template>
+                <div class="forum-post-user-title ml-3">
+                    <router-link :to="`${feed.user.uid}`"
+                    >{{ feed.user.name }}
+                        <!--                        @{{ feed.user.nickname}}-->
+                    </router-link
+                    >
+                    <small style="color:ghostwhite">{{ createdDate }}</small>
+                </div>
+                <FollowBtn :member="feed.user"></FollowBtn>
+            </div>
+
+            <div class="post-open-content">
+                <div class="post-open-content-body">
+                    <div v-html="feed.content" @click="contentClicked">
+                        {{ feed.content }}
+                    </div>
+                    `
+                </div>
+            </div>
+            <template v-if="feed.post_type==='SNS' && feed.attatchment_files">
+                <div v-for="file in feed.attatchment_files" :key="file.id">
+                    <img @click="contentClicked" class="sns-img" v-if="file.type === 'image' " :src="file.url"/>
+                    <video
+                        class="sns-img"
+                        v-if="file.type === 'video' "
+                        width="320"
+                        height="240"
+                        controls
+                        :src="file.url"></video>
+                </div>
+            </template>
+
+
+            <div class="content-actions">
+                <div class="content-action">
+                    <div class="post-option-wrap" style="position: relative">
+                        <LikeBtn :feed="feed"/>
+                    </div>
+
+                    <div class="post-option active">
+                        <svg class="post-option-icon icon-comment">
+                            <use xlink:href="#svg-comment"></use>
+                        </svg>
+                    </div>
+
+                    <div
+                        class="post-option"
+                        @click="copyUrl"
+
+                    >
+                        <svg class="post-option-icon icon-share">
+                            <use xlink:href="#svg-share"></use>
+                        </svg>
+                    </div>
+                </div>
+            </div>
         </div>
-        <FollowBtn :member="feed.user"></FollowBtn>
-      </div>
-
-      <div class="post-open-content">
-        <div class="post-open-content-body">
-          <div v-html="feed.content" @click="contentClicked">
-            {{ feed.content }}
-          </div>
-          `
-        </div>
-      </div>
-      <template v-if="feed.post_type==='SNS' && feed.attatchment_files">
-        <div v-for="file in feed.attatchment_files" :key="file.id">
-          <img @click="contentClicked" class="sns-img" v-if="file.type === 'image' " :src="file.url"/>
-          <video
-              class="sns-img"
-              v-if="file.type === 'video' "
-              width="320"
-              height="240"
-              controls
-              :src="file.url"></video>
-        </div>
-      </template>
-
-
-      <div class="content-actions">
-        <div class="content-action">
-          <div class="post-option-wrap" style="position: relative">
-            <LikeBtn :feed="feed"/>
-          </div>
-
-          <div class="post-option active">
-            <svg class="post-option-icon icon-comment">
-              <use xlink:href="#svg-comment"></use>
-            </svg>
-          </div>
-
-          <div
-              class="post-option"
-              @click="copyUrl"
-
-          >
-            <svg class="post-option-icon icon-share">
-              <use xlink:href="#svg-share"></use>
-            </svg>
-          </div>
-        </div>
-      </div>
-      <div id="comments" class="post-comment-list">
-        <comment-list :postId="feedId"></comment-list>
-      </div>
-    </div>
-    <b-modal
-        modal-class="orgin-img-modal"
-        centered
-        hide-header
-        hide-footer
-        ref="originImgModal"
-    >
-      <b-img-lazy :src="originImg" @click="closeImgModal"/>
-    </b-modal>
-    <AlertModal v-if="needLogin" @needLogin="needLogin = false"></AlertModal>
-  </article>
+        <modal
+            :adaptive="true"
+            name="originImgModal"
+        >
+            <img :src="originImg" @click="closeImgModal"/>
+        </modal>
+        <AlertModal v-if="needLogin" @needLogin="needLogin = false"></AlertModal>
+    </article>
 </template>
 
 <script lang="ts">
 import {Component, Prop, Vue} from "vue-property-decorator";
-import CommentList from "../../components/timeline/CommentList.vue";
 
 import {dateFormat} from "@/script/moment";
 import {AxiosError, AxiosResponse} from "axios";
@@ -101,137 +94,137 @@ import {execCommandCopy} from "@/script/util";
 import Toast from "@/script/message";
 
 @Component({
-  components: {CommentList, FollowBtn, LikeBtn, UserAvatar},
-  computed: {...mapGetters(["user"])},
+    components: { FollowBtn, LikeBtn, UserAvatar},
+    computed: {...mapGetters(["user"])},
 })
 export default class FeedDetail extends Vue {
-  toast = new Toast();
-  feedId = this.$route.params.feedId;
-  feed: any = null;
-  createdDate: string = "";
+    toast = new Toast();
+    feedId = this.$route.params.feedId;
+    feed: any = null;
+    createdDate: string = "";
 
-  originImg: string = "";
-  needLogin = false;
-  user!: User;
+    originImg: string = "";
+    needLogin = false;
+    user!: User;
 
-  fetch() {
-    this.$api.feed(this.feedId)
-        .then((res: AxiosResponse) => {
-          console.log(res)
-          this.feed = res
+    fetch() {
+        this.$api.feed(this.feedId)
+            .then((res: AxiosResponse) => {
+                console.log(res)
+                this.feed = res
 
-          this.createdDate = dateFormat(this.feed.createdAt)!;
-        })
-  }
-
-  mounted() {
-    this.fetch();
-  }
-
-  sendLike() {
-    if (this.user) {
-      this.$api.like(this.feed.id)
-          .then((res: AxiosResponse) => {
-            console.log(res)
-          })
-          .catch((err: AxiosError) => {
-
-          })
+                this.createdDate = dateFormat(this.feed.createdAt)!;
+            })
     }
-    else {
-      this.needLogin = true;
-      console.log('need login service')
-    }
-  }
 
-  copyUrl() {
-    execCommandCopy(window.location.href)
-    this.toast.clear();
-    this.toast.successToast("Link copied to clipboard")
-  }
+    mounted() {
+        this.fetch();
+    }
 
-  contentClicked(e: any) {
-    if (e.target.matches("img")) {
-      this.originImg = e.target.src;
-      (this.$refs.originImgModal as any).show();
-    }
-    else if (e.target.matches(".hashtag")) {
-      this.$router.push(
-          `/search?hashtag=${e.target.attributes["data-id"].nodeValue}`
-      );
-    }
-    else if (e.target.matches(".mention")) {
-      this.$router.push(
-          `/channel/${e.target.attributes["channel-id"].nodeValue}/timeline`
-      );
-    }
-  }
+    sendLike() {
+        if (this.user) {
+            this.$api.like(this.feed.id)
+                .then((res: AxiosResponse) => {
+                    console.log(res)
+                })
+                .catch((err: AxiosError) => {
 
-  closeImgModal() {
-    console.log("?");
-    (this.$refs.originImgModal as any).hide();
-  }
+                })
+        }
+        else {
+            this.needLogin = true;
+            console.log('need login service')
+        }
+    }
+
+    copyUrl() {
+        execCommandCopy(window.location.href)
+        this.toast.clear();
+        this.toast.successToast("Link copied to clipboard")
+    }
+
+    contentClicked(e: any) {
+        if (e.target.matches("img")) {
+            this.originImg = e.target.src;
+            (this.$refs.originImgModal as any).show();
+        }
+        else if (e.target.matches(".hashtag")) {
+            this.$router.push(
+                `/search?hashtag=${e.target.attributes["data-id"].nodeValue}`
+            );
+        }
+        else if (e.target.matches(".mention")) {
+            this.$router.push(
+                `/channel/${e.target.attributes["channel-id"].nodeValue}/timeline`
+            );
+        }
+    }
+
+    closeImgModal() {
+        console.log("?");
+        (this.$refs.originImgModal as any).hide();
+    }
 }
 </script>
 
 <style lang="scss" scoped>
 .user-avatar {
-  z-index: 999;
+    z-index: 999;
 }
 
 .sns-img {
-  width: 100%
+    width: 100%
 }
 
 .dropdown {
-  display: flex;
-  justify-content: flex-end;
-  margin-right: 28px;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 28px;
 
-  align-items: center;
+    align-items: center;
 }
 
 .post-open-content-body {
-  text-align: left;
+    text-align: left;
 
-  div > * {
-    margin-top: 0.75em !important;
-  }
+    div > * {
+        margin-top: 0.75em !important;
+    }
 }
 
 .post-open-content {
-  margin-top: 0px !important;
+    margin-top: 0px !important;
 }
 
 .post-open-content-sidebar {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-  .forum-post-user-title {
-    margin-top: 16px;
-  }
+    .forum-post-user-title {
+        margin-top: 16px;
+    }
 }
 
 .content-actions {
-  border-bottom: 1px solid #2f3749;
+    border-bottom: 1px solid #2f3749;
 }
 
 .post-top {
-  margin-left: 30px;
-  margin-right: 30px;
-  display: flex;
-  height: 100px;
-  align-items: center;
-
-  .forum-post-user-title {
-    margin-right: 30%;
+    margin-left: 30px;
+    margin-right: 30px;
     display: flex;
-    flex-direction: column;
-  }
+    height: 100px;
+    align-items: center;
 
-  .button {
-    width: 100px !important;
-  }
+    .forum-post-user-title {
+        margin-right: 30%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .button {
+        width: 100px !important;
+    }
 }
 </style>

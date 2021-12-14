@@ -113,19 +113,24 @@
                 </p>
             </div>
         </div>
-        <modal
-            name="noUser"
-            centered
-            hide-header
-            no-close-on-backdrop
-        >
-            <div class="modal-text">
-                작성하신 이메일로 비밀번호 재설정 메일을 보냈습니다.<br />메일함을
-                확인해주세요.
+
+
+        <modal :clickToClose="false" class="modal-area-type" name="noUser" width="90%" height="auto" :maxWidth="380"
+               :adaptive="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('checkMailModal')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2>존재하지 않는 회원정보입니다. 회원가입을 진행해주세요.</h2>
+                    <div>
+                        <button class="btn-default" @click="closeModal">확인</button>
+                    </div>
+                </div>
             </div>
-            <button class="btn-default"    @click="closeModal">OK</button>
-
-
         </modal>
     </div>
 </template>
@@ -393,27 +398,31 @@ export default class Login extends Vue {
 
 <style scoped lang="scss">
 
-////.btn-default-big {
-////    width: 100%;
-////    border-radius: 30px;
-////}
-//
-//.form-control {
-//    margin: 10px 0 10px 0;
+//.btn-default-big {
+//    width: 100%;
+//    border-radius: 30px;
 //}
-//
-//.form-control + .invalid-feedback {
-//    display: none;
-//    color: #999;
-//}
-//
-//.is-invalid + .invalid-feedback {
-//    font-size:12px;
-//    display: inline-block;
-//    color: red;
-//}
-//.modal-text{
-//    display: flex;
-//    justify-content: center;
-//}
+
+.btn-default{
+    width: 100%;
+}
+
+.form-control {
+    margin: 10px 0 10px 0;
+}
+
+.form-control + .invalid-feedback {
+    display: none;
+    color: #999;
+}
+
+.is-invalid + .invalid-feedback {
+    font-size:12px;
+    display: inline-block;
+    color: red;
+}
+.modal-text{
+    display: flex;
+    justify-content: center;
+}
 </style>

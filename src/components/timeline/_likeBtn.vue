@@ -1,11 +1,13 @@
 <template>
-  <li v-if="!feed.liked" @click="sendLike"><i class="xi-heart-o like-icon"
-                                              style="font-size:22px; color:#ff6e17;cursor: pointer;"></i>&nbsp;
-    {{ feed.like_cnt }}
-  </li>
-  <li v-else @click="sendLike"><i class="xi-heart like-icon"
-                                  style="font-size:22px; color:#ff6e17; cursor: pointer;"></i>&nbsp; {{ feed.like_cnt }}
-  </li>
+    <li v-if="!feed.liked" @click="sendLike(false)"><i class="xi-heart-o like-icon"
+                                                style="font-size:22px; color:#ff6e17;cursor: pointer;"></i>&nbsp;
+        {{ feed.like_cnt }}
+    </li>
+    <li v-else @click="sendLike(true)"><i class="xi-heart like-icon"
+                                    style="font-size:22px; color:#ff6e17; cursor: pointer;"></i>&nbsp; {{
+            feed.like_cnt
+        }}
+    </li>
 </template>
 
 <script lang="ts">
@@ -15,27 +17,37 @@ import {mapGetters} from "vuex";
 import {User} from "../../types";
 
 @Component({
-  components: {},
-  computed: {...mapGetters(["user"])},
+    components: {},
+    computed: {...mapGetters(["user"])},
 })
 export default class LikeBtn extends Vue {
-  @Prop() feed!: any;
-  private user!: User;
+    @Prop() feed!: any;
+    private user!: User;
 
 
-  sendLike() {
-    if (this.user) {
-      this.$api.like(this.feed.id)
-          .then((res: AxiosResponse) => {
-            console.log(res)
-          })
-          .catch((err: AxiosError) => {
-          })
+    //todo: 하트 상태 변화
+    sendLike(state:boolean) {
+        if (this.user) {
+            if(state) {
+                this.$api.like(this.feed.id)
+                    .then((res: AxiosResponse) => {
+                        console.log(res)
+                    })
+                    .catch((err: AxiosError) => {
+                    })
+            }else{
+                this.$api.unlike(this.feed.id)
+                    .then((res: AxiosResponse) => {
+                        console.log(res)
+                    })
+                    .catch((err: AxiosError) => {
+                    })
+            }
+        }
+        else {
+            this.$modal.show('needLogin')
+        }
     }
-    else {
-      this.$modal.show('needLogin')
-    }
-  }
 }
 </script>
 

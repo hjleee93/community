@@ -58,7 +58,7 @@ console.log(this.member.id)
             this.profileImg = this.member.profile_img
         }
         else {
-            this.profileImg = 'img/default_profile.png';
+            this.profileImg = 'img/zempy.png';
         }
 
         console.log(this.profileImg)

@@ -32,11 +32,11 @@ const routes: Array<RouteConfig> = [
                     break;
                 case LoginState.no_user:
                     console.log("no_user")
-                    // await  router.push('/landing')
+                    await  router.push('/landing')
                     break;
                 case LoginState.logout:
                     console.log("logout")
-                    // await router.push('/landing')
+                    await router.push('/landing')
                     break;
                 default:
                     next();
@@ -73,7 +73,7 @@ const routes: Array<RouteConfig> = [
             title: 'Landing',
             transition: 'fade-in-down'
         },
-        component: () => import(/* webpackChunkName: "Join" */ '@/views/Landing.vue')
+        component: () => import(/* webpackChunkName: "Landing" */ '@/views/Landing.vue')
     },
 
     {
@@ -162,7 +162,7 @@ const routes: Array<RouteConfig> = [
 
     },
     {
-        path: '/community/list',
+        path: '/communityList',
         name: 'CommunityList',
         component: () => import(/* webpackChunkName: "about" */ '@/views/group/CommunityList.vue'),
         meta: {
@@ -425,7 +425,6 @@ const routes: Array<RouteConfig> = [
         props: true
     },
 
-
     {
         path: '*',
         component: () => import('@/views/Error404.vue'),
@@ -446,12 +445,12 @@ const routes: Array<RouteConfig> = [
         },
     },
     {
-        path: '/gameListOffical',
-        name: 'GameListOffical',
-        component: () => import('@/views/GameListOffical.vue'),
+        path: '/gameList',
+        name: 'GameList',
+        component: () => import('@/views/GameList.vue'),
         meta: {
             layout: LayoutDefault,
-            title: 'GameListOffical',
+            title: 'GameList',
             transition: 'fade-in-down'
         },
     },

@@ -26,7 +26,7 @@ export default class Toast{
             fitToScreen: true,
             theme: "outline",
             position: "bottom-left",
-            className: "toast-error",
+            className: "toast-danger",
             duration: 3000,
             type: "error",
             action: {

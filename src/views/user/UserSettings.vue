@@ -13,22 +13,24 @@
                     <!--                    <div :style="{'background' : 'url(' + require('../../assets/images/card_test_img01.png') + ') center no-repeat', 'background-size' : 'cover'}"></div>-->
                     <p :style="{'background' : 'url(' + prevProfile + ') center center / cover no-repeat', 'background-size' : 'cover'}"></p>
                 </dt>
-<!--                <div class="delete-div" @click="deleteImg">-->
-<!--                    <router-link class="delete-btn" to="#"><i class="uil uil-trash-alt"></i></router-link>-->
-<!--                </div>-->
+                <!--                <div class="delete-div" @click="deleteImg">-->
+                <!--                    <router-link class="delete-btn" to="#"><i class="uil uil-trash-alt"></i></router-link>-->
+                <!--                </div>-->
                 <dd @click="uploadFile">
                     <div style="height: 0px; overflow: hidden">
-                        <input type="file" @change="onFileChange" accept=image/*
-                               ref="profileImg" name="fileInput"/>
+                        <input type="file"
+                               @input="onFileChange"
+                               accept=image/*
+                               ref="profileImg"
+                               name="fileInput"/>
                     </div>
                     <p><i class="uil uil-image-plus"></i></p>
                     <h2>Change Profile</h2>
                     <h3>{{ fileName }}</h3>
                     <div @click="deleteImg">
-                        <router-link to="#"><i class="uil uil-trash-alt"></i></router-link>
+                        <a><i class="uil uil-trash-alt"></i></a>
                     </div>
                 </dd>
-
 
 
                 <!--                <dd>-->
@@ -72,7 +74,7 @@
 
         <!-- 버튼영역 -->
         <div class="area-btn">
-            <router-link to="#" class="btn-default w250">저장</router-link>
+            <a @click="uploadProfile" class="btn-default w250">저장</a>
         </div>
         <!-- 버튼영역 끝 -->
         <div class="delete-account">
@@ -89,10 +91,11 @@
 import {Component, Prop, Vue} from "vue-property-decorator";
 import {mapGetters} from "vuex";
 
- ;
+;
 import ImgPreview from "@/components/common/upload/ImgPreview.vue";
 import ProfileImgUploader from "@/components/common/upload/ProfileImgUploader.vue";
 import BannerImgUploader from "@/components/common/upload/BannerImgUploader.vue";
+import store from "@/store";
 
 @Component({
     computed: {...mapGetters(["user"])},
@@ -112,7 +115,8 @@ export default class UserSettings extends Vue {
     private isDmOn: boolean = false;
 
     private fileName: string = "";
-    private prevProfile: string = ''
+    private prevProfile: string | null | ArrayBuffer = ''
+    private updateFile:File | null = null;
 
 
     private form = {
@@ -148,9 +152,6 @@ export default class UserSettings extends Vue {
         // await this.$api.alarmOnOff(type);
     }
 
-    getProfileImgSrc(imgSrc: string) {
-        this.form.profileImgSrc = imgSrc;
-    }
 
     userInfo() {
         try {
@@ -169,16 +170,40 @@ export default class UserSettings extends Vue {
     }
 
     onFileChange(event: { target: { files: any } }) {
-        this.inputFile(event.target.files);
-        this.fileName = event.target.files[0].name
+
+
+        if (event.target.files[0].size < 1024 * 1024 * 3) {
+            this.fileName = event.target.files[0].name
+            this.updateFile = event.target.files[0]
+            const reader = new FileReader();
+            reader.onload = e => {
+                this.prevProfile = e.target!.result
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+        else {
+            alert(`최대 파일 크기는 3mb입니다. `)
+        }
+
     }
 
-    inputFile(files: File) {
+    uploadProfile() {
+        const formData = new FormData();
+        if (this.updateFile) {
+            formData.append('file', this.updateFile);
+        }
+        this.$api.updateUser(formData)
+        .then((res)=>{
+            console.log(res)
+        })
+
 
     }
 
-    deleteImg() {
+    deleteImg(e) {
         this.prevProfile = '';
+        this.fileName ='';
+        e.stopPropagation()
 
     }
 }

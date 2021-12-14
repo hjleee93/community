@@ -64,7 +64,7 @@
 
             </dt>
             <dd>
-                <button class="btn-default-samll w100" @click="updatePost" v-if="feed">Update</button>
+                <button class="btn-default-samll w100" @click="updatePost" v-if="feed&&feed.id">Update</button>
                 <button class="btn-default-samll w100" @click="uploadPost" v-else>Post</button>
                 <button class="btn-default-samll w100 cancel-btn" @click="hideModal">Cancel</button>
             </dd>
@@ -282,19 +282,18 @@ export default class Post extends Vue {
     }
 
     isActive(type: string) {
-        //todo: 주석 제거(회사)
-        // if (!this.user) {
-        //   this.$modal.show('needLogin')
-        // }
-        // else {
-        // console.log(this.$store.getters.postContents)
-        // console.log(            !this.isEditorEmpty)
-        // console.log(   this.attFiles.length !== 0 )
-        this.isPostEmpty() ? this.activeTab = type : this.$modal.show('alertModal')
+        if (!this.user) {
+            this.$modal.show('needLogin')
+        }
+        else {
+            console.log(this.$store.getters.postContents)
+            console.log(!this.isEditorEmpty)
+            console.log(this.attFiles.length !== 0)
+            this.isPostEmpty() ? this.activeTab = type : this.$modal.show('alertModal')
+
+        }
 
     }
-
-    // }
 
     isPostEmpty() {
         console.log('this.feed', this.feed)
@@ -366,10 +365,10 @@ export default class Post extends Vue {
             hashtags: [],
             // user_tagId: this.$store.getters.userTagList,
             user_tag: [
-                {
-                    id: 111,
-                    nickname: "followers"
-                },
+                // {
+                //     id: 111,
+                //     nickname: "followers"
+                // },
             ],
             game_id: "",
             channel_id: this.user.uid,
@@ -414,15 +413,15 @@ export default class Post extends Vue {
             game_id: "",
             channel_id: this.user.uid,
             ...this.$store.getters.currPage,
-            portfolio_ids: [
-                ""
-            ],
+            portfolio_ids: [""],
             scheduled_for: null
         }
         console.log(obj)
 
         this.$api.updatePost(obj)
             .then((res: AxiosResponse) => {
+
+                this.$emit('refetch')
                 this.toast.successToast("포스팅 수정이 완료되었습니다.")
             })
             .catch((err: AxiosError) => {

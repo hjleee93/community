@@ -30,32 +30,29 @@ export default class Play extends Vue {
     private iframeHeight: string = "";
 
     async mounted() {
-        document.getElementById("header")!.style.display = "none";
-
-        // await this.$store.dispatch('loadedGames');
         this.gameData = this.$store.getters.gameByPathname(this.pathname);
 
         if (!this.gameData) {
 
             //todo 게임 요청
-            // const result = await this.$api.game(this.pathname);
-            // if (!result && result.error) {
-            //     console.error((result && result.error) || "error");
-            // } else {
-            //     this.gameData = result.game;
-            //     const title = this.gameData?.title;
-            //     const description = this.gameData?.description;
-            //     const thumb = this.gameData?.url_thumb;
-            //     const author = this.gameData?.user.name;
-            //
-            // }
+            const result = await this.$api.game(this.pathname);
+            console.log(result)
+            if (!result && result.error) {
+                console.error((result && result.error) || "error");
+            } else {
+                this.gameData = result.game;
+                // const title = this.gameData?.title;
+                // const description = this.gameData?.description;
+                // const thumb = this.gameData?.url_thumb;
+                // const author = this.gameData?.user.name;
+
+            }
         }
 
-        // const game_uid = this.gameData.game_uid;
-        // this.url = `${process.env.VUE_APP_LAUNCHER_URL}game/${game_uid}`;
+        this.url = `${process.env.VUE_APP_LAUNCHER_URL}game/${this.gameData.pathname}`;
         // document.title = this.gameData.title;
 
-        this.url = `${process.env.VUE_APP_LAUNCHER_URL}game/${this.gameData.pathname}`;
+        // this.url = `game/${this.gameData.pathname}`;
 
         window.addEventListener("message", this.onMessage);
         window.addEventListener("resize", this.onResize);

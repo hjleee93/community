@@ -38,7 +38,7 @@
         <div class="tab-menu-swiper">
             <swiper class="swiper-area" :options="TMSswiperOption">
                 <swiper-slide  :class="
-                        $route.name === 'UserTimeline.vue' &&
+                        $route.name === 'UserTimeline' &&
                         Object.keys($route.query).length === 0
                             ? 'active'
                             : ''
@@ -175,7 +175,7 @@ export default class UserHeader extends Vue {
                     this.profileImg = this.userInfo.picture
                 }
                 else {
-                    this.profileImg = 'img/default_profile.png'
+                    this.profileImg = 'img/zempy.png'
                 }
             })
             .then(() => {

@@ -15,15 +15,18 @@ class Login {
         // console.log('파이어베이스 초기화 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
         if( store.getters.loginState === LoginState.none ) {
             const currentUser = firebase.auth().currentUser;
+            console.log('currentUser', currentUser)
+
             if ( currentUser ) {
-                // console.log(currentUser);
 
                 const idToken = await currentUser.getIdToken();
                 // console.log('아이디 토큰 갱신 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
 
                 store.commit('idToken', idToken);
 
-                // console.log(idToken);
+                /**
+                 * 쿠키 있는 경우
+                 * */
                 //@ts-ignore
                 const cookie = Cookie.read( cookieName );
                 // console.log( cookie, currentUser.uid, cookie === currentUser.uid );
@@ -50,6 +53,32 @@ class Login {
                     // console.log('로그아웃(쿠키없음) : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
                     await Login.logout();
                 }
+
+                /**
+                 * 로컬 스토리지
+                 * */
+
+                const local = localStorage.getItem('z_uid')
+                console.log('local', local)
+                if( local && local === currentUser.uid ) {
+                    const result = await Vue.$api.user();
+
+                    // console.log('유저정보 세팅 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
+                    if( !result || result.error ) {
+                        await Login.logout();
+                    }
+                    else {
+                        const { user } = result;
+                        store.commit('user', user);
+                        console.log('user commit')
+                        await Login.login();
+                    }
+                }
+                else if(local){
+                    await firebase.auth().signOut();
+                }else{
+                    await Login.logout();
+                }
             }
             else {
                 //@ts-ignore
@@ -72,6 +101,8 @@ class Login {
                     await Login.logout();
                 }
             }
+
+
         }
         else if( store.getters.loginState === LoginState.customToken ) {
             const currentUser = firebase.auth().currentUser;
@@ -98,13 +129,14 @@ class Login {
         //@ts-ignore
         Cookie.write( cookieName, store.getters.user.uid, 30, process.env.VUE_APP_COOKIE_DOMAIN );
 
-        Vue.$api.saveFcmToken(store.getters.user.id, store.getters.fcmToken)
-            .then((res: AxiosResponse) => {
-                console.log('fcm token is registered')
-            })
-            .catch((err: AxiosError) => {
-
-            })
+        //fcm
+        // Vue.$api.saveFcmToken(store.getters.user.id, store.getters.fcmToken)
+        //     .then((res: AxiosResponse) => {
+        //         console.log('fcm token is registered')
+        //     })
+        //     .catch((err: AxiosError) => {
+        //
+        //     })
     }
 
     static async logout() {
@@ -115,6 +147,8 @@ class Login {
         localStorage.removeItem('z_uid')
         //@ts-ignore
         Cookie.delete( cookieName, process.env.VUE_APP_COOKIE_DOMAIN );
+
+        //fcm
         // if(store.getters.user) {
         //     Vue.$api.removeFcmToken(store.getters.user.id)
         //         .then((res: AxiosResponse) => {

@@ -1,16 +1,9 @@
 <template>
-    <div class="comment-box">
-        <p v-if="user"><span
-            :style="`background:url(${user && user.picture || 'img/zempy.png'}) center; background-size:cover;`"></span>
-        </p>
-        <dl>
-            <dt><input type="text" name="" title=""
-                       v-model="content"
-                       @keyup.enter="sendComment"
-                       placeholder="댓글을 작성해 주세요"/></dt>
-            <dd @click="sendComment"><i class="uil uil-message"></i></dd>
-        </dl>
-    </div>
+    <dl :class="commentId ? 'edit-comment' :''">
+
+        <dt><input type="text" v-model="content" name="" title="" placeholder="댓글달기" @keyup.enter="sendComment" /></dt>
+        <dd><a @click="sendComment"><i class="uil uil-message"></i></a></dd>
+    </dl>
 </template>
 
 <script lang="ts">
@@ -43,11 +36,6 @@ export default class CommentInput extends Vue {
         if (this.editContent) {
             this.content = this.editContent;
         }
-        //대댓글
-        if (this.parentId) {
-            // this.content = `<router-link @${this.parentId}></router-link>`;
-            this.userTag = this.parentId;
-        }
     }
 
     //수정 , 작성
@@ -63,6 +51,7 @@ export default class CommentInput extends Vue {
                 post_id: this.postId,
                 content:this.content
             }
+            console.log('updatge', obj)
             this.$api.updateComment(obj)
                 .then((res: AxiosResponse) => {
                     console.log('updata', res)
@@ -91,11 +80,11 @@ export default class CommentInput extends Vue {
                 post_id: this.postId,
                 content: this.content,
                 is_private: this.isPrivate
-
             }
+            console.log('upload', obj)
             this.$api.sendComment(obj)
                 .then((res: AxiosResponse) => {
-                    this.$emit('refetch')
+                    this.$emit('sendComment')
                 })
                 .catch((err: AxiosError) => {
 
@@ -115,7 +104,7 @@ export default class CommentInput extends Vue {
 </script>
 
 
-<style scoped>
+<style lang="scss" scoped>
 
 .comment-box {
     display: flex;
@@ -205,36 +194,30 @@ export default class CommentInput extends Vue {
     fill: transparent;
     transition: fill 0.2s ease-in-out;
 }
-
-.user-tag {
-    font-weight: 700;
-    margin-left: 10px;
-}
-
-.form-input.small {
-    height: 48px;
-}
-
-.reply-container {
+.edit-comment{
     display: flex;
     align-items: center;
-    background-color: #1d2333;
-    border: 1px solid #3f485f;
-    color: #fff;
-    transition: border-color 0.2s ease-in-out;
-    border-radius: 12px;
-}
-
-.reply-form {
+    margin-top: 25px;
+    border: #e5e5e5 1px solid;
+    border-radius: 10px;
     width: 100%;
-}
+    dt{
+        width: 80%;
+        padding: 0 5px;
 
-.reply-input {
-    border: none;
-    width: 100%;
+    }
+    input{
+        width: 100%;
+        border: none;
+    }
+    input[type='text']:focus{
+        box-shadow:none;
+    }
+    dd{
+        width: 20%;
+        padding-right: 15px;
+        text-align: right;
+        font-size: 20px;
+    }
 }
-
-/* .reply-label {
-    margin-left: 20%;
-} */
 </style>

@@ -8,12 +8,12 @@
                         <router-link to="/"><img src="../assets/images/logo.svg" width="120" alt="" title=""/>
                         </router-link>
                     </p>
-                    <ul>
+                    <ul class="menu">
                         <li>
-                            <router-link to="/community/list">COMMUNITY</router-link>
+                            <router-link to="/communityList" :class="$route.name === 'CommunityList' ? 'active' : ''">COMMUNITY</router-link>
                         </li>
                         <li>
-                            <a @click="moveGameList">GAME </a>
+                            <router-link to="/gameList" :class="$route.name === 'GameList' ? 'active' : ''">GAME </router-link>
                         </li>
                     </ul>
                 </div>
@@ -249,10 +249,7 @@ export default {
         }
     },
     methods: {
-        moveGameList() {
-            this.$router.push('/gameListOffical')
-            // window.open(this.$store.getters.homeUrl);
-        },
+
         moveGameDashBoard() {
             window.open(this.$store.getters.studioUrl );
         },
@@ -409,4 +406,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.menu li .active{
+    color: #F97316;
+}
 </style>

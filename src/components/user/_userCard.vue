@@ -36,7 +36,7 @@ import {User} from "@/types";
 })
 export default class UserCard extends Vue {
     @Prop() member!: User;
-    defaultProfile = 'img/default_profile.png'
+    defaultProfile = 'img/zempy.png'
     bannerImg = 'img/channel_banner.png'
 
     mounted() {

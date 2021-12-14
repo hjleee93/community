@@ -6,7 +6,7 @@
                 }}</span></dt>
             <dd>
 
-                <a @click="addGame" v-if="user && (user.uid === $route.params.channel_id)" class="btn-default-samll">Add
+                <a @click="addGame" v-if="user && (user.uid === userUid)" class="btn-default-samll">Add
                     Game <i
                         class="uil uil-plus"></i></a>
             </dd>
@@ -51,10 +51,18 @@ export default class AllGameList extends Vue {
     private tlUser: any = "";
     private user!: User;
 
-    userUid = this.$route.params.channel_id;
+    userUid = '';
 
     async mounted() {
         await this.$store.dispatch("loginState");
+
+        if (this.$route.params.channel_id) {
+            this.userUid = this.$route.params.channel_id;
+        }
+        else {
+            this.userUid = this.user.uid
+        }
+
         this.fetch();
     }
 
@@ -63,9 +71,7 @@ export default class AllGameList extends Vue {
             this.gameList = this.$store.getters.gameList;
         }
         else {
-            const userUid = this.$route.params.channel_id;
-
-            this.$api.userChannel(userUid)
+            this.$api.userChannel(this.userUid)
                 .then((res: any) => {
 
                     const {target} = res;
@@ -81,7 +87,6 @@ export default class AllGameList extends Vue {
     }
 
     addGame() {
-        // this.$store.commit('needLogin', true)
         if (this.user && (this.user.uid === this.userUid)) {
             window.location.href = this.$store.getters.studioUrl + "selectStage";
         }

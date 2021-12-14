@@ -39,8 +39,6 @@ import Toasted from 'vue-toasted';
 
 Vue.use(Toasted)
 
-export const bus = new Vue();
-
 
 Vue.config.productionTip = false
 

@@ -108,7 +108,7 @@ export default class Api {
     }
 
     async channelTimeline(community_id:string, channel_id: string, obj:any){
-        console.log(community_id,channel_id)
+        console.log(obj)
         return await this.request('get', `${this.communityApi}timeline/${community_id}/channel/${channel_id}`, obj, false);
     }
 
@@ -178,6 +178,9 @@ export default class Api {
     }
     async likeComment(post_id: string, comment_id: string){
         return await this.request('post', `${this.communityApi}post/${post_id}/comment/${comment_id}/like`, undefined, false);
+    }
+    async unlikeComment(post_id: string, comment_id: string){
+        return await this.request('post', `${this.communityApi}post/${post_id}/comment/${comment_id}/unlike`, undefined, false);
     }
     /* /comment */
 
@@ -298,23 +301,23 @@ export default class Api {
         return response.result || response;
     }
 
-    async updateUser(name: string, state_msg: string, file: File, channel_id: string, description: string) {
-        const formData = new FormData();
-        if (name) {
-            formData.append('name', name);
-        }
-        if (state_msg) {
-            formData.append('state_msg', state_msg);
-        }
-        if (file) {
-            formData.append('file', file);
-        }
-        if (channel_id) {
-            formData.append('channel_id', channel_id);
-        }
-        if (description) {
-            formData.append('description', description);
-        }
+    async updateUser(formData) {
+        // const formData = new FormData();
+        // if (name) {
+        //     formData.append('name', name);
+        // }
+        // if (state_msg) {
+        //     formData.append('state_msg', state_msg);
+        // }
+        // if (file) {
+        //     formData.append('file', file);
+        // }
+        // if (channel_id) {
+        //     formData.append('channel_id', channel_id);
+        // }
+        // if (description) {
+        //     formData.append('description', description);
+        // }
 
         const response = await this.request('post', `/user/update/info`, formData, false);
         return response.result || response;
@@ -350,6 +353,55 @@ export default class Api {
     }
 
     /* 파일 업로드 */
+
+    //GAME
+    async games(limit : number = 100, offset : number = 0, category: number, sort : string, dir : string) {
+
+        let url = `/games?limit=${limit}&offset=${offset}`;
+        if( category !== undefined ) {
+            url += `&category=${category}`;
+        }
+        if( sort !== undefined ) {
+            url += `&sort=${sort}`;
+        }
+        if( dir !== undefined ) {
+            url += `&dir=${dir}`;
+        }
+
+        const response = await this.request( 'get', url, {
+            limit,
+            offset,
+            category,
+            sort,
+            dir,
+        }, false );
+        return response.result || response;
+    }
+
+    async game(pathname : string) {
+        const response = await this.request( 'get', `/game/${pathname}`, undefined, false );
+        return response.result || response;
+    }
+
+    async searchGame( tag ) {
+        const response = await this.request( 'get', `/games/s/${tag}`, undefined, false );
+        return response.result || response;
+    }
+
+    async featured() {
+        const response = await this.request( 'get', `/featured`, undefined, false );
+        return response.result || response;
+    }
+
+    async hashtags( tag ) {
+        const response = await this.request( 'get', `/games/hashtags/${tag}`, undefined, false );
+        return response.result || response;
+    }
+
+    async tagged( id ) {
+        const response = await this.request( 'get', `/games/tagged/${id}`, undefined, false );
+        return response.result || response;
+    }
 
 }
 
