@@ -9,7 +9,7 @@
                 class="uil uil-files-landscapes"></i> Blog Post
             </li>
         </ul>
-        <div class="mp-editer">
+        <div class="mp-editer2">
             <TiptapSns
                 v-if="activeTab === 'SNS'"
                 @isEmpty="editorState"
@@ -22,9 +22,9 @@
             ></TiptapBlog>
         </div>
         <template v-if="activeTab === 'SNS'">
-            <div class="mp-image">
+            <div class="mp-image" >
                 <dd>
-                    <swiper class="swiper-area" :options="MPIswiperOption">
+                    <swiper class="swiper-area" :options="MPIswiperOption" v-if="imgPreviewArr.lenght > 0">
                         <swiper-slide
                             v-for="(img, idx) in imgPreviewArr" :key="idx"
                             :style="`background: url(${img.url}) center center no-repeat; background-size:cover;`">
@@ -50,7 +50,7 @@
         </template>
         <dl class="mp-category">
         </dl>
-        <dl class="mp-type">
+        <dl class="mp-type" :style="activeTab === 'BLOG'? 'margin-top:20px;':''">
             <dt>
                 <image-uploader-btn
                     :activeTab="activeTab"
@@ -83,7 +83,7 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2> 작성중인 글은 저장되지 않고 사라집니다. 작성을 끝내시겠습니까?</h2>
+                    <h2> 첨부파일은 저장되지 않고 사라집니다. 작성을 끝내시겠습니까?</h2>
                     <div>
                         <button class="btn-default w48p" @click="leavePost(true)">네</button>
                         <button class="btn-gray w48p" @click="leavePost(false)">아니오</button>
@@ -241,9 +241,9 @@ export default class Post extends Vue {
     }
 
     prefill() {
-        this.$store.dispatch('resetAttFiles')
+        this.activeTab =this.feed.post_type;
+            this.$store.dispatch('resetAttFiles')
         for (const file of this.feed.attatchment_files) {
-            console.log('attatchment_files', file)
             if (file.type === 'image') {
                 this.$store.commit('imgArr', file)
                 this.imgPreviewArr = this.$store.getters.imgArr
@@ -262,7 +262,6 @@ export default class Post extends Vue {
         }
         this.$api.joinedCommunityList(this.user.id)
             .then((res: any) => {
-                console.log('res', res)
                 this.communityList = res;
             })
             .catch((err: AxiosError) => {
@@ -271,7 +270,6 @@ export default class Post extends Vue {
     }
 
     init() {
-        console.log("init");
         this.selectedCategory = [];
         this.imgSrc = "";
         this.audioSrc = "";
@@ -286,23 +284,18 @@ export default class Post extends Vue {
             this.$modal.show('needLogin')
         }
         else {
-            console.log(this.$store.getters.postContents)
-            console.log(!this.isEditorEmpty)
-            console.log(this.attFiles.length !== 0)
             this.isPostEmpty() ? this.activeTab = type : this.$modal.show('alertModal')
-
         }
 
     }
 
     isPostEmpty() {
-        console.log('this.feed', this.feed)
         if (
             this.attFiles.length !== 0 ||
-            !this.isEditorEmpty ||
+            // !this.isEditorEmpty ||
             this.$store.getters.imgArr.length > 0 ||
-            this.$store.getters.audioArr.length > 0 ||
-            !(Object.keys(this.feed).length === 0)
+            this.$store.getters.audioArr.length > 0
+            // || !(Object.keys(this.feed).length === 0)
         ) {
             // console.log(this.attFiles.length !== 0)
             // console.log(!this.isEditorEmpty)
@@ -354,7 +347,6 @@ export default class Post extends Vue {
         let div = document.createElement("html");
         div.innerHTML = this.$store.getters.postContents;
 
-        console.log('this.attFiles', this.attFiles)
 
         const obj = {
             user_uid: this.user.uid,
@@ -377,8 +369,6 @@ export default class Post extends Vue {
             // ],
             scheduled_for: null
         }
-        console.log(this.$store.getters.postContents)
-        console.log(obj)
 
         this.$api.uploadPost(obj)
             .then((res: AxiosResponse) => {
@@ -422,7 +412,6 @@ export default class Post extends Vue {
             .then((res: AxiosResponse) => {
 
                 this.$emit('refetch')
-                this.toast.successToast("포스팅 수정이 완료되었습니다.")
             })
             .catch((err: AxiosError) => {
                 this.toast.failToast("포스팅 수정에 실패하였습니다.")
@@ -446,19 +435,16 @@ export default class Post extends Vue {
     @Watch('$store.getters.imgArr')
     imgArr() {
         this.imgPreviewArr = this.$store.getters.imgArr
-        console.log('imgPreviewArr', this.imgPreviewArr)
     }
 
     @Watch('$store.getters.audioArr')
     audioArr() {
         this.audioPreviewArr = this.$store.getters.audioArr
-        console.log('audioPreviewArr', this.audioPreviewArr)
     }
 
     @Watch('$store.getters.videoArr')
     watchImg() {
         this.videoSrc = this.$store.getters.videoArr
-        console.log('watch', this.videoSrc)
     }
 
     deletePreviewImg(idx: number) {
@@ -565,7 +551,6 @@ export default class Post extends Vue {
 
     deleteCategory(idx: number) {
         this.selectedCategory.splice(idx, 1);
-        console.log("idx", idx, this.selectedCategory);
     }
 }
 </script>

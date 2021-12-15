@@ -38,10 +38,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
- ;
-import { Portfolio } from "@/types/index";
-import { dateFormat } from "@/script/moment";
+import {Component, Prop, Vue} from "vue-property-decorator";
+
+;
+import {Portfolio} from "@/types/index";
+import {dateFormat} from "@/script/moment";
+
 @Component({
     components: {},
 })
@@ -49,9 +51,8 @@ export default class PortfolioCard extends Vue {
     @Prop() portfolio!: Portfolio;
 
     private latestDate: string = "";
-    mounted() {
 
-        console.log(this.portfolio)
+    mounted() {
         this.latestDate = dateFormat(this.portfolio.latest_update!);
     }
 }

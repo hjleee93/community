@@ -35,7 +35,7 @@
             <ul>
               <!--                            <li><img src="../../assets/images/charge_game_icon.svg" alt=""></li>-->
               <!--                            <li><img src="../../assets/images/hot_game_icon.svg" alt=""></li>-->
-              <li><img src="img/zempie_game_icon.svg" alt=""></li>
+              <li><img src="../assets/images/zempie_game_icon.svg" alt=""></li>
             </ul>
           </dd>
         </dl>
@@ -59,8 +59,8 @@ import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import Feed from "@/components/timeline/_feed.vue";
 import MemberCard from "@/components/community/_memberCard.vue";
 import {Swiper, SwiperSlide} from 'vue-awesome-swiper'
-import {execCommandCopy} from "@/script/util";
 import Toast from "@/script/message";
+
 
 @Component({
   components: {

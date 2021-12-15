@@ -1,7 +1,7 @@
 <template>
     <a class="btn-sub w120 mr10" v-if="this.$route.meta.title === 'ManageJoinedGroup'" @click="unsubscribe">가입중</a>
     <a class="btn-default w120 mr10" v-else-if="!community.is_subscribed" :community="community"
-       @click="subscribe">가입하기 </a>
+       @click="subscribe">가입하기</a>
     <a class="btn-sub w120 mr10" v-else @click="unsubscribe">가입중</a>
 </template>
 
@@ -25,7 +25,6 @@ export default class SubscribeBtn extends Vue {
             this.$api.subscribe({user_id: this.user.id, community_id: this.community.id})
                 .then((res: AxiosResponse) => {
                     this.$emit('refetch')
-                    console.log(res)
                 }).catch((err: AxiosError) => {
                 if (err.message) {
                     alert(err.message)

@@ -1,16 +1,15 @@
 <template>
-  <div>
-    <!--      v-if="user"-->
-    <editor-content
-
-        :editor="editor"
-        class="editor-container"
-        v-model="postingText"
-    />
-    <div class="character-count">
-      <p>{{ charCnt }}/{{ limit }}</p>
+    <div>
+        <!--      v-if="user"-->
+        <editor-content
+            :editor="editor"
+            class="editor-container"
+            v-model="postingText"
+        />
+        <div class="character-count">
+            <p>{{ charCnt }}/{{ limit }}</p>
+        </div>
     </div>
-  </div>
 </template>
 
 <script lang="ts">
@@ -40,409 +39,407 @@ import {User} from "@/types";
 
 
 @Component({
-  computed: {...mapGetters(["user"])},
-  components: {EditorContent},
+    computed: {...mapGetters(["user"])},
+    components: {EditorContent},
 })
 export default class TiptapSns extends Vue {
-  feed!: any;
-  private imgPreviewArr: any[] = [];
-  private postingText: string = "";
-  private editor!: Editor;
-  private user!: User;
-  private limit: number = 300;
-  private charCnt: number = 0;
+    feed!: any;
+    private imgPreviewArr: any[] = [];
+    private postingText: string = "";
+    private editor!: Editor;
+    private user!: User;
+    private limit: number = 300;
+    private charCnt: number = 0;
 
-  // 해시태그 멘션
-  private hasTagSuggestion: boolean = false;
-  private postedHashtag: string[] = [];
+    // 해시태그 멘션
+    private hasTagSuggestion: boolean = false;
+    private postedHashtag: string[] = [];
 
-  private hasMentionSuggestion: boolean = false;
-  private mentionList: any[] = [];
-  hashTagList: string[] = [];
-
-
-  // tiptap
+    private hasMentionSuggestion: boolean = false;
+    private mentionList: any[] = [];
+    hashTagList: string[] = [];
 
 
-    //todo: isClearEditor 사용하는지 확인
-  @Watch("$store.getters.isClearEditor")
-  watchReset() {
-    this.editor.commands.clearContent();
-  }
+    // tiptap
 
-  async created() {
-    this.editorInit();
-  }
 
-  async mounted() {
-    await this.$store.dispatch("loginState");
-    this.feed = this.$store.getters.feed
+    // //todo: isClearEditor 사용하는지 확인
+    // @Watch("$store.getters.isClearEditor")
+    // watchReset() {
+    //     console.log('clear')
+    //     this.editor.commands.clearContent();
+    // }
 
-    if (this.feed) {
-      this.editor.commands.setContent(this.feed.content);
-      this.charCnt = this.editor.getCharacterCount();
-      this.prefill();
+    async created() {
+        this.editorInit();
     }
 
-  }
+    async mounted() {
+        await this.$store.dispatch("loginState");
+        this.feed = this.$store.getters.feed
 
-  prefill() {
+        if (this.feed) {
+            this.editor.commands.setContent(this.feed.content);
+            this.charCnt = this.editor.getCharacterCount();
+            this.prefill();
+        }
 
-    this.$store.dispatch('resetAttFiles')
-    console.log(this.feed)
-    for (const file of this.feed.attatchment_files) {
-
-      if (file.type === 'image') {
-        this.imgPreviewArr.push(file);
-        console.log(this.imgPreviewArr)
-      }
     }
 
-    this.$store.commit('imgArr', this.imgPreviewArr)
-
-    if (this.feed.attatchment_files.type === 'image') {
-      this.imgPreviewArr = this.feed.attatchment_files.img;
-      console.log(this.imgPreviewArr)
-    }
-  }
-
-  @Watch("user")
-  editorInit() {
-    console.log("editor init", this.user);
-    this.editor = new Editor({
-      content: this.postingText,
-      extensions: [
-        StarterKit,
-        Placeholder.configure({
-          placeholder: this.user
-              ? "멋진 생각을 공유해주세요."
-              : " 로그인 후 사용해주세요.",
-        }),
-        Link,
-        Highlight,
-        // Typography,
-        Dropcursor,
-        CharacterCount.configure({
-          limit: this.limit,
-        }),
-        Video,
-        Iframe,
-        Audio,
-        Hashtag.configure({
-          HTMLAttributes: {
-            class: "hashtag",
-          },
-          renderLabel({options, node}) {
-            return `${options.suggestion.char}${
-                node.attrs.label ?? node.attrs.id
-            }`;
-          },
-
-          suggestion: {
-            //@ts-ignore
-            items: async (query) => {
-              /* 추후 hashtag log api 생기면 추가 예정 */
-              // if (query.length > 0) {
-              //     return this.hashTagListTest
-              //         .filter((item) =>
-              //             item
-              //                 .toLowerCase()
-              //                 .startsWith(query.toLowerCase())
-              //         )
-              //         .slice(0, 10);
-              // }
-            },
-            render: () => {
-              let component;
-              let popup;
-
-              return {
-                onStart: (props) => {
-                  component = new VueRenderer(HashtagList, {
-                    parent: this,
-                    propsData: props,
-                  });
-
-                  popup = tippy("body", {
-                    getReferenceClientRect:
-                    props.clientRect,
-                    appendTo: () => document.body,
-                    content: component.element,
-                    showOnCreate: true,
-                    interactive: false,
-                    trigger: "manual",
-                    placement: "bottom-start",
-                  });
-                },
-                onUpdate: (props) => {
-                  component.updateProps(props);
-                  if (props.items && props.items.length > 0) {
-                    this.hasTagSuggestion = true;
-                  }
-                  else {
-                    this.hasTagSuggestion = false;
-                  }
-                  popup[0].setProps({
-                    getReferenceClientRect:
-                    props.clientRect,
-                  });
-                },
-                onKeyDown: (props) => {
-                  if (
-                      props.event.code === "Space" ||
-                      (props.event.key === "Enter" &&
-                          !this.hasTagSuggestion &&
-                          component.ref?._props.query)
-                  ) {
-                    let id = {
-                      id: component.ref?._props.query,
-                    };
-
-                    return component.ref?._props.editor
-                        .chain()
-                        .focus()
-                        .insertContentAt(
-                            component.ref?._props.range,
-                            [
-                              {
-                                type: "hashtag",
-                                attrs: id,
-                              }
-                            ]
-                        )
-                        .run();
-                  }
-                  else if (props.event.key === "#") {
-                    let id = {
-                      id: component.ref?._props.query,
-                    };
-
-                    return component.ref?._props.editor
-                        .chain()
-                        .focus()
-                        .insertContentAt(
-                            component.ref?._props.range,
-                            [
-                              {
-                                type: "hashtag",
-                                attrs: id,
-                              },
-                              {
-                                type: "text",
-                                text: "#",
-                              },
-                            ]
-                        )
-                        .run();
-                  }
-                  else {
-                    return component.ref?.onKeyDown(props);
-                  }
-                },
-                onExit() {
-                  popup[0].destroy();
-                  component.destroy();
-                },
-              };
-            },
-          },
-        }),
-        Mention.configure({
-          HTMLAttributes: {
-            class: 'mention',
-          },
-          renderLabel({options, node}) {
-            return `${options.suggestion.char}${
-                node.attrs.label ?? node.attrs.id
-            }`;
-          },
-          suggestion: {
-            //@ts-ignore
-            items: async (query) => {
-              if (query.length > 0) {
-                const obj = {
-                  limit: 5,
-                  username: query
+    prefill() {
+        this.$store.dispatch('resetAttFiles')
+        if(this.feed.attatchment_files.length > 0) {
+            for (const file of this.feed.attatchment_files) {
+                if (file.type === 'image') {
+                    this.imgPreviewArr.push(file);
+                    console.log(this.imgPreviewArr)
                 }
-                const res = await this.$api.search(obj)
-                let username = res.result.map((user) => {
-                  return user.name
-                })
-                return username;
-              }
+            }
+
+            this.$store.commit('imgArr', this.imgPreviewArr)
+
+            if (this.feed.attatchment_files.type === 'image') {
+                this.imgPreviewArr = this.feed.attatchment_files.img;
+            }
+        }
+    }
+
+
+    editorInit() {
+        this.editor = new Editor({
+            content: this.postingText,
+            extensions: [
+                StarterKit,
+                Placeholder.configure({
+                    placeholder: this.user
+                        ? "멋진 생각을 공유해주세요."
+                        : " 로그인 후 사용해주세요.",
+                }),
+                Link,
+                Highlight,
+                // Typography,
+                Dropcursor,
+                CharacterCount.configure({
+                    limit: this.limit,
+                }),
+                Video,
+                Iframe,
+                Audio,
+                Hashtag.configure({
+                    HTMLAttributes: {
+                        class: "hashtag",
+                    },
+                    renderLabel({options, node}) {
+                        return `${options.suggestion.char}${
+                            node.attrs.label ?? node.attrs.id
+                        }`;
+                    },
+
+                    suggestion: {
+                        //@ts-ignore
+                        items: async (query) => {
+                            /* 추후 hashtag log api 생기면 추가 예정 */
+                            // if (query.length > 0) {
+                            //     return this.hashTagListTest
+                            //         .filter((item) =>
+                            //             item
+                            //                 .toLowerCase()
+                            //                 .startsWith(query.toLowerCase())
+                            //         )
+                            //         .slice(0, 10);
+                            // }
+                        },
+                        render: () => {
+                            let component;
+                            let popup;
+
+                            return {
+                                onStart: (props) => {
+                                    component = new VueRenderer(HashtagList, {
+                                        parent: this,
+                                        propsData: props,
+                                    });
+
+                                    popup = tippy("body", {
+                                        getReferenceClientRect:
+                                        props.clientRect,
+                                        appendTo: () => document.body,
+                                        content: component.element,
+                                        showOnCreate: true,
+                                        interactive: false,
+                                        trigger: "manual",
+                                        placement: "bottom-start",
+                                    });
+                                },
+                                onUpdate: (props) => {
+                                    component.updateProps(props);
+                                    if (props.items && props.items.length > 0) {
+                                        this.hasTagSuggestion = true;
+                                    }
+                                    else {
+                                        this.hasTagSuggestion = false;
+                                    }
+                                    popup[0].setProps({
+                                        getReferenceClientRect:
+                                        props.clientRect,
+                                    });
+                                },
+                                onKeyDown: (props) => {
+                                    if (
+                                        props.event.code === "Space" ||
+                                        (props.event.key === "Enter" &&
+                                            !this.hasTagSuggestion &&
+                                            component.ref?._props.query)
+                                    ) {
+                                        let id = {
+                                            id: component.ref?._props.query,
+                                        };
+
+                                        return component.ref?._props.editor
+                                            .chain()
+                                            .focus()
+                                            .insertContentAt(
+                                                component.ref?._props.range,
+                                                [
+                                                    {
+                                                        type: "hashtag",
+                                                        attrs: id,
+                                                    }
+                                                ]
+                                            )
+                                            .run();
+                                    }
+                                    else if (props.event.key === "#") {
+                                        let id = {
+                                            id: component.ref?._props.query,
+                                        };
+
+                                        return component.ref?._props.editor
+                                            .chain()
+                                            .focus()
+                                            .insertContentAt(
+                                                component.ref?._props.range,
+                                                [
+                                                    {
+                                                        type: "hashtag",
+                                                        attrs: id,
+                                                    },
+                                                    {
+                                                        type: "text",
+                                                        text: "#",
+                                                    },
+                                                ]
+                                            )
+                                            .run();
+                                    }
+                                    else {
+                                        return component.ref?.onKeyDown(props);
+                                    }
+                                },
+                                onExit() {
+                                    popup[0].destroy();
+                                    component.destroy();
+                                },
+                            };
+                        },
+                    },
+                }),
+                Mention.configure({
+                    HTMLAttributes: {
+                        class: 'mention',
+                    },
+                    renderLabel({options, node}) {
+                        return `${options.suggestion.char}${
+                            node.attrs.label ?? node.attrs.id
+                        }`;
+                    },
+                    suggestion: {
+                        //@ts-ignore
+                        items: async (query) => {
+                            if (query.length > 0) {
+                                const obj = {
+                                    limit: 5,
+                                    username: query
+                                }
+                                const res = await this.$api.search(obj)
+                                let username = res.result.map((user) => {
+                                    return user.name
+                                })
+                                return username;
+                            }
+                        },
+                        render: () => {
+                            let component;
+                            let popup;
+
+                            return {
+                                onStart: (props) => {
+                                    component = new VueRenderer(MentionList, {
+                                        parent: this,
+                                        propsData: props,
+                                    });
+
+                                    popup = tippy("body", {
+                                        getReferenceClientRect:
+                                        props.clientRect,
+                                        appendTo: () => document.body,
+                                        content: component.element,
+                                        showOnCreate: true,
+                                        interactive: false,
+                                        trigger: "manual",
+                                        placement: "bottom-start",
+                                    });
+                                },
+                                onUpdate: (props) => {
+                                    component.updateProps(props);
+                                    if (props.items && props.items.length > 0) {
+                                        this.hasMentionSuggestion = true;
+                                    }
+                                    else {
+                                        this.hasMentionSuggestion = false;
+                                    }
+                                    popup[0].setProps({
+                                        getReferenceClientRect:
+                                        props.clientRect,
+                                    });
+                                },
+                                onKeyDown: (props) => {
+
+                                    if (
+                                        props.event.code === "Space" ||
+                                        (props.event.key === "Enter" &&
+                                            !this.hasMentionSuggestion &&
+                                            component.ref?._props.query)
+                                    ) {
+                                        let id = {
+                                            id: component.ref?._props.query,
+                                        };
+                                        return component.ref?._props.editor
+                                            .chain()
+                                            .focus()
+                                            .insertContentAt(
+                                                component.ref?._props.range,
+                                                [
+                                                    {
+                                                        type: "mention",
+                                                        attrs: id,
+                                                    }
+                                                ]
+                                            )
+                                            .run();
+                                    }
+                                        // else if(props.event.key === "@") {
+                                        //     let id = {
+                                        //         id: component.ref?._props.query,
+                                        //     };
+                                        //     this.$store.commit(
+                                        //         "userTagList",
+                                        //         component.ref?._props.query
+                                        //     );
+                                        //     return component.ref?._props.editor
+                                        //         .chain()
+                                        //         .focus()
+                                        //         .insertContentAt(
+                                        //             component.ref?._props.range,
+                                        //             [
+                                        //                 {
+                                        //                     type: "mention",
+                                        //                     attrs: id,
+                                        //                 },
+                                        //                 {
+                                        //                     type: "text",
+                                        //                     text: "@",
+                                        //                 },
+                                        //             ]
+                                        //         )
+                                        //         .run();
+                                    // }
+                                    else {
+
+                                        return component.ref?.onKeyDown(props);
+                                    }
+                                },
+                                onExit() {
+                                    popup[0].destroy();
+                                    component.destroy();
+                                },
+                            };
+                        },
+                    },
+                }),
+
+            ],
+            autofocus: "end",
+            onUpdate: () => {
+                // this.$emit("isEmpty", this.editor.isEmpty);
+                this.$store.commit("postContents", this.editor.getHTML());
+                this.$store.commit("isClearEditor", false);
+                this.charCnt = this.editor.getCharacterCount();
             },
-            render: () => {
-              let component;
-              let popup;
-
-              return {
-                onStart: (props) => {
-                  component = new VueRenderer(MentionList, {
-                    parent: this,
-                    propsData: props,
-                  });
-
-                  popup = tippy("body", {
-                    getReferenceClientRect:
-                    props.clientRect,
-                    appendTo: () => document.body,
-                    content: component.element,
-                    showOnCreate: true,
-                    interactive: false,
-                    trigger: "manual",
-                    placement: "bottom-start",
-                  });
-                },
-                onUpdate: (props) => {
-                  component.updateProps(props);
-                  if (props.items && props.items.length > 0) {
-                    this.hasMentionSuggestion = true;
-                  }
-                  else {
-                    this.hasMentionSuggestion = false;
-                  }
-                  popup[0].setProps({
-                    getReferenceClientRect:
-                    props.clientRect,
-                  });
-                },
-                onKeyDown: (props) => {
-
-                  if (
-                      props.event.code === "Space" ||
-                      (props.event.key === "Enter" &&
-                          !this.hasMentionSuggestion &&
-                          component.ref?._props.query)
-                  ) {
-                    let id = {
-                      id: component.ref?._props.query,
-                    };
-                    return component.ref?._props.editor
-                        .chain()
-                        .focus()
-                        .insertContentAt(
-                            component.ref?._props.range,
-                            [
-                              {
-                                type: "mention",
-                                attrs: id,
-                              }
-                            ]
-                        )
-                        .run();
-                  }
-                      // else if(props.event.key === "@") {
-                      //     let id = {
-                      //         id: component.ref?._props.query,
-                      //     };
-                      //     this.$store.commit(
-                      //         "userTagList",
-                      //         component.ref?._props.query
-                      //     );
-                      //     return component.ref?._props.editor
-                      //         .chain()
-                      //         .focus()
-                      //         .insertContentAt(
-                      //             component.ref?._props.range,
-                      //             [
-                      //                 {
-                      //                     type: "mention",
-                      //                     attrs: id,
-                      //                 },
-                      //                 {
-                      //                     type: "text",
-                      //                     text: "@",
-                      //                 },
-                      //             ]
-                      //         )
-                      //         .run();
-                  // }
-                  else {
-
-                    return component.ref?.onKeyDown(props);
-                  }
-                },
-                onExit() {
-                  popup[0].destroy();
-                  component.destroy();
-                },
-              };
-            },
-          },
-        }),
-
-      ],
-      autofocus: "end",
-      onUpdate: () => {
-        this.$emit("isEmpty", this.editor.isEmpty);
-        this.$store.commit("postContents", this.editor.getHTML());
-        this.$store.commit("isClearEditor", false);
-        this.charCnt = this.editor.getCharacterCount();
-      },
-    });
-  }
+        });
+    }
 }
 </script>
 
 <style lang="scss" scoped>
-.character-count{
-  position: absolute;
-  bottom: 15px;
-  right: 15px;
-  font-size: 12px;
-  line-height: 12px;
+.character-count {
+    display: flex !important;
+    justify-content: flex-end !important;
+    margin-right: 10px;
 }
+
 .editor-container {
-  text-align: left;
-  padding: 15px;
-  height: 200px;
-  .ProseMirror:focus-visible{
-    outline-color: red;
-  }
-  .iframe-wrapper {
-    position: relative;
-    padding-bottom: 100/16 * 9%;
-    height: 0;
-    overflow: hidden;
-    width: 100%;
-    height: auto;
+    text-align: left;
+    padding: 15px;
+    height: 200px;
 
-    &.ProseMirror-selectednode {
-      outline: 3px solid #68cef8;
+
+
+
+    .iframe-wrapper {
+        position: relative;
+        padding-bottom: 100/16 * 9%;
+        height: 0;
+        overflow: hidden;
+        width: 100%;
+        height: auto;
+
+        &.ProseMirror-selectednode {
+            outline: 3px solid #68cef8;
+        }
+
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
     }
 
-    iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+    .video-wrapper {
+        position: relative;
+        padding-bottom: 100/16 * 9%;
+
+        overflow: hidden;
+        width: 360px;
+        height: 240px;
+
+        &.ProseMirror-selectednode {
+            outline: 3px solid #68cef8;
+        }
     }
-  }
 
-  .video-wrapper {
-    position: relative;
-    padding-bottom: 100/16 * 9%;
+    .audio-wrapper {
+        position: relative;
 
-    overflow: hidden;
-    width: 360px;
-    height: 240px;
+        overflow: hidden;
+        width: 360px;
+        height: 100px;
 
-    &.ProseMirror-selectednode {
-      outline: 3px solid #68cef8;
+        &.ProseMirror-selectednode {
+            outline: 3px solid #68cef8;
+        }
     }
-  }
-
-  .audio-wrapper {
-    position: relative;
-
-    overflow: hidden;
-    width: 360px;
-    height: 100px;
-
-    &.ProseMirror-selectednode {
-      outline: 3px solid #68cef8;
-    }
-  }
 }
 </style>

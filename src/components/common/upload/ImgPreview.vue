@@ -82,18 +82,8 @@ export default class ImgPreview extends Vue {
     private profileImgSrc: string = this.profileImg;
     private bannerImgSrc: string = this.bannerImg;
 
-    mounted() {
-        console.log(this.bannerImg)
 
-    }
-    beforeDestroy() {
 
-    }
-    @Watch("profileImgSrc", { immediate: true })
-    watchImg(val: any) {
-        console.log("watch imgSrc", val);
-
-    }
 }
 </script>
 

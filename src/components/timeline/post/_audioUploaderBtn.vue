@@ -53,7 +53,6 @@ export default class AudioUploaderBtn extends Vue {
             this.$api.fileUploader(formData)
                 .then((res: any) => {
                     this.$store.commit('blogAudioArr', res)
-                    console.log(res)
                 })
         }
     }

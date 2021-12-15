@@ -63,7 +63,6 @@ export default class MemberList extends Vue {
     refetch(){
         this.limit = 10;
         this.offset = 0;
-        console.log('refetcj')
 
         this.fetch();
 

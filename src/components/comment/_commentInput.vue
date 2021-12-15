@@ -51,10 +51,8 @@ export default class CommentInput extends Vue {
                 post_id: this.postId,
                 content:this.content
             }
-            console.log('updatge', obj)
             this.$api.updateComment(obj)
                 .then((res: AxiosResponse) => {
-                    console.log('updata', res)
                     this.$emit('sendComment')
 
                 })
@@ -81,7 +79,6 @@ export default class CommentInput extends Vue {
                 content: this.content,
                 is_private: this.isPrivate
             }
-            console.log('upload', obj)
             this.$api.sendComment(obj)
                 .then((res: AxiosResponse) => {
                     this.$emit('sendComment')

@@ -1,24 +1,26 @@
 <template>
     <li>
         <div class="cm-img"></div>
-        <p @click="userPage" :style="{'background' : 'url(' + profileImg + ') center no-repeat', 'background-size' : 'cover'}"></p>
-        <div class="cm-setup">
-            <i class="uil uil-ellipsis-h" slot="trigger" @click="isOpenMyDropdown = !isOpenMyDropdown"></i>
-            <dropdown-menu :overlay="false" :isOpen="isOpenMyDropdown" @closed="isOpenMyDropdown = false">
+        <p @click="userPage"
+           :style="{'background' : 'url(' + profileImg || '../../assets/images/zempy.png'+ ') center no-repeat', 'background-size' : 'cover'}"></p>
 
-                <ul slot="body" class="vic-more-list">
-                    <a @click="muteUser">뮤트</a>
-                </ul>
+        <!--        <div class="cm-setup">-->
+        <!--            <i class="uil uil-ellipsis-h" slot="trigger" @click="isOpenMyDropdown = !isOpenMyDropdown"></i>-->
+        <!--            <dropdown-menu :overlay="false" :isOpen="isOpenMyDropdown" @closed="isOpenMyDropdown = false">-->
 
-            </dropdown-menu>
+        <!--                <ul slot="body" class="vic-more-list">-->
+        <!--                    <a @click="muteUser">뮤트</a>-->
+        <!--                </ul>-->
 
-        </div>
+        <!--            </dropdown-menu>-->
+
+        <!--        </div>-->
         <div class="cm-info">
             <h3>{{ member.name }}</h3>
             <!--                    <p>@Zempieabcd</p>-->
             <div>
                 <FollowBtn :member="member" @refetch="refetch"/>
-<!--                <router-link to="#" class="btn-default">Fellow</router-link>-->
+                <!--                <router-link to="#" class="btn-default">Fellow</router-link>-->
                 <!--                        <router-link to="#" class="btn-gray">Send Message</router-link>-->
             </div>
         </div>
@@ -39,9 +41,9 @@ export default class MemberCard extends Vue {
     profileImg = '';
     bannerImg = 'img/channel_banner.png'
     isOpenMyDropdown = false
-    muteUser(){
+
+    muteUser() {
         this.isOpenMyDropdown = false;
-console.log(this.member.id)
         this.$api.userBlock(this.member.id)
             .then((res: AxiosResponse) => {
                 console.log(res)
@@ -52,21 +54,19 @@ console.log(this.member.id)
 
 
     }
+
     mounted() {
 
         if (this.member.profile_img) {
             this.profileImg = this.member.profile_img
         }
-        else {
-            this.profileImg = 'img/zempy.png';
-        }
-
-        console.log(this.profileImg)
     }
-    refetch(){
+
+    refetch() {
         this.$emit('refetch')
     }
-    userPage(){
+
+    userPage() {
         this.$router.push(`/channel/${this.member.uid}/timeline`)
     }
 }
@@ -80,7 +80,8 @@ svg {
 .cm-img {
     background-color: #f39800;
 }
-.cm-setup{
+
+.cm-setup {
     left: 30px;
 }
 </style>

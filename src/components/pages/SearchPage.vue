@@ -4,24 +4,24 @@
             <h2>'{{ keyword }}' <span>검색결과</span></h2>
         </div>
 
-        <div class="tab-search-swiper">
-            <swiper class="swiper-area" :options="TSSswiperOption">
-                <swiper-slide>
-                    <router-link to="#" class="active">ALL</router-link>
-                </swiper-slide>
-                <swiper-slide>
-                    <router-link to="#">Communities
-                        <!--                        <span>10</span>-->
-                    </router-link>
-                </swiper-slide>
-                <swiper-slide>
-                    <router-link to="#">Users</router-link>
-                </swiper-slide>
-                <swiper-slide>
-                    <router-link to="#">Games</router-link>
-                </swiper-slide>
-            </swiper>
-        </div>
+<!--        <div class="tab-search-swiper">-->
+<!--            <swiper class="swiper-area" :options="TSSswiperOption">-->
+<!--                <swiper-slide>-->
+<!--                    <router-link to="#" class="active">ALL</router-link>-->
+<!--                </swiper-slide>-->
+<!--                <swiper-slide>-->
+<!--                    <router-link to="#">Communities-->
+<!--                        &lt;!&ndash;                        <span>10</span>&ndash;&gt;-->
+<!--                    </router-link>-->
+<!--                </swiper-slide>-->
+<!--                <swiper-slide>-->
+<!--                    <router-link to="#">Users</router-link>-->
+<!--                </swiper-slide>-->
+<!--                <swiper-slide>-->
+<!--                    <router-link to="#">Games</router-link>-->
+<!--                </swiper-slide>-->
+<!--            </swiper>-->
+<!--        </div>-->
         <dl class="area-title">
             <dt>Users <span>{{ memberList && memberList.length }}</span></dt>
         </dl>
@@ -93,54 +93,59 @@
 
         <div class="ta-search-post" v-if="posts">
             <ul class="ta-post">
+                <div v-for="feed in posts" :key="feed.id">
+<!--                    {{feed}}-->
+                    <Feed :feed="feed"
+                    ></Feed>
+                </div>
                 <!--포스트 반복 -->
-                <li class="tap-list tsp-list" v-for="post in posts" :key="post.id">
-                    <dl class="tapl-title">{{post.user}}
-                        <dt>
-                            <dl>
-                                <p style="background: url('https://i.pinimg.com/564x/70/86/0a/70860a694929c5a615deead4a9c9d259.jpg') center center no-repeat; background-size: cover;"></p>
+                <!--                <li class="tap-list tsp-list" v-for="post in posts" :key="post.id">-->
+                <!--                    <dl class="tapl-title">{{post.user}}-->
+                <!--                        <dt>-->
+                <!--                            <dl>-->
+                <!--                                <p style="background: url('https://i.pinimg.com/564x/70/86/0a/70860a694929c5a615deead4a9c9d259.jpg') center center no-repeat; background-size: cover;"></p>-->
 
-                                <dd>
-                                    <h2>젬파이 업데이트 포스트 무슨생각을 하고 계신가요?</h2>
-                                    <p><i class="uis uis-clock" style="color:#c1c1c1;"></i> 10시간전</p>
-                                </dd>
-                            </dl>
-                        </dt>
-                        <dd>
-                            <router-link to="#"><i class="uil uil-ellipsis-h font25"></i></router-link>
-                        </dd>
-                    </dl>
-                    <div class="tapl-content" v-html="post.content">
-                    </div>
-                    <ul class="tapl-option">
-                        <li>
-                            <ul>
-                                <li><i class="xi-heart" style="font-size:22px; color:#ff6e17"></i>&nbsp;
-                                    {{ post.like_cnt }}
-                                </li>
-                                <li @click="openComments">
-                                    <i class="uil uil-comment-alt-dots"
-                                       style="font-size:22px;"></i>&nbsp; {{ post.comment_cnt }}
-                                </li>
-                                <!--                                <li><i class="uil uil-eye" style="font-size:22px;"></i>&nbsp;680</li>-->
-                                <li><a @click="copyUrl"><i class="uil uil-share-alt" style="font-size:20px;"></i></a>
-                                </li>
-                            </ul>
-                        </li>
-                        <!--                        <li><router-link to="#"><i class="uil uil-bookmark" style="font-size:24px; color:#ff6e17;"></i></router-link></li>-->
-                    </ul>
-                    <div v-if="isOpenedComments" class="tapl-comment">
-                        <ul @scroll="scrollCheck">
-                            <li v-for="comment in comments" :key="comment.id">
-                                <Comment :comment="comment" :editContent="comment.content" :postId="post.id"
-                                         @editDone="editDone"/>
-                            </li>
-                        </ul>
+                <!--                                <dd>-->
+                <!--                                    <h2>젬파이 업데이트 포스트 무슨생각을 하고 계신가요?</h2>-->
+                <!--                                    <p><i class="uis uis-clock" style="color:#c1c1c1;"></i> 10시간전</p>-->
+                <!--                                </dd>-->
+                <!--                            </dl>-->
+                <!--                        </dt>-->
+                <!--                        <dd>-->
+                <!--                            <router-link to="#"><i class="uil uil-ellipsis-h font25"></i></router-link>-->
+                <!--                        </dd>-->
+                <!--                    </dl>-->
+                <!--                    <div class="tapl-content" v-html="post.content">-->
+                <!--                    </div>-->
+                <!--                    <ul class="tapl-option">-->
+                <!--                        <li>-->
+                <!--                            <ul>-->
+                <!--                                <li><i class="xi-heart" style="font-size:22px; color:#ff6e17"></i>&nbsp;-->
+                <!--                                    {{ post.like_cnt }}-->
+                <!--                                </li>-->
+                <!--                                <li @click="openComments">-->
+                <!--                                    <i class="uil uil-comment-alt-dots"-->
+                <!--                                       style="font-size:22px;"></i>&nbsp; {{ post.comment_cnt }}-->
+                <!--                                </li>-->
+                <!--                                &lt;!&ndash;                                <li><i class="uil uil-eye" style="font-size:22px;"></i>&nbsp;680</li>&ndash;&gt;-->
+                <!--                                <li><a @click="copyUrl"><i class="uil uil-share-alt" style="font-size:20px;"></i></a>-->
+                <!--                                </li>-->
+                <!--                            </ul>-->
+                <!--                        </li>-->
+                <!--                        &lt;!&ndash;                        <li><router-link to="#"><i class="uil uil-bookmark" style="font-size:24px; color:#ff6e17;"></i></router-link></li>&ndash;&gt;-->
+                <!--                    </ul>-->
+                <!--                    <div v-if="isOpenedComments" class="tapl-comment">-->
+                <!--                        <ul @scroll="scrollCheck">-->
+                <!--                            <li v-for="comment in comments" :key="comment.id">-->
+                <!--                                <Comment :comment="comment" :editContent="comment.content" :postId="post.id"-->
+                <!--                                         @editDone="editDone"/>-->
+                <!--                            </li>-->
+                <!--                        </ul>-->
 
-                        <CommentInput :postId="post.id" @sendComment="editDone"/>
+                <!--                        <CommentInput :postId="post.id" @sendComment="editDone"/>-->
 
-                    </div>
-                </li>
+                <!--                    </div>-->
+                <!--                </li>-->
                 <!--포스트 반복 끝-->
 
             </ul>
@@ -166,6 +171,7 @@ import {AxiosError} from "axios";
 
 import Comment from "@/components/timeline/Comment.vue";
 import CommentInput from "@/components/comment/_commentInput.vue";
+
 @Component({
     components: {
         Feed,
@@ -216,16 +222,10 @@ export default class SearchPage extends Vue {
         }
     }
 
-    async created() {
-        console.log(this.$store.getters.researchData)
-        console.log('quer', this.$route)
-        console.log('data', this.$store.getters.userData)
-
-
+    async mounted() {
         if (this.$store.getters.userData.length > 0) {
             this.keyword = this.$route.query.username
             this.memberList = this.$store.getters.userData;
-            console.log('me', this.memberList)
         }
         else {
             this.keyword = this.$route.query.q
@@ -244,7 +244,6 @@ export default class SearchPage extends Vue {
     }
 
     fetch() {
-        console.log('fetch', this.$route.query.q)
         const obj = {
             q: this.$route.query.q,
             limit: 5
@@ -252,7 +251,6 @@ export default class SearchPage extends Vue {
 
         this.$api.search(obj)
             .then((res: any) => {
-                console.log('resd', res.users)
                 this.memberList = res.users
                 this.games = res.games
                 this.posts = res.posts
@@ -263,52 +261,8 @@ export default class SearchPage extends Vue {
             })
     }
 
-    scrollCheck(e) {
-        if (scrollDone(e.target)) {
-            this.offset += this.limit;
-            this.commentFetch();
-        }
-    }
 
-    openComments() {
-        this.isOpenedComments = !this.isOpenedComments;
-        if (this.isOpenedComments && this.feed.comment_cnt > 0) {
-            this.comments = []
-            this.commentFetch()
-        }
 
-    }
-
-    commentFetch() {
-        const obj = {
-            limit: this.limit,
-            offset: this.offset,
-            sort: this.sort
-        }
-        console.log(obj)
-        this.$api.comments(this.feed.id, obj)
-            .then((res: any) => {
-                console.log(res.result)
-                if (this.isAddData) {
-                    if (res.result.length > 0) {
-                        this.comments = [...this.comments, ...res.result]
-                    }
-                    else {
-                        console.log('no data')
-                    }
-                }
-                else {
-                    this.comments = res.result;
-                    this.isAddData = true
-                }
-            })
-            .catch((err: AxiosError) => {
-
-            })
-            .finally(() => {
-
-            })
-    }
 
     toGamePage(gamePath: string, gameId: number) {
         this.$router.push(`/timeline/game/${gamePath}?game_id=${gameId}`)
@@ -318,6 +272,7 @@ export default class SearchPage extends Vue {
 
     @Watch('$route.query.q')
     watchQuery() {
+        this.keyword = this.$route.query.q
         this.fetch();
     }
 
@@ -331,12 +286,6 @@ export default class SearchPage extends Vue {
 
     }
 
-
-    copyUrl() {
-        execCommandCopy(window.location.href)
-        this.toast.clear();
-        this.toast.successToast("Link copied to clipboard")
-    }
 
 }
 </script>

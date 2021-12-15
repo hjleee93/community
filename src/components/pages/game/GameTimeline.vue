@@ -108,7 +108,6 @@ export default class GameTimeline extends Vue {
           Vue.$gtag.event('visit_game_page', {
             'gameId': game.id,
           });
-          console.log('vue', game.id)
 
         })
         .catch((err: any) => {
@@ -130,7 +129,7 @@ export default class GameTimeline extends Vue {
     const url = `${process.env.VUE_APP_LAUNCHER_URL}game/${this.game.pathname}`;
     execCommandCopy(url)
     this.toast.clear();
-    this.toast.successToast("Link copied to clipboard")
+    this.toast.successToast("클립보드에 복사되었습니다.")
   }
 }
 </script>

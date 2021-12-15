@@ -4,18 +4,18 @@ export default {
         //첨부파일
         imgArr: [],
         audioArr: [],
-        videoArr:[],
-        blogImgArr:[],
-        blogVideoArr:[],
-        blogAudioArr:[],
+        videoArr: [],
+        blogImgArr: [],
+        blogVideoArr: [],
+        blogAudioArr: [],
         //tiptap
         postContents: '',
         isClearEditor: false,
         //검색
         channelUserInfo: [],
-        researchData:{},
-        userData:[],
-        feed:null
+        researchData: {},
+        userData: [],
+        feed: null
     },
     getters: {
 
@@ -25,7 +25,7 @@ export default {
         imgArr(state: any) {
             return state.imgArr;
         },
-        videoArr(state:any){
+        videoArr(state: any) {
             return state.videoArr;
         },
         audioArr(state: any) {
@@ -85,50 +85,49 @@ export default {
             state.channelUserInfo = payload;
         },
         blogImgArr(state: any, payload: any) {
-            state.blogImgArr =payload;
+            state.blogImgArr = payload;
             // state.blogImgArr.push(payload);
         },
         blogVideoArr(state: any, payload: any) {
-            state.blogVideoArr =payload;
+            state.blogVideoArr = payload;
 
         },
         blogAudioArr(state: any, payload: any) {
-            state.blogAudioArr =payload;
+            state.blogAudioArr = payload;
 
         },
 
         researchData(state: any, payload: any) {
-            state.researchData =payload;
+            state.researchData = payload;
 
         },
         userData(state: any, payload: any) {
-            state.userData =payload;
+            state.userData = payload;
         },
         feed(state: any, payload: any) {
-            state.feed =payload;
+            state.feed = payload;
         },
     },
     actions: {
         resetEditor(context: any) {
             context.state.userTagList = [];
             context.state.postContents = '';
-            context.state.isClearEditor = true;
-            context.state.imgArr =[];
-            context.state.audioArr =[];
-            context.state.videoArr =[];
+            context.state.imgArr = [];
+            context.state.audioArr = [];
+            context.state.videoArr = [];
 
         },
-        resetAttFiles(context:any){
-            context.state.imgArr =[];
-            context.state.audioArr =[];
-            context.state.videoArr =[];
+        resetAttFiles(context: any) {
+            context.state.imgArr = [];
+            context.state.audioArr = [];
+            context.state.videoArr = [];
         },
-        resetBlogImgArr(context:any){
-            context.state.blogImgArr =[];
+        resetBlogImgArr(context: any) {
+            context.state.blogImgArr = [];
         },
-        resetResearchData(context:any){
-            context.state.researchData ={};
-            context.state.userData =[]
+        resetResearchData(context: any) {
+            context.state.researchData = {};
+            context.state.userData = []
         }
 
 

@@ -29,10 +29,11 @@ class Login {
                  * */
                 //@ts-ignore
                 const cookie = Cookie.read( cookieName );
-                // console.log( cookie, currentUser.uid, cookie === currentUser.uid );
+                const local = localStorage.getItem('z_uid')
                 if( cookie && cookie === currentUser.uid ) {
-                    const result = await Vue.$api.user();
 
+                    const result = await Vue.$api.user();
+                    console.log('cookie', result)
                     // console.log('유저정보 세팅 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
                     if( !result || result.error ) {
                         await Login.logout();
@@ -40,7 +41,6 @@ class Login {
                     else {
                         const { user } = result;
                         store.commit('user', user);
-                        console.log('user commit')
                         await Login.login();
                     }
                 }
@@ -49,18 +49,11 @@ class Login {
                     // console.log('로그아웃(쿠키다름) : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
                     await firebase.auth().signOut();
                 }
-                else {
-                    // console.log('로그아웃(쿠키없음) : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
-                    await Login.logout();
-                }
-
                 /**
                  * 로컬 스토리지
                  * */
-
-                const local = localStorage.getItem('z_uid')
-                console.log('local', local)
-                if( local && local === currentUser.uid ) {
+               else if( local && local === currentUser.uid ) {
+                   console.log('local')
                     const result = await Vue.$api.user();
 
                     // console.log('유저정보 세팅 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
@@ -83,6 +76,8 @@ class Login {
             else {
                 //@ts-ignore
                 const cookie = Cookie.read(cookieName);
+                const local = localStorage.getItem('z_uid')
+                console.log('local', local)
                 if( cookie ) {
                     const result = await Vue.$api.session();
                     // console.log('세션 확인 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
@@ -95,6 +90,19 @@ class Login {
                         store.commit('loginState', LoginState.customToken );
                         await firebase.auth().signInWithCustomToken( customToken );
                         // console.log('커스텀토큰 로그인 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
+                    }
+                }
+               else if( local ) {
+                    const result = await Vue.$api.session();
+
+                    // console.log('유저정보 세팅 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
+                    if( !result || result.error ) {
+                        await Login.logout();
+                    }
+                    else {
+                        const { customToken } = result;
+                        store.commit('loginState', LoginState.customToken );
+                        await firebase.auth().signInWithCustomToken( customToken );
                     }
                 }
                 else {
@@ -124,6 +132,7 @@ class Login {
     }
 
     static async login() {
+        console.log('log in')
         store.commit('loginState', LoginState.login );
         localStorage.setItem('z_uid', store.getters.user.uid)
         //@ts-ignore

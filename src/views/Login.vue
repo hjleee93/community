@@ -121,7 +121,7 @@
                 <dl class="ma-header">
                     <dt>안내</dt>
                     <dd>
-                        <button @click="$modal.hide('checkMailModal')"><i class="uil uil-times"></i></button>
+                        <button @click="$modal.hide('noUser')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">

@@ -146,13 +146,31 @@
                     :community="community"
                 >
                     <template v-slot:subBtn>
-                        <SubscribeBtn @refetch="refetch" class="sub-btn" :community="community"/>
+                        <SubscribeBtn @refetch="refetch" class="sub-btn" :community="community" @unsubscribe="unsubscribe"/>
                     </template>
                 </community-card>
             </transition-group>
 
         </div>
-
+        <modal :clickToClose="false" class="modal-area-type" name="deleteConfirm" width="90%" height="auto"
+               :maxWidth="380"
+               :adaptive="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('deleteConfirm')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2> 해당 커뮤니티를 정말 탈퇴하시겠습니까? </h2>
+                    <div>
+                        <button class="btn-default w48p" @click="yesUnsubscribe">네</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('deleteConfirm')">아니오</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
     </div>
 </template>
 
@@ -184,7 +202,8 @@ export default class CommunityList extends Vue {
     private sort: string = '';
     private show: string = ''
     private isAddData: boolean = false;
-
+    unCommunityId: string = ''
+    user !: any;
 
     scrollCheck() {
         if (scrollDone(document.documentElement)) {
@@ -214,7 +233,6 @@ export default class CommunityList extends Vue {
         this.$api.communityList(obj)
             .then((res: any) => {
                 //todo:중첩 데이터 수정해야됨
-                console.log('fetch', this.isAddData)
                 if (this.isAddData) {
                     if (res.length > 0) {
                         this.communityList = [...this.communityList, ...res]
@@ -232,7 +250,25 @@ export default class CommunityList extends Vue {
                 console.log(err)
             })
     }
-
+    unsubscribe(communityId: string) {
+        this.$modal.show('deleteConfirm')
+        this.unCommunityId = communityId;
+    }
+    yesUnsubscribe() {
+        this.initData()
+        this.$api.unsubscribe({user_id: this.user.id, community_id: this.unCommunityId})
+            .then((res: any) => {
+                this.fetch();
+            })
+            .catch((err: any) => {
+                if (err.message) {
+                    alert(err.message)
+                }
+            })
+            .finally(() => {
+                this.$modal.hide('deleteConfirm')
+            })
+    }
     sortGroups(filter: number) {
         this.isAddData = false;
         this.filter = filter;
@@ -288,7 +324,6 @@ export default class CommunityList extends Vue {
     // }
 
     refetch() {
-        console.log('refetch')
         this.initData();
         this.fetch();
     }

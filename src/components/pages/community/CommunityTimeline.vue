@@ -15,7 +15,7 @@
                         :class="{ active: isActive(channel.id) }"
                         @click="openChannelTl(channel.id)"
                         :id="channel.id"
-                        :style="`background: url(${channel.profile_img || '../../../assets/images/default.png'}) center center / cover no-repeat;`">
+                        :style="`background: url(${channel.profile_img || 'img/1500_300_com_channel_default.png'}) center center / cover no-repeat;`">
                         <span>{{ channel.title }}</span>
                     </li>
 
@@ -95,7 +95,6 @@ export default class CommunityTimeline extends Vue {
     private createdDate: string = dateFormat(this.community.createdAt);
 
     mounted() {
-console.log('mount')
         this.isAllPosts = true;
         this.currPage = 'community';
 
@@ -117,8 +116,6 @@ console.log('mount')
     communityFetch() {
         this.$api.communityInfo(this.communityId)
             .then((res: any) => {
-                console.log('fetch user', this.user)
-                console.log("postCnt", res.block)
                 this.$store.commit('communityInfo', res);
                 this.community = res
                 this.createdDate = dateFormat(res.createdAt);
@@ -158,7 +155,6 @@ console.log('mount')
 
 
     isActive(id?: any) {
-        console.log('active', id === this.channelId)
         return id === this.channelId;
     }
 

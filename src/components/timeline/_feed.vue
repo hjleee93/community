@@ -1,5 +1,5 @@
 <template>
-    <li class="tap-list" v-if="feed && feed.user">
+    <li class="tap-list" v-if="feed">
         <dl class="tapl-title">
             <dt>
                 <dl>
@@ -41,7 +41,6 @@
                     <video
                         width="100%"
                         height="240"
-
                         controls
                         :src="file.url"
                         v-if="file.type === 'video'"></video>
@@ -130,6 +129,7 @@ export default class Feed extends Vue {
     isOpenReportModal = false
 
     mounted() {
+        console.log('this.feed',this.feed)
         this.attachedFile = this.feed.attatchment_files
         this.hashtags = this.feed.hashtags;
         this.likeListFetch();
@@ -207,13 +207,12 @@ export default class Feed extends Vue {
     copyUrl() {
         execCommandCopy(`${this.$store.getters.communityUrl}/feed/${this.feed.id}`)
         this.toast.clear();
-        this.toast.successToast("Link copied to clipboard")
+        this.toast.successToast("클립보드에 복사되었습니다.")
     }
 
     //post
     contentClicked(e: any) {
         if (e.target.matches("img")) {
-            console.log("이미지 클릭", e.target.src);
             this.originImg = e.target.src;
             // this.$modal.show('originImgModal')
             this.$emit('originImg', this.originImg)
@@ -330,6 +329,21 @@ export default class Feed extends Vue {
 }
 
 <style lang="scss" scoped>
+pre {
+    overflow: auto;
+    background: #0D0D0D;
+    color: #fff;
+    font-family: JetBrainsMono, monospace;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+}
+
+pre code {
+    color: inherit;
+    padding: 0;
+    background: none;
+    font-size: .8rem;
+}
 .tapl-comment > ul {
     max-height: 500px;
     overflow-y: auto;

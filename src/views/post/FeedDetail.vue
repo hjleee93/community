@@ -133,14 +133,13 @@ export default class FeedDetail extends Vue {
         }
         else {
             this.needLogin = true;
-            console.log('need login service')
         }
     }
 
     copyUrl() {
         execCommandCopy(window.location.href)
         this.toast.clear();
-        this.toast.successToast("Link copied to clipboard")
+        this.toast.successToast("클립보드에 복사되었습니다.")
     }
 
     contentClicked(e: any) {
@@ -161,7 +160,6 @@ export default class FeedDetail extends Vue {
     }
 
     closeImgModal() {
-        console.log("?");
         (this.$refs.originImgModal as any).hide();
     }
 }

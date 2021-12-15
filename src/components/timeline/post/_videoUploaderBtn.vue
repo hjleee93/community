@@ -39,7 +39,6 @@ export default class VideoUploaderBtn extends Vue {
 
         if (this.activeTab === 'SNS') {
             onSelectFile(input.files, this.maxFileNum, 30, 'videoArr')
-            console.log(this.$store.getters.videoArr)
         }
         else if (this.activeTab === 'BLOG') {
             const formData = new FormData();
@@ -51,7 +50,6 @@ export default class VideoUploaderBtn extends Vue {
             this.$api.fileUploader(formData)
                 .then((res: any) => {
                     this.$store.commit('blogVideoArr', res)
-                    console.log(res)
                 })
         }
     }

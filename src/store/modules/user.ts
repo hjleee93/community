@@ -148,7 +148,6 @@ export default {
                         || context.state.loginState === LoginState.customToken) {
                         setTimeout(wait, 100);
                     } else {
-                        console.log(context.state.loginState)
                         return resolve(context.getters.loginState);
                     }
                 }

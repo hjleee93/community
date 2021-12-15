@@ -1,7 +1,6 @@
 import store from "@/store";
 
 function FileSizeCheck(file: File, maxSize: number) {
-    console.log(file.size, mbToByte(maxSize))
 
     if (file.size > mbToByte(maxSize)) {
         return false;

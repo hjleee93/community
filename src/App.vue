@@ -132,6 +132,8 @@ export default class App extends Vue {
 
 }
 
+//header
+.header-search-dropdown .v-dropdown-menu__container {min-width:260px; margin:30px 0 0 -321px !important;}
 .vue-modal {
     border-radius: 20px !important;
     max-height: 500px !important;
@@ -149,14 +151,102 @@ export default class App extends Vue {
 
 //tiptap
 
+.tapl-content{
+
+    pre {
+        overflow: auto;
+        background: #0D0D0D !important;
+        color: #fff !important;
+        font-family: JetBrainsMono, monospace !important;
+        padding: 0.75rem 1rem !important;
+        border-radius: 0.5rem !important;
+    }
+
+    pre code {
+        width: 512px !important;
+        max-width: 512px !important;
+        color: inherit !important;
+        padding: 0 !important;
+        background: none !important;
+        font-size: .8rem !important;
+    }
+}
 .editor-container {
     height: 100%;
     text-align: left;
     padding: 15px;
 
     .ProseMirror {
+        > * + * {
+            margin-top: 0.75em;
+        }
 
-        height: 100%
+        height: 148px;
+        overflow: auto;
+
+        pre {
+            overflow: auto;
+            background: #0D0D0D;
+            color: #fff;
+            font-family: JetBrainsMono, monospace;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        pre code {
+            color: inherit;
+            padding: 0;
+            background: none;
+            font-size: .8rem;
+        }
+        ul,
+        ol {
+            padding: 0 1rem;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            line-height: 1.1;
+        }
+
+        code {
+            background-color: rgba(#616161, 0.1);
+            color: #616161;
+        }
+
+        pre {
+            overflow: auto;
+            background: #0D0D0D;
+            color: #FFF;
+            font-family: 'JetBrainsMono', monospace;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+
+            code {
+                color: inherit;
+                padding: 0;
+                background: none;
+                font-size: 0.8rem;
+            }
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        hr {
+            margin: 1rem 0;
+        }
+
+        blockquote {
+            padding-left: 1rem;
+            border-left: 2px solid rgba(#0D0D0D, 0.1);
+        }
     }
 
     .ProseMirror:focus-visible {

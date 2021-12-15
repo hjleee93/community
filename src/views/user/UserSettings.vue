@@ -11,7 +11,7 @@
                 <dt>
                     <div :style="{'background-color' : 'orange', 'background-size' : 'cover'}"></div>
                     <!--                    <div :style="{'background' : 'url(' + require('../../assets/images/card_test_img01.png') + ') center no-repeat', 'background-size' : 'cover'}"></div>-->
-                    <p :style="{'background' : 'url(' + prevProfile + ') center center / cover no-repeat', 'background-size' : 'cover'}"></p>
+                    <p :style="{'background' : 'url(' + prevProfile || '../../assets/images/zempy.png' + ') center center / cover no-repeat', 'background-size' : 'cover'}"></p>
                 </dt>
                 <!--                <div class="delete-div" @click="deleteImg">-->
                 <!--                    <router-link class="delete-btn" to="#"><i class="uil uil-trash-alt"></i></router-link>-->
@@ -56,16 +56,16 @@
                 <ol>
                     <li>Email</li>
                     <li><input type="text" name="" title="" placeholder="" class="w100p" readonly
-                               :value="user && user.name"/></li>
+                               :value="user && user.email"/></li>
                     <li>&nbsp;</li>
                 </ol>
                 <ol>
                     <li>유저이름</li>
-                    <li><input type="text" name="" title="" placeholder="" class="w100p" :value="user && user.name"/>
+                    <li><input type="text" name="" title="" readonly class="w100p" :value="user && user.name"/>
                     </li>
-                    <li>
-                        <router-link to="#" class="btn-line-big w100p">변경</router-link>
-                    </li>
+<!--                    <li>-->
+<!--                        <router-link to="#" class="btn-line-big w100p">변경</router-link>-->
+<!--                    </li>-->
                 </ol>
             </div>
         </div>
@@ -91,11 +91,10 @@
 import {Component, Prop, Vue} from "vue-property-decorator";
 import {mapGetters} from "vuex";
 
-;
 import ImgPreview from "@/components/common/upload/ImgPreview.vue";
 import ProfileImgUploader from "@/components/common/upload/ProfileImgUploader.vue";
 import BannerImgUploader from "@/components/common/upload/BannerImgUploader.vue";
-import store from "@/store";
+import Toast from "@/script/message";
 
 @Component({
     computed: {...mapGetters(["user"])},
@@ -106,6 +105,7 @@ import store from "@/store";
     },
 })
 export default class UserSettings extends Vue {
+    toast = new Toast();
     private user!: any;
     private isCommentOn: boolean = false;
     private isLikeOn: boolean = false;
@@ -115,7 +115,7 @@ export default class UserSettings extends Vue {
     private isDmOn: boolean = false;
 
     private fileName: string = "";
-    private prevProfile: string | null | ArrayBuffer = ''
+    private prevProfile: any = ''
     private updateFile:File | null = null;
 
 
@@ -161,10 +161,6 @@ export default class UserSettings extends Vue {
         }
     }
 
-    async leave() {
-        await this.$router.push("/leave");
-    }
-
     uploadFile() {
         (this.$refs.profileImg as HTMLElement).click();
     }
@@ -194,7 +190,8 @@ export default class UserSettings extends Vue {
         }
         this.$api.updateUser(formData)
         .then((res)=>{
-            console.log(res)
+            this.$store.dispatch('loginState')
+            this.toast.successToast("계정 업데이트가 완료되었습니다.")
         })
 
 

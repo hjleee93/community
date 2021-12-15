@@ -31,7 +31,7 @@
                     <h3> {{ community.description }}</h3>
                 </dd>
                 <dt v-if="user">
-                    <SubscribeBtn :community="community" @fetch="fetch"/>
+                    <SubscribeBtn :community="community" @unsubscribe="unsubscribe"/>
                     <!--                    <dropdown-menu :overlay="false" class="vic-more-dropdown">-->
                     <!--                        <router-link to="#" class="btn-circle-none pt6" slot="trigger"><i-->
                     <!--                            class="uil uil-ellipsis-h"></i></router-link>-->
@@ -98,6 +98,25 @@
             </swiper>
         </div>
         <router-view></router-view>
+        <modal :clickToClose="false" class="modal-area-type" name="deleteConfirm" width="90%" height="auto"
+               :maxWidth="380"
+               :adaptive="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('deleteConfirm')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2> 해당 커뮤니티를 정말 탈퇴하시겠습니까? </h2>
+                    <div>
+                        <button class="btn-default w48p" @click="yesUnsubscribe">네</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('deleteConfirm')">아니오</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
     </div>
 </template>
 
@@ -124,7 +143,6 @@ import 'vue-range-slider/dist/vue-range-slider.css'
 export default class Community extends Vue {
     postCnt: number = 0;
     community: any = {};
-    user!: User;
     bannerImg: string = "";
     profileImg = '';
 
@@ -154,6 +172,8 @@ export default class Community extends Vue {
         }
     }
 
+    unCommunityId: string = ''
+    user !: any;
 
     mounted() {
         this.$store.dispatch("loginState")
@@ -162,7 +182,24 @@ export default class Community extends Vue {
             })
 
     }
-
+    unsubscribe(communityId: string) {
+        this.$modal.show('deleteConfirm')
+        this.unCommunityId = communityId;
+    }
+    yesUnsubscribe() {
+        this.$api.unsubscribe({user_id: this.user.id, community_id: this.unCommunityId})
+            .then((res: any) => {
+                this.fetch();
+            })
+            .catch((err: any) => {
+                if (err.message) {
+                    alert(err.message)
+                }
+            })
+            .finally(() => {
+                this.$modal.hide('deleteConfirm')
+            })
+    }
     fetch() {
         this.$api.communityInfo(this.$route.params.community_id)
             .then((res: any) => {
@@ -171,13 +208,13 @@ export default class Community extends Vue {
                     this.bannerImg = this.community.banner_img;
                 }
                 else {
-                    this.bannerImg = "../../assets/images/community_banner_default.jpg"
+                    this.bannerImg = "img/1500_300_com_channel_default.png"
                 }
                 if (this.community.profile_img) {
                     this.profileImg = this.community.profile_img;
                 }
                 else {
-                    this.profileImg = '../../assets/images/zempy.png'
+                    this.profileImg = 'img/100_100_com_profile_default.png'
                 }
             })
             .catch((err: any) => {
@@ -198,17 +235,6 @@ export default class Community extends Vue {
         })
     }
 
-    unsubscribe() {
-        this.$api.unsubscribe({user_id: this.user.id, community_id: this.$route.params.community_id})
-            .then((res: AxiosResponse) => {
-                console.log(res)
-            }).catch((err: AxiosError) => {
-            if (err.message) {
-                alert(err.message)
-            }
-        })
-
-    }
 
     setting() {
         // (this.$refs.dropbox as HTMLElement).click();

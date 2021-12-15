@@ -37,6 +37,7 @@ import UserCard from "@/components/user/_userCard.vue";
     components: {MemberCard, UserCard},
 })
 export default class FollowerList extends Vue {
+    @Prop() userId!: any;
     private followerList: any = [];
     private totalCnt: number = 0;
     private limit: number = 10;
@@ -44,7 +45,15 @@ export default class FollowerList extends Vue {
     private search: string = '';
     private user !: any;
 
+    channel_id: string = '';
+
     mounted() {
+        if (this.$route.params.channel_id) {
+            this.channel_id = this.$route.params.channel_id;
+        }
+        else {
+            this.channel_id = this.userId;
+        }
         this.fetch();
     }
 
@@ -55,11 +64,10 @@ export default class FollowerList extends Vue {
             search: this.search
         }
         //userId로 넘기는 부분인데 params 이름이 channel_id임
-        this.$api.followerList(obj, this.$route.params.channel_id)
+        this.$api.followerList(obj, this.channel_id)
             .then((res: any) => {
                 this.followerList = res.result;
                 this.totalCnt = res.totalCount;
-                console.log(res)
             })
             .catch((err: any) => {
 

@@ -1,18 +1,20 @@
 <template>
-    <dl    v-if="!isEditing">
-        <dt >
+    <dl v-if="!isEditing">
+        <dt>
             <dl>
-                <dt><span
-                    :style="`background: url(${comment.user&&comment.user.picture}) center center no-repeat; background-size: cover;`"></span>
+                <dt @click="moveUserChannel(comment.user.uid)"><span
+                    :style="`background: url(${comment.user&&comment.user.picture || '../../assets/images/zempy.png'}) center center no-repeat; background-size: cover;`"></span>
                 </dt>
                 <dd>
-                    <h2>{{ comment.user&&comment.user.name }} <span>{{  }}</span></h2>
+                    <h2>{{ comment.user && comment.user.name }} <span>{{  }}</span></h2>
                     <div>
                         {{ comment.content }}
                     </div>
                     <p>
-<!--                        is_liked-->
-                        <a @click="sendLike"  ><i class="uil uil-heart-sign" :style="comment.is_liked ? 'color:red':''"></i></a> 좋아요 {{ comment.like_cnt }}개
+                        <!--                        is_liked-->
+                        <a @click="sendLike"><i class="uil uil-heart-sign"
+                                                :style="comment.is_liked ? 'color:red':''"></i></a> 좋아요
+                        {{ comment.like_cnt }}개
                         <!--                    <a href="#"><i class="uil uil-edit-alt"></i> 댓글 작성</a>-->
                     </p>
                 </dd>
@@ -20,7 +22,7 @@
 
         </dt>
 
-        <dd>
+        <dd v-if="comment.user.uid === user.uid">
             <dropdown-menu :overlay="false" class="tapl-more-dropdown">
                 <a slot="trigger"><i class="uil uil-ellipsis-h font25"></i>
                 </a>
@@ -55,7 +57,7 @@ import CommentInput from "@/components/comment/_commentInput.vue";
 
 @Component({
     computed: {...mapGetters(["user"])},
-    components: { UserAvatar,CommentInput},
+    components: {UserAvatar, CommentInput},
 })
 export default class Comment extends Vue {
     @Prop() comment!: any;
@@ -69,7 +71,6 @@ export default class Comment extends Vue {
 
     mounted() {
         this.init();
-        console.log('post',this.postId)
         this.createdDate = dateFormat(this.comment.createdAt);
     }
 
@@ -104,7 +105,7 @@ export default class Comment extends Vue {
 
 
     sendLike() {
-        if(this.comment.is_liked){
+        if (this.comment.is_liked) {
             this.$api.unlikeComment(this.postId, this.comment.id)
                 .then((res: AxiosResponse) => {
                     this.$emit('editDone')
@@ -112,7 +113,8 @@ export default class Comment extends Vue {
                 .catch((err: AxiosError) => {
 
                 })
-        }else{
+        }
+        else {
             this.$api.likeComment(this.postId, this.comment.id)
                 .then((res: AxiosResponse) => {
                     this.$emit('editDone')
@@ -121,9 +123,9 @@ export default class Comment extends Vue {
 
                 })
         }
-
-
-
+    }
+    moveUserChannel(uid:string){
+        this.$router.push(`/channel/${uid}/timeline`)
     }
 
 }
@@ -154,5 +156,13 @@ export default class Comment extends Vue {
 .comment-btn {
     color: #9aa4bf;
     background: none;
+}
+.more-list{
+    position: fixed;
+    right: 10px;
+    background-color: #fff !important;
+    border-radius: 10px !important;
+    width: 100px;
+    box-shadow: 0 0 15px 0 rgb(82 70 70 / 20%);
 }
 </style>

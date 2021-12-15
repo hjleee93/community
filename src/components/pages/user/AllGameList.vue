@@ -18,7 +18,7 @@
                 :game="game">
                 <div class="cp-img" :style="{'background' : 'url(' +  game.url_thumb_webp ||
                 game.url_thumb ||
-                'img/default.png' + ') center no-repeat', 'background-size' : 'cover'}"></div>
+                '../../../assets/images/default.png' + ') center no-repeat', 'background-size' : 'cover'}"></div>
                 <div class="cp-info">
                     <h3>게임게임게임</h3>
                     <p>@zempieeeee</p>
@@ -41,7 +41,6 @@ import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import {mapGetters} from "vuex";
 import {Game, User} from "@/types";
 import {AxiosError, AxiosResponse} from "axios";
-
 @Component({
     computed: {...mapGetters(["user"])},
     components: {},
@@ -88,7 +87,7 @@ export default class AllGameList extends Vue {
 
     addGame() {
         if (this.user && (this.user.uid === this.userUid)) {
-            window.location.href = this.$store.getters.studioUrl + "selectStage";
+            window.location.href = this.$store.getters.studioUrl + "addGame";
         }
     }
 }

@@ -108,7 +108,6 @@ export default class Api {
     }
 
     async channelTimeline(community_id:string, channel_id: string, obj:any){
-        console.log(obj)
         return await this.request('get', `${this.communityApi}timeline/${community_id}/channel/${channel_id}`, obj, false);
     }
 

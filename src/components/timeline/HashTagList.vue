@@ -13,7 +13,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
+
 @Component({
     components: {},
 })
@@ -26,7 +27,8 @@ export default class HashTagList extends Vue {
     watchItem() {
         this.selectedIndex = 0;
     }
-    onKeyDown({ event }) {
+
+    onKeyDown({event}) {
         if (event.key === "ArrowUp") {
             this.upHandler();
             return true;
@@ -55,7 +57,6 @@ export default class HashTagList extends Vue {
     }
 
     enterHandler() {
-        console.log(this.selectedIndex);
         this.selectItem(this.selectedIndex);
     }
 
@@ -63,7 +64,7 @@ export default class HashTagList extends Vue {
         if (this.items) {
             const item = this.items[index];
             if (item) {
-                this.command({ id: item });
+                this.command({id: item});
             }
         }
     }

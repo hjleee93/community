@@ -5,15 +5,19 @@
             <dt>
                 <div class="header-logo-menu">
                     <p>
+                        <i class="uil uil-bars" v-on:click="headerSideOpenMobile"></i>
                         <router-link to="/"><img src="../assets/images/logo.svg" width="120" alt="" title=""/>
                         </router-link>
                     </p>
                     <ul class="menu">
                         <li>
-                            <router-link to="/communityList" :class="$route.name === 'CommunityList' ? 'active' : ''">COMMUNITY</router-link>
+                            <router-link to="/communityList" :class="$route.name === 'CommunityList' ? 'active' : ''">
+                                COMMUNITY
+                            </router-link>
                         </li>
                         <li>
-                            <router-link to="/gameList" :class="$route.name === 'GameList' ? 'active' : ''">GAME </router-link>
+                            <router-link to="/gameList" :class="$route.name === 'GameList' ? 'active' : ''">GAME
+                            </router-link>
                         </li>
                     </ul>
                 </div>
@@ -36,23 +40,61 @@
                 <!--          </div>-->
 
                 <!-- 로그인 했을 때 -->
+                <template v-if="$store.getters.user">
+                    <div class="header-info">
+                        <!--            <button class="btn-circle-icon" @click="isOpenMessage = !isOpenMessage">-->
+                        <!--              <i class="uil uil-comment-alt"></i>-->
+                        <!--              <span></span>-->
+                        <!--            </button>-->
+                        <!--            -->
+                        <!--            <button class="btn-circle-icon ml10" @click="isOpenMessage = !isOpenMessage">-->
+                        <!--              <i class="uil uil-bell"></i>-->
+                        <!--              <span></span>-->
+                        <!--            </button>-->
 
-                <div class="header-info" v-if="$store.getters.user">
-                    <!--            <button class="btn-circle-icon" @click="isOpenMessage = !isOpenMessage">-->
-                    <!--              <i class="uil uil-comment-alt"></i>-->
-                    <!--              <span></span>-->
-                    <!--            </button>-->
-                    <!--            -->
-                    <!--            <button class="btn-circle-icon ml10" @click="isOpenMessage = !isOpenMessage">-->
-                    <!--              <i class="uil uil-bell"></i>-->
-                    <!--              <span></span>-->
-                    <!--            </button>-->
-
-                    <button class="btn-circle-none ml5" @click="isOpenSetting = !isOpenSetting">
-                        <i class="uil uil-setting"></i>
-                    </button>
-                </div>
-
+                        <button class="btn-circle-none ml5" @click="isOpenSetting = !isOpenSetting">
+                            <i class="uil uil-setting"></i>
+                        </button>
+                    </div>
+                    <!-- 모바일 - 우측버튼 -->
+                    <div class="header-info-mobile">
+                        <!--                    <button class="btn-none" @click="isOpenMessage = !isOpenMessage">-->
+                        <!--                        <i class="uil uil-comment" style="font-size:21px;"></i>-->
+                        <!--                        <span></span>-->
+                        <!--                    </button>-->
+                        <!--                    <button class="btn-none" @click="isOpenMessage = !isOpenMessage">-->
+                        <!--                        <i class="uil uil-bell" style="font-size:23px;"></i>-->
+                        <!--                        <span></span>-->
+                        <!--                    </button>-->
+                        <button class="btn-none" @click="isOpenSetting = !isOpenSetting">
+                            <i class="uil uil-setting"></i>
+                        </button>
+                    </div>
+                    <!-- 모바일 - 우측버튼 끝 -->
+                    <!-- 모바일 - 좌측영역 -->
+                    <div class="header-side-mobile" id="headerSideMobile">
+                        <div class="hsm-close"><i class="uil uil-times" v-on:click="headerSideCloseMobile"></i></div>
+                        <div class="hsm-search">
+                            <div class="input-search-line-mobile" @click="isOpenSearch = !isOpenSearch">
+                                <p><i class="uil uil-search"></i>
+                                <p>
+                                <div><input type="text" name="" title="keywords" placeholder="검색어를 입력하세요."/></div>
+                            </div>
+                        </div>
+                        <div class="hsm-menu">
+                            <a href="#"><i class="uil uil-comment"></i> Community</a>
+                            <a href="#"><i class="uil uil-robot"></i> Game</a>
+                        </div>
+                        <div class="hsm-language">
+                            <a href="#" class="active">Korea</a>
+                            <a href="#">English</a>
+                        </div>
+                    </div>
+                    <div class="header-side-bg-mobile" id="headerSideBgMobile" v-on:click="headerSideCloseMobile">
+                        &nbsp;
+                    </div>
+                    <!-- 모바일 - 좌측영역 끝 -->
+                </template>
                 <!-- 로그인 했을 때 끝 -->
                 <!-- 로그인 안했을 때 -->
                 <div class="header-login" v-else>
@@ -95,7 +137,7 @@
                                          @click="userPage(user.uid)">
                                         <dl>
                                             <dt>
-                                                <em :style="`background:url(${user.picture || '/src/assets/images/zempy.png'}) center center / cover no-repeat; background-size:cover;`"></em>
+                                                <em :style="`background:url(${user.picture || '../assets/images/zempy.png'}) center center / cover no-repeat; background-size:cover;`"></em>
                                                 {{ user.name }}
                                             </dt>
                                             <dd><i class="uil uil-user"></i></dd>
@@ -109,7 +151,7 @@
                                         <dl>
                                             <dt>
                                         <span
-                                            :style="`background:url(${game.profile_img}) center center / cover no-repeat; background-size:cover;`"></span>
+                                            :style="`background:url(${game.profile_img ||  game.url_thumb}) center center / cover no-repeat; background-size:cover;`"></span>
                                                 {{ game.title }}
                                             </dt>
                                             <dd><i class="uil uil-robot"></i></dd>
@@ -156,9 +198,9 @@
                         <div>
                             <h2>내 프로필</h2>
                             <div>
-                                <router-link to="/myChannel"><i class="uil uil-user"></i>내 채널</router-link>
-                                <a @click="moveGameDashBoard" ><i class="uil uil-robot"></i>게임스튜디오</a>
-                                <router-link :to="`/user/${user.uid}/settings`"><i class="uil uil-setting"></i> 계정설정
+                                <router-link to="/myChannel" @click.native="isOpenSetting = false"><i class="uil uil-user"></i>내 채널</router-link>
+                                <a @click="moveGameDashBoard"><i class="uil uil-robot"></i>게임스튜디오</a>
+                                <router-link :to="`/user/${user.uid}/settings`" @click.native="isOpenSetting = false"><i class="uil uil-setting"></i>계정설정
                                 </router-link>
                             </div>
                         </div>
@@ -166,7 +208,7 @@
                             <h2>그룹</h2>
                             <div>
                                 <router-link :to="`/user/${user.uid}/manageJoinedGroup`"><i
-                                    class="uil uil-users-alt"></i> 가입한 그룹
+                                    class="uil uil-users-alt"></i>가입한 그룹
                                 </router-link>
                             </div>
                         </div>
@@ -182,9 +224,10 @@
 
 </template>
 
-<script >
+<script>
 import Login from "@/script/login";
 import {AxiosError} from "axios";
+
 
 export default {
     name: "Header",
@@ -251,7 +294,8 @@ export default {
     methods: {
 
         moveGameDashBoard() {
-            window.open(this.$store.getters.studioUrl );
+            this.isOpenSetting = false
+            window.open(this.$store.getters.studioUrl);
         },
         async logout() {
             this.$store.state.pathName = "logout";
@@ -265,13 +309,11 @@ export default {
             if (this.searchInput.length !== 0) {
                 clearTimeout(this.debounce);
                 this.debounce = setTimeout(() => {
-                    console.log('debounce', this.searchInput)
                     this.searchType(event)
                 }, 150);
             } else {
                 clearTimeout(this.debounce);
                 this.debounce = setTimeout(() => {
-                    console.log('clear', this.searchInput)
                     this.listReset();
                     this.searchInput = '';
                     this.isOpenSearch = false
@@ -379,7 +421,6 @@ export default {
                                 this.isOpenSearch = true;
 
                             }
-                            console.log('query obj2', this.gameList.length, this.userList.length, this.groupList.length)
                             if (event.key === 'Enter') {
                                 this.$router.push(`/search?q=${query}`)
                             }
@@ -388,15 +429,25 @@ export default {
                         .catch((err) => {
 
                         })
-                    console.log('query obj1', this.isOpenSearch)
                 }
 
 
             } else if (this.searchInput.length === 0) {
-                console.log("search 3")
                 this.isOpenSearch = false
             }
         },
+        headerSideOpenMobile: function () {
+            //document.getElementById("headerMobileSideMobile").style.display = "block";
+            document.getElementById("headerSideMobile").style.left = "0";
+            document.getElementById("headerSideBgMobile").style.display = "block";
+            document.body.style.overflow = "hidden";
+        },
+        headerSideCloseMobile: function () {
+            //document.getElementById("headerMobileSideMobile").style.display = "none";
+            document.getElementById("headerSideMobile").style.left = "-305px";
+            document.getElementById("headerSideBgMobile").style.display = "none";
+            document.body.style.overflow = "visible";
+        }
 
 
     }
@@ -406,7 +457,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.menu li .active{
+.menu li .active {
     color: #F97316;
 }
+
 </style>

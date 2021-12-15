@@ -66,7 +66,10 @@
 
 
         <!-- 3단영역 -->
-        <AllGameList v-if="media === 'game'"></AllGameList>
+        <AllGameList v-if="media === 'game'" ></AllGameList>
+
+        <FollowerList v-else-if="media === 'followers'" :userId="user.id"></FollowerList>
+        <FollowingList v-else-if="media === 'followings'" :userId="user.id"></FollowingList>
         <dl class="three-area" v-else>
             <dt>
                 <div class="ta-myinfo">
@@ -76,18 +79,18 @@
                     <h2>{{ user.name }}</h2>
                     <!--                    <h3>Admin</h3>-->
                     <ul>
-                        <li>
-                            <p style="background:#FEB100;"><i class="uil uil-comment-chart-line"></i></p>
+                        <li @click="media = ''">
+                            <p style="background:#FEB100; cursor: pointer"><i class="uil uil-comment-chart-line"></i></p>
                             <h2>{{ postCnt }}</h2>
                             <h3>Posts</h3>
                         </li>
-                        <li>
-                            <p style="background:#5D5FFE;"><i class="uil uil-user-plus"></i></p>
+                        <li @click="media = 'followings'">
+                            <p style="background:#5D5FFE;cursor: pointer"><i class="uil uil-user-plus"></i></p>
                             <h2>{{ user.profile && user.profile.following_cnt }}</h2>
-                            <h3>Following</h3>
+                            <h3>Followings</h3>
                         </li>
-                        <li>
-                            <p style="background:#33E4CE;"><i class="uil uil-users-alt"></i></p>
+                        <li @click="media = 'followers'">
+                            <p style="background:#33E4CE;cursor: pointer"><i class="uil uil-users-alt"></i></p>
                             <h2>{{ user.profile && user.profile.followers_cnt }}</h2>
                             <h3>Followers</h3>
                         </li>
@@ -165,12 +168,12 @@
                     <h2>Groups</h2>
                     <div>
                         <template v-if="communityList && communityList.length > 0">
-                            <dl v-for="community in communityList">
+                            <dl v-for="community in communityList" @click="moveCommunity(community.id)">
                                 <dt><span
-                                    :style="`background: url(${community.banner_img}) center center no-repeat; background-size: cover;`"></span>
+                                    :style="`background: url(${community.profile_img || '../../assets/images/100_100_com_profile.png'}) center center no-repeat; background-size: cover;`"></span>
                                 </dt>
                                 <dd>
-                                    <h2>{{ community.description }}</h2>
+                                    <h2>{{ community.name }}</h2>
                                     <h3><i class="uil uil-chat-bubble-user"></i> 멤버 {{ community.member_cnt }}명</h3>
                                 </dd>
                             </dl>
@@ -199,13 +202,17 @@ import {mapGetters} from "vuex";
 import {AxiosError} from "axios";
 import Timeline from "@/components/timeline/_timeline.vue";
 import AllGameList from "@/components/pages/user/AllGameList.vue";
+import FollowerList from "@/components/pages/user/FollowerList.vue";
+import FollowingList from "@/components/pages/user/FollowingList.vue";
 
 @Component({
     components: {
         Swiper,
         SwiperSlide,
         Timeline,
-        AllGameList
+        AllGameList,
+        FollowerList,
+        FollowingList
     },
     computed: {...mapGetters(["user"])},
 })
@@ -262,13 +269,16 @@ export default class MyChannel extends Vue {
     joinedComFetch(userId: number) {
         this.$api.joinedCommunityList(userId)
             .then((res: any) => {
-                console.log('res', res)
                 this.communityList = res;
             })
             .catch((err: AxiosError) => {
 
             })
     }
+    moveCommunity(id:string){
+        this.$router.push(`/community/${id}/timeline`)
+    }
+
 }
 </script>
 

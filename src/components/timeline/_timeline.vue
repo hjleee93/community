@@ -13,13 +13,13 @@
                     <dt><input type="text" name="" title="" readonly
                                @click="openPostModal"
                                placeholder="무슨 생각을 하고 계신가요"/></dt>
-                    <dd><a href="#"><i class="uil uil-message"></i></a></dd>
+                    <dd><a @click="openPostModal"><i class="uil uil-message"></i></a></dd>
                 </dl>
             </div>
             <div class="ta-message-block" v-else-if="ableToPost() === 'block'">
                 <i class="uil uil-exclamation-triangle"></i> 블락으로 인해 포스팅을 작성하실 수 없습니다.
             </div>
-            <ul class="ta-post" v-if="timeline.length > 0">
+            <ul class="ta-post" v-if="timeline.length > 0" :style="ableToPost() === false ? 'margin-top: -20px;' : ''">
                 <Feed
                     class="mt-3"
                     data-aos-once="true"
@@ -139,6 +139,7 @@ import TiptapPost from "@/components/timeline/_tiptapBlog.vue";
 import ImageUploaderBtn from "@/components/timeline/post/_imageUploaderBtn.vue";
 import Toast from "@/script/message";
 
+
 @Component({
     computed: {...mapGetters(["user"])},
     components: {
@@ -181,7 +182,6 @@ export default class Timeline extends Vue {
 
 
     mounted() {
-        console.log('currPage', this.currPage)
         this.fetch()
         window.addEventListener("scroll", this.scrollCheck);
     }
@@ -206,19 +206,16 @@ export default class Timeline extends Vue {
     }
 
     fetch() {
-        let obj = {}
         switch (this.currPage) {
             case 'user':
-                console.log('user timeline')
-                obj = {
+                const userObj = {
                     channel_id: this.$route.params.channel_id || this.user.uid,
                     limit: this.limit,
                     offset: this.offset,
                     sort: this.sort,
                     media: this.$route.query.media || this.mediaType
                 }
-                console.log('obj', obj)
-                this.$api.userTimeline(obj)
+                this.$api.userTimeline(userObj)
                     .then((res: any) => {
                         console.log(res)
                         if (this.isAddData) {
@@ -247,15 +244,14 @@ export default class Timeline extends Vue {
                 break;
             case 'game':
 
-                obj = {
+                const gameObj = {
                     game_id: this.$route.query.game_id,
                     limit: this.limit,
                     offset: this.offset,
                     sort: this.sort,
                     media: this.$route.query.media
                 }
-                console.log('game timel', obj)
-                this.$api.gameTimeline(obj)
+                this.$api.gameTimeline(gameObj)
                     .then((res: any) => {
                         if (this.isAddData) {
                             if (res.result.length > 0) {
@@ -283,15 +279,14 @@ export default class Timeline extends Vue {
                 break;
             case 'community':
                 console.log('community')
-                obj = {
+                const comObj = {
                     community_id: this.$route.params.community_id,
                     limit: this.limit,
                     offset: this.offset,
                     sort: this.sort,
                     media: this.$route.query.media
                 }
-                console.log(obj, this.timeline)
-                this.$api.communityTimeline(obj)
+                this.$api.communityTimeline(comObj)
                     .then((res: any) => {
 
                         if (this.isAddData) {
@@ -322,16 +317,15 @@ export default class Timeline extends Vue {
 
             //커뮤니티 내의 채널
             case 'channel':
-                console.log('channel', this.$store.getters.currPage.community)
 
-                obj = {
+                const chaObj = {
                     limit: this.limit,
                     offset: this.offset,
                     sort: this.sort,
                     media: this.media
                 }
 
-                this.$api.channelTimeline(this.$store.getters.currPage.community[0].id, this.$store.getters.currPage.community[0].channel_id, obj)
+                this.$api.channelTimeline(this.$store.getters.currPage.community[0].id, this.$store.getters.currPage.community[0].channel_id, chaObj)
                     .then((res: any) => {
                         console.log(res)
                         if (this.isAddData) {
@@ -367,16 +361,26 @@ export default class Timeline extends Vue {
 
         let result: any = ''
         //커뮤니티 블락당한 경우
-        if (this.block) {
-            result = 'block'
-        }
-        //남의 채널인경우
-        else if (this.user && (this.user.uid === this.$route.params.channel_id)) {
-            result = true;
+        switch (this.currPage) {
 
-        }
-        else {
-            result = true;
+            case 'user':
+                if (this.user && (this.user.uid === this.$route.params.channel_id) || this.$route.name === 'MyChannel') {
+                    result = true;
+                }
+                else {
+                    result = false;
+                }
+                break;
+                console.log(this.currPage)
+            case 'community' :
+                if (this.block) {
+                    result = 'block'
+                }
+                else {
+                    result = true;
+                }
+                break;
+
         }
         return result;
 
@@ -398,7 +402,6 @@ export default class Timeline extends Vue {
     }
 
     closePostModal() {
-        console.log('modal close~', this.currPage);
         this.fetch();
         this.isAddData = false;
         // (this.$refs.editModal as any).hide();
@@ -490,18 +493,23 @@ export default class Timeline extends Vue {
 </script>
 
 <style scoped lang="scss">
-.pw-reset{
+
+
+.pw-reset {
     padding-bottom: 44px !important;
     padding-top: 44px !important;
 }
+
 .pw-reset .pr-content > p {
     display: flex !important;
     justify-content: space-between !important;
 }
-.btn-default{
+
+.btn-default {
     width: 48% !important;
     border-radius: 20px;
 }
+
 .quick-post {
     height: 100px;
 

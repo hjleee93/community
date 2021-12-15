@@ -270,7 +270,6 @@ export default class CommunitySetting extends Vue {
         event.preventDefault();
         this.$v.form.$touch();
         if (this.$v.form.$anyError) {
-            console.log(this.$v.form);
             return;
         }
         console.log(

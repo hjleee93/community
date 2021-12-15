@@ -156,6 +156,11 @@ const routes: Array<RouteConfig> = [
             {
                 path: '/user/:userUid/leave',
                 name: 'Leave',
+                meta: {
+                    layout: LayoutDefault,
+                    title: 'Leave',
+                    transition: 'fade-in-down'
+                },
                 component: () => import('@/views/Leave.vue'),
             },
         ]
@@ -179,6 +184,7 @@ const routes: Array<RouteConfig> = [
             title: 'GameTimeline',
             transition: 'fade-in-down'
         },
+        props: true,
         component: () => import("@/views/group/CommunitySetting.vue"),
         children: [
             {
@@ -247,6 +253,7 @@ const routes: Array<RouteConfig> = [
             title: 'CommunityTimeline',
             transition: 'fade-in-down'
         },
+        props: true,
         component: () => import(/* webpackChunkName: "CommunityTimeline" */ "@/views/group/Community.vue"),
         redirect: '/community/:community_id/timeline',
         children: [
@@ -258,6 +265,7 @@ const routes: Array<RouteConfig> = [
                     title: 'CommunityTimeline',
                     transition: 'fade-in-down'
                 },
+                props: true,
                 component: () => import("@/components/pages/community/CommunityTimeline.vue"),
             },
             {
@@ -268,6 +276,7 @@ const routes: Array<RouteConfig> = [
                     title: 'MemberList',
                     transition: 'fade-in-down'
                 },
+                props: true,
                 component: () => import("@/views/group/MemberList.vue"),
             },
 
@@ -464,7 +473,11 @@ const routes: Array<RouteConfig> = [
             transition: 'fade-in-down'
         },
     },
-
+    {
+        name : 'redirect',
+        path : '/redirect*',
+        component: () => import( '@/views/Redirect.vue' ),
+    },
 
 ]
 
