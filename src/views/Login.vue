@@ -66,7 +66,7 @@
                 <!--                    <input type="checkbox" name="" title="" id="auto-login"/> <label for="id-save"><i-->
                 <!--                    class="uil uil-check"></i></label>&nbsp; <span><label for="auto-login">자동로그인</label></span>-->
                 <!--                </div>-->
-                <p><a  @click="login" class="btn-default-big">로그인</a></p>
+                <p><a @click="login" class="btn-default-big">로그인</a></p>
 
 
                 <dl>
@@ -116,7 +116,8 @@
 
 
         <modal :clickToClose="false" class="modal-area-type" name="noUser" width="90%" height="auto" :maxWidth="380"
-               :adaptive="true">
+               :adaptive="true"
+               :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
                     <dt>안내</dt>
@@ -128,6 +129,25 @@
                     <h2>존재하지 않는 회원정보입니다. 회원가입을 진행해주세요.</h2>
                     <div>
                         <button class="btn-default" @click="closeModal">확인</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
+
+        <modal :clickToClose="false" class="modal-area-type" name="wrongInfo" width="90%" height="auto" :maxWidth="380"
+               :adaptive="true"
+               :scrollable="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('wrongInfo')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2>잘못된 정보입니다. 다시 한 번 입력해주세요</h2>
+                    <div>
+                        <button class="btn-default" @click="$modal.hide('wrongInfo')">확인</button>
                     </div>
                 </div>
             </div>
@@ -179,12 +199,6 @@ export default class Login extends Vue {
     private redirect: string = "";
     private form = {email: "", password: ""};
 
-    private googleForm = {
-        googleNickname: "@",
-        googleUsername: "",
-        googleEmail: "",
-    };
-
     // private googleRegister: boolean = false;
     // private isClickedLoginBtn: boolean = false;
     private isGoolgeLoginDone: boolean = false;
@@ -226,10 +240,6 @@ export default class Login extends Vue {
                     this.form.email,
                     this.form.password
                 );
-
-            console.log('rest', result)
-
-            // await this.$router.replace('/');
 
             if (result.user) {
                 const token = await firebase.auth().currentUser!.getIdToken();
@@ -274,7 +284,7 @@ export default class Login extends Vue {
             if (code) {
                 switch (code) {
                     case "auth/wrong-password":
-                        alert("잘못된 정보입니다. 다시 한 번 입력해주세요");
+                        this.$modal.show('wrongInfo')
                         // this.passwordError = '잘못된 비밀번호 입니다. 다시 입력하세요.'
                         break;
                     case "auth/user-not-found":
@@ -320,65 +330,58 @@ export default class Login extends Vue {
 
         const provider = new firebase.auth.GoogleAuthProvider();
         const result: any = await firebase.auth().signInWithPopup(provider);
-        this.googleForm.googleUsername = result.user.displayName;
-        this.googleForm.googleEmail = result.user.email;
+
 
 
         if (result.user) {
             const token = await firebase.auth().currentUser?.getIdToken();
             this.$store.commit("idToken", token);
             Vue.$api.user()
-            .then(async (res:any)=>{
-                const {user} = result;
-                this.$store.commit("user", user);
-                console.log("user", user);
-                await LoginManager.login();
-                // this.$store.commit('loginState', LoginState.login );
-                // await this.$router.replace('/');
-                if (this.$store.getters.redirectRouter) {
-                    console.log(
-                        "redirectRouter",
-                        this.$store.getters.redirectRouter
-                    );
-                    const router = this.$store.getters.redirectRouter;
-                    this.$store.commit("redirectRouter", null);
-                    await this.$router.replace(router);
-                }
-                else if (this.$store.getters.redirectUrl) {
-                    console.log("redirectUrl", this.$store.getters.redirectUrl);
-                    const url = this.$store.getters.redirectUrl;
-                    this.$store.commit("redirectUrl", null);
-                    window.location.href = url;
-                }
-                else {
-                    console.log("replace");
-                    await this.$router.push(
-                        `/channel/${this.$store.getters.user.uid}/timeline`
-                    );
-                }
+                .then(async (res: any) => {
+                    const {user} = result;
+                    this.$store.commit("user", user);
+                    console.log("user", user);
+                    await LoginManager.login();
+                    // this.$store.commit('loginState', LoginState.login );
+                    // await this.$router.replace('/');
+                    if (this.$store.getters.redirectRouter) {
+                        console.log(
+                            "redirectRouter",
+                            this.$store.getters.redirectRouter
+                        );
+                        const router = this.$store.getters.redirectRouter;
+                        this.$store.commit("redirectRouter", null);
+                        await this.$router.replace(router);
+                    }
+                    else if (this.$store.getters.redirectUrl) {
+                        console.log("redirectUrl", this.$store.getters.redirectUrl);
+                        const url = this.$store.getters.redirectUrl;
+                        this.$store.commit("redirectUrl", null);
+                        window.location.href = url;
+                    }
+                    else {
+                        console.log("replace");
+                        await this.$router.push(
+                            `/channel/${this.$store.getters.user.uid}/timeline`
+                        );
+                    }
 
-            })
-        .catch((err:any)=>{
-            console.log('err',err)
-            if (err.error.code === 20001) {
-                this.$modal.show('example')
-                // (this.$refs.googleRegisterBtn as any).click();
-                // alert(this.$t("login.googleJoinError") as string);
-                this.$store.commit("loginState", LoginState.no_user);
-                this.$store.commit("googleAccountInfo", this.googleForm);
-                 this.$router.replace("/join");
-                return;
-            }
-            })
+                })
+                .catch((err: any) => {
+                    console.log('google err', err)
+                    if (err.error.code === 20001) {
+                        this.$store.commit("loginState", LoginState.no_user);
+                        this.$router.replace("/googleJoin");
+                        return;
+                    }
+                })
 
             // const result = await Vue.$api.user();
             // if( result.error && result.error && result.error.message === '잘 못 된 유저 아이디입니다' ) {
 
 
-
         }
     }
-
 
 
     findPwd() {
@@ -390,7 +393,8 @@ export default class Login extends Vue {
         (this.$refs.registerBtn as any).click();
         this.isGoolgeLoginDone = !this.isGoolgeLoginDone;
     }
-    closeModal(){
+
+    closeModal() {
         this.$modal.hide('noUser')
     }
 }
@@ -403,7 +407,7 @@ export default class Login extends Vue {
 //    border-radius: 30px;
 //}
 
-.btn-default{
+.btn-default {
     width: 100%;
 }
 
@@ -417,11 +421,12 @@ export default class Login extends Vue {
 }
 
 .is-invalid + .invalid-feedback {
-    font-size:12px;
+    font-size: 12px;
     display: inline-block;
     color: red;
 }
-.modal-text{
+
+.modal-text {
     display: flex;
     justify-content: center;
 }

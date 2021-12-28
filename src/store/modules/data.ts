@@ -115,6 +115,10 @@ export default {
             context.state.imgArr = [];
             context.state.audioArr = [];
             context.state.videoArr = [];
+            context.state.blogImgArr =[];
+            context.state.blogAudioArr = [];
+            context.state.blogVideoArr = [];
+            context.state.feed = null;
 
         },
         resetAttFiles(context: any) {

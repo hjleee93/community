@@ -155,10 +155,10 @@ export default {
                 wait();
             })
         },
-        // async login( context: any ) {
-        //     const user = await Vue.$api.user();
-        //
-        // },
+        async reloadUserInfo(context:any) {
+            return await Vue.$api.user()
+
+        },
         async logout(context: any) {
             await firebase.auth().signOut();
             context.commit('user', null);

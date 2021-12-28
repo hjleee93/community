@@ -3,10 +3,10 @@
         <ul class="mp-header">
             <li :class="activeTab === 'SNS' ? 'active' : ''" @click="isActive('SNS')"><i
                 class="uil uil-file-landscape"></i>
-                Post
+                SNS
             </li>
             <li :class="activeTab === 'BLOG' ? 'active' : ''" @click="isActive('BLOG')"><i
-                class="uil uil-files-landscapes"></i> Blog Post
+                class="uil uil-files-landscapes"></i> Blog
             </li>
         </ul>
         <div class="mp-editer2">
@@ -22,15 +22,16 @@
             ></TiptapBlog>
         </div>
         <template v-if="activeTab === 'SNS'">
-            <div class="mp-image" >
-                <dd>
-                    <swiper class="swiper-area" :options="MPIswiperOption" v-if="imgPreviewArr.lenght > 0">
+            <div class="mp-image" style="padding-bottom: 0px">
+                <dd style="width: 100%;">
+                    <swiper class="swiper-area" :options="MPIswiperOption" v-if="imgPreviewArr.length > 0">
+
                         <swiper-slide
                             v-for="(img, idx) in imgPreviewArr" :key="idx"
-                            :style="`background: url(${img.url}) center center no-repeat; background-size:cover;`">
+                            :style="`padding-bottom: 43px; background: url(${img.url}) center center / cover no-repeat; background-size:cover;`">
                             <span @click="deletePreviewImg(idx)"><i class="uis uis-times-circle"></i></span>
                         </swiper-slide>
-
+                        <div class="swiper-pagination" slot="pagination"></div>
                     </swiper>
                 </dd>
             </div>
@@ -74,7 +75,8 @@
 
         <!--    모달-->
         <modal :clickToClose="false" class="modal-area-type" name="alertModal" width="90%" height="auto" :maxWidth="380"
-               :adaptive="true">
+               :adaptive="true"
+               :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
                     <dt>안내</dt>
@@ -83,7 +85,7 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2> 첨부파일은 저장되지 않고 사라집니다. 작성을 끝내시겠습니까?</h2>
+                    <h2>작성 중인 내용이 저장되지 않고 사라집니다.<br/>작성을 끝내시겠습니까?</h2>
                     <div>
                         <button class="btn-default w48p" @click="leavePost(true)">네</button>
                         <button class="btn-gray w48p" @click="leavePost(false)">아니오</button>
@@ -94,7 +96,8 @@
 
         <modal :clickToClose="false" class="modal-area-type" name="alertAttrModal" width="90%" height="auto"
                :maxWidth="380"
-               :adaptive="true">
+               :adaptive="true"
+               :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
                     <dt>안내</dt>
@@ -103,11 +106,31 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2>한가지 형식의 첨부파일만 입력이 가능합니다. 여러가지 첨부파일을 업로드 하고 싶은 경우 블로그 포스팅을 이용해주세요.</h2>
+                    <h2>같은 포맷의 파일만 업로드할 수 있습니다. 다양한 포맷의 파일을 업로드 하고 싶은 경우 블로그 포스팅을 이용해주세요.</h2>
                     <p>기존 첨부파일을 지우시겠습니까?</p>
                     <div>
                         <button class="btn-default w48p" @click="resetAttr(false)">아니오</button>
                         <button class="btn-gray w48p" @click="resetAttr(true)">네</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
+
+        <modal :clickToClose="false" class="modal-area-type" name="minChar" width="90%" height="auto"
+               :maxWidth="380"
+               :adaptive="true"
+               :scrollable="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('minChar')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2> 최소 1글자 이상 작성해주세요 </h2>
+                    <div>
+                        <button class="btn-default" style="width:100%" @click="$modal.hide('minChar')">네</button>
                     </div>
                 </div>
             </div>
@@ -132,6 +155,7 @@ import Messages from "@/components/pages/user/Messages.vue";
 import {AxiosError, AxiosResponse} from "axios";
 import {Swiper, SwiperSlide} from "vue-awesome-swiper";
 import Toast from "@/script/message";
+import {forEach} from "lodash";
 
 @Component({
     computed: {...mapGetters(["user"])},
@@ -149,7 +173,7 @@ import Toast from "@/script/message";
 export default class Post extends Vue {
     toast = new Toast();
     feed: any = {};
-    private isEditorEmpty: boolean = true;
+    isEditorEmpty: boolean = true;
     private youtubeLink: string[] = [];
 
     private communityList: any[] = [];
@@ -163,9 +187,6 @@ export default class Post extends Vue {
     private audioPreviewArr: any[] = [];
 
     private user!: User;
-
-    private selectedFileType: string = "";
-
     // follow 공개 여부
     private isPrivate: boolean = false;
     private isScheduledPost: boolean = false;
@@ -186,18 +207,19 @@ export default class Post extends Vue {
     private selectedCategory: any[] = [];
 
     private attFiles: any[] = [];
-
+    updateImgArr:any = [];
+    updateAudioArr:any = [];
+    updateVideo:any = {};
 
     textPreview: any = "";
-    tempKey: string = "";
     userTag: string = "";
 
-    // videoSrc: string = "";
-    audioSrc: string = "";
-    imgSrc: string = "";
     activeTab: string = "SNS";
     sliderValue = 200
     MPIswiperOption = {
+        pagination: {
+            el: '.swiper-pagination'
+        },
         slidesPerView: 4,
         spaceBetween: 10,
         breakpoints: {
@@ -218,16 +240,14 @@ export default class Post extends Vue {
             }
         }
     }
-    MPCswiperOption = {
-        slidesPerView: 'auto',
-        spaceBetween: 5,
-    }
+
 
     // 해시태그 멘션
     private hasTagSuggestion: boolean = false;
     private postedHashtag: string[] = [];
 
     async mounted() {
+
         await this.$store.dispatch("loginState");
         if (this.$store.getters.feed) {
             this.feed = this.$store.getters.feed
@@ -237,23 +257,49 @@ export default class Post extends Vue {
     }
 
     beforeDestroy() {
-        this.$store.commit('feed', null)
+        console.log("destroy???")
+        this.init()
+        this.$emit('reMount')
+
     }
 
     prefill() {
-        this.activeTab =this.feed.post_type;
+        this.activeTab = this.feed.post_type;
+        console.log(JSON.parse(this.feed.attatchment_files))
+        if (JSON.parse(this.feed.attatchment_files).length > 0) {
             this.$store.dispatch('resetAttFiles')
-        for (const file of this.feed.attatchment_files) {
-            if (file.type === 'image') {
-                this.$store.commit('imgArr', file)
-                this.imgPreviewArr = this.$store.getters.imgArr
+            for (const file of JSON.parse(this.feed.attatchment_files)) {
+                if (this.activeTab === 'SNS') {
+                    if (file.type === 'image') {
+                        this.$store.commit('imgArr', file)
+                    }
+                    else if (file.type === 'sound') {
+                        this.$store.commit('audioArr', file)
+                    }
+                    else if (file.type === 'video') {
+                        this.$store.commit('videoArr', file)
+                    }
+
+                }
+                else if (this.activeTab === 'BLOG') {
+
+                    if (file.type === 'image') {
+                        this.$store.commit('blogImgArr', file)
+                    }
+                    else if (file.type === 'sound') {
+                        this.$store.commit('blogAudioArr', file)
+                    }
+                    else if (file.type === 'video') {
+                        this.$store.commit('blogVideoArr', file)
+                    }
+                    console.log("?", this.$store.getters.blogImgArr)
+                }
+
             }
         }
-
         this.$store.commit('postContents', this.feed.content);
 
     }
-
 
     fetch() {
         const obj = {
@@ -271,8 +317,6 @@ export default class Post extends Vue {
 
     init() {
         this.selectedCategory = [];
-        this.imgSrc = "";
-        this.audioSrc = "";
         this.videoSrc = "";
         this.imgPreviewArr = [];
         this.audioPreviewArr = [];
@@ -284,7 +328,8 @@ export default class Post extends Vue {
             this.$modal.show('needLogin')
         }
         else {
-            this.isPostEmpty() ? this.activeTab = type : this.$modal.show('alertModal')
+            this.isPostEmpty() ? this.activeTab = type : this.$modal.show('alertModal');
+            this.isEditorEmpty = true
         }
 
     }
@@ -292,15 +337,15 @@ export default class Post extends Vue {
     isPostEmpty() {
         if (
             this.attFiles.length !== 0 ||
-            // !this.isEditorEmpty ||
+            !this.isEditorEmpty ||
             this.$store.getters.imgArr.length > 0 ||
             this.$store.getters.audioArr.length > 0
             // || !(Object.keys(this.feed).length === 0)
         ) {
-            // console.log(this.attFiles.length !== 0)
-            // console.log(!this.isEditorEmpty)
-            // console.log(this.$store.getters.imgArr.length)
-            // console.log(this.$store.getters.audioArr.length)
+            console.log(this.attFiles.length !== 0)
+            console.log(this.isEditorEmpty)
+            console.log(this.$store.getters.imgArr.length)
+            console.log(this.$store.getters.audioArr.length)
             return false;
         }
         else {
@@ -327,62 +372,86 @@ export default class Post extends Vue {
         this.$modal.hide('modalPost')
     }
 
-    //첨부파일 업로드
-    uploadFile(fileType: string) {
-        this.selectedFileType = fileType;
-
-        // (this.$refs[fileType] as HTMLElement).click();
-    }
-
-
     //포스팅 업로드
     async uploadPost() {
+        this.attFiles = [];
 
         let date = this.reserved_date + "T" + this.reserved_time;
         let scheduledTime = moment(date).valueOf();
-        // console.log(this.)
-        this.attFiles = await this.uploadAtt()
-
-        //blog
-        let div = document.createElement("html");
-        div.innerHTML = this.$store.getters.postContents;
 
 
-        const obj = {
-            user_uid: this.user.uid,
-            post_state: this.activeTab,
-            attatchment_files: this.attFiles,
-            post_contents: this.$store.getters.postContents,
-            visibility: this.isPrivate ? "PRIVATE" : "PUBLIC",
-            hashtags: [],
-            // user_tagId: this.$store.getters.userTagList,
-            user_tag: [
-                // {
-                //     id: 111,
-                //     nickname: "followers"
-                // },
-            ],
-            game_id: "",
-            channel_id: this.user.uid,
-            ...this.$store.getters.currPage,
-            // portfolio_ids: [
-            // ],
-            scheduled_for: null
+        if (this.activeTab === 'BLOG') {
+            if (this.$store.getters.blogImgArr.length > 0) {
+                for (let i = 0; i < this.$store.getters.blogImgArr.length; i++) {
+                    if (!this.$store.getters.postContents.includes(`"attr-img" src="${this.$store.getters.blogImgArr[i].url}"`)) {
+                        this.$store.getters.blogImgArr.splice(i, 1)
+                    }
+                }
+                console.log(this.$store.getters.blogImgArr)
+                this.attFiles.push(...this.$store.getters.blogImgArr)
+            }
+            if (this.$store.getters.blogVideoArr.length > 0) {
+                for (let i = 0; i < this.$store.getters.blogVideoArr.length; i++) {
+                    if (!this.$store.getters.postContents.includes(`<iframe src="${this.$store.getters.blogVideoArr[i].url}"`)) {
+                        this.$store.getters.blogVideoArr.splice(i, 1)
+                    }
+                }
+                this.attFiles.push(...this.$store.getters.blogVideoArr)
+            }
+            if (this.$store.getters.blogAudioArr.length > 0) {
+                for (let i = 0; i < this.$store.getters.blogAudioArr.length; i++) {
+                    if (!this.$store.getters.postContents.includes(`<audio src="${this.$store.getters.blogAudioArr[i].url}"`)) {
+                        this.$store.getters.blogAudioArr.splice(i, 1)
+                    }
+                }
+                this.attFiles.push(...this.$store.getters.blogAudioArr)
+            }
+        }
+        else {
+            this.attFiles = await this.uploadAtt();
         }
 
-        this.$api.uploadPost(obj)
-            .then((res: AxiosResponse) => {
-                this.$emit('refetch')
-                this.toast.successToast("포스팅이 완료되었습니다.")
-            })
-            .catch((err: AxiosError) => {
-                this.toast.failToast("업로드에 실패하였습니다.")
-            })
-            .finally(() => {
-                this.$modal.hide("modalPost");
-                this.init();
-                this.$store.commit('postContents', '')
-            })
+        console.log('this.upload', this.attFiles)
+        if (this.$store.getters.postContents.length === 0) {
+            this.$modal.show('minChar')
+        }
+        else {
+            const obj = {
+                user_uid: this.user.uid,
+                post_state: this.activeTab,
+                attatchment_files: this.attFiles,
+                post_contents: this.$store.getters.postContents,
+                visibility: this.isPrivate ? "PRIVATE" : "PUBLIC",
+                hashtags: [],
+                // user_tagId: this.$store.getters.userTagList,
+                user_tag: [
+                    // {
+                    //     id: 111,
+                    //     nickname: "followers"
+                    // },
+                ],
+                game_id: "",
+                channel_id: this.user.uid,
+                ...this.$store.getters.currPage,
+                // portfolio_ids: [
+                // ],
+                scheduled_for: null
+            }
+
+            this.$api.uploadPost(obj)
+                .then((res: AxiosResponse) => {
+                    // this.$emit('refetch')
+                    this.toast.successToast("포스팅이 완료되었습니다.")
+                })
+                .catch((err: AxiosError) => {
+                    this.toast.failToast("업로드에 실패하였습니다.")
+                })
+                .finally(() => {
+                    this.$modal.hide("modalPost");
+                    this.init();
+                    this.$store.commit('postContents', '')
+                })
+        }
 
 
     }
@@ -390,6 +459,47 @@ export default class Post extends Vue {
 
     //포스팅 수정
     async updatePost() {
+
+        if (this.activeTab === 'BLOG') {
+            if (this.$store.getters.blogImgArr.length > 0) {
+                for (let i = 0; i < this.$store.getters.blogImgArr.length; i++) {
+                    if (!this.$store.getters.postContents.includes(`"attr-img" src="${this.$store.getters.blogImgArr[i].url}"`)) {
+                        this.$store.getters.blogImgArr.splice(i, 1)
+                    }
+                }
+                this.attFiles.push(...this.$store.getters.blogImgArr)
+            }
+            if (this.$store.getters.blogVideoArr.length > 0) {
+                for (let i = 0; i < this.$store.getters.blogVideoArr.length; i++) {
+                    if (!this.$store.getters.postContents.includes(`<iframe src="${this.$store.getters.blogVideoArr[i].url}"`)) {
+                        this.$store.getters.blogVideoArr.splice(i, 1)
+                    }
+                }
+                this.attFiles.push(...this.$store.getters.blogVideoArr)
+            }
+            if (this.$store.getters.blogAudioArr.length > 0) {
+                for (let i = 0; i < this.$store.getters.blogAudioArr.length; i++) {
+                    if (!this.$store.getters.postContents.includes(`<audio src="${this.$store.getters.blogAudioArr[i].url}"`)) {
+                        this.$store.getters.blogAudioArr.splice(i, 1)
+                    }
+                }
+                this.attFiles.push(...this.$store.getters.blogAudioArr)
+            }
+        }
+        else {
+            this.attFiles = await this.uploadAtt();
+        }
+        if(this.updateImgArr.length > 0){
+            this.attFiles.unshift(...this.updateImgArr)
+        }
+        if(this.updateAudioArr.length > 0){
+            this.attFiles.unshift(...this.updateAudioArr)
+        }
+        if( Object.keys(this.updateVideo).length !== 0){
+            this.attFiles.unshift(this.updateVideo)
+        }
+
+        console.log('attFiles',this.attFiles)
         const obj = {
             post_id: this.feed.id,
             user_uid: this.user.uid,
@@ -406,12 +516,10 @@ export default class Post extends Vue {
             portfolio_ids: [""],
             scheduled_for: null
         }
-        console.log(obj)
-
+        console.log('수정',obj)
         this.$api.updatePost(obj)
             .then((res: AxiosResponse) => {
-
-                this.$emit('refetch')
+                this.toast.successToast("포스팅이 수정되었습니다.")
             })
             .catch((err: AxiosError) => {
                 this.toast.failToast("포스팅 수정에 실패하였습니다.")
@@ -435,6 +543,7 @@ export default class Post extends Vue {
     @Watch('$store.getters.imgArr')
     imgArr() {
         this.imgPreviewArr = this.$store.getters.imgArr
+
     }
 
     @Watch('$store.getters.audioArr')
@@ -450,7 +559,6 @@ export default class Post extends Vue {
     deletePreviewImg(idx: number) {
         this.$store.getters.imgArr.splice(idx, 1)
         this.imgPreviewArr = this.$store.getters.imgArr
-        // this.$store.dispatch('imageArrChg', imgArr)
     }
 
     deleteVideo() {
@@ -462,27 +570,46 @@ export default class Post extends Vue {
     }
 
     async uploadAtt() {
-        const imgFiles = this.$store.getters.imgArr.map((img) => {
-            return img.file;
+        const imgFiles:any = [];
+        const audioFiles:any = [];
+
+        this.$store.getters.imgArr.forEach((img) => {
+            if(img.file){
+                imgFiles.push(img)
+            }else{
+                this.updateImgArr.push(img)
+            }
         })
-        const audioFiles = this.$store.getters.audioArr.map((audio) => {
-            return audio.file;
+
+        this.$store.getters.audioArr.forEach((audio) => {
+            if(audio.file){
+                audioFiles.push(audio)
+            }else{
+                this.updateAudioArr.push(audio)
+            }
         })
+
         const formData = new FormData();
+
         for (let i = 0; i < imgFiles.length; i++) {
-            formData.append(imgFiles[i].name, imgFiles[i]);
+            formData.append(imgFiles[i].file.name, imgFiles[i].file);
         }
+
         for (let i = 0; i < audioFiles.length; i++) {
-            formData.append(audioFiles[i].name, audioFiles[i]);
+            formData.append(audioFiles[i].file.name, audioFiles[i].file);
         }
+
 
         if (this.videoSrc.file) {
             formData.append(this.videoSrc.file.name, this.videoSrc.file)
+        }else{
+            this.updateVideo = this.videoSrc;
         }
 
         if (formData) {
             return await this.$api.fileUploader(formData)
         }
+
     }
 
     resetAttr(isReset: boolean) {
@@ -584,7 +711,7 @@ export default class Post extends Vue {
 }
 
 .audio-preview-container {
-    // background-color: #68cef8;
+    // background-color: #F97316;
     align-items: center;
     display: flex;
     flex-wrap: wrap;
@@ -679,7 +806,7 @@ export default class Post extends Vue {
 
 // image preview of post
 .img-preview-container {
-    // background-color: #68cef8;
+    // background-color: #F97316;
     display: flex;
     /* flex-direction: row; */
     flex-wrap: nowrap;
@@ -759,13 +886,12 @@ export default class Post extends Vue {
     .iframe-wrapper {
         position: relative;
         padding-bottom: 100/16 * 9%;
-        height: 0;
         overflow: hidden;
         width: 100%;
         height: auto;
 
         &.ProseMirror-selectednode {
-            outline: 3px solid #68cef8;
+            outline: 3px solid #F97316;
         }
 
         iframe {
@@ -774,6 +900,7 @@ export default class Post extends Vue {
             left: 0;
             width: 100%;
             height: 100%;
+
         }
     }
 
@@ -786,19 +913,18 @@ export default class Post extends Vue {
         height: 240px;
 
         &.ProseMirror-selectednode {
-            outline: 3px solid #68cef8;
+            outline: 3px solid #F97316;
         }
     }
 
     .audio-wrapper {
         position: relative;
-
         overflow: hidden;
         width: 360px;
         height: 100px;
 
         &.ProseMirror-selectednode {
-            outline: 3px solid #68cef8;
+            outline: 3px solid #F97316;
         }
     }
 }
@@ -810,6 +936,11 @@ export default class Post extends Vue {
 
 .cancel-btn {
     margin-right: 10px;
+    background-color:#dc3545;
+}
+.cancel-btn:hover{
+    color:#dc3545;
+    background: rgba(220, 53, 69, 0.27);
 }
 
 .delete-btn {
@@ -832,5 +963,9 @@ export default class Post extends Vue {
     display: flex;
     justify-content: flex-end;
     width: 37%;
+}
+
+.swiper-wrapper, .swiper-container {
+    height: 130px !important;
 }
 </style>

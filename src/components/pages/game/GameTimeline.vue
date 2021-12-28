@@ -115,6 +115,9 @@ export default class GameTimeline extends Vue {
 
         })
   }
+    beforeDestroy(){
+        this.$store.commit('currPage', null)
+    }
 
   openImgModal(imgSrc: string) {
     this.imgSrc = imgSrc;

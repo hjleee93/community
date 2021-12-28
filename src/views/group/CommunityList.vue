@@ -20,17 +20,18 @@
         <!-- 검색/구분 -->
         <dl class="area-search-sort">
             <dt>
-                <div class="input-search-default">
-                    <p><i class="uil uil-search"></i>
-                    <p>
-                    <div>
-                        <input
-                            v-model="searchInput"
-                            @keyup.enter="searchCommunity" type="text" name="" title="keywords"
-                            placeholder="검색어를 입력하세요."/>
-                    </div>
-
-                </div>
+<!--              커뮤니티 검색용 -->
+<!--                -->
+<!--                <div class="input-search-default">-->
+<!--                    <p><i class="uil uil-search"></i>-->
+<!--                    </p>-->
+<!--                    <div>-->
+<!--                        <input-->
+<!--                            v-model="searchInput"-->
+<!--                            @keyup.enter="searchCommunity" type="text" name="" title="keywords"-->
+<!--                            placeholder="검색어를 입력하세요."/>-->
+<!--                    </div>-->
+<!--                </div>-->
             </dt>
             <dd>
                 <div class="sort-default">
@@ -44,103 +45,15 @@
             </dd>
         </dl>
         <!-- 검색/구분 끝 -->
-
-        <!--        <div class="section-filters-bar v1">-->
-        <!--            <div class="section-filters-bar-actions">-->
-        <!--                <div class="form">-->
-        <!--                    <div-->
-        <!--                        class="form-input small with-button"-->
-        <!--                        :class="searchInput.length > 0 ? 'active' : ''"-->
-        <!--                    >-->
-        <!--                        <label for="groups-search">Search Groups</label>-->
-        <!--                        <input-->
-        <!--                            type="text"-->
-        <!--                            id="groups-search"-->
-        <!--                            name="groups_search"-->
-        <!--                            v-model="searchInput"-->
-        <!--                            @keyup.enter="searchCommunity"-->
-        <!--                        />-->
-        <!--                        <template v-if="isSearched">-->
-        <!--                            <button class="search button primary" @click="searchReset">-->
-        <!--                                <svg class="icon-cross-thin">-->
-        <!--                                    <use xlink:href="#svg-cross-thin"></use>-->
-        <!--                                </svg>-->
-        <!--                            </button>-->
-        <!--                        </template>-->
-        <!--                        <template v-else>-->
-        <!--                            <button-->
-        <!--                                class="search button primary"-->
-        <!--                                @click="searchCommunity"-->
-        <!--                            >-->
-        <!--                                <svg class="icon-magnifying-glass">-->
-        <!--                                    <use xlink:href="#svg-magnifying-glass"></use>-->
-        <!--                                </svg>-->
-        <!--                            </button>-->
-        <!--                        </template>-->
-        <!--                    </div>-->
-
-        <!--                    <div class="form-select">-->
-        <!--                        <label for="groups-filter-category">Filter By</label>-->
-        <!--                        <select-->
-        <!--                            id="groups-filter-category"-->
-        <!--                            name="groups_filter_category"-->
-        <!--                            @change="sortGroups($event.target.value)"-->
-        <!--                        >-->
-        <!--                            <option value=0>Newly Created</option>-->
-        <!--                            <option value=1>Most Members</option>-->
-        <!--                            <option value=2>Alphabetical</option>-->
-        <!--                        </select>-->
-
-        <!--                        <svg class="form-select-icon icon-small-arrow">-->
-        <!--                            <use xlink:href="#svg-small-arrow"></use>-->
-        <!--                        </svg>-->
-        <!--                    </div>-->
-        <!--                </div>-->
-
-        <!--                <div class="filter-tabs" v-if="communityList.length > 0">-->
-        <!--                    <div-->
-        <!--                        class="filter-tab"-->
-        <!--                        :class="filter === 0 ? 'active' : ''"-->
-        <!--                        @click="sortGroups(0)"-->
-        <!--                    >-->
-        <!--                        <p class="filter-tab-text">-->
-        <!--                            Newly Created-->
-        <!--                        </p>-->
-        <!--                    </div>-->
-
-        <!--                    <div-->
-        <!--                        class="filter-tab"-->
-        <!--                        :class="filter === 1 ? 'active' : ''"-->
-        <!--                        @click="sortGroups(1)"-->
-        <!--                    >-->
-        <!--                        <p class="filter-tab-text">-->
-        <!--                            Most Members-->
-        <!--                        </p>-->
-        <!--                    </div>-->
-
-        <!--                    <div-->
-        <!--                        class="filter-tab"-->
-        <!--                        :class="filter === 2 ? 'active' : ''"-->
-        <!--                        @click="sortGroups(2)"-->
-        <!--                    >-->
-        <!--                        <p class="filter-tab-text">-->
-        <!--                            Alphabetical-->
-        <!--                        </p>-->
-        <!--                    </div>-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--        </div>-->
-
         <div class="result-container">
             <div class="no-result" v-if="!communityList || communityList.length === 0">
                 <h1>검색 결과가 없습니다.</h1>
                 <img src="../../assets/images/not-found.png" width="100px" height="100px"/>
-
             </div>
             <transition-group name="list-complete" class="card-timeline">
                 <community-card
                     @refetch="refetch"
-                    data-aos="fade"
+                    data-aos="zoom-in"
                     v-for="community in communityList"
                     :key="community.id"
                     :community="community"
@@ -154,6 +67,7 @@
         </div>
         <modal :clickToClose="false" class="modal-area-type" name="deleteConfirm" width="90%" height="auto"
                :maxWidth="380"
+               :scrollable="true"
                :adaptive="true">
             <div class="modal-alert">
                 <dl class="ma-header">
@@ -163,7 +77,7 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2> 해당 커뮤니티를 정말 탈퇴하시겠습니까? </h2>
+                    <h2> 커뮤니티에서 탈퇴하시겠습니까?<br/>※ 커뮤니티 탈퇴시 작성한 포스팅은 자동으로 삭제되지 않습니다.</h2>
                     <div>
                         <button class="btn-default w48p" @click="yesUnsubscribe">네</button>
                         <button class="btn-gray w48p" @click="$modal.hide('deleteConfirm')">아니오</button>
@@ -184,12 +98,14 @@ import {scrollDone} from "@/script/scrollManager";
 import {mapGetters} from "vuex";
 import SubscribeBtn from "@/components/community/_subscribeBtn.vue";
 import UniCons from '@iconscout/vue-unicons'
+import ClickManager from "@/script/clickManager";
 
 @Component({
     components: {PageLoader, CommunityCard, SubscribeBtn, UniCons},
     computed: {...mapGetters(["user"])},
 })
 export default class CommunityList extends Vue {
+    clickManager: ClickManager = new ClickManager();
     private communityList: any = [];
     private searchInput: string = "";
     private filter: number = 0;
@@ -232,7 +148,6 @@ export default class CommunityList extends Vue {
 
         this.$api.communityList(obj)
             .then((res: any) => {
-                //todo:중첩 데이터 수정해야됨
                 if (this.isAddData) {
                     if (res.length > 0) {
                         this.communityList = [...this.communityList, ...res]
@@ -272,17 +187,20 @@ export default class CommunityList extends Vue {
     sortGroups(filter: number) {
         this.isAddData = false;
         this.filter = filter;
-        if (filter === 0) {
-            this.sort = '';
-            this.fetch()
-        }
-        else if (filter === 1) {
-            this.sort = 'SUBSCRIBE'
-            this.fetch()
-        }
-        else if (filter === 2) {
-            this.sort = 'ALPAHBETIC'
-            this.fetch()
+        if (this.clickManager.doubleClickCheck() === false) {
+            console.log('true')
+            if (filter === 0) {
+                this.sort = '';
+                this.fetch()
+            }
+            else if (filter === 1) {
+                this.sort = 'SUBSCRIBE'
+                this.fetch()
+            }
+            else if (filter === 2) {
+                this.sort = 'ALPAHBETIC'
+                this.fetch()
+            }
         }
     }
 
@@ -310,18 +228,6 @@ export default class CommunityList extends Vue {
         this.show = '';
         this.searchInput = '';
     }
-
-    // joinCommunity() {
-    //     console.log('join!')
-    //     this.$api.subscribe({user_id: this.user.id, community_id: this.communityId})
-    //         .then((res: AxiosResponse) => {
-    //             console.log(res)
-    //         }).catch((err: AxiosError) => {
-    //         if (err.message) {
-    //             alert(err.message)
-    //         }
-    //     })
-    // }
 
     refetch() {
         this.initData();

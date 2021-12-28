@@ -2,19 +2,24 @@
     <dl v-if="!isEditing">
         <dt>
             <dl>
-                <dt @click="moveUserChannel(comment.user.uid)"><span
-                    :style="`background: url(${comment.user&&comment.user.picture || '../../assets/images/zempy.png'}) center center no-repeat; background-size: cover;`"></span>
+                <dt @click="moveUserChannel(comment.user.uid)">
+                    <UserAvatar :user="comment.user" :tag="'span'"></UserAvatar>
                 </dt>
                 <dd>
                     <h2>{{ comment.user && comment.user.name }} <span>{{  }}</span></h2>
                     <div>
                         {{ comment.content }}
                     </div>
-                    <p>
+                    <p :key="likeCnt">
                         <!--                        is_liked-->
-                        <a @click="sendLike"><i class="uil uil-heart-sign"
-                                                :style="comment.is_liked ? 'color:red':''"></i></a> 좋아요
-                        {{ comment.like_cnt }}개
+                        <a v-if="!isLiked " :key="isLiked" @click="sendLike(false)">
+                            <i class="uil uil-heart-sign"></i>
+                        </a>
+                        <a v-else :key="isLiked" @click="sendLike(true)">
+                            <i class="uil uil-heart-sign"
+                               style="color:red"></i>
+                        </a>
+                        좋아요 {{ likeCnt }}개
                         <!--                    <a href="#"><i class="uil uil-edit-alt"></i> 댓글 작성</a>-->
                     </p>
                 </dd>
@@ -22,16 +27,19 @@
 
         </dt>
 
-        <dd v-if="comment.user.uid === user.uid">
+        <dd v-if="comment.user.uid === (user && user.uid)">
             <dropdown-menu :overlay="false" class="tapl-more-dropdown">
                 <a slot="trigger"><i class="uil uil-ellipsis-h font25"></i>
                 </a>
-                <div slot="body" class="more-list">
+
+                <div slot="body" :class="$route.name === 'feedDetail' ? 'more-list':'more-list fixed'">
                     <a @click="editComment(comment.id)">댓글 수정</a>
-                    <a @click="deleteComment(comment.id)">댓글 삭제</a>
+                    <a @click="$modal.show('deleteComment', {commentId:comment.id, postId:postId})">댓글 삭제</a>
+                    <!--                    <a @click="deleteComment(comment.id)">댓글 삭제</a>-->
                 </div>
             </dropdown-menu>
         </dd>
+
     </dl>
     <dl v-else>
         <CommentInput
@@ -42,6 +50,7 @@
             :parentId="parentId"
         ></CommentInput>
     </dl>
+
 
 </template>
 
@@ -54,6 +63,8 @@ import {AxiosError, AxiosResponse} from "axios";
 import {mapGetters} from "vuex";
 import UserAvatar from "@/components/user/_userAvatar.vue";
 import CommentInput from "@/components/comment/_commentInput.vue";
+import {User} from "@/types";
+import ClickManager from "@/script/clickManager";
 
 @Component({
     computed: {...mapGetters(["user"])},
@@ -68,6 +79,12 @@ export default class Comment extends Vue {
     private parentId: number = -1;
     private modalTitle: string = "Report Comment";
     private createdDate: string = "";
+
+    showModal: boolean = false;
+    user!: User;
+    clickManager: ClickManager = new ClickManager();
+    isLiked: boolean = this.comment.is_liked;
+    likeCnt: number = this.comment.like_cnt
 
     mounted() {
         this.init();
@@ -89,42 +106,49 @@ export default class Comment extends Vue {
         this.$emit('editDone')
     }
 
-    deleteComment(commentId: string) {
-        this.$api.deleteComment(this.postId, commentId)
-            .then((res: AxiosResponse) => {
-                this.$emit('editDone')
-            })
-            .catch((err: AxiosError) => {
-
-            })
-    }
-
     editComment() {
         this.isEditing = true;
     }
 
 
-    sendLike() {
-        if (this.comment.is_liked) {
-            this.$api.unlikeComment(this.postId, this.comment.id)
-                .then((res: AxiosResponse) => {
-                    this.$emit('editDone')
-                })
-                .catch((err: AxiosError) => {
+    sendLike(state: boolean) {
+        if (this.user) {
+            if (state) {
+                if (!this.clickManager.doubleClickCheck()) {
+                    this.$api.unlikeComment(this.postId, this.comment.id)
+                        .then((res: AxiosResponse) => {
+                            console.log(res)
+                            this.isLiked = false;
+                            this.likeCnt--;
+                            // this.$emit('editDone')
+                        })
+                        .catch((err: AxiosError) => {
 
-                })
+                        })
+                }
+            }
+            else {
+                if (!this.clickManager.doubleClickCheck()) {
+                    this.$api.likeComment(this.postId, this.comment.id)
+                        .then((res: AxiosResponse) => {
+                            console.log(res)
+                            this.isLiked = true;
+                            this.likeCnt++;
+                            // this.$emit('editDone')
+                        })
+                        .catch((err: AxiosError) => {
+
+                        })
+                }
+            }
         }
         else {
-            this.$api.likeComment(this.postId, this.comment.id)
-                .then((res: AxiosResponse) => {
-                    this.$emit('editDone')
-                })
-                .catch((err: AxiosError) => {
-
-                })
+            this.$modal.show('needLogin')
         }
+
     }
-    moveUserChannel(uid:string){
+
+    moveUserChannel(uid: string) {
         this.$router.push(`/channel/${uid}/timeline`)
     }
 
@@ -157,12 +181,16 @@ export default class Comment extends Vue {
     color: #9aa4bf;
     background: none;
 }
-.more-list{
-    position: fixed;
-    right: 10px;
+
+.more-list {
     background-color: #fff !important;
     border-radius: 10px !important;
-    width: 100px;
     box-shadow: 0 0 15px 0 rgb(82 70 70 / 20%);
+}
+
+.fixed {
+    width: 100px;
+    position: fixed;
+    right: 10px;
 }
 </style>

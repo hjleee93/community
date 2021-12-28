@@ -9,7 +9,7 @@
                 type="file"
                 @input="onSelectFile"
                 multiple
-                accept=audio/*
+                accept=".mp3"
                 ref="audio"/>
         </div>
 
@@ -29,18 +29,30 @@ export default class AudioUploaderBtn extends Vue {
     maxFileNum: number = 5;
 
     uploadFile() {
-        if (this.$store.getters.imgArr.length > 0  || this.$store.getters.videoArr.file) {
-            this.$modal.show('alertAttrModal')
-        }
-        else {
-            (this.$refs.audio as HTMLElement).click();
+        if(this.activeTab === 'SNS') {
+            if (this.$store.getters.imgArr.length > 0 || this.$store.getters.videoArr.file) {
+
+                    this.$modal.show('alertAttrModal')
+                }else{
+                (this.$refs.audio as HTMLElement).click();
+            }
+            }
+            else {
+                (this.$refs.audio as HTMLElement).click();
+
         }
     }
 
     onSelectFile() {
         const input: any = this.$refs.audio;
         if (this.activeTab === 'SNS') {
-            onSelectFile(input.files, this.maxFileNum, 10, 'audioArr')
+            if (this.$store.getters.audioArr.length < this.maxFileNum) {
+                onSelectFile(input.files, this.maxFileNum, 10, 'audioArr')
+            }
+            else {
+                alert(`최대 파일 개수는 ${this.maxFileNum}개입니다.`)
+            }
+
         }
         else if (this.activeTab === 'BLOG') {
 
@@ -52,9 +64,11 @@ export default class AudioUploaderBtn extends Vue {
 
             this.$api.fileUploader(formData)
                 .then((res: any) => {
+                    console.log(res)
                     this.$store.commit('blogAudioArr', res)
                 })
         }
+        (this.$refs.audio as any).value = '';
     }
 
 

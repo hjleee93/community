@@ -1,8 +1,8 @@
 import store from '@/store'
 import Vue from 'vue'
-import VueRouter, { RouteConfig } from 'vue-router'
+import VueRouter, {RouteConfig} from 'vue-router'
 import Home from '../views/Home.vue'
-import { LoginState } from "@/store/modules/user";
+import {LoginState} from "@/store/modules/user";
 import LayoutDefault from "../layout/LayoutDefault.vue";
 import LayoutNone from "../layout/LayoutNone.vue";
 
@@ -17,22 +17,26 @@ VueRouter.prototype.push = function push(location) {
     });
 };
 
-
 const routes: Array<RouteConfig> = [
     {
         path: '/',
         name: 'Home',
         component: Home,
         beforeEnter: async function (to, from, next) {
+            // await router.push('/update')
             const loginState = await store.dispatch("loginState");
             switch (loginState) {
                 case LoginState.login:
-                    console.log("login")
-                    await router.push(`/MyChannel`)
+                    if(from.name === 'MyChannel'){
+                        window.location.reload();
+                    }else{
+                        await router.push(`/MyChannel`)
+                    }
+
                     break;
                 case LoginState.no_user:
                     console.log("no_user")
-                    await  router.push('/landing')
+                    await router.push('/landing')
                     break;
                 case LoginState.logout:
                     console.log("logout")
@@ -40,10 +44,18 @@ const routes: Array<RouteConfig> = [
                     break;
                 default:
                     next();
-
             }
         }
-
+    },
+    {
+        path: '/update',
+        name: 'Update',
+        meta: {
+            layout: LayoutNone,
+            title: 'Login',
+            transition: 'fade-in-down'
+        },
+        component: () => import("@/views/Update.vue"),
     },
     {
         path: '/login',
@@ -86,7 +98,16 @@ const routes: Array<RouteConfig> = [
         },
         component: () => import(/* webpackChunkName: "Join" */ '@/views/user/Join.vue')
     },
-
+    {
+        path: '/googleJoin',
+        name: 'GoogleJoin',
+        meta: {
+            layout: LayoutNone,
+            title: 'GoogleJoin',
+            transition: 'fade-in-down'
+        },
+        component: () => import(/* webpackChunkName: "Join" */ '@/views/user/GoogleJoin.vue')
+    },
     {
         path: '/user/:userUid/settings',
         name: 'UserSettingHeader',
@@ -99,13 +120,13 @@ const routes: Array<RouteConfig> = [
         children: [
             {
                 path: '/user/:userUid/settings',
-                name: 'UserSettings',
+                name: 'UserGeneralSetting.vue',
                 meta: {
                     layout: LayoutDefault,
-                    title: 'UserSettings',
+                    title: 'UserGeneralSetting.vue',
                     transition: 'fade-in-down'
                 },
-                component: () => import("@/views/user/UserSettings.vue"),
+                component: () => import("@/components/pages/user/UserGeneralSetting.vue"),
             },
             {
                 path: '/user/:userUid/manageJoinedGroup',
@@ -162,6 +183,17 @@ const routes: Array<RouteConfig> = [
                     transition: 'fade-in-down'
                 },
                 component: () => import('@/views/Leave.vue'),
+            },
+            {
+                path: '/user/:userUid/changePwd',
+                name: 'ChangePwd',
+                meta: {
+                    layout: LayoutDefault,
+                    title: 'ChangePwd',
+                    transition: 'fade-in-down'
+                },
+                component: () => import('@/components/pages/user/ChangePwd.vue'),
+                props: true
             },
         ]
 
@@ -244,7 +276,6 @@ const routes: Array<RouteConfig> = [
         name: 'CreateCommunity',
         component: () => import("@/components/pages/community/CommunityCreate.vue"),
     },
-
     {
         path: '/community/:community_id',
         name: 'Community',
@@ -309,15 +340,36 @@ const routes: Array<RouteConfig> = [
             title: 'User',
             transition: 'fade-in-down'
         },
+        beforeEnter: async function (to, from, next) {
+            const loginState = await store.dispatch("loginState");
+
+            if ((loginState === LoginState.login) && (store.getters.user.uid === to.params.channel_id)) {
+                await router.push('/myChannel')
+            }
+            else {
+                next();
+            }
+        },
         children: [
             {
                 path: '/channel/:channel_id/timeline',
-                name: 'UserTimeline.vue',
+                name: 'UserTimeline',
                 component: () => import("@/components/pages/user/UserTimeline.vue"),
                 meta: {
                     layout: LayoutDefault,
                     title: 'UserTimeline',
                     transition: 'fade-in-down'
+                },
+                beforeEnter: async function (to, from, next) {
+                    console.log("?")
+                    const loginState = await store.dispatch("loginState");
+
+                    if ((loginState === LoginState.login) && (store.getters.user.uid === to.params.channel_id)) {
+                        await router.push('/myChannel')
+                    }
+                    else {
+                        next();
+                    }
                 },
             },
             {
@@ -342,11 +394,11 @@ const routes: Array<RouteConfig> = [
             },
             {
                 path: '/channel/:channel_id/games',
-                name: 'AllGameList',
-                component: () => import("@/components/pages/user/AllGameList.vue"),
+                name: 'AllGameCard',
+                component: () => import("@/components/pages/user/AllGameCard.vue"),
                 meta: {
                     layout: LayoutDefault,
-                    title: 'AllGameList',
+                    title: 'AllGameCard',
                     transition: 'fade-in-down'
                 },
             },
@@ -373,7 +425,6 @@ const routes: Array<RouteConfig> = [
 
         ]
     },
-
     {
         path: '/timeline/game/:gamePath',
         name: 'Game',
@@ -422,7 +473,7 @@ const routes: Array<RouteConfig> = [
         name: 'feedDetail',
         meta: {
             layout: LayoutDefault,
-            title: 'GameTimeline',
+            title: 'FeedDetail',
             transition: 'fade-in-down'
         },
         component: () => import("@/views/post/FeedDetail.vue")
@@ -432,16 +483,6 @@ const routes: Array<RouteConfig> = [
         name: 'Play',
         component: () => import('@/views/Play.vue'),
         props: true
-    },
-
-    {
-        path: '*',
-        component: () => import('@/views/Error404.vue'),
-        meta: {
-            layout: LayoutNone,
-            title: 'Home',
-            transition: 'fade-in-down'
-        },
     },
     {
         path: '/terms',
@@ -474,21 +515,32 @@ const routes: Array<RouteConfig> = [
         },
     },
     {
-        name : 'redirect',
-        path : '/redirect*',
+        path: '*',
+        component: () => import('@/views/Error404.vue'),
+        meta: {
+            layout: LayoutNone,
+            title: 'Home',
+            transition: 'fade-in-down'
+        },
+    },
+    /**
+     * 서버 리다이렉트용
+     */
+    {
+        name: 'redirect',
+        path: '/redirect*',
         component: () => import( '@/views/Redirect.vue' ),
     },
 
 ]
 
 const router = new VueRouter({
-    scrollBehavior: () => ({ x: 0, y: 0 }),
+    scrollBehavior: () => ({x: 0, y: 0}),
     //@ts-ignore
     mode: process.env.VUE_APP_ROUTER_MODE,
     base: process.env.VUE_ROUTER_BASE,
     routes
 })
-
 
 
 router.beforeEach((to, from, next) => {

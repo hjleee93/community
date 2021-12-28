@@ -1,57 +1,58 @@
 <template>
-  <div class="content">
-    <div class="visual-title">
-      <h2><span>Games</span></h2>
-    </div>
-    <div class="tab-search-swiper">
-      <swiper class="swiper-area" :options="TSSswiperOption">
-        <swiper-slide>
-          <a @click="fetch(1)" :class="category === 1 ? 'active' : ''">공식 게임</a>
-        </swiper-slide>
-        <swiper-slide>
-          <a @click="fetch(0)" :class="category === 0 ? 'active' : ''">도전 게임
-            <!--                        <span>10</span>-->
-          </a>
-        </swiper-slide>
-      </swiper>
-    </div>
+    <div class="content">
+        <div class="visual-title">
+            <h2><span>Games</span></h2>
+        </div>
+        <div class="tab-search-swiper">
+            <swiper class="swiper-area" :options="TSSswiperOption">
+                <swiper-slide>
+                    <a @click="clickCategory(1); " :class="category === 1 ? 'active' : ''">공식 게임</a>
+                </swiper-slide>
+                <swiper-slide>
+                    <a @click="clickCategory(0); " :class="category === 0 ? 'active' : ''">도전 게임
+                        <!--                        <span>10</span>-->
+                    </a>
+                </swiper-slide>
+            </swiper>
+        </div>
 
 
-    <dl class="area-title">
-      <dt>Games <span>{{ games.length }}</span></dt>
-    </dl>
-
-    <ul class="card-game">
-      <li v-for="game in games" :key="game.id" @click="playGame(game.pathname)">
-        <div
-            :style="`background: url( ${game && game.url_thumb_webp ||  game.picture} ) center center no-repeat; background-size: cover;`"></div>
-        <dl>
-          <dt>
-            <P :style="`background: url(${game.user && game.user.picture || 'img/zempy.png' }) center center no-repeat; background-size: cover;`"></P>
-          </dt>
-          <dd>
-            <h2>{{ game && game.title }}</h2>
-            <p>{{ game.user && game.user.name }}</p>
-            <ul>
-              <!--                            <li><img src="../../assets/images/charge_game_icon.svg" alt=""></li>-->
-              <!--                            <li><img src="../../assets/images/hot_game_icon.svg" alt=""></li>-->
-              <li><img src="../assets/images/zempie_game_icon.svg" alt=""></li>
-            </ul>
-          </dd>
+        <dl class="area-title">
+            <dt>Games <span>{{ games.length }}</span></dt>
         </dl>
-      </li>
+
+        <ul>
+            <transition-group name="list-complete" class="card-game">
+            <li v-for="game in games" :key="game.id" @click="playGame(game.pathname)">
+                <div
+                    :style="`background: url( ${game &&( game.url_thumb_webp || game.url_thumb )} ) center center no-repeat; background-size: cover;`"></div>
+                <dl>
+                    <dt>
+                        <P :style="`background: url(${game.user && game.user.picture || 'img/zempy.png' }) center center no-repeat; background-size: cover;`"></P>
+                    </dt>
+                    <dd>
+                        <h2>{{ game && game.title }}</h2>
+                        <p>{{ game.user && game.user.name }}</p>
+                        <ul>
+                            <!--                            <li><img src="../../assets/images/charge_game_icon.svg" alt=""></li>-->
+                            <!--                            <li><img src="../../assets/images/hot_game_icon.svg" alt=""></li>-->
+                            <li><img src="../assets/images/zempie_game_icon.svg" alt=""></li>
+                        </ul>
+                    </dd>
+                </dl>
+            </li>
+            </transition-group>
+
+            <!--            <li class="more-card" v-if="games && games.length>3">-->
+            <!--                <div>-->
+            <!--                    <h3><i class="uil uil-plus"></i></h3>-->
+            <!--                    <p>모두보기</p>-->
+            <!--                </div>-->
+            <!--            </li>-->
+        </ul>
 
 
-      <!--            <li class="more-card" v-if="games && games.length>3">-->
-      <!--                <div>-->
-      <!--                    <h3><i class="uil uil-plus"></i></h3>-->
-      <!--                    <p>모두보기</p>-->
-      <!--                </div>-->
-      <!--            </li>-->
-    </ul>
-
-
-  </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -60,132 +61,213 @@ import Feed from "@/components/timeline/_feed.vue";
 import MemberCard from "@/components/community/_memberCard.vue";
 import {Swiper, SwiperSlide} from 'vue-awesome-swiper'
 import Toast from "@/script/message";
+import {scrollDone} from "@/script/scrollManager";
 
 
 @Component({
-  components: {
-    Feed,
-    MemberCard,
-    Swiper,
-    SwiperSlide,
-  },
+    components: {
+        Feed,
+        MemberCard,
+        Swiper,
+        SwiperSlide,
+    },
 })
 export default class gameList extends Vue {
-  toast = new Toast();
-  games: any = [];
-  category: number = 1;
+    toast = new Toast();
+    games: any = [];
+    category: number = 1;
 
-  keyword: string | (string | null)[] = '';
-  TSSswiperOption = {
-    slidesPerView: 8,
-    spaceBetween: 0,
-    breakpoints: {
-      300: {
-        slidesPerView: 2.5
-      },
-      480: {
-        slidesPerView: 3.5
-      },
-      768: {
-        slidesPerView: 4.5
-      },
-      992: {
-        slidesPerView: 6
-      },
-      1200: {
-        //slidesPerView: 7
-      }
-    }
-  }
+    //parameters
+    limit: number = 20;
+    offset: number = 0;
+    sort: string = 'c';
+    dir: string = 'asc'
 
-  mounted() {
-    this.fetch(this.category)
-  }
-
-  beforeDestroy() {
-    this.$store.dispatch('resetResearchData')
-  }
-
-  fetch(category: number) {
-    this.category = category;
-    const obj = {
-      limit: 20,
-      category: category,
-      sort: 'c',
-      dir: 'asc'
-    };
-    switch (category) {
-        //도전
-      case 0:
-        this.$api.officalGameList(obj)
-            .then((res: any) => {
-              this.games = res.result.games
-            })
-        break;
-        //공식
-      case 1:
-        this.$api.officalGameList(obj)
-            .then((res: any) => {
-              this.games = res.result.games
-
-            })
-        break;
+    //state
+    isAddData: boolean = false;
+    hasData: boolean = true;
 
 
+    keyword: string | (string | null)[] = '';
+    TSSswiperOption = {
+        slidesPerView: 8,
+        spaceBetween: 0,
+        breakpoints: {
+            300: {
+                slidesPerView: 2.5
+            },
+            480: {
+                slidesPerView: 3.5
+            },
+            768: {
+                slidesPerView: 4.5
+            },
+            992: {
+                slidesPerView: 6
+            },
+            1200: {
+                //slidesPerView: 7
+            }
+        }
     }
 
-  }
+    mounted() {
+        this.fetch()
+        window.addEventListener("scroll", this.scrollCheck);
+    }
 
-  playGame(pathname: string) {
-    window.open(
-        `play/${pathname}`, "_blank")
-  }
+    beforeDestroy() {
+        this.$store.dispatch('resetResearchData')
+        this.initData();
+        window.removeEventListener("scroll", this.scrollCheck);
+    }
 
-  userPage(userUid: string) {
-    this.$router.push(`/channel/${userUid}/timeline`)
-  }
+    fetch() {
+        const obj = {
+            limit: this.limit,
+            offset: this.offset,
+            category: this.category,
+            sort: this.sort,
+            dir: this.dir
+        };
+        console.log('obj',obj);
+        console.log('category',this.category)
+
+
+        switch (this.category) {
+            //도전
+            case 0:
+                const indieObj = {
+                limit: this.limit,
+                offset: this.offset,
+                category: '0',
+                sort: this.sort,
+                dir: this.dir
+            };
+                console.log('obj',indieObj);
+                this.$api.officalGameList(indieObj)
+                    .then((res: any) => {
+                        if (this.isAddData) {
+                            if (res.result.games.length > 0) {
+                                this.games = [...this.games, ...res.result.games]
+                                console.log(this.games)
+                            }
+                            else {
+                                console.log('no data')
+                                this.hasData = false
+                                window.removeEventListener("scroll", this.scrollCheck);
+
+                            }
+                        }
+                        else {
+                            console.log('here')
+                            this.games = res.result.games;
+                            this.isAddData = true
+                        }
+                    })
+                break;
+            //공식
+            case 1:
+                this.$api.officalGameList(obj)
+                    .then((res: any) => {
+                        if (this.isAddData) {
+                            if (res.result.games.length > 0) {
+                                this.games = [...this.games, ...res.result.games]
+                            }
+                            else {
+                                console.log('no data')
+                                this.hasData = false
+                                window.removeEventListener("scroll", this.scrollCheck);
+
+                            }
+                        }
+                        else {
+                            this.games = res.result.games;
+                            this.isAddData = true
+                        }
+
+                    })
+                break;
+        }
+
+    }
+
+    clickCategory(category: number) {
+        this.category = category;
+        this.initData();
+        this.fetch();
+
+    }
+
+
+    initData() {
+        window.addEventListener("scroll", this.scrollCheck);
+        this.isAddData = false
+        this.hasData = false
+        this.limit = 20;
+        this.offset = 0;
+        this.games = [];
+        this.sort = 'c';
+        this.dir = 'asc';
+    }
+
+    scrollCheck() {
+        if (scrollDone(document.documentElement)) {
+            this.offset += this.limit;
+            this.fetch();
+        }
+    }
+
+    playGame(pathname: string) {
+        window.open(
+            `play/${pathname}`, "_blank")
+    }
+
+    userPage(userUid: string) {
+        this.$router.push(`/channel/${userUid}/timeline`)
+    }
 
 }
 </script>
 
 <style scoped>
 .toasted, .toast-success {
-  color: #F97316 !important;
-  border-color: #F97316 !important;
+    color: #F97316 !important;
+    border-color: #F97316 !important;
 }
 
 .section-banner {
-  padding: 0;
-  display: flex;
-  align-content: space-around;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+    padding: 0;
+    display: flex;
+    align-content: space-around;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .stats-decoration-title {
-  padding: 2px 6px;
-  font-size: 16px;
-  text-overflow: ellipsis;
-  font-weight: 600;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  align-items: center;
-  color: #fff;
-  border-radius: 6px;
-  background-color: #1d2333;
+    padding: 2px 6px;
+    font-size: 16px;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    color: #fff;
+    border-radius: 6px;
+    background-color: #1d2333;
 }
 
 .cf-info {
-  height: 100%;
+    height: 100%;
 }
 
 .cf-img {
-  background-color: #f39800;
+    background-color: #f39800;
 }
 
-.swiper-slide{
+.swiper-slide {
     cursor: pointer;
 }
 </style>

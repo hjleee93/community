@@ -1,29 +1,30 @@
 <template>
-  <div class="wrap ">
+    <div class="wrap">
 
 
-    <Header></Header>
-    <slot />
-    <Footer></Footer>
-    
+        <Header :key="user &&user.picture"></Header>
+        <slot/>
+        <Footer></Footer>
 
-  </div>
+    </div>
 </template>
 
-<script>
+<script lang="ts">
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import Header from "./Header.vue";
 import Footer from "./Footer.vue";
+import {mapGetters} from "vuex";
+
+@Component({
+    components: {Header, Footer},
+    computed: {...mapGetters(["user"])},
+})
+export default class LayoutDefault extends Vue {
+    user!: any;
 
 
-export default {
-  name: "LayoutDefault",
-  components: {
-    Header,
-    Footer,
-  }
-};
+}
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
 </style>

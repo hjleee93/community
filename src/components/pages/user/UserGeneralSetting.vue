@@ -11,7 +11,7 @@
                 <dt>
                     <div :style="{'background-color' : 'orange', 'background-size' : 'cover'}"></div>
                     <!--                    <div :style="{'background' : 'url(' + require('../../assets/images/card_test_img01.png') + ') center no-repeat', 'background-size' : 'cover'}"></div>-->
-                    <p :style="{'background' : 'url(' + prevProfile || '../../assets/images/zempy.png' + ') center center / cover no-repeat', 'background-size' : 'cover'}"></p>
+                    <p :style="prevProfile ? `background: url(${prevProfile}) center center / cover no-repeat; background-size: cover;` :`background: url(${require('../../../assets/images/zempy.png')}) center center / cover no-repeat; background-size: cover;`  "></p>
                 </dt>
                 <!--                <div class="delete-div" @click="deleteImg">-->
                 <!--                    <router-link class="delete-btn" to="#"><i class="uil uil-trash-alt"></i></router-link>-->
@@ -63,14 +63,14 @@
                     <li>유저이름</li>
                     <li><input type="text" name="" title="" readonly class="w100p" :value="user && user.name"/>
                     </li>
-<!--                    <li>-->
-<!--                        <router-link to="#" class="btn-line-big w100p">변경</router-link>-->
-<!--                    </li>-->
+                    <!--                    <li>-->
+                    <!--                        <router-link to="#" class="btn-line-big w100p">변경</router-link>-->
+                    <!--                    </li>-->
                 </ol>
+
             </div>
         </div>
         <!-- 입력/수정 끝 -->
-
 
         <!-- 버튼영역 -->
         <div class="area-btn">
@@ -78,9 +78,16 @@
         </div>
         <!-- 버튼영역 끝 -->
         <div class="delete-account">
+            <h2>비밀 번호 번경</h2>
+            <div>
+                <p>비밀번호를 변경하시려면 <span><router-link :to="`/user/${this.$route.params.userUid}/changePwd`">클릭</router-link></span>해주세요.
+                </p>
+            </div>
+        </div>
+        <div class="delete-account">
             <h2>계정삭제</h2>
             <div>
-                <p>계정을 비활성화 하려면 <span><router-link :to="`/user/${this.$route.params.channel_id}/leave`">클릭</router-link></span>해주세요.
+                <p>계정을 비활성화 하려면 <span><router-link :to="`/user/${this.$route.params.userUid}/leave`">클릭</router-link></span>해주세요.
                 </p>
             </div>
         </div>
@@ -88,23 +95,16 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue} from "vue-property-decorator";
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import {mapGetters} from "vuex";
 
-import ImgPreview from "@/components/common/upload/ImgPreview.vue";
-import ProfileImgUploader from "@/components/common/upload/ProfileImgUploader.vue";
-import BannerImgUploader from "@/components/common/upload/BannerImgUploader.vue";
 import Toast from "@/script/message";
 
 @Component({
     computed: {...mapGetters(["user"])},
-    components: {
-        ImgPreview,
-        ProfileImgUploader,
-        BannerImgUploader,
-    },
+    components: {},
 })
-export default class UserSettings extends Vue {
+export default class UserGeneralSetting extends Vue {
     toast = new Toast();
     private user!: any;
     private isCommentOn: boolean = false;
@@ -116,15 +116,10 @@ export default class UserSettings extends Vue {
 
     private fileName: string = "";
     private prevProfile: any = ''
-    private updateFile:File | null = null;
-
-
-    private form = {
-        // bannerImgSrc: "",
-        profileImgSrc: "",
-    };
+    private updateFile: File | null = null;
 
     mounted() {
+
         this.prevProfile = this.user.picture
     }
 
@@ -166,8 +161,6 @@ export default class UserSettings extends Vue {
     }
 
     onFileChange(event: { target: { files: any } }) {
-
-
         if (event.target.files[0].size < 1024 * 1024 * 3) {
             this.fileName = event.target.files[0].name
             this.updateFile = event.target.files[0]
@@ -187,22 +180,41 @@ export default class UserSettings extends Vue {
         const formData = new FormData();
         if (this.updateFile) {
             formData.append('file', this.updateFile);
-        }
-        this.$api.updateUser(formData)
-        .then((res)=>{
-            this.$store.dispatch('loginState')
-            this.toast.successToast("계정 업데이트가 완료되었습니다.")
-        })
+            formData.append('name', this.user.name)
 
+            this.$api.updateUser(formData)
+                .then(() => {
+                    this.toast.successToast("계정 업데이트가 완료되었습니다.")
+                    // this.$store.dispatch('userInfoUpdate', res.picture)
+                    console.log(this.$store.getters.user.picture)
+
+                    this.$store.commit('userInfoUpdate', {
+                        picture: this.$store.getters.user.picture + `?t=${Date.now()}`
+                    });
+                })
+        }else{
+            formData.append('rm_picture', 'true');
+            this.$api.updateUser(formData)
+                .then(() => {
+                    this.toast.successToast("계정 업데이트가 완료되었습니다.")
+                    // this.$store.dispatch('userInfoUpdate', res.picture)
+                    console.log(this.$store.getters.user.picture)
+
+                    this.$store.commit('userInfoUpdate', {
+                        picture: this.$store.getters.user.picture + `?t=${Date.now()}`
+                    });
+                })
+        }
 
     }
 
     deleteImg(e) {
         this.prevProfile = '';
-        this.fileName ='';
+        this.fileName = '';
         e.stopPropagation()
 
     }
+
 }
 </script>
 

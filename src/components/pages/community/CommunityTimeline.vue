@@ -1,5 +1,5 @@
 <template>
-    <dl class="three-area">
+    <dl class="three-area" v-if="community">
         <dt>
             <div class="ta-channel-list">
                 <h2>Channel</h2>
@@ -7,15 +7,16 @@
                 <ul @click="isActive">
                     <li :class="{ active: isActive(-1) }"
                         class="channel"
+                        :style="`background: url('/img/1500_300_com_banner_default.png') center center / cover no-repeat;`"
                         @click="allPost">
                         <span>All Posts</span>
                     </li>
-                    <li v-for="channel in community.channels"
+                    <li v-for="channel in orderedChannelList"
                         class="channel"
                         :class="{ active: isActive(channel.id) }"
                         @click="openChannelTl(channel.id)"
                         :id="channel.id"
-                        :style="`background: url(${channel.profile_img || 'img/1500_300_com_channel_default.png'}) center center / cover no-repeat;`">
+                        :style="`background: url(${channel.profile_img || '/img/1500_300_com_channel_default.png'}) center center / cover no-repeat;`">
                         <span>{{ channel.title }}</span>
                     </li>
 
@@ -25,7 +26,11 @@
         </dt>
 
         <dd>
-            <Timeline :currPage="currPage" :key="generateKey()" :block="community.user_block"></Timeline>
+            <Timeline
+                :currPage="currPage"
+                :key="generateKey()"
+                :community="community"
+                @refetch="refetch"></Timeline>
         </dd>
 
         <!-- 커뮤니티 설명-->
@@ -65,17 +70,23 @@ import {mapGetters} from "vuex";
 import Timeline from "@/components/timeline/_timeline.vue";
 import {dateFormat} from "@/script/moment";
 
+import _ from 'lodash';
+
 @Component({
-    computed: {...mapGetters(["user"])},
-    components: {Post, Feed,  PulseLoader, Timeline},
+    computed: {
+        ...mapGetters(["user"]),
+        orderedChannelList: function () {
+            const channels = this.$store.getters.communityInfo.channels
+            return _.orderBy(channels, 'createdAt', 'asc')
+        }
+    },
+    components: {Post, Feed, PulseLoader, Timeline},
 })
 export default class CommunityTimeline extends Vue {
-    private communityId = this.$route.params.community_id;
-    private community: any = this.$store.getters.communityInfo;
-    private timeline: any = [];
-    private isAllPosts: boolean = false;
-
-    private channelId: any = -1;
+    communityId = this.$route.params.community_id;
+    community: any = this.$store.getters.communityInfo;
+    channelId: any = -1;
+    channelList = []
 
     //parameters
     private limit: number = 10;
@@ -85,32 +96,42 @@ export default class CommunityTimeline extends Vue {
 
     //state
     private isAddData: boolean = false;
-    private isLoading: boolean = false;
     private hasData: boolean = true;
 
     currPage: string = '';
 
-    private user!: any;
-    show = false;
-    private createdDate: string = dateFormat(this.community.createdAt);
+    user!: any;
+    createdDate: string = dateFormat(this.community.createdAt);
 
     mounted() {
-        this.isAllPosts = true;
         this.currPage = 'community';
 
         this.$store.dispatch("loginState")
             .then(() => {
-                this.communityFetch();
                 this.createdDate = dateFormat(this.community.createdAt);
-
-                this.$store.commit('currPage', {
-                    community: [{
-                        id: this.communityId
-                    }]
-                })
-
+                this.channelList = this.community.channels;
+                //@ts-ignore
+                if (this.orderedChannelList[0]) {
+                    this.$store.commit('currPage', {
+                        community: [{
+                            id: this.communityId,
+                            //@ts-ignore
+                            channel_id: this.orderedChannelList[0].id
+                        }]
+                    })
+                }
 
             })
+    }
+
+    beforeDestroy() {
+        this.$store.commit('currPage', null)
+    }
+
+    refetch() {
+        console.log('community timeline refetch')
+        this.$emit('refetch')
+        // this.communityFetch()
     }
 
     communityFetch() {
@@ -119,6 +140,7 @@ export default class CommunityTimeline extends Vue {
                 this.$store.commit('communityInfo', res);
                 this.community = res
                 this.createdDate = dateFormat(res.createdAt);
+
 
             })
             .catch((err: any) => {
@@ -134,7 +156,9 @@ export default class CommunityTimeline extends Vue {
         this.currPage = 'community';
         this.$store.commit('currPage', {
             community: [{
-                id: this.communityId
+                id: this.communityId,
+                //@ts-ignore
+                channel_id: this.orderedChannelList[0].id
             }]
         })
     }
@@ -148,7 +172,6 @@ export default class CommunityTimeline extends Vue {
         this.offset = 0;
         this.sort = '';
         this.media = '';
-        this.timeline = [];
         this.isAddData = false;
         this.hasData = false;
     }
@@ -160,17 +183,11 @@ export default class CommunityTimeline extends Vue {
 
 
     openEdit() {
-        if (this.user) {
-            this.show = true;
-        }
-        else {
+        if (!this.user) {
             this.$store.commit('needLogin', true)
         }
     }
 
-    closePostModal() {
-        (this.$refs.editModal as any).hide();
-    }
 
     openChannelTl(channel_id: string) {
         this.channelId = channel_id;
@@ -181,13 +198,11 @@ export default class CommunityTimeline extends Vue {
                 channel_id: channel_id
             }]
         })
-
-
     }
 
-
+    @Watch('$store.getters.currPage')
     generateKey() {
-        return this.currPage;
+        return Date.now();
     }
 
 
@@ -195,10 +210,6 @@ export default class CommunityTimeline extends Vue {
 </script>
 
 <style scoped>
-.channel {
-    background-color: #f39800;
-}
-
 .channel:hover {
     cursor: pointer;
 }
@@ -269,11 +280,12 @@ textarea {
     justify-content: space-between;
 }
 
-.channel{
-  opacity: 50%;
+.channel {
+    opacity: 50%;
 }
-.channel.active,.channel:hover{
-  opacity: 100%;
+
+.channel.active, .channel:hover {
+    opacity: 100%;
 }
 
 </style>

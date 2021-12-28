@@ -1,20 +1,29 @@
 <template>
     <dl class="three-area">
         <dt>
-            <div class="ta-channel-list">
-                <h2>Game</h2>
-                <ul v-if="games && games.length > 0">
-                    <li
-                        @click="moveGameChannel(game.pathname)"
-                        :style="`background:url(${
+            <div class="ta-game-list">
+                <dl>
+                    <dt>Game</dt>
+                </dl>
+                <template v-if="games && games.length > 0 ">
+                    <ul>
+                        <li
+                            @click="moveGameChannel(game.pathname)"
+                            v-for="game in games">
+                            <p :style="`background:url(${
                             game.url_thumb_webp ||
                             game.picture ||
                             'img/default.png'
-                        }) center; background-size:cover;`" v-for="game in games">
-                        <span>{{ game.title }}</span>
-                    </li>
+                        }) center; background-size:cover;`"></p>
+                            <h2 style="text-overflow: ellipsis; overflow: hidden">{{ game.title }}</h2>
+                        </li>
 
-                </ul>
+                    </ul>
+
+                    <div v-if="totalGameCnt > 5">
+                        <router-link :to="`/channel/${userUid}/games`" class="btn-default-samll w100p">더보기</router-link>
+                    </div>
+                </template>
                 <ul v-else class="no-game">
                     <li>등록된 게임이 없습니다.</li>
                 </ul>
@@ -45,7 +54,7 @@
                             </dt>
                             <dd>
                                 <h2>{{ community.name }}</h2>
-                                <h3><i class="uil uil-chat-bubble-user"></i>{{ community.member_cnt }}</h3>
+                                <h3><i class="uil uil-chat-bubble-user"></i>{{ community.member_cnt }} 명</h3>
                             </dd>
                         </dl>
                     </template>
@@ -112,11 +121,11 @@ import {AxiosError, AxiosResponse} from "axios";
     },
 })
 export default class UserPage extends Vue {
-    private userUid = this.$route.params.channel_id;
-    private games: any[] = [];
-    private totalGameCnt = 0;
-    private user!: any;
-    private communityList: {
+    userUid = this.$route.params.channel_id;
+    games: any[] = [];
+    totalGameCnt = 0;
+    user!: any;
+    communityList: {
         id: number;
         name: string;
         profile_img: string;
@@ -132,7 +141,6 @@ export default class UserPage extends Vue {
     }
 
     gameListFetch() {
-        // this.$api.gameList()
         this.$api.userChannel(this.userUid)
             .then((res: any) => {
                 const {target} = res;

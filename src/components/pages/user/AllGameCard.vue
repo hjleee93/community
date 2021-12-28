@@ -20,9 +20,6 @@
                 game.url_thumb ||
                 '../../../assets/images/default.png' + ') center no-repeat', 'background-size' : 'cover'}"></div>
                 <div class="cp-info">
-                    <h3>게임게임게임</h3>
-                    <p>@zempieeeee</p>
-                    <p> {{ game.count_heart }}</p>
                     <p>{{ game.title }}</p>
                     <p> Version {{ game.version }}</p>
                 </div>
@@ -45,7 +42,7 @@ import {AxiosError, AxiosResponse} from "axios";
     computed: {...mapGetters(["user"])},
     components: {},
 })
-export default class AllGameList extends Vue {
+export default class AllGameCard extends Vue {
     private gameList: Game[] = [];
     private tlUser: any = "";
     private user!: User;

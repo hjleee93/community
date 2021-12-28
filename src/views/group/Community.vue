@@ -10,11 +10,11 @@
                             <h3>Member</h3>
                         </li>
                         <li>
-                            <h2 class="cursor" @click="movePage('timeline')">{{ postCnt }}</h2>
+                            <h2 class="cursor" @click="movePage('timeline')">{{ community.posts_cnt }}</h2>
                             <h3>Posts</h3>
                         </li>
                         <li>
-                            <h2>{{ postCnt }}</h2>
+                            <h2>{{ community.visit_cnt }}</h2>
                             <h3>Visits</h3>
                         </li>
                     </ul>
@@ -30,8 +30,8 @@
                     </h2>
                     <h3> {{ community.description }}</h3>
                 </dd>
-                <dt v-if="user">
-                    <SubscribeBtn :community="community" @unsubscribe="unsubscribe"/>
+                <dt >
+                    <SubscribeBtn :community="community" @unsubscribe="unsubscribe" @refetch="refetch" />
                     <!--                    <dropdown-menu :overlay="false" class="vic-more-dropdown">-->
                     <!--                        <router-link to="#" class="btn-circle-none pt6" slot="trigger"><i-->
                     <!--                            class="uil uil-ellipsis-h"></i></router-link>-->
@@ -89,7 +89,7 @@
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'sound' ? 'active' : ''">
                     <router-link :to="`/community/${community.id}/timeline?media=sound`">
-                        <p><i class="uil uil-layers"></i></p>
+                        <p><i class="uil uil-music"></i></p>
                         <h2>오디오</h2>
                     </router-link>
                 </swiper-slide>
@@ -97,9 +97,10 @@
                 <div class="swiper-button-next" slot="button-next"></div>
             </swiper>
         </div>
-        <router-view></router-view>
+        <router-view @refetch="refetch" :key="community.is_subscribed"></router-view>
         <modal :clickToClose="false" class="modal-area-type" name="deleteConfirm" width="90%" height="auto"
                :maxWidth="380"
+               :scrollable="true"
                :adaptive="true">
             <div class="modal-alert">
                 <dl class="ma-header">
@@ -109,7 +110,7 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2> 해당 커뮤니티를 정말 탈퇴하시겠습니까? </h2>
+                    <h2>커뮤니티에서 탈퇴하시겠습니까?<br/>※ 커뮤니티 탈퇴시 작성한 포스팅은 자동으로 삭제되지 않습니다.</h2>
                     <div>
                         <button class="btn-default w48p" @click="yesUnsubscribe">네</button>
                         <button class="btn-gray w48p" @click="$modal.hide('deleteConfirm')">아니오</button>
@@ -200,10 +201,12 @@ export default class Community extends Vue {
                 this.$modal.hide('deleteConfirm')
             })
     }
+
     fetch() {
         this.$api.communityInfo(this.$route.params.community_id)
             .then((res: any) => {
                 this.community = res
+                this.$store.commit('communityInfo', res);
                 if (this.community.banner_img) {
                     this.bannerImg = this.community.banner_img;
                 }
@@ -222,26 +225,15 @@ export default class Community extends Vue {
             })
 
     }
-
-
-    subscribe() {
-        this.$api.subscribe({user_id: this.user.id, community_id: this.$route.params.community_id})
-            .then((res: AxiosResponse) => {
-                console.log(res)
-            }).catch((err: AxiosError) => {
-            if (err.message) {
-                alert(err.message)
-            }
-        })
+    refetch(){
+        console.log('community header refetch')
+        this.fetch();
     }
+
 
 
     setting() {
         // (this.$refs.dropbox as HTMLElement).click();
-    }
-
-    joined() {
-        this.fetch();
     }
 
     currPage(routeName: string, query?: string) {

@@ -73,6 +73,17 @@ html {
 .hl-select-box .vs__clear {display:none;}
 .hl-select-box .vs__open-indicator {fill:#999;}
 
+/* Vue-select - 대시보드 선택 */
+.sdc-select-box .vs__dropdown-toggle {display:flex; align-items:center; width:150px; height:38px; padding:0 5px 2px 5px; border:#e5e5e5 1px solid !important; border-radius:5px !important;}
+.sdc-select-box .vs__selected-options {display:flex; align-items:center; flex-wrap:nowrap;}
+.sdc-select-box .vs__selected {line-height:13px !important;}
+.sdc-select-box .vs__dropdown-menu {min-width:120px !important; margin-top:10px; padding:10px; border-radius:10px;}
+.sdc-select-box .vs__dropdown-menu li {padding:7px; border-radius:4px;}
+.sdc-select-box .vs__dropdown-menu li:hover {background:#F97316;}
+.sdc-select-box .vs__dropdown-option--highlight {background:#F97316;}
+.sdc-select-box .vs__clear {display:none;}
+.sdc-select-box .vs__open-indicator {fill:#999;}
+
 
 
 

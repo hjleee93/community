@@ -7,6 +7,7 @@
                 <dt>
                     <ul>
                         <li>
+
                             <h2 class="cursor" @click="movePage('timeline')">{{ postCnt }}</h2>
                             <h3>Posts</h3>
                         </li>
@@ -21,10 +22,12 @@
                     </ul>
                 </dt>
                 <dd>
-                    <div
-                        :style="`background:url(${userInfo.picture ||  '../../assets/images/zempy.png' }) center center / cover no-repeat; background-size:cover;`">
-                        <!--                        <span></span>-->
-                    </div>
+                    <UserAvatar :key='userInfo.id' :user="userInfo" :tag="'div'"></UserAvatar>
+
+                    <!--                    <div-->
+                    <!--                        :style="`background:url(${userInfo.picture ||  '../../assets/images/zempy.png' }) center center / cover no-repeat; background-size:cover;`">-->
+                    <!--                        &lt;!&ndash;                        <span></span>&ndash;&gt;-->
+                    <!--                    </div>-->
                     <h2>
                         {{ userInfo.name }}
                     </h2>
@@ -75,11 +78,13 @@
                         <h2>동영상</h2>
                     </router-link>
                 </swiper-slide>
-                <!--                <swiper-slide>-->
-                <!--                    <p><i class="uil uil-layers"></i></p>-->
-                <!--                    <h2>포트폴리오</h2>-->
-                <!--                </swiper-slide>-->
-                <swiper-slide :class="$route.name === 'AllGameList' ? 'active' : ''">
+                <swiper-slide :class="$route.query.media === 'sound' ? 'active' : ''">
+                    <router-link :to="`/channel/${userInfo.uid}/timeline?media=sound`">
+                        <p><i class="uil uil-music"></i></p>
+                        <h2>오디오</h2>
+                    </router-link>
+                </swiper-slide>
+                <swiper-slide :class="$route.name === 'AllGameCard' ? 'active' : ''">
                     <router-link :to="`/channel/${userInfo.uid}/games`">
                         <p><i class="uil uil-map-pin-alt"></i></p>
                         <h2>게임</h2>
@@ -114,6 +119,7 @@ import {User} from "@/types";
 import {AxiosError, AxiosResponse} from "axios";
 import FollowBtn from "@/components/user/_followBtn.vue";
 import {Swiper, SwiperSlide} from "vue-awesome-swiper";
+import UserAvatar from "@/components/user/_userAvatar.vue";
 
 @Component({
     computed: {...mapGetters(["user"])},
@@ -121,12 +127,13 @@ import {Swiper, SwiperSlide} from "vue-awesome-swiper";
         FollowBtn,
         Swiper,
         SwiperSlide,
+        UserAvatar
     },
 })
 export default class UserHeader extends Vue {
-    private userInfo: any = [];
-    private postCnt: number = 0;
-    private user!: User;
+    userInfo: any = [];
+    postCnt: number = 0;
+    user!: User;
 
     profileImg: string = '';
     TMSswiperOption = {

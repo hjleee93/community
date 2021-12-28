@@ -6,6 +6,15 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Raleway:100,200,300,400,500,600,700,800,900');
 
 
+/* 잘난체 - 국문 */
+@font-face {
+	font-family: 'Jalnan';
+	font-style: normal;
+	font-weight: 400;
+	src: local('※'), url('../../assets/fonts/JalnanOTF00.woff') format('woff');
+	}
+
+
 /* 본고딕 - 국문 */
 @font-face {
 	font-family: 'NotoSansKR';

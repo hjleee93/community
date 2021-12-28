@@ -4,32 +4,33 @@
             <h2>'{{ keyword }}' <span>검색결과</span></h2>
         </div>
 
-<!--        <div class="tab-search-swiper">-->
-<!--            <swiper class="swiper-area" :options="TSSswiperOption">-->
-<!--                <swiper-slide>-->
-<!--                    <router-link to="#" class="active">ALL</router-link>-->
-<!--                </swiper-slide>-->
-<!--                <swiper-slide>-->
-<!--                    <router-link to="#">Communities-->
-<!--                        &lt;!&ndash;                        <span>10</span>&ndash;&gt;-->
-<!--                    </router-link>-->
-<!--                </swiper-slide>-->
-<!--                <swiper-slide>-->
-<!--                    <router-link to="#">Users</router-link>-->
-<!--                </swiper-slide>-->
-<!--                <swiper-slide>-->
-<!--                    <router-link to="#">Games</router-link>-->
-<!--                </swiper-slide>-->
-<!--            </swiper>-->
-<!--        </div>-->
-        <dl class="area-title">
+        <!--        <div class="tab-search-swiper">-->
+        <!--            <swiper class="swiper-area" :options="TSSswiperOption">-->
+        <!--                <swiper-slide>-->
+        <!--                    <router-link to="#" class="active">ALL</router-link>-->
+        <!--                </swiper-slide>-->
+        <!--                <swiper-slide>-->
+        <!--                    <router-link to="#">Communities-->
+        <!--                        &lt;!&ndash;                        <span>10</span>&ndash;&gt;-->
+        <!--                    </router-link>-->
+        <!--                </swiper-slide>-->
+        <!--                <swiper-slide>-->
+        <!--                    <router-link to="#">Users</router-link>-->
+        <!--                </swiper-slide>-->
+        <!--                <swiper-slide>-->
+        <!--                    <router-link to="#">Games</router-link>-->
+        <!--                </swiper-slide>-->
+        <!--            </swiper>-->
+        <!--        </div>-->
+        <dl class="area-title" v-if="memberList && memberList.length > 0">
             <dt>Users <span>{{ memberList && memberList.length }}</span></dt>
         </dl>
         <ul class="card-follow" v-if="memberList">
             <li v-for="member in memberList" :key="member.id" @click="userPage(member.uid)">
                 <div class="cf-img"></div>
-                <!--                todo: zempy s3에 올려서 url 따서 넣기-->
-                <p :style="{'background' : 'url(' + member.picture || 'img/zempy.png' + ') center center no-repeat', 'background-size' : 'cover'}"></p>
+                <UserAvatar :user="member" :tag="'p'"></UserAvatar>
+
+                <!--                <p :style="{'background' : 'url(' + member.picture || '../../assets/images/zempy.png' + ') center center no-repeat', 'background-size' : 'cover'}"></p>-->
                 <div class="cf-info">
                     <h3>{{ member.name }}</h3>
                     <p></p>
@@ -52,8 +53,24 @@
             </li>
         </ul>
 
+<!--        <dl class="area-title">-->
+<!--            <dt>Communities <span>{{ communityList && communityList.length }}</span></dt>-->
+<!--        </dl>-->
+<!--        <div class="card-follow">-->
+<!--            <community-card-->
+<!--                @refetch="refetch"-->
+<!--                data-aos="zoom-in"-->
+<!--                v-for="community in communityList"-->
+<!--                :key="community.id"-->
+<!--                :community="community"-->
+<!--            >-->
+<!--                <template v-slot:subBtn>-->
+<!--                    <SubscribeBtn @refetch="refetch" class="sub-btn" :community="community" @unsubscribe="unsubscribe"/>-->
+<!--                </template>-->
+<!--            </community-card>-->
+<!--        </div>-->
 
-        <dl class="area-title">
+        <dl class="area-title" v-if="games && games.length > 0">
             <dt>Games <span>{{ games && games.length }}</span></dt>
         </dl>
 
@@ -94,7 +111,7 @@
         <div class="ta-search-post" v-if="posts">
             <ul class="ta-post">
                 <div v-for="feed in posts" :key="feed.id">
-<!--                    {{feed}}-->
+                    <!--                    {{feed}}-->
                     <Feed :feed="feed"
                     ></Feed>
                 </div>
@@ -171,6 +188,9 @@ import {AxiosError} from "axios";
 
 import Comment from "@/components/timeline/Comment.vue";
 import CommentInput from "@/components/comment/_commentInput.vue";
+import UserAvatar from "@/components/user/_userAvatar.vue";
+import CommunityCard from "@/components/community/_communityCard.vue";
+import SubscribeBtn from "@/components/community/_subscribeBtn.vue";
 
 @Component({
     components: {
@@ -179,7 +199,9 @@ import CommentInput from "@/components/comment/_commentInput.vue";
         Swiper,
         SwiperSlide,
         Comment,
-        CommentInput
+        CommentInput,
+        UserAvatar,
+        CommunityCard, SubscribeBtn
 
     },
 })
@@ -190,6 +212,7 @@ export default class SearchPage extends Vue {
     posts: any = [];
     games: any = [];
     memberList: any = [];
+    communityList: any = [];
     keyword: string | (string | null)[] = '';
 
     limit: number = 5;
@@ -233,6 +256,7 @@ export default class SearchPage extends Vue {
 
         this.memberList = this.$store.getters.researchData.users;
         this.posts = this.$store.getters.researchData.posts;
+        this.communityList = this.$store.getters.researchData.community;
         // const result = await this.$api.search(this.query, this.type);
         // this.posts = result.posts;
         this.games = this.$store.getters.researchData.games;
@@ -251,17 +275,16 @@ export default class SearchPage extends Vue {
 
         this.$api.search(obj)
             .then((res: any) => {
-                this.memberList = res.users
-                this.games = res.games
-                this.posts = res.posts
+                this.memberList = res.users;
+                this.communityList = res.community;
+                this.games = res.games;
+                this.posts = res.posts;
 
             })
             .catch((err: any) => {
 
             })
     }
-
-
 
 
     toGamePage(gamePath: string, gameId: number) {

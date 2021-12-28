@@ -5,36 +5,42 @@
                 <router-view/>
             </vue-page-transition>
         </component>
-        <modal
-            name="needLogin"
-            centered
-            classes="vue-modal"
-            no-close-on-backdrop
-        >
-            <slot name="modalContent"></slot>
-            <div class="pw-reset">
-                <div class="pr-title">
-                    <h3>로그인</h3>
+
+            <modal :clickToClose="false" class="modal-area-type" name="needLogin" width="90%" height="auto" :maxWidth="380"
+                   :adaptive="true"
+                   :scrollable="true">
+                <div class="modal-alert">
+                    <dl class="ma-header">
+                        <dt>안내</dt>
+                        <dd>
+                            <button @click="$modal.hide('needLogin')"><i class="uil uil-times"></i></button>
+                        </dd>
+                    </dl>
+                    <div class="ma-content">
+                        <h2> 회원만 이용가능한 서비스입니다.<br/>로그인 하시겠습니까?</h2>
+                        <div>
+                            <button class="btn-default" style="width: 100%" @click="moveLogin">로그인</button>
+                        </div>
+                    </div>
 
                 </div>
-                <div class="pr-content">
-                    <div>로그인 하신 후 이용하실 수 있습니다</div>
-                    <p><a @click="moveLogin" class="btn-default-big">로그인하기</a></p>
-                </div>
-            </div>
-
-
         </modal>
+
+
+
+
     </div>
 </template>
 
 <script lang="ts">
-import {Component, Vue} from "vue-property-decorator";
+import {Component, Vue, Watch} from "vue-property-decorator";
 
 import MetaSetting from "@/plugins/meta"
+import {mapGetters} from "vuex";
 
 @Component({
     components: {},
+
 })
 export default class App extends Vue {
     // metaInfo:{
@@ -59,6 +65,8 @@ export default class App extends Vue {
         this.$modal.hide('needLogin')
         this.$router.push('/login')
     }
+
+
 
 
 }
@@ -91,7 +99,7 @@ export default class App extends Vue {
 
 .no-drag {
     -ms-user-select: none;
-    -moz-user-select: -moz-none;
+    -moz-user-select: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
     user-select: none;
@@ -133,12 +141,15 @@ export default class App extends Vue {
 }
 
 //header
-.header-search-dropdown .v-dropdown-menu__container {min-width:260px; margin:30px 0 0 -321px !important;}
+.header-search-dropdown .v-dropdown-menu__container {
+    min-width: 260px;
+    margin: 30px 0 0 -321px !important;
+}
+
 .vue-modal {
     border-radius: 20px !important;
     max-height: 500px !important;
 }
-
 .post-modal {
     height: 418px !important;
     border-radius: 10px !important;
@@ -151,8 +162,45 @@ export default class App extends Vue {
 
 //tiptap
 
-.tapl-content{
+.tapl-content {
 
+    h1{
+        display: block !important;
+        font-size: 2em !important;
+        margin-block-start: 0.67em !important;
+        margin-block-end: 0.67em !important;
+        margin-inline-start: 0px !important;
+        margin-inline-end: 0px !important;
+        font-weight: bold !important;
+    }
+    .audio-wrapper {
+        margin: 20px 20px 0 20px;
+        display: flex;
+        align-items: center;
+        border-radius: 5px;
+        background: #f5f5f5;
+        &.ProseMirror-selectednode {
+            outline: 3px solid #F97316;
+        }
+    }
+    .iframe-wrapper {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: 300px;
+
+        &.ProseMirror-selectednode {
+            outline: 3px solid #F97316 !important;
+        }
+
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+        }
+    }
     pre {
         overflow: auto;
         background: #0D0D0D !important;
@@ -170,8 +218,79 @@ export default class App extends Vue {
         background: none !important;
         font-size: .8rem !important;
     }
+    ul {
+        padding: 0 1.5rem;
+        list-style-type: disc;
+    }
+
+    ol {
+        padding: 0 1.5rem;
+        list-style-type: decimal;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        line-height: 1.1;
+    }
+
+    code {
+        background-color: rgba(#616161, 0.1);
+        color: #616161;
+    }
+
+    pre {
+        overflow: auto;
+        background: #0D0D0D;
+        color: #FFF;
+        font-family: 'JetBrainsMono', monospace;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+
+        code {
+            color: inherit;
+            padding: 0;
+            background: none;
+            font-size: 0.8rem;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    hr {
+        margin: 1rem 0;
+    }
+
+    blockquote {
+        padding-left: 1rem;
+        border-left: 2px solid rgba(#0D0D0D, 0.1);
+    }
 }
-.editor-container {
+.editor-container.blog {
+    .ProseMirror {
+        > * + * {
+            margin-top: 0.75em;
+        }
+        height: 75vh;
+    }
+    h1{
+        display: block;
+        font-size: 2em;
+        margin-block-start: 0.67em;
+        margin-block-end: 0.67em;
+        margin-inline-start: 0px;
+        margin-inline-end: 0px;
+        font-weight: bold;
+    }
+}
+
+.editor-container, {
     height: 100%;
     text-align: left;
     padding: 15px;
@@ -181,8 +300,17 @@ export default class App extends Vue {
             margin-top: 0.75em;
         }
 
+
         height: 148px;
         overflow: auto;
+
+        p.is-editor-empty:first-child::before {
+            content: attr(data-placeholder);
+            float: left;
+            color: #adb5bd;
+            pointer-events: none;
+            height: 0;
+        }
 
         pre {
             overflow: auto;
@@ -199,9 +327,15 @@ export default class App extends Vue {
             background: none;
             font-size: .8rem;
         }
-        ul,
+
+        ul {
+            padding: 0 1.5rem;
+            list-style-type: disc;
+        }
+
         ol {
-            padding: 0 1rem;
+            padding: 0 1.5rem;
+            list-style-type: decimal;
         }
 
         h1,
@@ -257,32 +391,32 @@ export default class App extends Vue {
     .iframe-wrapper {
         position: relative;
         padding-bottom: math.div(100, 16) * 9%;
-        height: 0;
         overflow: hidden;
-        width: 100%;
-        height: auto;
 
         &.ProseMirror-selectednode {
-            outline: 3px solid #68cef8;
+            outline: 3px solid #F97316;
         }
 
         iframe {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100% !important;
+            height: 100% !important;
         }
     }
 
     .audio-wrapper {
-        position: relative;
-        overflow: hidden;
-        width: 360px;
-        height: 100px;
+        width: 500px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
 
+        padding: 20px;
+        border-radius: 5px;
+        background: #f5f5f5;
         &.ProseMirror-selectednode {
-            outline: 3px solid #68cef8;
+            outline: 3px solid #F97316;
         }
     }
 }

@@ -2,12 +2,12 @@
     <div class="content min-vh-100" v-if="user">
         <!-- 비주얼영역 - 메뉴 -->
         <div class="visual-menu"
-             :style="{'background' : 'url(' + require('../../assets/images/visual_top_img.png') + ') center no-repeat', 'background-size' : 'cover'}">
+             :style="{'background' : 'url(' + require('../../assets/images/1200_240_setting.png') + ') center no-repeat', 'background-size' : 'cover'}">
             <p class="title"> Settings</p>
             <swiper class="swiper-area" :options="VMswiperOption">
                 <swiper-slide >
                     <router-link :class="
-                    $route.name === 'UserSettings' ||
+                    $route.name === 'UserGeneralSetting.vue' ||
                     $route.name === 'Leave'
                         ? 'active'
                         : ''

@@ -26,21 +26,33 @@ export default class ImageUploaderBtn extends Vue {
     maxFileNum: number = 5;
 
     uploadFile() {
-        if (this.$store.getters.audioArr.length > 0 || this.$store.getters.videoArr.file) {
-            this.$modal.show('alertAttrModal')
+        if (this.activeTab === 'SNS') {
+            if (this.$store.getters.audioArr.length > 0 || this.$store.getters.videoArr.file) {
+                this.$modal.show('alertAttrModal')
+
+            }else{
+                (this.$refs.image as HTMLElement).click();
+            }
         }
         else {
             (this.$refs.image as HTMLElement).click();
+
         }
+
     }
 
     onSelectFile() {
+
         const input: any = this.$refs.image;
         const formData = new FormData();
-        console.log(this.activeTab)
 
         if (this.activeTab === 'SNS') {
-            onSelectFile(input.files, this.maxFileNum, 15,'imgArr')
+            if (this.$store.getters.imgArr.length < 5) {
+                onSelectFile(input.files, this.maxFileNum, 15, 'imgArr')
+            }
+            else {
+                alert(`최대 파일 개수는 ${this.maxFileNum}개입니다.`)
+            }
         }
         else if (this.activeTab === 'BLOG') {
             const files = input.files;
@@ -56,11 +68,15 @@ export default class ImageUploaderBtn extends Vue {
             this.$api.fileUploader(formData)
                 .then((res: any) => {
                     this.$store.commit('blogImgArr', res)
-                    console.log(res)
                 })
-            // console.log('blogImgArr', this.$store.getters.blogImgArr)
+                .catch((err:any)=>{
+
+                })
+
+            console.log('blogImgArr', this.$store.getters.blogImgArr)
         }
 
+        (this.$refs.image as any).value = '';
     }
 }
 </script>

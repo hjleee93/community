@@ -1,6 +1,5 @@
 <template>
     <div>
-
         <dl class="area-title">
             <dt>Followers <span>{{ followingList.length }}</span></dt>
         </dl>

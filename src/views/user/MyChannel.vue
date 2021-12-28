@@ -2,7 +2,7 @@
     <div class="content" v-if="user">
         <!-- 비주얼영역 - 정보 -->
         <div class="visual-info-center"
-             :style="{'background' : 'url(' + require('../../assets/images/visual_top_img.png') + ') center no-repeat', 'background-size' : 'cover'}">
+             :style="{'background' : 'url(' + require('../../assets/images/1200_380_my_channel.png') + ') center no-repeat', 'background-size' : 'cover'}">
 
         </div>
         <!-- 비주얼영역 - 정보 끝 -->
@@ -48,7 +48,7 @@
                 </swiper-slide>
                 <swiper-slide :class="media=== 'sound' ? 'active' : ''">
                     <a @click="media='sound'">
-                        <p><i class="uil uil-layers"></i></p>
+                        <p><i class="uil uil-music"></i></p>
                         <h2>오디오</h2>
                     </a>
                 </swiper-slide>
@@ -66,32 +66,34 @@
 
 
         <!-- 3단영역 -->
-        <AllGameList v-if="media === 'game'" ></AllGameList>
-
+        <AllGameCard v-if="media === 'game'"></AllGameCard>
         <FollowerList v-else-if="media === 'followers'" :userId="user.id"></FollowerList>
         <FollowingList v-else-if="media === 'followings'" :userId="user.id"></FollowingList>
         <dl class="three-area" v-else>
             <dt>
                 <div class="ta-myinfo">
-                    <p :style="`background:url(${user.picture || 'img/zempy.png'}) center; background-size:cover;`">
+                    <UserAvatar :user="user" :tag="'p'"></UserAvatar>
+<!--                    <p :style="`background:url(${user.picture || 'img/zempy.png'}) center; background-size:cover;`">-->
                         <!--                        <span><i class="uil uil-camera"></i></span>-->
-                    </p>
+<!--                    </p>-->
                     <h2>{{ user.name }}</h2>
                     <!--                    <h3>Admin</h3>-->
                     <ul>
                         <li @click="media = ''">
-                            <p style="background:#FEB100; cursor: pointer"><i class="uil uil-comment-chart-line"></i></p>
+                            <p style="background:#FEB100; cursor: pointer"><i class="uil uil-comment-chart-line"></i>
+                            </p>
                             <h2>{{ postCnt }}</h2>
                             <h3>Posts</h3>
                         </li>
                         <li @click="media = 'followings'">
+
                             <p style="background:#5D5FFE;cursor: pointer"><i class="uil uil-user-plus"></i></p>
-                            <h2>{{ user.profile && user.profile.following_cnt }}</h2>
+                            <h2>{{ user.profile && user.following_cnt }}</h2>
                             <h3>Followings</h3>
                         </li>
                         <li @click="media = 'followers'">
                             <p style="background:#33E4CE;cursor: pointer"><i class="uil uil-users-alt"></i></p>
-                            <h2>{{ user.profile && user.profile.followers_cnt }}</h2>
+                            <h2>{{ user.profile && user.follower_cnt }}</h2>
                             <h3>Followers</h3>
                         </li>
                     </ul>
@@ -127,7 +129,7 @@
                 <!--                    <div><a href="#" class="btn-default-samll w100p">더보기</a></div>-->
                 <!--                </div>-->
             </dt>
-            <dd>
+            <dd >
                 <Timeline :currPage="'user'" :key="media" :mediaType='media'></Timeline>
             </dd>
             <dt>
@@ -201,25 +203,27 @@ import {Component, Prop, Vue} from "vue-property-decorator";
 import {mapGetters} from "vuex";
 import {AxiosError} from "axios";
 import Timeline from "@/components/timeline/_timeline.vue";
-import AllGameList from "@/components/pages/user/AllGameList.vue";
+import AllGameCard from "@/components/pages/user/AllGameCard.vue";
 import FollowerList from "@/components/pages/user/FollowerList.vue";
 import FollowingList from "@/components/pages/user/FollowingList.vue";
+import UserAvatar from "@/components/user/_userAvatar.vue";
 
 @Component({
     components: {
         Swiper,
         SwiperSlide,
         Timeline,
-        AllGameList,
+        AllGameCard,
         FollowerList,
-        FollowingList
+        FollowingList,
+        UserAvatar
     },
     computed: {...mapGetters(["user"])},
 })
 export default class MyChannel extends Vue {
     TMSswiperOption = {
         slidesPerView: 'auto',
-        spaceBetween: '0.4%',
+        spaceBetween: '0.2%',
         navigation: {
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev'
@@ -249,12 +253,18 @@ export default class MyChannel extends Vue {
 
     mounted() {
         this.$store.dispatch("loginState")
-            .then(() => {
-                this.postCntFetch(this.user.id)
-                this.joinedComFetch(this.user.id)
+            .then((res: any) => {
+                console.log('res', res)
+                if (res === 4) {
+                    this.postCntFetch(this.user.id)
+                    this.joinedComFetch(this.user.id)
+                }
+                else {
+                    this.$router.push('/login')
+                }
             })
-
     }
+
 
     postCntFetch(userId: number) {
         this.$api.userPostCnt(userId)
@@ -275,7 +285,8 @@ export default class MyChannel extends Vue {
 
             })
     }
-    moveCommunity(id:string){
+
+    moveCommunity(id: string) {
         this.$router.push(`/community/${id}/timeline`)
     }
 

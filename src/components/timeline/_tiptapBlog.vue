@@ -1,15 +1,15 @@
 <template>
-    <div style="height: 200px">
+    <div style="height: 80vh">
         <editor-content
             :editor="editor"
-            class="editor-container"
-            v-model="postingText"
+            class="editor-container blog"
         />
         <div class="character-count">
             <p>{{ charCnt }}/{{ limit }}</p>
         </div>
     </div>
 </template>
+
 
 <script lang="ts">
 import {Component, Prop, Vue, Watch} from "vue-property-decorator";
@@ -52,7 +52,7 @@ export default class TiptapBlog extends Vue {
     //todo: imgPreviewArr 수정시사용하는지 확인
     private imgPreviewArr: any[] = [];
     private postingText: string = "";
-    private editor!: Editor;
+    private editor: Editor|null = null;
     private user!: any;
     private limit: number = 5000;
     private charCnt: number = 0;
@@ -75,6 +75,7 @@ export default class TiptapBlog extends Vue {
                     lowlight,
                 }),
                 Placeholder.configure({
+                    emptyEditorClass: 'is-editor-empty',
                     placeholder: "멋진 생각을 공유해주세요.",
                 }),
                 CharacterCount.configure({
@@ -83,7 +84,7 @@ export default class TiptapBlog extends Vue {
                 Link,
                 Code,
                 Document,
-                Paragraph,
+                // Paragraph,
                 Text,
                 Highlight,
                 Typography,
@@ -91,210 +92,211 @@ export default class TiptapBlog extends Vue {
                 Video,
                 Iframe,
                 Audio,
-                Hashtag.configure({
-                    HTMLAttributes: {
-                        class: "hashtag",
-                    },
-                    renderLabel({options, node}) {
-                        return `${options.suggestion.char}${
-                            node.attrs.label ?? node.attrs.id
-                        }`;
-                    },
-                    suggestion: {
-                        //@ts-ignore
-                        items: (query) => {
-                            if (query.length > 0) {
-                                return this.hashTagListTest
-                                    .filter((item) =>
-                                        item
-                                            .toLowerCase()
-                                            .startsWith(query.toLowerCase())
-                                    )
-                                    .slice(0, 10);
-                            }
-                        },
-                        render: () => {
-                            let component;
-                            let popup;
 
-                            return {
-                                onStart: (props) => {
-                                    component = new VueRenderer(HashtagList, {
-                                        parent: this,
-                                        propsData: props,
-                                    });
-
-                                    popup = tippy("body", {
-                                        getReferenceClientRect:
-                                        props.clientRect,
-                                        appendTo: () => document.body,
-                                        content: component.element,
-                                        showOnCreate: true,
-                                        interactive: false,
-                                        trigger: "manual",
-                                        placement: "bottom-start",
-                                    });
-                                },
-                                onUpdate: (props) => {
-                                    component.updateProps(props);
-                                    if (props.items && props.items.length > 0) {
-                                        this.hasTagSuggestion = true;
-                                    }
-                                    else {
-                                        this.hasTagSuggestion = false;
-                                    }
-                                    popup[0].setProps({
-                                        getReferenceClientRect:
-                                        props.clientRect,
-                                    });
-                                },
-                                onKeyDown: (props) => {
-                                    // console.log("onKeyDown", props);
-                                    if (
-                                        props.event.key === "Enter" &&
-                                        !this.hasTagSuggestion &&
-                                        component.ref?._props.query
-                                    ) {
-                                        let id = {
-                                            id: component.ref?._props.query,
-                                        };
-
-                                        return component.ref?._props.editor
-                                            .chain()
-                                            .focus()
-                                            .insertContentAt(
-                                                component.ref?._props.range,
-                                                [
-                                                    {
-                                                        type: "hashtag",
-                                                        attrs: id,
-                                                    },
-                                                    {
-                                                        type: "text",
-                                                        text: " ",
-                                                    },
-                                                ]
-                                            )
-                                            .run();
-                                    }
-                                    else {
-                                        return component.ref?.onKeyDown(props);
-                                    }
-                                },
-                                onExit() {
-
-                                    popup[0].destroy();
-                                    component.destroy();
-                                },
-                            };
-                        },
-                    },
-                }),
-                Mention.configure({
-                    HTMLAttributes: {
-                        class: "mention",
-                    },
-                    suggestion: {
-                        items: (query) => {
-                            return this.mentionList
-                                .filter((item) =>
-                                    item.nickname
-                                        .toLowerCase()
-                                        .startsWith(query.toLowerCase())
-                                )
-                                .slice(0, 10);
-                        },
-                        render: () => {
-                            let component;
-                            let popup;
-
-                            return {
-                                onStart: (props) => {
-                                    component = new VueRenderer(MentionList, {
-                                        parent: this,
-                                        propsData: props,
-                                    });
-
-                                    popup = tippy("body", {
-                                        getReferenceClientRect:
-                                        props.clientRect,
-                                        appendTo: () => document.body,
-                                        content: component.element,
-                                        showOnCreate: true,
-                                        interactive: true,
-                                        trigger: "manual",
-                                        placement: "bottom-start",
-                                    });
-                                    if (props.items && props.items.length > 0) {
-                                        this.hasMentionSuggestion = true;
-                                    }
-                                    else {
-                                        this.hasMentionSuggestion = false;
-                                    }
-                                },
-                                onUpdate: (props) => {
-                                    component.updateProps(props);
-                                    if (props.items && props.items.length > 0) {
-                                        this.hasMentionSuggestion = true;
-                                    }
-                                    else {
-                                        this.hasMentionSuggestion = false;
-                                    }
-
-                                    popup[0].setProps({
-                                        getReferenceClientRect:
-                                        props.clientRect,
-                                    });
-                                },
-                                onKeyDown: (props) => {
-                                    if (
-                                        props.event.key === "Enter" &&
-                                        !this.hasMentionSuggestion &&
-                                        component.ref?._props.query
-                                    ) {
-                                        let id = {
-                                            id: component.ref?._props.query,
-                                        };
-                                        this.$store.commit(
-                                            "userTagList",
-                                            component.ref?._props.query
-                                        );
-                                        return component.ref?._props.editor
-                                            .chain()
-                                            .focus()
-                                            .insertContentAt(
-                                                component.ref?._props.range,
-                                                [
-                                                    {
-                                                        type: "mention",
-                                                        attrs: id,
-                                                    },
-                                                    {
-                                                        type: "text",
-                                                        text: " ",
-                                                    },
-                                                ]
-                                            )
-                                            .run();
-                                    }
-                                    else {
-                                        return component.ref?.onKeyDown(props);
-                                    }
-                                },
-                                onExit() {
-                                    popup[0].destroy();
-                                    component.destroy();
-                                },
-                            };
-                        },
-                    },
-                }),
+                // Hashtag.configure({
+                //     HTMLAttributes: {
+                //         class: "hashtag",
+                //     },
+                //     renderLabel({options, node}) {
+                //         return `${options.suggestion.char}${
+                //             node.attrs.label ?? node.attrs.id
+                //         }`;
+                //     },
+                //     suggestion: {
+                //         //@ts-ignore
+                //         items: (query) => {
+                //             if (query.length > 0) {
+                //                 return this.hashTagListTest
+                //                     .filter((item) =>
+                //                         item
+                //                             .toLowerCase()
+                //                             .startsWith(query.toLowerCase())
+                //                     )
+                //                     .slice(0, 10);
+                //             }
+                //         },
+                //         render: () => {
+                //             let component;
+                //             let popup;
+                //
+                //             return {
+                //                 onStart: (props) => {
+                //                     component = new VueRenderer(HashtagList, {
+                //                         parent: this,
+                //                         propsData: props,
+                //                     });
+                //
+                //                     popup = tippy("body", {
+                //                         getReferenceClientRect:
+                //                         props.clientRect,
+                //                         appendTo: () => document.body,
+                //                         content: component.element,
+                //                         showOnCreate: true,
+                //                         interactive: false,
+                //                         trigger: "manual",
+                //                         placement: "bottom-start",
+                //                     });
+                //                 },
+                //                 onUpdate: (props) => {
+                //                     component.updateProps(props);
+                //                     if (props.items && props.items.length > 0) {
+                //                         this.hasTagSuggestion = true;
+                //                     }
+                //                     else {
+                //                         this.hasTagSuggestion = false;
+                //                     }
+                //                     popup[0].setProps({
+                //                         getReferenceClientRect:
+                //                         props.clientRect,
+                //                     });
+                //                 },
+                //                 onKeyDown: (props) => {
+                //                     // console.log("onKeyDown", props);
+                //                     if (
+                //                         props.event.key === "Enter" &&
+                //                         !this.hasTagSuggestion &&
+                //                         component.ref?._props.query
+                //                     ) {
+                //                         let id = {
+                //                             id: component.ref?._props.query,
+                //                         };
+                //
+                //                         return component.ref?._props.editor
+                //                             .chain()
+                //                             .focus()
+                //                             .insertContentAt(
+                //                                 component.ref?._props.range,
+                //                                 [
+                //                                     {
+                //                                         type: "hashtag",
+                //                                         attrs: id,
+                //                                     },
+                //                                     {
+                //                                         type: "text",
+                //                                         text: " ",
+                //                                     },
+                //                                 ]
+                //                             )
+                //                             .run();
+                //                     }
+                //                     else {
+                //                         return component.ref?.onKeyDown(props);
+                //                     }
+                //                 },
+                //                 onExit() {
+                //
+                //                     popup[0].destroy();
+                //                     component.destroy();
+                //                 },
+                //             };
+                //         },
+                //     },
+                // }),
+                // Mention.configure({
+                //     HTMLAttributes: {
+                //         class: "mention",
+                //     },
+                //     suggestion: {
+                //         items: (query) => {
+                //             return this.mentionList
+                //                 .filter((item) =>
+                //                     item.nickname
+                //                         .toLowerCase()
+                //                         .startsWith(query.toLowerCase())
+                //                 )
+                //                 .slice(0, 10);
+                //         },
+                //         render: () => {
+                //             let component;
+                //             let popup;
+                //
+                //             return {
+                //                 onStart: (props) => {
+                //                     component = new VueRenderer(MentionList, {
+                //                         parent: this,
+                //                         propsData: props,
+                //                     });
+                //
+                //                     popup = tippy("body", {
+                //                         getReferenceClientRect:
+                //                         props.clientRect,
+                //                         appendTo: () => document.body,
+                //                         content: component.element,
+                //                         showOnCreate: true,
+                //                         interactive: true,
+                //                         trigger: "manual",
+                //                         placement: "bottom-start",
+                //                     });
+                //                     if (props.items && props.items.length > 0) {
+                //                         this.hasMentionSuggestion = true;
+                //                     }
+                //                     else {
+                //                         this.hasMentionSuggestion = false;
+                //                     }
+                //                 },
+                //                 onUpdate: (props) => {
+                //                     component.updateProps(props);
+                //                     if (props.items && props.items.length > 0) {
+                //                         this.hasMentionSuggestion = true;
+                //                     }
+                //                     else {
+                //                         this.hasMentionSuggestion = false;
+                //                     }
+                //
+                //                     popup[0].setProps({
+                //                         getReferenceClientRect:
+                //                         props.clientRect,
+                //                     });
+                //                 },
+                //                 onKeyDown: (props) => {
+                //                     if (
+                //                         props.event.key === "Enter" &&
+                //                         !this.hasMentionSuggestion &&
+                //                         component.ref?._props.query
+                //                     ) {
+                //                         let id = {
+                //                             id: component.ref?._props.query,
+                //                         };
+                //                         this.$store.commit(
+                //                             "userTagList",
+                //                             component.ref?._props.query
+                //                         );
+                //                         return component.ref?._props.editor
+                //                             .chain()
+                //                             .focus()
+                //                             .insertContentAt(
+                //                                 component.ref?._props.range,
+                //                                 [
+                //                                     {
+                //                                         type: "mention",
+                //                                         attrs: id,
+                //                                     },
+                //                                     {
+                //                                         type: "text",
+                //                                         text: " ",
+                //                                     },
+                //                                 ]
+                //                             )
+                //                             .run();
+                //                     }
+                //                     else {
+                //                         return component.ref?.onKeyDown(props);
+                //                     }
+                //                 },
+                //                 onExit() {
+                //                     popup[0].destroy();
+                //                     component.destroy();
+                //                 },
+                //             };
+                //         },
+                //     },
+                // }),
             ],
-            autofocus: "end",
+            autofocus: true,
             onUpdate: () => {
-                // this.$emit("isEmpty", this.editor.isEmpty);
-                this.charCnt = this.editor.getCharacterCount();
-                this.$store.commit("postContents", this.editor.getHTML());
+                this.$emit("isEmpty", this.editor!.isEmpty);
+                this.charCnt = this.editor!.getCharacterCount();
+                this.$store.commit("postContents", this.editor!.getHTML());
                 this.$store.commit("isClearEditor", false);
             },
         });
@@ -303,53 +305,54 @@ export default class TiptapBlog extends Vue {
     mounted() {
         this.feed = this.$store.getters.feed
         if (this.feed) {
-            this.editor.commands.setContent(this.feed.content);
-            this.charCnt = this.editor.getCharacterCount();
+            this.editor!.commands.setContent(this.feed.content);
+            this.charCnt = this.editor!.getCharacterCount();
             this.prefill();
         }
     }
 
-    prefill() {
 
-        this.$store.dispatch('resetAttFiles')
-        if(this.feed.attatchment_files.length > 0) {
+    beforeUnmount() {
+        this.editor!.destroy()
+    }
+
+    prefill() {
+        if (JSON.parse(this.feed.attatchment_files).length > 0) {
             for (const file of this.feed.attatchment_files) {
-                console.log(file)
                 if (file.type === 'image') {
                     this.imgPreviewArr.push(file);
                 }
+
             }
 
             this.$store.commit('imgArr', this.imgPreviewArr)
 
             if (this.feed.attatchment_files.type === 'image') {
                 this.imgPreviewArr = this.feed.attatchment_files.img;
-                console.log(this.imgPreviewArr)
             }
         }
 
-        this.postingText = this.feed.content
-        console.log('this.postingText', this.postingText)
+        this.postingText = this.feed.content;
     }
 
     @Watch('$store.getters.blogImgArr')
     blogImgArr() {
         for (const img of this.$store.getters.blogImgArr) {
-            this.editor.chain().focus().setImage({src: img.url}).run();
+            this.editor!.chain().focus('end').setImage({src: img.url}).run();
         }
     }
 
     @Watch('$store.getters.blogVideoArr')
     blogVideoArr() {
         for (const video of this.$store.getters.blogVideoArr) {
-            this.editor.chain().focus().setIframe({src: video.url}).run();
+            this.editor!.chain().focus('end').setIframe({src: video.url}).run();
         }
     }
 
     @Watch('$store.getters.blogAudioArr')
     blogAudioArr() {
         for (const audio of this.$store.getters.blogAudioArr) {
-            this.editor.chain().focus().setAudio({src: audio.url}).run();
+            this.editor!.chain().focus('end').setAudio({src: audio.url}).run();
         }
     }
 }
@@ -358,11 +361,11 @@ export default class TiptapBlog extends Vue {
 <style lang="scss" scoped>
 @use "sass:math";
 
-.character-count p{
+.character-count p {
     display: flex !important;
     justify-content: flex-end !important;
-            margin-right: 10px;
-            margin-top: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
 
 
 }
@@ -381,7 +384,7 @@ export default class TiptapBlog extends Vue {
         height: auto;
 
         &.ProseMirror-selectednode {
-            outline: 3px solid #68cef8;
+            outline: 3px solid #F97316;
         }
 
         iframe {
@@ -400,7 +403,7 @@ export default class TiptapBlog extends Vue {
         height: 100px;
 
         &.ProseMirror-selectednode {
-            outline: 3px solid #68cef8;
+            outline: 3px solid #F97316;
         }
     }
 }

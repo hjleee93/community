@@ -3,27 +3,37 @@
         <dl class="tapl-title">
             <dt>
                 <dl>
-                    <UserAvatar :user="feed.user"></UserAvatar>
-                    <dd>
-                        <h2>{{ feed.user.name }} uploaded a {{ feed.post_type }} post</h2>
+                    <dt>
+                        <UserAvatar :user="feed.user" :tag="'span'"></UserAvatar>
+                    </dt>
+
+                    <dd v-if="feed.user && feed.user.name">
+                        <h2>{{ feed.user && feed.user.name }} uploaded a {{ feed.post_type }} post</h2>
+                        <p><i class="uis uis-clock" style="color:#c1c1c1;"></i> {{ dateFormat(feed.createdAt) }}</p>
+
+                    </dd>
+                    <dd v-else>
+                        <h2>탈퇴한 유저가 작성한 포스팅입니다.</h2>
                         <p><i class="uis uis-clock" style="color:#c1c1c1;"></i> {{ dateFormat(feed.createdAt) }}</p>
 
                     </dd>
                 </dl>
             </dt>
-            <dd>
+            <dd v-if="feed.user && feed.user.name">
                 <dropdown-menu :overlay="false" class="tapl-more-dropdown"
-                               :isOpen="isOpenReportModal" @closed="isOpenReportModal= false">
-                    <a class="btn-circle-none pt6" slot="trigger" @click="isOpenReportModal= !isOpenReportModal"><i
+                               :isOpen="isOpenReportModal" @closed="isOpenReportModal= false;"
+                >
+                    <a class="btn-circle-none pt6" slot="trigger" @click=" isOpenReportModal= !isOpenReportModal"><i
                         class="uil uil-ellipsis-h font25"></i></a>
-                    <div slot="body" class="more-list">
-                        <template v-if="user && (user.id === feed.user.id)">
+                    <div slot="body" class="more-list fixed">
+                        <template v-if="user && (user.id === (feed.user && feed.user.id))">
                             <a @click="openEdit">포스팅 수정</a>
                             <a @click="deletePost">포스팅 삭제</a>
+
                         </template>
                         <template v-else>
-                            <router-link :to="`/channel/${feed.user.uid}/timeline`">유저 채널 방문</router-link>
-                            <a @click="report">포스팅 신고</a>
+                            <router-link :to="`/channel/${feed.user&&feed.user.uid}/timeline`">유저 채널 방문</router-link>
+                            <a v-if="user" @click="report">포스팅 신고</a>
                         </template>
                     </div>
                 </dropdown-menu>
@@ -32,24 +42,45 @@
 
 
         <div class="tapl-content" v-html="feed.content" @click="contentClicked"></div>
-
         <template v-if="attachedFile && feed.post_type === 'SNS'">
-            <div v-for="file in attachedFile">
-                <img v-if="file.type === 'image'" :src="file.url"
-                     class="feed-img mt-3"></img>
-                <div class="video">
-                    <video
-                        width="100%"
-                        height="240"
-                        controls
-                        :src="file.url"
-                        v-if="file.type === 'video'"></video>
+
+            <template v-if="attachedFile.length === 1 && attachedFile[0].type === 'image'">
+                <img style="height: 88%;
+                             margin: 0 auto;
+                             display: flex;" :src="attachedFile[0].url"
+                     class="feed-img mt-3"/>
+            </template>
+            <template v-else>
+                <div v-for="file in attachedFile">
+                    <div class="video" v-if="file.type === 'video'">
+                        <video
+                            width="100%"
+                            height="240"
+                            controls
+                            :src="file.url"
+                        ></video>
+                    </div>
+                    <div class="audio" v-if="file.type === 'sound'">
+                        <audio controls :src="file.url" ></audio>
+                        <p>{{ file.name }}</p>
+                    </div>
                 </div>
-                <div class="audio">
-                    <audio v-if="file.type === 'sound'" controls :src="file.url"></audio>
-                </div>
-            </div>
+                <swiper class="swiper" :options="swiperOption" style="height: 350px;"
+                        v-if="attachedFile.length > 0 && attachedFile[0].type === 'image'">
+                    <template v-for="file in attachedFile">
+                        <swiper-slide>
+                            <img style="height: 88%;
+                             margin: 0 auto;
+                             display: flex;" v-if="file.type === 'image'" :src="file.url"
+                                 class="feed-img mt-3"/>
+                        </swiper-slide>
+
+                    </template>
+                    <div class="swiper-pagination" slot="pagination"></div>
+                </swiper>
+            </template>
         </template>
+
 
         <ul class="tapl-option">
             <li>
@@ -95,6 +126,7 @@ import {execCommandCopy} from "@/script/util";
 import Toast from "@/script/message";
 import CommentInput from "@/components/comment/_commentInput.vue";
 import Comment from "@/components/timeline/Comment.vue";
+import {Swiper, SwiperSlide} from "vue-awesome-swiper";
 
 @Component({
     components: {
@@ -103,6 +135,8 @@ import Comment from "@/components/timeline/Comment.vue";
         LikeBtn,
         UserAvatar,
         CommentInput,
+        Swiper,
+        SwiperSlide,
         Comment
     },
     computed: {...mapGetters(["user"])},
@@ -126,13 +160,19 @@ export default class Feed extends Vue {
     isAddData: boolean = false;
     comments: any = [];
     user!: any;
-    isOpenReportModal = false
+    isOpenReportModal = false;
+
+
+    swiperOption = {
+        pagination: {
+            el: '.swiper-pagination'
+        }
+    }
 
     mounted() {
-        console.log('this.feed',this.feed)
-        this.attachedFile = this.feed.attatchment_files
+        this.attachedFile = this.feed.attatchment_files ? JSON.parse(this.feed.attatchment_files) : this.feed.attatchment_files;
         this.hashtags = this.feed.hashtags;
-        this.likeListFetch();
+        // this.likeListFetch();
     }
 
     scrollCheck(e) {
@@ -146,36 +186,6 @@ export default class Feed extends Vue {
         return dateFormat(date);
     }
 
-    sendLike() {
-        if (this.user) {
-            // console.log(this.feed.liked)
-            if (!this.feed.liked) {
-                console.log('like')
-                this.$api.like(this.feed.id)
-                    .then((res: AxiosResponse) => {
-                        this.$emit('refetch')
-                        console.log(res)
-                    })
-                    .catch((err: AxiosError) => {
-
-                    })
-            }
-            else {
-                console.log('unlike')
-                this.$api.unlike(this.feed.id)
-                    .then((res: AxiosResponse) => {
-                        this.$emit('fetch')
-                    })
-                    .catch((err: AxiosError) => {
-
-                    })
-            }
-
-        }
-        else {
-            this.$modal.show('needLogin')
-        }
-    }
 
     openComments() {
         this.isOpenedComments = !this.isOpenedComments;
@@ -228,7 +238,7 @@ export default class Feed extends Vue {
             );
         }
         else {
-            // this.$router.push(`/feed/${this.feed.id}`);
+            this.$router.push(`/feed/${this.feed.id}`);
         }
     }
 
@@ -292,7 +302,6 @@ export default class Feed extends Vue {
         this.$emit('reportPost', this.feed.id)
         this.isOpenReportModal = !this.isOpenReportModal
         this.$modal.show('modalReport')
-
     }
 
 
@@ -329,6 +338,12 @@ export default class Feed extends Vue {
 }
 
 <style lang="scss" scoped>
+
+.tapl-content {
+    word-break: break-all;
+
+}
+
 pre {
     overflow: auto;
     background: #0D0D0D;
@@ -344,6 +359,7 @@ pre code {
     background: none;
     font-size: .8rem;
 }
+
 .tapl-comment > ul {
     max-height: 500px;
     overflow-y: auto;
@@ -440,5 +456,32 @@ pre code {
     align-items: center;
     border-radius: 5px;
     background: #f5f5f5;
+    flex-direction: column;
+    audio{
+        width: 100%;
+    }
+    p{
+        width: 100%;
+        height: 30px;
+        padding-left: 20px;
+    }
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    --swiper-navigation-color: #999;
+    --swiper-navigation-size: 20px;
+
+    &:hover {
+        --swiper-navigation-color: #FF6216;
+    }
+}
+
+.swiper-wrapper div {
+    width: 100%;
+}
+
+.tapl-content {
+    min-height: 100px;
 }
 </style>

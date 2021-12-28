@@ -3,11 +3,9 @@
         <dl class="area-title">
             <dt>Manager Group</dt>
         </dl>
-        <div class="grid grid-4-4-4" v-if="$store.getters.LoadingStatus">
-            <b-skeleton-img animation="throb" variant="dark"></b-skeleton-img>
-        </div>
 
-        <ul class="card-manage-group" v-else>
+{{communityList.length}}
+        <ul class="card-manage-group" v-if="communityList.length > 0">
             <CommunityCard
                 v-for="community in communityList"
                 :key="community.id"
@@ -19,8 +17,15 @@
             </CommunityCard>
         </ul>
 
+            <div class="no-result" v-else>
+                <h1> 가입한 커뮤니티가 없습니다. </h1>
+                <img src="../../assets/images/not-found.png" width="100px" height="100px"/>
+            </div>
+
+
         <modal :clickToClose="false" class="modal-area-type" name="deleteConfirm" width="90%" height="auto"
                :maxWidth="380"
+               :scrollable="true"
                :adaptive="true">
             <div class="modal-alert">
                 <dl class="ma-header">
@@ -30,7 +35,7 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2> 해당 커뮤니티를 정말 탈퇴하시겠습니까? </h2>
+                    <h2> 커뮤니티에서 탈퇴하시겠습니까?<br/>※ 커뮤니티 탈퇴시 작성한 포스팅은 자동으로 삭제되지 않습니다.</h2>
                     <div>
                         <button class="btn-default w48p" @click="yesUnsubscribe">네</button>
                         <button class="btn-gray w48p" @click="$modal.hide('deleteConfirm')">아니오</button>
@@ -100,5 +105,23 @@ export default class ManageJoinedGroup extends Vue {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+
+.no-result {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+
+h1 {
+    color: #333;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+img {
+    margin: 0 auto
+}
+}
 </style>

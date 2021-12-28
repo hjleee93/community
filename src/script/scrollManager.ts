@@ -1,9 +1,7 @@
 function scrollDone(element) {
     if (
-        element.scrollTop + element.clientHeight ===
-        element.scrollHeight
+        element.scrollTop + element.offsetHeight >= element.scrollHeight
     ) {
-        console.log('true')
         return true;
     }
     else {
@@ -11,6 +9,6 @@ function scrollDone(element) {
     }
 }
 
-export{
+export {
     scrollDone
 }

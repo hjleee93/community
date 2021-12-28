@@ -6,14 +6,16 @@
                             남의 채널 남의 게임은 글 작성 불가 : v-if="this.user.uid === this.$route.params.channel_id" -->
             <div class="ta-message-send" v-if="ableToPost() === true">
                 <p>
-                    <span
-                        :style="`background: url('${user && user.picture  || 'img/zempy.png'}') center center no-repeat; background-size: cover;`"></span>
+                    <UserAvatar :user="user" :tag="'span'"></UserAvatar>
                 </p>
-                <dl>
-                    <dt><input type="text" name="" title="" readonly
-                               @click="openPostModal"
-                               placeholder="무슨 생각을 하고 계신가요"/></dt>
-                    <dd><a @click="openPostModal"><i class="uil uil-message"></i></a></dd>
+                <dl @click="openPostModal">
+                    <dt>
+                        <input
+                            type="text"
+                            readonly
+                            placeholder="무슨 생각을 하고 계신가요"/>
+                    </dt>
+                    <dd><a><i class="uil uil-message"></i></a></dd>
                 </dl>
             </div>
             <div class="ta-message-block" v-else-if="ableToPost() === 'block'">
@@ -34,7 +36,7 @@
                 ></Feed>
             </ul>
 
-            <div class="ta-post-none" v-else>
+            <div class="ta-post-none" :style="ableToPost() === false ? 'margin-top: 0px;' : ''" v-else>
                 <p><span><i class="uil uil-layers-slash"></i></span></p>
                 <h2>작성된 글이 없습니다.</h2>
             </div>
@@ -43,38 +45,41 @@
             <!--        </div>-->
             <!--        <PulseLoader :loading="$store.getters.LoadingStatus"></PulseLoader>-->
         </dd>
-        <modal name="writingModal" classes="post-modal" :clickToClose="false">
-            <post @closePostModal="closePostModal" @refetch="refetch">
+        <modal name="writingModal" classes="post-modal" :clickToClose="false" :scrollable="true" height="auto">
+            <post @closePostModal="closePostModal" @refetch="refetch" @reMount="reMount">
             </post>
         </modal>
 
-        <modal
-            name="deleteModal"
-            centered
-            classes="vue-modal"
-            no-close-on-backdrop
-        >
-            <div class="pw-reset">
-                <div class="pr-title">
-                    <h3>포스팅 삭제</h3>
 
-                </div>
-                <div class="pr-content">
-                    <div>삭제하신 포스팅은 복구하실 수 없습니다.<br/>정말 삭제하시겠습니까?</div>
-                    <p>
-                        <a @click="yesDeletePost" class="btn-default">네</a>
-                        <a @click="closeModal" class="btn-default">아니요</a>
-                    </p>
+        <modal :clickToClose="false" class="modal-area-type" name="deleteModal" width="90%" height="auto"
+               :maxWidth="380"
+               :adaptive="true"
+               :scrollable="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('deleteModal')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2> 삭제된 포스트는 복구가 불가능합니다.<br/>해당 포스트를 삭제하시겠습니까?</h2>
+                    <div>
+                        <button class="btn-default w48p" @click="yesDeletePost">네</button>
+                        <button class="btn-gray w48p" @click="closeModal">아니오</button>
+                    </div>
                 </div>
             </div>
         </modal>
 
         <modal :clickToClose="false" class="modal-area-type" name="modalPost" width="90%" height="auto" :maxWidth="550"
-               :adaptive="true">
-            <Post @refetch="refetch"></Post>
+               :adaptive="true"
+               :scrollable="true">
+            <Post @refetch="refetch" @reMount="reMount"></Post>
         </modal>
 
-        <modal class="modal-area-type" name="modalReport" width="90%" height="auto" :maxWidth="375" :adaptive="true">
+        <modal class="modal-area-type" name="modalReport" width="90%" height="auto" :maxWidth="375" :adaptive="true"
+               :scrollable="true">
             <div class="modal-report">
                 <dl class="mr-header">
                     <dt>포스트 신고하기</dt>
@@ -105,7 +110,49 @@
                         <!--            </li>-->
                     </ul>
                     <div @click="sendReport">
-                        <button class="btn-default">신고</button>
+                        <button class="btn-default" style="width: 100%">신고</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
+        <modal name="deleteComment" :clickToClose="false" class="modal-area-type" width="90%" height="auto"
+               :maxWidth="380"
+               :adaptive="true"
+               :scrollable="true"
+               @before-open="beforeOpen">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('deleteComment')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2> 해당 댓글을 삭제하시겠습니까?</h2>
+                    <div>
+                        <button class="btn-default w48p" @click="deleteComment">네</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('deleteComment')">아니오</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
+
+        <modal name="needSubscribe" :clickToClose="false" class="modal-area-type" width="90%" height="auto"
+               :maxWidth="380"
+               :adaptive="true"
+               :scrollable="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('needSubscribe')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2> 커뮤니티 멤버만 이용가능한 서비스입니다.<br/>가입 하시겠습니까?</h2>
+                    <div>
+                        <button class="btn-default w48p" @click="needSubscribe">네</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('needSubscribe')">아니오</button>
                     </div>
                 </div>
             </div>
@@ -138,8 +185,8 @@ import TiptapSns from "@/components/timeline/_tiptapSns.vue";
 import TiptapPost from "@/components/timeline/_tiptapBlog.vue";
 import ImageUploaderBtn from "@/components/timeline/post/_imageUploaderBtn.vue";
 import Toast from "@/script/message";
-
-
+import SubscribeBtn from "@/components/community/_subscribeBtn.vue";
+import _ from "lodash";
 @Component({
     computed: {...mapGetters(["user"])},
     components: {
@@ -151,13 +198,14 @@ import Toast from "@/script/message";
         SwiperSlide,
         TiptapSns,
         TiptapPost,
-        ImageUploaderBtn
+        ImageUploaderBtn,
+        SubscribeBtn
     },
 })
 export default class Timeline extends Vue {
     @Prop() currPage!: string;
     @Prop() id!: any;
-    @Prop() block!: any;
+    @Prop() community!: any;
     @Prop() mediaType!: any;
     private timeline: any = [];
     private user!: User;
@@ -175,14 +223,20 @@ export default class Timeline extends Vue {
     activeTab: string = "SNS";
 
 
-    private feedId = '';
+    feedId = '';
     pickedReason: any = '';
     originImg = '';
     toast = new Toast();
 
+    commentId = '';
+    postId = '';
+
 
     mounted() {
-        this.fetch()
+        this.$store.dispatch("loginState")
+            .then(() => {
+                this.fetch()
+            });
         window.addEventListener("scroll", this.scrollCheck);
     }
 
@@ -191,11 +245,32 @@ export default class Timeline extends Vue {
     }
 
     refetch() {
+        this.$emit('refetch')
         this.initData()
         this.fetch()
     }
 
+    deleteComment() {
+        this.$api.deleteComment(this.postId, this.commentId)
+            .then((res) => {
+                this.refetch()
+            })
+            .catch((err) => {
+
+            })
+            .finally(() => {
+                this.$modal.hide('deleteComment')
+            })
+    }
+
+    beforeOpen(event) {
+        this.commentId = event.params.commentId;
+        this.postId = event.params.postId;
+
+    }
+
     initData() {
+        console.log('timeline initData')
         this.isAddData = false
         this.hasData = false
         this.limit = 10;
@@ -203,34 +278,35 @@ export default class Timeline extends Vue {
         this.timeline = [];
         this.sort = '';
         this.media = '';
+        window.scrollTo(0,0)
     }
 
     fetch() {
         switch (this.currPage) {
             case 'user':
                 const userObj = {
-                    channel_id: this.$route.params.channel_id || this.user.uid,
                     limit: this.limit,
                     offset: this.offset,
                     sort: this.sort,
                     media: this.$route.query.media || this.mediaType
                 }
-                this.$api.userTimeline(userObj)
+                console.log('userObj', userObj)
+                const channel_id = this.$route.params.channel_id || this.user.uid;
+
+                this.$api.userTimeline(channel_id, userObj)
                     .then((res: any) => {
-                        console.log(res)
+
                         if (this.isAddData) {
                             if (res.result.length > 0) {
                                 this.timeline = [...this.timeline, ...res.result]
                             }
                             else {
                                 console.log('no data')
-                                this.hasData = false
                                 window.removeEventListener("scroll", this.scrollCheck);
 
                             }
                         }
                         else {
-
                             this.timeline = res.result;
                             this.isAddData = true
                         }
@@ -241,6 +317,12 @@ export default class Timeline extends Vue {
                         this.$router.push('/')
 
                     })
+                .finally(()=>{
+                    // _.orderBy(this.timeline, 'createdAt', 'asc')
+                    console.log('user timeline',  _.orderBy(this.timeline, 'createdAt', 'desc'))
+                    this.timeline = _.orderBy(this.timeline, 'createdAt', 'desc')
+                })
+
                 break;
             case 'game':
 
@@ -278,7 +360,6 @@ export default class Timeline extends Vue {
                     })
                 break;
             case 'community':
-                console.log('community')
                 const comObj = {
                     community_id: this.$route.params.community_id,
                     limit: this.limit,
@@ -314,7 +395,6 @@ export default class Timeline extends Vue {
                     })
 
                 break;
-
             //커뮤니티 내의 채널
             case 'channel':
 
@@ -358,11 +438,9 @@ export default class Timeline extends Vue {
 
 
     ableToPost() {
-
         let result: any = ''
         //커뮤니티 블락당한 경우
         switch (this.currPage) {
-
             case 'user':
                 if (this.user && (this.user.uid === this.$route.params.channel_id) || this.$route.name === 'MyChannel') {
                     result = true;
@@ -371,16 +449,17 @@ export default class Timeline extends Vue {
                     result = false;
                 }
                 break;
-                console.log(this.currPage)
             case 'community' :
-                if (this.block) {
+                if (this.community.user_block) {
                     result = 'block'
                 }
                 else {
                     result = true;
                 }
                 break;
-
+            case 'channel' :
+                result = true;
+                break;
         }
         return result;
 
@@ -398,7 +477,31 @@ export default class Timeline extends Vue {
     }
 
     openPostModal() {
-        this.$modal.show('modalPost')
+        if (!this.user) {
+            this.$modal.show('needLogin')
+            this.$store.commit('needLogin', true)
+        }
+        else if (this.user && this.currPage === 'user') {
+            this.$modal.show('modalPost')
+        }
+        else if (!this.community.is_subscribed) {
+            this.$modal.show('needSubscribe')
+        }
+        else {
+            this.$modal.show('modalPost')
+        }
+
+    }
+
+    needSubscribe() {
+        this.$api.subscribe({user_id: this.user.id, community_id: this.community.id})
+            .then((res: AxiosResponse) => {
+                this.$emit('refetch')
+            }).catch((err: AxiosError) => {
+            if (err.message) {
+                alert(err.message)
+            }
+        })
     }
 
     closePostModal() {
@@ -423,6 +526,7 @@ export default class Timeline extends Vue {
 
     @Watch('$route.query')
     watchMedia() {
+        console.log("???")
         this.initData()
         this.media = (this.$route.query.media as string);
         this.fetch();
@@ -463,6 +567,7 @@ export default class Timeline extends Vue {
                     });
                 }
                 this.timeline = []
+                this.initData();
                 this.fetch();
             })
             .catch((err: any) => {
@@ -480,15 +585,34 @@ export default class Timeline extends Vue {
         }
         this.$api.reportPost(obj)
             .then((res: AxiosResponse) => {
-                console.log(res)
+
             })
             .catch((err: AxiosError) => {
-                this.$modal.hide('modalReport')
+
                 this.toast.failToast(err.message)
             })
-
-
+            .finally(() => {
+                this.$modal.hide('modalReport')
+                this.pickedReason = ''
+            })
     }
+
+    commentInfo(event) {
+        console.log(event.params.commentId)
+        this.$api.deleteComment(event.params.postId, event.params.commentId)
+            .then((res: AxiosResponse) => {
+
+            })
+            .catch((err: AxiosError) => {
+
+            })
+    }
+
+    reMount() {
+        this.initData();
+        this.fetch()
+    }
+
 }
 </script>
 
