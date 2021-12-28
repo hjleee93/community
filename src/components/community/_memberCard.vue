@@ -1,8 +1,9 @@
 <template>
     <li>
         <div class="cm-img"></div>
-        <p @click="userPage"
-           :style="{'background' : 'url(' + profileImg || '../../assets/images/zempy.png'+ ') center no-repeat', 'background-size' : 'cover'}"></p>
+        <UserAvatar :user="member" :tag="'p'"></UserAvatar>
+<!--        <p @click="userPage"-->
+<!--           :style="{'background' : 'url(' + profileImg || '../../assets/images/zempy.png'+ ') center no-repeat', 'background-size' : 'cover'}"></p>-->
 
         <!--        <div class="cm-setup">-->
         <!--            <i class="uil uil-ellipsis-h" slot="trigger" @click="isOpenMyDropdown = !isOpenMyDropdown"></i>-->
@@ -32,12 +33,15 @@ import {Component, Prop, Vue} from "vue-property-decorator";
 import {User} from "@/types";
 import FollowBtn from "@/components/user/_followBtn.vue";
 import {AxiosError, AxiosResponse} from "axios";
+import UserAvatar from "@/components/user/_userAvatar.vue";
 
 @Component({
-    components: {FollowBtn},
+    components: {
+        FollowBtn,
+        UserAvatar},
 })
 export default class MemberCard extends Vue {
-    @Prop() member!: User;
+    @Prop() member!: any;
     profileImg = '';
     bannerImg = 'img/channel_banner.png'
     isOpenMyDropdown = false
@@ -56,7 +60,6 @@ export default class MemberCard extends Vue {
     }
 
     mounted() {
-
         if (this.member.profile_img) {
             this.profileImg = this.member.profile_img
         }

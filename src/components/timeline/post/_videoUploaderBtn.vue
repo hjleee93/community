@@ -26,11 +26,17 @@ export default class VideoUploaderBtn extends Vue {
     maxFileNum: number = 1;
 
     uploadFile() {
-        if (this.$store.getters.audioArr.length > 0 || this.$store.getters.imgArr.length > 0) {
-            this.$modal.show('alertAttrModal')
-        }
-        else {
-            (this.$refs.video as HTMLElement).click();
+        if(this.activeTab === 'SNS') {
+            if (this.$store.getters.audioArr.length > 0 || this.$store.getters.imgArr.length > 0) {
+
+                    this.$modal.show('alertAttrModal')
+                }else{
+                (this.$refs.video as HTMLElement).click();
+            }
+            }
+            else {
+                (this.$refs.video as HTMLElement).click();
+
         }
     }
 
@@ -52,6 +58,7 @@ export default class VideoUploaderBtn extends Vue {
                     this.$store.commit('blogVideoArr', res)
                 })
         }
+        (this.$refs.video as any).value = '';
     }
 
 

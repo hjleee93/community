@@ -37,7 +37,6 @@ export default class MemberList extends Vue {
     private offset: number = 0;
 
     mounted() {
-        //todo: 새로고침하면 데이터 변환 할건지 아니면 탈퇴시 바로 변환할건지
         this.fetch();
     }
 
@@ -46,7 +45,6 @@ export default class MemberList extends Vue {
             limit: this.limit,
             offset: this.offset
         }
-
         this.$api.communityMembers(this.communityId, obj)
             .then((res: any) => {
                 this.totalMembers = res.totalCount;
@@ -63,6 +61,7 @@ export default class MemberList extends Vue {
     refetch(){
         this.limit = 10;
         this.offset = 0;
+        this.memberList = [];
 
         this.fetch();
 

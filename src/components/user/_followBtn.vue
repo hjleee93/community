@@ -18,6 +18,13 @@ export default class FollowBtn extends Vue {
     @Prop() member!: any;
     user!: any;
 
+   async created(){
+        await this.$store.dispatch("loginState")
+    }
+
+    mounted(){
+        console.log('FollowBtn', this.member.is_following)
+    }
     follow() {
         this.$api.follow(this.member.id)
             .then((res: AxiosResponse) => {
