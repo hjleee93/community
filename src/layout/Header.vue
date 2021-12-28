@@ -212,7 +212,7 @@
                                 <router-link to="/myChannel" @click.native="isOpenSetting = false"><i
                                     class="uil uil-user"></i>내 채널
                                 </router-link>
-                                <a @click="moveGameDashBoard"><i class="uil uil-robot"></i>게임스튜디오</a>
+                                <router-link to="/dashBoard" ><i class="uil uil-robot"></i>게임스튜디오</router-link>
                                 <router-link :to="`/user/${user.uid}/settings`" @click.native="isOpenSetting = false"><i
                                     class="uil uil-setting"></i>계정설정
                                 </router-link>

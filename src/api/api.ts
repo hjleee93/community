@@ -41,7 +41,7 @@ export default class Api {
         }
         catch (error) {
             // if ( error && error.response && error.response.data && error.response.data.error && error.response.data.error.message === 'Unauthorized' ) {
-            if (error?.response?.data?.error?.code === 10001) {
+            if (error?.response?.data?.error?.code === 10001 || error && error.response && error.response.data && error.response.data.error === 'Unauthorized') {
                 const currentUser = firebase.auth().currentUser;
                 if (currentUser) {
                     const idToken = await currentUser.getIdToken(true);
@@ -215,7 +215,6 @@ export default class Api {
         return response.result || response;
     }
 
-    //getProjects
     async gameInfo(pathname: string) {
         return await this.request('get', `/launch/game/${pathname}`, undefined, false)
     }
