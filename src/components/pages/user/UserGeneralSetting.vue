@@ -11,7 +11,7 @@
                 <dt>
                     <div :style="{'background-color' : 'orange', 'background-size' : 'cover'}"></div>
                     <!--                    <div :style="{'background' : 'url(' + require('../../assets/images/card_test_img01.png') + ') center no-repeat', 'background-size' : 'cover'}"></div>-->
-                    <p :style="prevProfile ? `background: url(${prevProfile}) center center / cover no-repeat; background-size: cover;` :`background: url(${require('../../../assets/images/zempy.png')}) center center / cover no-repeat; background-size: cover;`  "></p>
+                    <p :style="prevProfile ? `background: url(${prevProfile}) center center / cover no-repeat; background-size: cover;` :`background: url(${require('../../../assets/images/300_300_default_profile.png')}) center center / cover no-repeat; background-size: cover;`  "></p>
                 </dt>
                 <!--                <div class="delete-div" @click="deleteImg">-->
                 <!--                    <router-link class="delete-btn" to="#"><i class="uil uil-trash-alt"></i></router-link>-->
@@ -80,17 +80,18 @@
         <div class="delete-account">
             <h2>비밀 번호 번경</h2>
             <div>
-                <p>비밀번호를 변경하시려면 <span><router-link :to="`/user/${this.$route.params.userUid}/changePwd`">클릭</router-link></span>해주세요.
+                <p>비밀번호를 변경하시려면 <span><router-link :to="`/user/${this.$route.params.channel_id}/changePwd`">클릭</router-link></span>해주세요.
                 </p>
             </div>
         </div>
         <div class="delete-account">
             <h2>계정삭제</h2>
             <div>
-                <p>계정을 비활성화 하려면 <span><router-link :to="`/user/${this.$route.params.userUid}/leave`">클릭</router-link></span>해주세요.
+                <p>계정을 비활성화 하려면 <span><router-link :to="`/user/${this.$route.params.channel_id}/leave`">클릭</router-link></span>해주세요.
                 </p>
             </div>
         </div>
+
     </div>
 </template>
 
@@ -183,13 +184,14 @@ export default class UserGeneralSetting extends Vue {
             formData.append('name', this.user.name)
 
             this.$api.updateUser(formData)
-                .then(() => {
+                .then((res) => {
                     this.toast.successToast("계정 업데이트가 완료되었습니다.")
                     // this.$store.dispatch('userInfoUpdate', res.picture)
-                    console.log(this.$store.getters.user.picture)
+
+                    // console.log(' this.$store.getters.user.picture',  res)
 
                     this.$store.commit('userInfoUpdate', {
-                        picture: this.$store.getters.user.picture + `?t=${Date.now()}`
+                        picture:res.user.picture ? res.user.picture + `?t=${Date.now()}` : null
                     });
                 })
         }else{
@@ -198,10 +200,9 @@ export default class UserGeneralSetting extends Vue {
                 .then(() => {
                     this.toast.successToast("계정 업데이트가 완료되었습니다.")
                     // this.$store.dispatch('userInfoUpdate', res.picture)
-                    console.log(this.$store.getters.user.picture)
 
                     this.$store.commit('userInfoUpdate', {
-                        picture: this.$store.getters.user.picture + `?t=${Date.now()}`
+                        picture:null
                     });
                 })
         }

@@ -32,7 +32,7 @@
 
                         </template>
                         <template v-else>
-                            <router-link :to="`/channel/${feed.user&&feed.user.uid}/timeline`">유저 채널 방문</router-link>
+                            <router-link :to="`/channel/${feed.user&&feed.user.channel_id}/timeline`">유저 채널 방문</router-link>
                             <a v-if="user" @click="report">포스팅 신고</a>
                         </template>
                     </div>
@@ -41,7 +41,11 @@
         </dl>
 
 
-        <div class="tapl-content" v-html="feed.content" @click="contentClicked"></div>
+        <div class="tapl-content" v-html="feed.content" @click="contentClicked" ref="contentDiv"></div>
+
+<!--        <button class="btn-default"  v-show="isOverflow" @click="contentClicked">더보기-->
+<!--        </button>-->
+
         <template v-if="attachedFile && feed.post_type === 'SNS'">
 
             <template v-if="attachedFile.length === 1 && attachedFile[0].type === 'image'">
@@ -60,8 +64,10 @@
                             :src="file.url"
                         ></video>
                     </div>
+
                     <div class="audio" v-if="file.type === 'sound'">
-                        <audio controls :src="file.url" ></audio>
+
+                        <audio controls :src="file.url"></audio>
                         <p>{{ file.name }}</p>
                     </div>
                 </div>
@@ -161,7 +167,7 @@ export default class Feed extends Vue {
     comments: any = [];
     user!: any;
     isOpenReportModal = false;
-
+    isOverflow = false;
 
     swiperOption = {
         pagination: {
@@ -170,8 +176,9 @@ export default class Feed extends Vue {
     }
 
     mounted() {
-        this.attachedFile = this.feed.attatchment_files ? JSON.parse(this.feed.attatchment_files) : this.feed.attatchment_files;
+        this.attachedFile = Array.isArray(this.feed.attatchment_files) ? this.feed.attatchment_files : JSON.parse(this.feed.attatchment_files)
         this.hashtags = this.feed.hashtags;
+        this.checkOverflow()
         // this.likeListFetch();
     }
 
@@ -215,31 +222,42 @@ export default class Feed extends Vue {
 
 
     copyUrl() {
-        execCommandCopy(`${this.$store.getters.communityUrl}/feed/${this.feed.id}`)
+        execCommandCopy(`${this.$store.getters.communityUrl}feed/${this.feed.id}`)
         this.toast.clear();
         this.toast.successToast("클립보드에 복사되었습니다.")
     }
 
+    checkOverflow() {
+        this.$nextTick(() => {
+            const ref = this.$refs.contentDiv;
+
+            if ((ref as any).clientHeight >= 500) {
+                this.isOverflow = true;
+            }
+
+        })
+    }
+
     //post
     contentClicked(e: any) {
-        if (e.target.matches("img")) {
-            this.originImg = e.target.src;
-            // this.$modal.show('originImgModal')
-            this.$emit('originImg', this.originImg)
-        }
-        else if (e.target.matches(".hashtag")) {
-            this.$router.push(
-                `/search?hashtag=${e.target.attributes["data-id"].nodeValue}`
-            );
-        }
-        else if (e.target.matches(".mention")) {
-            this.$router.push(
-                `/channel/${e.target.attributes["channel-id"].nodeValue}/timeline`
-            );
-        }
-        else {
+        // if (e.target.matches("img")) {
+        //     this.originImg = e.target.src;
+        //     // this.$modal.show('originImgModal')
+        //     this.$emit('originImg', this.originImg)
+        // }
+        // else if (e.target.matches(".hashtag")) {
+        //     this.$router.push(
+        //         `/search?hashtag=${e.target.attributes["data-id"].nodeValue}`
+        //     );
+        // }
+        // else if (e.target.matches(".mention")) {
+        //     this.$router.push(
+        //         `/channel/${e.target.attributes["channel-id"].nodeValue}/timeline`
+        //     );
+        // }
+        // else {
             this.$router.push(`/feed/${this.feed.id}`);
-        }
+        // }
     }
 
     moveHashtag(hashtag: string) {
@@ -252,7 +270,6 @@ export default class Feed extends Vue {
             offset: this.offset,
             sort: this.sort
         }
-        console.log(obj)
         this.$api.comments(this.feed.id, obj)
             .then((res: any) => {
                 console.log(res.result)
@@ -457,10 +474,12 @@ pre code {
     border-radius: 5px;
     background: #f5f5f5;
     flex-direction: column;
-    audio{
+
+    audio {
         width: 100%;
     }
-    p{
+
+    p {
         width: 100%;
         height: 30px;
         padding-left: 20px;
@@ -482,6 +501,13 @@ pre code {
 }
 
 .tapl-content {
+    overflow: auto;
     min-height: 100px;
+    max-height: 500px;
+}
+.btn-default{
+    border-radius: 10px !important;
+    display: block !important;
+    margin: 0 auto !important;
 }
 </style>

@@ -338,7 +338,7 @@ export default class Login extends Vue {
             this.$store.commit("idToken", token);
             Vue.$api.user()
                 .then(async (res: any) => {
-                    const {user} = result;
+                    const {user} = res;
                     this.$store.commit("user", user);
                     console.log("user", user);
                     await LoginManager.login();
@@ -354,21 +354,20 @@ export default class Login extends Vue {
                         await this.$router.replace(router);
                     }
                     else if (this.$store.getters.redirectUrl) {
-                        console.log("redirectUrl", this.$store.getters.redirectUrl);
                         const url = this.$store.getters.redirectUrl;
                         this.$store.commit("redirectUrl", null);
                         window.location.href = url;
                     }
                     else {
-                        console.log("replace");
+
                         await this.$router.push(
-                            `/channel/${this.$store.getters.user.uid}/timeline`
+
+                            `/channel/${this.$store.getters.user.channel_id}/timeline`
                         );
                     }
 
                 })
                 .catch((err: any) => {
-                    console.log('google err', err)
                     if (err.error.code === 20001) {
                         this.$store.commit("loginState", LoginState.no_user);
                         this.$router.replace("/googleJoin");

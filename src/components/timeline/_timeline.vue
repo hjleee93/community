@@ -21,12 +21,12 @@
             <div class="ta-message-block" v-else-if="ableToPost() === 'block'">
                 <i class="uil uil-exclamation-triangle"></i> 블락으로 인해 포스팅을 작성하실 수 없습니다.
             </div>
-            <ul class="ta-post" v-if="timeline.length > 0" :style="ableToPost() === false ? 'margin-top: -20px;' : ''">
+            <ul class="ta-post" v-if="filterDupTl.length > 0" :style="ableToPost() === false ? 'margin-top: -20px;' : ''">
                 <Feed
                     class="mt-3"
                     data-aos-once="true"
                     data-aos="fade"
-                    v-for="feed in timeline"
+                    v-for="feed in filterDupTl"
                     :key="feed.id"
                     :feed="feed"
                     @refetch="refetch"
@@ -75,7 +75,7 @@
         <modal :clickToClose="false" class="modal-area-type" name="modalPost" width="90%" height="auto" :maxWidth="550"
                :adaptive="true"
                :scrollable="true">
-            <Post @refetch="refetch" @reMount="reMount"></Post>
+            <Post @refetch="refetch"></Post>
         </modal>
 
         <modal class="modal-area-type" name="modalReport" width="90%" height="auto" :maxWidth="375" :adaptive="true"
@@ -110,7 +110,7 @@
                         <!--            </li>-->
                     </ul>
                     <div @click="sendReport">
-                        <button class="btn-default" style="width: 100%">신고</button>
+                        <button class="btn-default" style="width: 100% !important;">신고</button>
                     </div>
                 </div>
             </div>
@@ -187,8 +187,18 @@ import ImageUploaderBtn from "@/components/timeline/post/_imageUploaderBtn.vue";
 import Toast from "@/script/message";
 import SubscribeBtn from "@/components/community/_subscribeBtn.vue";
 import _ from "lodash";
+
 @Component({
-    computed: {...mapGetters(["user"])},
+    computed: {
+        ...mapGetters(["user"]),
+
+        filterDupTl: function () {
+            return _.uniqBy(this['timeline'], (e:any)=>{
+                return e.id;
+                }
+            )
+        }
+    },
     components: {
         Feed,
         PulseLoader,
@@ -270,7 +280,6 @@ export default class Timeline extends Vue {
     }
 
     initData() {
-        console.log('timeline initData')
         this.isAddData = false
         this.hasData = false
         this.limit = 10;
@@ -278,7 +287,7 @@ export default class Timeline extends Vue {
         this.timeline = [];
         this.sort = '';
         this.media = '';
-        window.scrollTo(0,0)
+        window.scrollTo(0, 0)
     }
 
     fetch() {
@@ -290,18 +299,16 @@ export default class Timeline extends Vue {
                     sort: this.sort,
                     media: this.$route.query.media || this.mediaType
                 }
-                console.log('userObj', userObj)
-                const channel_id = this.$route.params.channel_id || this.user.uid;
 
-                this.$api.userTimeline(channel_id, userObj)
+                const channel_id: any = this.$route.name === 'MyChannel' ? this.user.channel_id :   this.$route.params.channel_id;
+
+                this.$api.userTimeline(channel_id , userObj)
                     .then((res: any) => {
-
                         if (this.isAddData) {
                             if (res.result.length > 0) {
                                 this.timeline = [...this.timeline, ...res.result]
                             }
                             else {
-                                console.log('no data')
                                 window.removeEventListener("scroll", this.scrollCheck);
 
                             }
@@ -314,14 +321,13 @@ export default class Timeline extends Vue {
 
                     })
                     .catch((err: AxiosError) => {
-                        this.$router.push('/')
+                        this.$router.push('/communityList')
 
                     })
-                .finally(()=>{
-                    // _.orderBy(this.timeline, 'createdAt', 'asc')
-                    console.log('user timeline',  _.orderBy(this.timeline, 'createdAt', 'desc'))
-                    this.timeline = _.orderBy(this.timeline, 'createdAt', 'desc')
-                })
+                    .finally(() => {
+                        // _.orderBy(this.timeline, 'createdAt', 'asc')
+                        this.timeline = _.orderBy(this.timeline, 'createdAt', 'desc')
+                    })
 
                 break;
             case 'game':
@@ -340,7 +346,6 @@ export default class Timeline extends Vue {
                                 this.timeline = [...this.timeline, ...res.result]
                             }
                             else {
-                                console.log('no data')
                                 this.hasData = false
                                 window.removeEventListener("scroll", this.scrollCheck);
 

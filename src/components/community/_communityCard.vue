@@ -11,7 +11,7 @@
             <h3 class="title" @click="moveCommunity"> {{ community.name }}</h3>
             <p class="desc"> {{ community.description }}</p>
             <dl>
-                <dd>
+                <dd @click="moveMemberList()">
                     <h4>{{ community.member_cnt }}</h4>
                     <p>멤버수</p>
                 </dd>
@@ -44,8 +44,8 @@ import {numToKMB} from "@/script/util"
 export default class CommunityCard extends Vue {
     @Prop() community!: any;
 
-    private bannerImg: string = "img/1500_300_com_banner_default.png";
-    private profileImg: string = 'img/100_100_com_profile_default.png';
+    private bannerImg: string = "/img/1500_300_com_banner_default.png";
+    private profileImg: string = '/img/100_100_com_profile_default.png';
 
     mounted() {
         if (this.community.banner_img) this.bannerImg = this.community.banner_img;
@@ -56,6 +56,9 @@ export default class CommunityCard extends Vue {
 
     moveCommunity() {
         this.$router.push(`/community/${this.community.id}/timeline`)
+    }
+    moveMemberList(){
+        this.$router.push(`/community/${this.community.id}/members`)
     }
 
 //    퍼블리싱 이미지 처리

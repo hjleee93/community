@@ -188,7 +188,6 @@ export default class CommunityList extends Vue {
         this.isAddData = false;
         this.filter = filter;
         if (this.clickManager.doubleClickCheck() === false) {
-            console.log('true')
             if (filter === 0) {
                 this.sort = '';
                 this.fetch()

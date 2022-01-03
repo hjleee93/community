@@ -111,12 +111,14 @@ export default {
             }
         },
         userInfoUpdate(state: any, payload: any) {
+            state.user.picture = payload.picture;
             if (payload.name) {
                 state.user.name = payload.name;
             }
-            if (payload.picture) {
-                state.user.picture = payload.picture;
-            }
+            // if (payload.picture) {
+            //     state.user.picture = payload.picture;
+            // }
+
             if (payload.state_msg) {
                 state.user.profile.state_msg = payload.state_msg;
             }
@@ -165,7 +167,6 @@ export default {
             context.commit('idToken', null);
             // context.commit('developer', null);
             context.commit('loginState', LoginState.logout);
-            console.log(context.getters.loginState)
         },
 
 

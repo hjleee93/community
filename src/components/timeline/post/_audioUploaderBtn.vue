@@ -29,16 +29,16 @@ export default class AudioUploaderBtn extends Vue {
     maxFileNum: number = 5;
 
     uploadFile() {
-        if(this.activeTab === 'SNS') {
+        if (this.activeTab === 'SNS') {
             if (this.$store.getters.imgArr.length > 0 || this.$store.getters.videoArr.file) {
-
-                    this.$modal.show('alertAttrModal')
-                }else{
-                (this.$refs.audio as HTMLElement).click();
-            }
+                this.$modal.show('alertAttrModal')
             }
             else {
                 (this.$refs.audio as HTMLElement).click();
+            }
+        }
+        else {
+            (this.$refs.audio as HTMLElement).click();
 
         }
     }
@@ -55,16 +55,26 @@ export default class AudioUploaderBtn extends Vue {
 
         }
         else if (this.activeTab === 'BLOG') {
+            if (input.files.length > 10) {
+                alert(`최대 파일 개수는 10개입니다.`)
+                return;
+            }
 
             const formData = new FormData();
 
             for (let i = 0; i < input.files.length; i++) {
-                formData.append(input.files[i].name, input.files[i]);
+                if (input.files[i].size > mbToByte(10)) {
+                    alert(`최대 파일 크기는 10mb입니다.`)
+                }
+                else {
+                    formData.append(input.files[i].name, input.files[i]);
+                }
             }
 
             this.$api.fileUploader(formData)
                 .then((res: any) => {
-                    console.log(res)
+
+                    console.log('red', res)
                     this.$store.commit('blogAudioArr', res)
                 })
         }

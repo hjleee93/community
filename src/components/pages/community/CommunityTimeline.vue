@@ -129,7 +129,6 @@ export default class CommunityTimeline extends Vue {
     }
 
     refetch() {
-        console.log('community timeline refetch')
         this.$emit('refetch')
         // this.communityFetch()
     }

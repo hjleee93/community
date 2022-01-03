@@ -21,26 +21,27 @@
             <dt>Games <span>{{ games.length }}</span></dt>
         </dl>
 
+        <transition name="component-fade" mode="out-in">
         <ul>
             <transition-group name="list-complete" class="card-game">
-            <li v-for="game in games" :key="game.id" @click="playGame(game.pathname)">
-                <div
-                    :style="`background: url( ${game &&( game.url_thumb_webp || game.url_thumb )} ) center center no-repeat; background-size: cover;`"></div>
-                <dl>
-                    <dt>
-                        <P :style="`background: url(${game.user && game.user.picture || 'img/zempy.png' }) center center no-repeat; background-size: cover;`"></P>
-                    </dt>
-                    <dd>
-                        <h2>{{ game && game.title }}</h2>
-                        <p>{{ game.user && game.user.name }}</p>
-                        <ul>
-                            <!--                            <li><img src="../../assets/images/charge_game_icon.svg" alt=""></li>-->
-                            <!--                            <li><img src="../../assets/images/hot_game_icon.svg" alt=""></li>-->
-                            <li><img src="../assets/images/zempie_game_icon.svg" alt=""></li>
-                        </ul>
-                    </dd>
-                </dl>
-            </li>
+                <li v-for="game in games" :key="game.pathname" @click="playGame(game.pathname)"  >
+                    <div
+                        :style="`background: url( ${game &&( game.url_thumb_webp || game.url_thumb )} ) center center no-repeat; background-size: cover;`"></div>
+                    <dl>
+                        <dt>
+                            <P :style="`background: url(${game.user && game.user.picture || 'img/300_300_default_profile.png' }) center center no-repeat; background-size: cover;`"></P>
+                        </dt>
+                        <dd>
+                            <h2>{{ game && game.title }}</h2>
+                            <p>{{ game.user && game.user.name }}</p>
+                            <ul>
+                                <!--                            <li><img src="../../assets/images/charge_game_icon.svg" alt=""></li>-->
+                                <!--                            <li><img src="../../assets/images/hot_game_icon.svg" alt=""></li>-->
+                                <li><img src="../assets/images/zempie_game_icon.svg" alt=""></li>
+                            </ul>
+                        </dd>
+                    </dl>
+                </li>
             </transition-group>
 
             <!--            <li class="more-card" v-if="games && games.length>3">-->
@@ -50,7 +51,7 @@
             <!--                </div>-->
             <!--            </li>-->
         </ul>
-
+        </transition>
 
     </div>
 </template>
@@ -130,37 +131,30 @@ export default class gameList extends Vue {
             sort: this.sort,
             dir: this.dir
         };
-        console.log('obj',obj);
-        console.log('category',this.category)
-
 
         switch (this.category) {
             //도전
             case 0:
                 const indieObj = {
-                limit: this.limit,
-                offset: this.offset,
-                category: '0',
-                sort: this.sort,
-                dir: this.dir
-            };
-                console.log('obj',indieObj);
+                    limit: this.limit,
+                    offset: this.offset,
+                    category: '0',
+                    sort: this.sort,
+                    dir: this.dir
+                };
                 this.$api.officalGameList(indieObj)
                     .then((res: any) => {
                         if (this.isAddData) {
                             if (res.result.games.length > 0) {
                                 this.games = [...this.games, ...res.result.games]
-                                console.log(this.games)
                             }
                             else {
-                                console.log('no data')
                                 this.hasData = false
                                 window.removeEventListener("scroll", this.scrollCheck);
 
                             }
                         }
                         else {
-                            console.log('here')
                             this.games = res.result.games;
                             this.isAddData = true
                         }
@@ -175,7 +169,6 @@ export default class gameList extends Vue {
                                 this.games = [...this.games, ...res.result.games]
                             }
                             else {
-                                console.log('no data')
                                 this.hasData = false
                                 window.removeEventListener("scroll", this.scrollCheck);
 
@@ -195,6 +188,7 @@ export default class gameList extends Vue {
     clickCategory(category: number) {
         this.category = category;
         this.initData();
+
         this.fetch();
 
     }
@@ -223,9 +217,7 @@ export default class gameList extends Vue {
             `play/${pathname}`, "_blank")
     }
 
-    userPage(userUid: string) {
-        this.$router.push(`/channel/${userUid}/timeline`)
-    }
+
 
 }
 </script>
@@ -269,5 +261,33 @@ export default class gameList extends Vue {
 
 .swiper-slide {
     cursor: pointer;
+}
+
+
+
+.list-complete-item {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.list-complete-enter, .list-complete-leave-to
+    /* .list-complete-leave-active below version 2.1.8 */
+{
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.list-complete-enter-active {
+    transition: all 1s;
+}
+
+.component-fade-enter-active,
+.component-fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.component-fade-enter-from,
+.component-fade-leave-to {
+    opacity: 0;
 }
 </style>

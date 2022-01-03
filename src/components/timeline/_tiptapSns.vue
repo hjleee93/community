@@ -80,10 +80,10 @@ export default class TiptapSns extends Vue {
     }
 
     prefill() {
-        if(JSON.parse(this.feed.attatchment_files).length > 0) {
+        const attachFiles = Array.isArray(this.feed.attatchment_files) ? this.feed.attatchment_files : JSON.parse(this.feed.attatchment_files)
+        if(attachFiles) {
             this.$store.dispatch('resetAttFiles')
-            for (const file of JSON.parse(this.feed.attatchment_files) ){
-                console.log("123?")
+            for (const file of attachFiles ){
                 if (file.type === 'image') {
                     this.imgPreviewArr.push(file);
                 }

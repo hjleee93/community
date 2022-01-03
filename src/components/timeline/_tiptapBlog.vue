@@ -84,7 +84,7 @@ export default class TiptapBlog extends Vue {
                 Link,
                 Code,
                 Document,
-                // Paragraph,
+                Paragraph,
                 Text,
                 Highlight,
                 Typography,
@@ -312,47 +312,44 @@ export default class TiptapBlog extends Vue {
     }
 
 
-    beforeUnmount() {
+    beforeDestroy() {
         this.editor!.destroy()
     }
 
     prefill() {
-        if (JSON.parse(this.feed.attatchment_files).length > 0) {
-            for (const file of this.feed.attatchment_files) {
+
+        const attachFiles = Array.isArray(this.feed.attatchment_files) ? this.feed.attatchment_files : JSON.parse(this.feed.attatchment_files)
+        if (attachFiles) {
+            for (const file of attachFiles) {
                 if (file.type === 'image') {
                     this.imgPreviewArr.push(file);
                 }
-
             }
-
             this.$store.commit('imgArr', this.imgPreviewArr)
-
             if (this.feed.attatchment_files.type === 'image') {
                 this.imgPreviewArr = this.feed.attatchment_files.img;
             }
         }
-
-        this.postingText = this.feed.content;
     }
 
     @Watch('$store.getters.blogImgArr')
     blogImgArr() {
         for (const img of this.$store.getters.blogImgArr) {
-            this.editor!.chain().focus('end').setImage({src: img.url}).run();
+            this.editor!.chain().focus(null).setImage({src: img.url}).run();
         }
     }
 
     @Watch('$store.getters.blogVideoArr')
     blogVideoArr() {
         for (const video of this.$store.getters.blogVideoArr) {
-            this.editor!.chain().focus('end').setIframe({src: video.url}).run();
+            this.editor!.chain().focus(true).setIframe({src: video.url}).run();
         }
     }
 
     @Watch('$store.getters.blogAudioArr')
     blogAudioArr() {
         for (const audio of this.$store.getters.blogAudioArr) {
-            this.editor!.chain().focus('end').setAudio({src: audio.url}).run();
+            this.editor!.chain().focus(true).setAudio({src: audio.url, name:audio.name}).run();
         }
     }
 }
@@ -366,8 +363,6 @@ export default class TiptapBlog extends Vue {
     justify-content: flex-end !important;
     margin-right: 10px;
     margin-top: 10px;
-
-
 }
 
 .editor-container {
@@ -396,16 +391,6 @@ export default class TiptapBlog extends Vue {
         }
     }
 
-    .audio-wrapper {
-        position: relative;
-        overflow: hidden;
-        width: 360px;
-        height: 100px;
-
-        &.ProseMirror-selectednode {
-            outline: 3px solid #F97316;
-        }
-    }
 }
 
 </style>

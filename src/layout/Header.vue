@@ -144,7 +144,7 @@
                                     <h2>유저이름</h2>
                                     <div v-for="user in userList"
                                          :key="user.id"
-                                         @click="userPage(user.uid)">
+                                         @click="userPage(user.channel_id)">
                                         <dl>
                                             <dt>
                                                 <UserAvatar :user="user" :tag="'span'"></UserAvatar>
@@ -212,8 +212,9 @@
                                 <router-link to="/myChannel" @click.native="isOpenSetting = false"><i
                                     class="uil uil-user"></i>내 채널
                                 </router-link>
-                                <router-link to="/dashBoard" ><i class="uil uil-robot"></i>게임스튜디오</router-link>
-                                <router-link :to="`/user/${user.uid}/settings`" @click.native="isOpenSetting = false"><i
+                                <a @click="moveGameDashBoard"><i class="uil uil-robot"></i>게임스튜디오</a>
+<!--                                <router-link to="/dashBoard" ><i class="uil uil-robot"></i>게임스튜디오</router-link>-->
+                                <router-link :to="`/user/${user.channel_id}/settings`" @click.native="isOpenSetting = false"><i
                                     class="uil uil-setting"></i>계정설정
                                 </router-link>
                             </div>
@@ -222,7 +223,7 @@
                             <h2>그룹</h2>
                             <div>
                                 <router-link @click.native="isOpenSetting = false"
-                                             :to="`/user/${user.uid}/manageJoinedGroup`"><i
+                                             :to="`/user/${user.channel_id}/manageJoinedGroup`"><i
                                     class="uil uil-users-alt"></i>가입한 그룹
                                 </router-link>
                             </div>
@@ -292,7 +293,7 @@ export default {
                     if (this.user.picture) {
                         this.profileImg = this.user.picture
                     } else {
-                        this.profileImg = 'img/zempy.png'
+                        this.profileImg = 'img/300_300_default_profile.png'
                     }
                 }
             })
@@ -354,9 +355,9 @@ export default {
             this.listReset()
             this.$router.push(`/community/${groupId}/timeline`)
         },
-        userPage(userUid) {
+        userPage(channel_id) {
             this.listReset()
-            this.$router.push(`/channel/${userUid}/timeline`)
+            this.$router.push(`/channel/${channel_id}/timeline`)
         },
         gamePage(pathname) {
             this.listReset()
@@ -421,7 +422,6 @@ export default {
                         q: event,
                         limit: 5
                     };
-                    console.log(obj)
 
 
                     this.$api.search(obj)

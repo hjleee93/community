@@ -1,4 +1,4 @@
-import { Node } from '@tiptap/core'
+import {mergeAttributes, Node} from '@tiptap/core'
 
 export interface AudioOptions {
     HTMLAttributes: {
@@ -9,8 +9,7 @@ export interface AudioOptions {
 declare module '@tiptap/core' {
     interface Commands<ReturnType> {
         audio: {
-
-            setAudio: (options: { src: string, type?: string, controls?: boolean }) => ReturnType,
+            setAudio: (options: { src: string, name?:string, type?: string, controls?: boolean }) => ReturnType,
         }
     }
 }
@@ -34,6 +33,9 @@ export default Node.create({
 
     addAttributes() {
         return {
+            name:{
+                default: null,
+            },
             src: {
                 default: null,
             },
@@ -54,7 +56,9 @@ export default Node.create({
 
 
     renderHTML({ HTMLAttributes }) {
-        return ['div', this.options.HTMLAttributes, ['audio', HTMLAttributes]]
+        return ['div', this.options.HTMLAttributes, ['audio', HTMLAttributes]
+            // , ['p',HTMLAttributes.name]
+        ]
     },
 
     addCommands() {

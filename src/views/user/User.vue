@@ -25,7 +25,7 @@
                     <UserAvatar :key='userInfo.id' :user="userInfo" :tag="'div'"></UserAvatar>
 
                     <!--                    <div-->
-                    <!--                        :style="`background:url(${userInfo.picture ||  '../../assets/images/zempy.png' }) center center / cover no-repeat; background-size:cover;`">-->
+                    <!--                        :style="`background:url(${userInfo.picture ||  '../../assets/images/300_300_default_profile.png' }) center center / cover no-repeat; background-size:cover;`">-->
                     <!--                        &lt;!&ndash;                        <span></span>&ndash;&gt;-->
                     <!--                    </div>-->
                     <h2>
@@ -49,43 +49,43 @@
                             ? 'active'
                             : ''
                     ">
-                    <router-link :to="`/channel/${userInfo.uid}/timeline`">
+                    <router-link :to="`/channel/${userInfo.channel_id}/timeline`">
                         <p><i class="uil uil-clock-three"></i></p>
                         <h2>타임라인(ALL)</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'sns' ? 'active' : ''">
-                    <router-link :to="`/channel/${userInfo.uid}/timeline?media=sns`">
+                    <router-link :to="`/channel/${userInfo.channel_id}/timeline?media=sns`">
                         <p><i class="uil uil-comment-dots"></i></p>
                         <h2>SNS</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'blog' ? 'active' : ''">
-                    <router-link :to="`/channel/${userInfo.uid}/timeline?media=blog`">
+                    <router-link :to="`/channel/${userInfo.channel_id}/timeline?media=blog`">
                         <p><i class="uil uil-edit"></i></p>
                         <h2>블로그</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'image' ? 'active' : ''">
-                    <router-link :to="`/channel/${userInfo.uid}/timeline?media=image`">
+                    <router-link :to="`/channel/${userInfo.channel_id}/timeline?media=image`">
                         <p><i class="uil uil-image-edit"></i></p>
                         <h2>이미지</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'video' ? 'active' : ''">
-                    <router-link :to="`/channel/${userInfo.uid}/timeline?media=video`">
+                    <router-link :to="`/channel/${userInfo.channel_id}/timeline?media=video`">
                         <p><i class="uil uil-play-circle"></i></p>
                         <h2>동영상</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'sound' ? 'active' : ''">
-                    <router-link :to="`/channel/${userInfo.uid}/timeline?media=sound`">
+                    <router-link :to="`/channel/${userInfo.channel_id}/timeline?media=sound`">
                         <p><i class="uil uil-music"></i></p>
                         <h2>오디오</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.name === 'AllGameCard' ? 'active' : ''">
-                    <router-link :to="`/channel/${userInfo.uid}/games`">
+                    <router-link :to="`/channel/${userInfo.channel_id}/games`">
                         <p><i class="uil uil-map-pin-alt"></i></p>
                         <h2>게임</h2>
                     </router-link>
@@ -167,6 +167,7 @@ export default class UserHeader extends Vue {
         this.$store.dispatch("loginState")
             .then(() => {
                 this.fetch()
+
             })
             .finally(() => {
 
@@ -184,7 +185,7 @@ export default class UserHeader extends Vue {
                     this.profileImg = this.userInfo.picture
                 }
                 else {
-                    this.profileImg = 'img/zempy.png'
+                    this.profileImg = 'img/300_300_default_profile.png'
                 }
                 this.followKey = Date.now();
             })
@@ -192,7 +193,6 @@ export default class UserHeader extends Vue {
                 this.postCntFetch(this.userInfo.id);
             })
             .catch((err: any) => {
-
             })
     }
 
@@ -212,7 +212,7 @@ export default class UserHeader extends Vue {
                 //todo: follow 버튼 새로고침 처리
                 //todo: 백엔드 수정해야됨
                 if (res.is_following) {
-                    console.log('following...')
+                    // console.log('following...')
                 }
 
             })
@@ -224,8 +224,6 @@ export default class UserHeader extends Vue {
 
 
     currPage(routeName: string) {
-
-        console.log(this.$route.name)
 
         let result = '';
         if ((routeName === this.$route.name) && Object.keys(this.$route.query).length === 0) {
@@ -244,7 +242,7 @@ export default class UserHeader extends Vue {
 
     movePage(page: string) {
         if (page === 'timeline') {
-            this.$router.push(`/channel/${this.userInfo && this.userInfo.uid}/timeline`)
+            this.$router.push(`/channel/${this.userInfo && this.userInfo.channel_id}/timeline`)
         }
         else if (page === 'following') {
 

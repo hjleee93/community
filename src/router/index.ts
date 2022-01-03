@@ -47,16 +47,16 @@ const routes: Array<RouteConfig> = [
             }
         }
     },
-    {
-        path: '/update',
-        name: 'Update',
-        meta: {
-            layout: LayoutNone,
-            title: 'Login',
-            transition: 'fade-in-down'
-        },
-        component: () => import("@/views/Update.vue"),
-    },
+    // {
+    //     path: '/update',
+    //     name: 'Update',
+    //     meta: {
+    //         layout: LayoutNone,
+    //         title: 'Login',
+    //         transition: 'fade-in-down'
+    //     },
+    //     component: () => import("@/views/Update.vue"),
+    // },
     {
         path: '/login',
         name: 'Login',
@@ -109,7 +109,7 @@ const routes: Array<RouteConfig> = [
         component: () => import(/* webpackChunkName: "Join" */ '@/views/user/GoogleJoin.vue')
     },
     {
-        path: '/user/:userUid/settings',
+        path: '/user/:channel_id/settings',
         name: 'UserSettingHeader',
         meta: {
             layout: LayoutDefault,
@@ -119,7 +119,7 @@ const routes: Array<RouteConfig> = [
         component: () => import("@/views/user/UserSetting.vue"),
         children: [
             {
-                path: '/user/:userUid/settings',
+                path: '/user/:channel_id/settings',
                 name: 'UserGeneralSetting.vue',
                 meta: {
                     layout: LayoutDefault,
@@ -129,7 +129,7 @@ const routes: Array<RouteConfig> = [
                 component: () => import("@/components/pages/user/UserGeneralSetting.vue"),
             },
             {
-                path: '/user/:userUid/manageJoinedGroup',
+                path: '/user/:channel_id/manageJoinedGroup',
                 name: 'ManageJoinedGroup.vue',
                 meta: {
                     layout: LayoutDefault,
@@ -140,7 +140,7 @@ const routes: Array<RouteConfig> = [
             },
 
             {
-                path: '/user/:userUid/changePassword',
+                path: '/user/:channel_id/changePassword',
                 name: 'ChangePassword',
                 component: () => import("@/views/ChangePassword.vue"),
             },
@@ -165,17 +165,17 @@ const routes: Array<RouteConfig> = [
                 component: () => import("@/components/pages/user/FollowingList.vue"),
             },
             {
-                path: '/user/:userUid/notificationList',
+                path: '/user/:channel_id/notificationList',
                 name: 'NotificationList',
                 component: () => import('@/views/NotificationList.vue'),
             },
             {
-                path: '/user/:userUid/messageList',
+                path: '/user/:channel_id/messageList',
                 name: 'MessageList',
                 component: () => import('@/views/MessageList.vue'),
             },
             {
-                path: '/user/:userUid/leave',
+                path: '/user/:channel_id/leave',
                 name: 'Leave',
                 meta: {
                     layout: LayoutDefault,
@@ -185,7 +185,7 @@ const routes: Array<RouteConfig> = [
                 component: () => import('@/views/Leave.vue'),
             },
             {
-                path: '/user/:userUid/changePwd',
+                path: '/user/:channel_id/changePwd',
                 name: 'ChangePwd',
                 meta: {
                     layout: LayoutDefault,
@@ -343,7 +343,7 @@ const routes: Array<RouteConfig> = [
         beforeEnter: async function (to, from, next) {
             const loginState = await store.dispatch("loginState");
 
-            if ((loginState === LoginState.login) && (store.getters.user.uid === to.params.channel_id)) {
+            if ((loginState === LoginState.login) && (store.getters.user.channel_id === to.params.channel_id)) {
                 await router.push('/myChannel')
             }
             else {
@@ -361,10 +361,9 @@ const routes: Array<RouteConfig> = [
                     transition: 'fade-in-down'
                 },
                 beforeEnter: async function (to, from, next) {
-                    console.log("?")
                     const loginState = await store.dispatch("loginState");
 
-                    if ((loginState === LoginState.login) && (store.getters.user.uid === to.params.channel_id)) {
+                    if ((loginState === LoginState.login) && (store.getters.user.channel_id === to.params.channel_id)) {
                         await router.push('/myChannel')
                     }
                     else {
@@ -499,6 +498,16 @@ const routes: Array<RouteConfig> = [
                 meta: {
                     layout: LayoutStudio,
                     title: 'AddGameInfo',
+                    transition: 'fade-in-down'
+                },
+            },
+            {
+                path: '/addGameFile',
+                name: 'AddGameFile',
+                component: () => import(/* webpackChunkName: "about" */ "@/components/pages/studio/AddGameFile.vue"),
+                meta: {
+                    layout: LayoutStudio,
+                    title: 'AddGameFile',
                     transition: 'fade-in-down'
                 },
             },

@@ -73,7 +73,7 @@
             <dt>
                 <div class="ta-myinfo">
                     <UserAvatar :user="user" :tag="'p'"></UserAvatar>
-<!--                    <p :style="`background:url(${user.picture || 'img/zempy.png'}) center; background-size:cover;`">-->
+<!--                    <p :style="`background:url(${user.picture || 'img/300_300_default_profile.png'}) center; background-size:cover;`">-->
                         <!--                        <span><i class="uil uil-camera"></i></span>-->
 <!--                    </p>-->
                     <h2>{{ user.name }}</h2>
@@ -172,7 +172,7 @@
                         <template v-if="communityList && communityList.length > 0">
                             <dl v-for="community in communityList" @click="moveCommunity(community.id)">
                                 <dt><span
-                                    :style="`background: url(${community.profile_img || '../../assets/images/100_100_com_profile.png'}) center center no-repeat; background-size: cover;`"></span>
+                                    :style="`background: url(${community.profile_img || 'img/100_100_com_profile.png'}) center center no-repeat; background-size: cover;`"></span>
                                 </dt>
                                 <dd>
                                     <h2>{{ community.name }}</h2>
@@ -254,7 +254,6 @@ export default class MyChannel extends Vue {
     mounted() {
         this.$store.dispatch("loginState")
             .then((res: any) => {
-                console.log('res', res)
                 if (res === 4) {
                     this.postCntFetch(this.user.id)
                     this.joinedComFetch(this.user.id)

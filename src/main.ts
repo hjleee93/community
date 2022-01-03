@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import Component from 'vue-class-component'
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -66,6 +67,13 @@ Vue.component('v-select', vSelect);
 Vue.use(DropdownMenu);
 Vue.use(VModal, {dynamic: true});
 Vue.use(VueTilt);
+
+
+Component.registerHooks([
+    'beforeRouteEnter',
+    'beforeRouteLeave',
+    'beforeRouteUpdate'
+])
 
 
 Vue.config.productionTip = false;

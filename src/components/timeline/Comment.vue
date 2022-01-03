@@ -2,7 +2,7 @@
     <dl v-if="!isEditing">
         <dt>
             <dl>
-                <dt @click="moveUserChannel(comment.user.uid)">
+                <dt @click="moveUserChannel(comment.user.channel_id)">
                     <UserAvatar :user="comment.user" :tag="'span'"></UserAvatar>
                 </dt>
                 <dd>
@@ -16,7 +16,7 @@
                             <i class="uil uil-heart-sign"></i>
                         </a>
                         <a v-else :key="isLiked" @click="sendLike(true)">
-                            <i class="uil uil-heart-sign"
+                            <i class="xi-heart like-icon"
                                style="color:red"></i>
                         </a>
                         좋아요 {{ likeCnt }}개
@@ -148,8 +148,8 @@ export default class Comment extends Vue {
 
     }
 
-    moveUserChannel(uid: string) {
-        this.$router.push(`/channel/${uid}/timeline`)
+    moveUserChannel(channel_id: string) {
+        this.$router.push(`/channel/${channel_id}/timeline`)
     }
 
 }

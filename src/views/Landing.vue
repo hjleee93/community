@@ -104,7 +104,7 @@
                             <dl>
                                 <dt>
                                     <dl>
-                                        <dt :style="`background: url(${game.user && game.user.picture || 'img/zempy.png' }) center center / cover no-repeat; background-size: cover;`"></dt>
+                                        <dt :style="`background: url(${game.user && game.user.picture || 'img/300_300_default_profile.png' }) center center / cover no-repeat; background-size: cover;`"></dt>
                                         <dd>
                                             <h3>{{ game && game.title }}</h3>
                                             <p>{{ game.user && game.user.name }}</p>
@@ -144,7 +144,7 @@
 
                             </div>
                             <dl>
-                                <dt :style="`background: url(${game.user && game.user.picture || 'img/zempy.png' }) center center / cover no-repeat; background-size: cover;`"></dt>
+                                <dt :style="`background: url(${game.user && game.user.picture || 'img/300_300_default_profile.png' }) center center / cover no-repeat; background-size: cover;`"></dt>
                                 <dd>
                                     <h3>{{ game && game.title }}</h3>
                                     <p>{{ game.user && game.user.name }}</p>

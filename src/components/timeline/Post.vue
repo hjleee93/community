@@ -37,15 +37,19 @@
             </div>
             <div class="mp-midi" v-if="videoSrc.url ||audioPreviewArr.length > 0 ">
                 <div v-if="videoSrc.url">
+
                     <span @click="deleteVideo" class="delete-btn"><i class="uis uis-times-circle"></i></span>
                     <video width="100%" height="315" :src="videoSrc.url" title="YouTube video player"
                            frameborder="0"
                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                            allowfullscreen></video>
                 </div>
-                <ul v-if="audioPreviewArr.length > 0" v-for="audio in audioPreviewArr">
-                    <audio controls :src="audio.url"></audio>
-                    <span class="audio-cancel-btn" @click="deleteAudio"><i class="uis uis-times-circle"></i></span>
+                <ul v-if="audioPreviewArr.length > 0" v-for="audio in audioPreviewArr" class="audio-wrapper">
+                    <div class="btn-container">
+                        <audio controls :src="audio.url"></audio>
+                        <span class="audio-cancel-btn" @click="deleteAudio"><i class="uis uis-times-circle"></i></span>
+                    </div>
+                    <p> {{ audio.name || audio.file.name }}</p>
                 </ul>
             </div>
         </template>
@@ -207,9 +211,9 @@ export default class Post extends Vue {
     private selectedCategory: any[] = [];
 
     private attFiles: any[] = [];
-    updateImgArr:any = [];
-    updateAudioArr:any = [];
-    updateVideo:any = {};
+    updateImgArr: any = [];
+    updateAudioArr: any = [];
+    updateVideo: any = {};
 
     textPreview: any = "";
     userTag: string = "";
@@ -257,7 +261,6 @@ export default class Post extends Vue {
     }
 
     beforeDestroy() {
-        console.log("destroy???")
         this.init()
         this.$emit('reMount')
 
@@ -265,10 +268,10 @@ export default class Post extends Vue {
 
     prefill() {
         this.activeTab = this.feed.post_type;
-        console.log(JSON.parse(this.feed.attatchment_files))
-        if (JSON.parse(this.feed.attatchment_files).length > 0) {
+        const attachFiles = Array.isArray(this.feed.attatchment_files) ? this.feed.attatchment_files : JSON.parse(this.feed.attatchment_files)
+        if (attachFiles) {
             this.$store.dispatch('resetAttFiles')
-            for (const file of JSON.parse(this.feed.attatchment_files)) {
+            for (const file of attachFiles) {
                 if (this.activeTab === 'SNS') {
                     if (file.type === 'image') {
                         this.$store.commit('imgArr', file)
@@ -292,7 +295,9 @@ export default class Post extends Vue {
                     else if (file.type === 'video') {
                         this.$store.commit('blogVideoArr', file)
                     }
-                    console.log("?", this.$store.getters.blogImgArr)
+                    // console.log("blogAudioArr", this.$store.getters.blogAudioArr)
+                    // console.log("blogVideoArr", this.$store.getters.blogVideoArr)
+                    // console.log("blogImgArr", this.$store.getters.blogImgArr)
                 }
 
             }
@@ -329,7 +334,7 @@ export default class Post extends Vue {
         }
         else {
             this.isPostEmpty() ? this.activeTab = type : this.$modal.show('alertModal');
-            this.isEditorEmpty = true
+            // this.isEditorEmpty = true
         }
 
     }
@@ -340,12 +345,13 @@ export default class Post extends Vue {
             !this.isEditorEmpty ||
             this.$store.getters.imgArr.length > 0 ||
             this.$store.getters.audioArr.length > 0
+            || this.feed.content
             // || !(Object.keys(this.feed).length === 0)
         ) {
-            console.log(this.attFiles.length !== 0)
-            console.log(this.isEditorEmpty)
-            console.log(this.$store.getters.imgArr.length)
-            console.log(this.$store.getters.audioArr.length)
+            // console.log(this.attFiles.length !== 0)
+            // console.log(this.isEditorEmpty)
+            // console.log(this.$store.getters.imgArr.length)
+            // console.log(this.$store.getters.audioArr.length)
             return false;
         }
         else {
@@ -375,10 +381,8 @@ export default class Post extends Vue {
     //포스팅 업로드
     async uploadPost() {
         this.attFiles = [];
-
         let date = this.reserved_date + "T" + this.reserved_time;
         let scheduledTime = moment(date).valueOf();
-
 
         if (this.activeTab === 'BLOG') {
             if (this.$store.getters.blogImgArr.length > 0) {
@@ -387,7 +391,6 @@ export default class Post extends Vue {
                         this.$store.getters.blogImgArr.splice(i, 1)
                     }
                 }
-                console.log(this.$store.getters.blogImgArr)
                 this.attFiles.push(...this.$store.getters.blogImgArr)
             }
             if (this.$store.getters.blogVideoArr.length > 0) {
@@ -399,8 +402,9 @@ export default class Post extends Vue {
                 this.attFiles.push(...this.$store.getters.blogVideoArr)
             }
             if (this.$store.getters.blogAudioArr.length > 0) {
+
                 for (let i = 0; i < this.$store.getters.blogAudioArr.length; i++) {
-                    if (!this.$store.getters.postContents.includes(`<audio src="${this.$store.getters.blogAudioArr[i].url}"`)) {
+                    if (!this.$store.getters.postContents.includes(`src="${this.$store.getters.blogAudioArr[i].url}"`)) {
                         this.$store.getters.blogAudioArr.splice(i, 1)
                     }
                 }
@@ -410,8 +414,6 @@ export default class Post extends Vue {
         else {
             this.attFiles = await this.uploadAtt();
         }
-
-        console.log('this.upload', this.attFiles)
         if (this.$store.getters.postContents.length === 0) {
             this.$modal.show('minChar')
         }
@@ -431,7 +433,7 @@ export default class Post extends Vue {
                     // },
                 ],
                 game_id: "",
-                channel_id: this.user.uid,
+                channel_id: this.user.channel_id,
                 ...this.$store.getters.currPage,
                 // portfolio_ids: [
                 // ],
@@ -440,7 +442,7 @@ export default class Post extends Vue {
 
             this.$api.uploadPost(obj)
                 .then((res: AxiosResponse) => {
-                    // this.$emit('refetch')
+                    this.$emit('refetch')
                     this.toast.successToast("포스팅이 완료되었습니다.")
                 })
                 .catch((err: AxiosError) => {
@@ -460,46 +462,75 @@ export default class Post extends Vue {
     //포스팅 수정
     async updatePost() {
 
-        if (this.activeTab === 'BLOG') {
-            if (this.$store.getters.blogImgArr.length > 0) {
-                for (let i = 0; i < this.$store.getters.blogImgArr.length; i++) {
-                    if (!this.$store.getters.postContents.includes(`"attr-img" src="${this.$store.getters.blogImgArr[i].url}"`)) {
-                        this.$store.getters.blogImgArr.splice(i, 1)
-                    }
-                }
-                this.attFiles.push(...this.$store.getters.blogImgArr)
-            }
-            if (this.$store.getters.blogVideoArr.length > 0) {
-                for (let i = 0; i < this.$store.getters.blogVideoArr.length; i++) {
-                    if (!this.$store.getters.postContents.includes(`<iframe src="${this.$store.getters.blogVideoArr[i].url}"`)) {
-                        this.$store.getters.blogVideoArr.splice(i, 1)
-                    }
-                }
-                this.attFiles.push(...this.$store.getters.blogVideoArr)
-            }
-            if (this.$store.getters.blogAudioArr.length > 0) {
-                for (let i = 0; i < this.$store.getters.blogAudioArr.length; i++) {
-                    if (!this.$store.getters.postContents.includes(`<audio src="${this.$store.getters.blogAudioArr[i].url}"`)) {
-                        this.$store.getters.blogAudioArr.splice(i, 1)
-                    }
-                }
-                this.attFiles.push(...this.$store.getters.blogAudioArr)
-            }
+        // if (this.activeTab === 'BLOG') {
+        //     if (this.$store.getters.blogImgArr) {
+        //         // for (let i = 0; i < this.$store.getters.blogImgArr.length; i++) {
+        //         //     if (!this.$store.getters.postContents.includes(`"attr-img" src="${this.$store.getters.blogImgArr[i].url}"`)) {
+        //         //         this.$store.getters.blogImgArr.splice(i, 1)
+        //         //     }
+        //         // }
+        //         this.attFiles.push(this.$store.getters.blogImgArr)
+        //     }
+        //     if (this.$store.getters.blogVideoArr) {
+        //         // for (let i = 0; i < this.$store.getters.blogVideoArr.length; i++) {
+        //         //     if (!this.$store.getters.postContents.includes(`<iframe src="${this.$store.getters.blogVideoArr[i].url}"`)) {
+        //         //         this.$store.getters.blogVideoArr.splice(i, 1)
+        //         //     }
+        //         // }
+        //         this.attFiles.push(this.$store.getters.blogVideoArr)
+        //     }
+        //     if (this.$store.getters.blogAudioArr) {
+        //
+        //         // for (let i = 0; i < this.$store.getters.blogAudioArr.length; i++) {
+        //         //     if (!this.$store.getters.postContents.includes(` src="${this.$store.getters.blogAudioArr[i].url}"`)) {
+        //         //         this.$store.getters.blogAudioArr.splice(i, 1)
+        //         //     }
+        //         // }
+        //         this.attFiles.push(this.$store.getters.blogAudioArr)
+        //     }
+        // }
+        // else {
+        //     this.attFiles = await this.uploadAtt();
+        // }
+        // console.log('this.attFiles', this.attFiles)
+        // console.log('this.$store.getters.blogAudioArr', this.$store.getters.blogAudioArr)
+        // console.log('this.updateAudioArr', this.updateAudioArr)
+        // if (this.updateImgArr.length > 0) {
+        //     this.attFiles.unshift(...this.updateImgArr)
+        // }
+        // if (this.updateAudioArr.length > 0) {
+        //     this.attFiles.unshift(...this.updateAudioArr)
+        // }
+        // if (Object.keys(this.updateVideo).length !== 0) {
+        //     this.attFiles.unshift(this.updateVideo)
+        // }
+// console.log('====', this.attFiles)
+
+        //todo: 백엔드 수정후 변경
+        if(this.$store.getters.postContents.includes('<audio')){
+            this.attFiles.push( {
+                priority: 0,
+                url:'audio',
+                type:'sound'
+            })
         }
-        else {
-            this.attFiles = await this.uploadAtt();
+        if(this.$store.getters.postContents.includes('<iframe')){
+            this.attFiles.push( {
+                priority: 0,
+                url:'video',
+                type:'video'
+            })
+
         }
-        if(this.updateImgArr.length > 0){
-            this.attFiles.unshift(...this.updateImgArr)
-        }
-        if(this.updateAudioArr.length > 0){
-            this.attFiles.unshift(...this.updateAudioArr)
-        }
-        if( Object.keys(this.updateVideo).length !== 0){
-            this.attFiles.unshift(this.updateVideo)
+        if(this.$store.getters.postContents.includes('<img')){
+            this.attFiles.push( {
+                priority: 0,
+                url:'image',
+                type:'image'
+            })
         }
 
-        console.log('attFiles',this.attFiles)
+
         const obj = {
             post_id: this.feed.id,
             user_uid: this.user.uid,
@@ -511,14 +542,15 @@ export default class Post extends Vue {
             // user_tagId: this.$store.getters.userTagList,
             // user_tagId:'123',
             game_id: "",
-            channel_id: this.user.uid,
+            channel_id: this.user.channel_id,
             ...this.$store.getters.currPage,
             portfolio_ids: [""],
             scheduled_for: null
         }
-        console.log('수정',obj)
+
         this.$api.updatePost(obj)
             .then((res: AxiosResponse) => {
+                this.$emit('refetch')
                 this.toast.successToast("포스팅이 수정되었습니다.")
             })
             .catch((err: AxiosError) => {
@@ -570,21 +602,23 @@ export default class Post extends Vue {
     }
 
     async uploadAtt() {
-        const imgFiles:any = [];
-        const audioFiles:any = [];
+        const imgFiles: any = [];
+        const audioFiles: any = [];
 
         this.$store.getters.imgArr.forEach((img) => {
-            if(img.file){
+            if (img.file) {
                 imgFiles.push(img)
-            }else{
+            }
+            else {
                 this.updateImgArr.push(img)
             }
         })
 
         this.$store.getters.audioArr.forEach((audio) => {
-            if(audio.file){
+            if (audio.file) {
                 audioFiles.push(audio)
-            }else{
+            }
+            else {
                 this.updateAudioArr.push(audio)
             }
         })
@@ -602,7 +636,8 @@ export default class Post extends Vue {
 
         if (this.videoSrc.file) {
             formData.append(this.videoSrc.file.name, this.videoSrc.file)
-        }else{
+        }
+        else {
             this.updateVideo = this.videoSrc;
         }
 
@@ -918,14 +953,45 @@ export default class Post extends Vue {
     }
 
     .audio-wrapper {
-        position: relative;
-        overflow: hidden;
-        width: 360px;
-        height: 100px;
+        margin: 20px 20px 0 20px;
+        display: flex;
+        align-items: center;
+        border-radius: 5px;
+        background: #f5f5f5;
+        flex-direction: column;
+
+        audio {
+            width: 100%;
+        }
+
+        p {
+            width: 100%;
+            height: 30px;
+            padding-left: 20px;
+        }
 
         &.ProseMirror-selectednode {
             outline: 3px solid #F97316;
         }
+    }
+}
+
+.audio-wrapper {
+    margin: 20px 20px 0 20px;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    background: #f5f5f5;
+    flex-direction: column;
+
+    audio {
+        width: 100%;
+    }
+
+    p {
+        width: 100%;
+        height: 30px;
+        padding-left: 20px;
     }
 }
 
@@ -936,10 +1002,11 @@ export default class Post extends Vue {
 
 .cancel-btn {
     margin-right: 10px;
-    background-color:#dc3545;
+    background-color: #dc3545;
 }
-.cancel-btn:hover{
-    color:#dc3545;
+
+.cancel-btn:hover {
+    color: #dc3545;
     background: rgba(220, 53, 69, 0.27);
 }
 
@@ -962,10 +1029,24 @@ export default class Post extends Vue {
     cursor: pointer;
     display: flex;
     justify-content: flex-end;
-    width: 37%;
+
 }
 
 .swiper-wrapper, .swiper-container {
     height: 130px !important;
+}
+
+.mp-midi {
+    padding: 0px !important;
+}
+
+.btn-container {
+    padding-bottom: 0px !important;
+    width: 100%;
+    padding-top: 0px !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: auto !important;
 }
 </style>

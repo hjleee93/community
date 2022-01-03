@@ -180,7 +180,7 @@ export default class Login extends Vue {
     private form = {
         email: "",
         username: "",
-        nickname: "",
+        // nickname: "",
         policyAgreement1: false
     };
     isEmailReadOnly = false;
@@ -234,7 +234,7 @@ export default class Login extends Vue {
 
         const obj={
             name:this.form.username,
-            nickname:this.form.nickname
+            // nickname:this.form.nickname
         }
         const result = await this.$api.signUp(obj);
 

@@ -1,5 +1,5 @@
 <template>
-    <div class="content" v-if="feed">
+    <div class="content" v-if="feed" style="min-height: 1024px;">
         <div class=" area-view">
             <ul class="ta-post">
                 <li class="tap-list">
@@ -21,12 +21,20 @@
                         </dt>
                         <dd>
                             <FollowBtn :member="feed.user" @refetch="refetch" :key="generateKey()"></FollowBtn>
+
                         </dd>
+
                     </dl>
 
                     <div class="tapl-content" v-html="feed.content"></div>
+                    <template v-if="feed.post_type==='SNS' && feed.attatchment_files.length === 1 && feed.attatchment_files[0].type === 'image'">
+                        <img style="height: 88%;
+                             margin: 0 auto;
+                             display: flex;" :src="feed.attatchment_files[0].url"
+                             class="feed-img mt-3"/>
+                    </template>
                     <template
-                        v-if="feed.post_type==='SNS' && feed.attatchment_files && feed.attatchment_files.length > 0">
+                        v-else-if="feed.post_type==='SNS' && feed.attatchment_files && feed.attatchment_files.length > 0">
                         <div class="tapl-movie-img" v-if="feed.attatchment_files[0].type === 'image' ">
                             <swiper class="swiper" :options="swiperOption" style="height: 350px;">
                                 <template v-for="file in feed.attatchment_files">
@@ -50,7 +58,11 @@
                                     height="240"
                                     controls
                                     :src="file.url"></video>
-                                <audio v-if="file.type === 'sound' " controls :src="file.url"></audio>
+                                <!--                                <audio v-if="file.type === 'sound' " controls :src="file.url"></audio>-->
+                                <div class="audio" v-if="file.type === 'sound'">
+                                    <audio controls :src="file.url"></audio>
+                                    <p>{{ file.name }}</p>
+                                </div>
                             </div>
                         </div>
                     </template>
@@ -67,6 +79,27 @@
                                     </a>
                                 </li>
                             </ul>
+                        </li>
+                        <li>
+                            <dropdown-menu :overlay="false" class="tapl-more-dropdown"
+                                           :isOpen="isOpenReportModal" @closed="isOpenReportModal= false;"
+                            >
+                                <a class="btn-circle-none pt6" slot="trigger"
+                                   @click=" isOpenReportModal= !isOpenReportModal"><i
+                                    class="uil uil-ellipsis-h font25"></i></a>
+                                <div slot="body" class="more-list fixed">
+                                    <template v-if="user && (user.id === (feed.user && feed.user.id))">
+                                        <a @click="openEdit">포스팅 수정</a>
+                                        <a @click="deletePost">포스팅 삭제</a>
+
+                                    </template>
+                                    <template v-else>
+                                        <router-link :to="`/channel/${feed.user&&feed.user.channel_id}/timeline`">유저 채널 방문
+                                        </router-link>
+                                        <a v-if="user" @click="report">포스팅 신고</a>
+                                    </template>
+                                </div>
+                            </dropdown-menu>
                         </li>
                         <!--                    <li>-->
                         <!--                        <router-link to="#"><i class="uil uil-bookmark" style="font-size:24px; color:#ff6e17;"></i>-->
@@ -186,6 +219,34 @@
                 </div>
             </div>
         </modal>
+
+        <modal :clickToClose="false" class="modal-area-type" name="deleteModal" width="90%" height="auto"
+               :maxWidth="380"
+               :adaptive="true"
+               :scrollable="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('deleteModal')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2> 삭제된 포스트는 복구가 불가능합니다.<br/>해당 포스트를 삭제하시겠습니까?</h2>
+                    <div>
+                        <button class="btn-default w48p" @click="yesDeletePost">네</button>
+                        <button class="btn-gray w48p" @@click="$modal.hide('deleteModal')">아니오</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
+
+        <modal :clickToClose="false" class="modal-area-type" name="modalPost" width="90%" height="auto" :maxWidth="550"
+               :adaptive="true"
+               :scrollable="true">
+            <Post @refetch="refetch"></Post>
+        </modal>
+
     </div>
 </template>
 
@@ -205,6 +266,7 @@ import CommentInput from "@/components/comment/_commentInput.vue";
 import Comment from "@/components/timeline/Comment.vue";
 import {scrollDone} from "@/script/scrollManager";
 import {Swiper, SwiperSlide} from "vue-awesome-swiper";
+import Post from "@/components/timeline/Post.vue";
 
 @Component({
     components: {
@@ -215,6 +277,8 @@ import {Swiper, SwiperSlide} from "vue-awesome-swiper";
         Comment,
         Swiper,
         SwiperSlide,
+        Post
+
     },
     computed: {...mapGetters(["user"])},
 })
@@ -240,6 +304,7 @@ export default class FeedDetail extends Vue {
         }
     }
 
+    isOpenReportModal = false;
 
     mounted() {
         this.$store.dispatch("loginState")
@@ -284,6 +349,12 @@ export default class FeedDetail extends Vue {
             this.commentFetch();
         }
 
+    }
+
+
+    openEdit() {
+        this.$modal.show('modalPost')
+        this.$store.commit('feed', this.feed)
     }
 
     commentInit() {
@@ -367,13 +438,49 @@ export default class FeedDetail extends Vue {
     closeImgModal() {
         (this.$refs.originImgModal as any).hide();
     }
-    generateKey(){
+
+    generateKey() {
         return Date.now();
     }
+
+    deletePost() {
+        this.$emit('deleteFeed', this.feed.id)
+        this.$modal.show('deleteModal')
+    }
+
+    yesDeletePost() {
+        this.$modal.hide('deleteModal')
+
+
+        this.$api.deletePost(this.feedId)
+            .then((res: any) => {
+                console.log(res)
+                if (res.success) {
+                    this.$toasted.clear();
+                    this.toast.successToast("포스팅이 삭제되었습니다.")
+                }
+                this.$router.push('/')
+            })
+            .catch((err: any) => {
+
+            })
+    }
+
+    report() {
+        this.$emit('reportPost', this.feed.id)
+        this.isOpenReportModal = !this.isOpenReportModal
+        this.$modal.show('modalReport')
+    }
+
 }
 </script>
 
 <style lang="scss" scoped>
+.tapl-movie-img {
+    padding-bottom: 0px !important;
+    height: auto !important;
+}
+
 .tapl-content {
     word-break: break-all;
 }
@@ -437,13 +544,23 @@ export default class FeedDetail extends Vue {
     }
 }
 
-audio {
-    width: 80%;
+.audio {
     margin: 20px 20px 0 20px;
     display: flex;
     align-items: center;
     border-radius: 5px;
     background: #f5f5f5;
+    flex-direction: column;
+
+    audio {
+        width: 100%;
+    }
+
+    p {
+        width: 100%;
+        height: 30px;
+        padding-left: 20px;
+    }
 }
 
 </style>

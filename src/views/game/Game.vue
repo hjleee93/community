@@ -169,7 +169,7 @@ export default class GameHeader extends Vue {
             })
         this.$api.getProject(Number(this.gameId))
             .then((res: any) => {
-                console.log('getProject', eStage[res.stage])
+                // console.log('getProject', eStage[res.stage])
             })
             .catch((err: any) => {
 

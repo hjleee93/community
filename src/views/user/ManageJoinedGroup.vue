@@ -3,8 +3,7 @@
         <dl class="area-title">
             <dt>Manager Group</dt>
         </dl>
-
-{{communityList.length}}
+        <transition name="component-fade" mode="out-in">
         <ul class="card-manage-group" v-if="communityList.length > 0">
             <CommunityCard
                 v-for="community in communityList"
@@ -22,7 +21,7 @@
                 <img src="../../assets/images/not-found.png" width="100px" height="100px"/>
             </div>
 
-
+        </transition>
         <modal :clickToClose="false" class="modal-area-type" name="deleteConfirm" width="90%" height="auto"
                :maxWidth="380"
                :scrollable="true"
@@ -123,5 +122,15 @@ h1 {
 img {
     margin: 0 auto
 }
+}
+
+.component-fade-enter-active,
+.component-fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.component-fade-enter-from,
+.component-fade-leave-to {
+    opacity: 0;
 }
 </style>

@@ -15,7 +15,6 @@ class Login {
         // console.log('파이어베이스 초기화 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
         if( store.getters.loginState === LoginState.none ) {
             const currentUser = firebase.auth().currentUser;
-            console.log('currentUser', currentUser)
 
             if ( currentUser ) {
 
@@ -33,7 +32,6 @@ class Login {
                 if( cookie && cookie === currentUser.uid ) {
 
                     const result = await Vue.$api.user();
-                    console.log('cookie', result)
                     // console.log('유저정보 세팅 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
                     if( !result || result.error ) {
                         await Login.logout();
@@ -53,7 +51,6 @@ class Login {
                  * 로컬 스토리지
                  * */
                else if( local && local === currentUser.uid ) {
-                   console.log('local')
                     const result = await Vue.$api.user();
 
                     // console.log('유저정보 세팅 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
@@ -63,7 +60,6 @@ class Login {
                     else {
                         const { user } = result;
                         store.commit('user', user);
-                        console.log('user commit')
                         await Login.login();
                     }
                 }
@@ -77,7 +73,6 @@ class Login {
                 //@ts-ignore
                 const cookie = Cookie.read(cookieName);
                 const local = localStorage.getItem('z_uid')
-                console.log('local', local)
                 if( cookie ) {
                     const result = await Vue.$api.session();
                     // console.log('세션 확인 : ' +  (Date.now() - firebaseInitStartTime) / 1000 );
@@ -132,7 +127,6 @@ class Login {
     }
 
     static async login() {
-        console.log('log in')
         store.commit('loginState', LoginState.login );
         localStorage.setItem('z_uid', store.getters.user.uid)
         //@ts-ignore
@@ -149,7 +143,6 @@ class Login {
     }
 
     static async logout() {
-        console.log('logout',store.getters.user)
         await firebase.auth().signOut();
         await store.dispatch('logout');
         // await store.commit('clearMail');

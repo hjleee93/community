@@ -11,7 +11,7 @@
                     $route.name === 'Leave'
                         ? 'active'
                         : ''
-                " :to="`/user/${user.uid}/settings`">계정</router-link>
+                " :to="`/user/${user.channel_id}/settings`">계정</router-link>
                 </swiper-slide>
                 <!--                <swiper-slide>-->
                 <!--                    <router-link to="#">비밀번호변경</router-link>-->
@@ -27,7 +27,7 @@
                     </router-link>
                 </swiper-slide>
                 <swiper-slide>
-                    <router-link :to="`/user/${user.uid}/manageJoinedGroup`"
+                    <router-link :to="`/user/${user.channel_id}/manageJoinedGroup`"
                                  :class="$route.name === 'ManageJoinedGroup.vue' ? 'active' : ''">그룹
                     </router-link>
                 </swiper-slide>
@@ -86,7 +86,6 @@ export default class UserSettingHeader extends Vue {
 
     async mounted(){
         await this.$store.dispatch('loginState')
-        console.log(this.user)
     }
 }
 </script>

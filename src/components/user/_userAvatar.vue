@@ -26,17 +26,19 @@ export default class UserAvatar extends Vue {
 
     picture = ''
 
-    mounted() {
+    async mounted() {
+        await this.$store.dispatch("loginState");
         if (this.user) {
-            this.picture = this.user.picture ? this.user.picture + `?t=${Date.now()}` : '/img/zempy.png'
+
+            this.picture = this.user.picture ? this.user.picture + `?t=${Date.now()}` : '/img/300_300_default_profile.png'
         }else{
-            this.picture = '/img/zempy.png'
+            this.picture = '/img/300_300_default_profile.png'
         }
     }
 
     moveUserPage() {
-        if(this.user.uid)
-        this.$router.push(`/channel/${this.user.uid}/timeline`)
+        if(this.user.channel_id)
+        this.$router.push(`/channel/${this.user.channel_id}/timeline`)
     }
 }
 </script>

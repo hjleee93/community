@@ -211,13 +211,13 @@ export default class Community extends Vue {
                     this.bannerImg = this.community.banner_img;
                 }
                 else {
-                    this.bannerImg = "img/1500_300_com_channel_default.png"
+                    this.bannerImg = "/img/1500_300_com_channel_default.png"
                 }
                 if (this.community.profile_img) {
                     this.profileImg = this.community.profile_img;
                 }
                 else {
-                    this.profileImg = 'img/100_100_com_profile_default.png'
+                    this.profileImg = '/img/100_100_com_profile_default.png'
                 }
             })
             .catch((err: any) => {
@@ -238,17 +238,13 @@ export default class Community extends Vue {
 
     currPage(routeName: string, query?: string) {
 
-        console.log(Object.keys(this.$route.query), Object.keys(this.$route.query).length)
         let result = '';
         if ((routeName === this.$route.name) && Object.keys(this.$route.query).length === 0) {
-            console.log('1')
             result = 'active'
         }
         else if (this.$route.query.media === query) {
-            console.log('2')
             result = 'active'
         }
-        console.log('result', result)
 
         return result;
     }

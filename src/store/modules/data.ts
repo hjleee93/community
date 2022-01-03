@@ -90,9 +90,12 @@ export default {
         },
         blogVideoArr(state: any, payload: any) {
             state.blogVideoArr = payload;
+            // state.blogVideoArr.push(payload);
 
         },
         blogAudioArr(state: any, payload: any) {
+            // console.log('store audio length : ', state.blogAudioArr.length)
+            // state.blogAudioArr.push(payload);
             state.blogAudioArr = payload;
 
         },

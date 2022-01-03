@@ -163,6 +163,10 @@ export default class App extends Vue {
 //tiptap
 
 .tapl-content {
+    p{
+        margin-top: 0.75em;
+        min-height: 20px;
+    }
 
     h1{
         display: block !important;
@@ -179,9 +183,20 @@ export default class App extends Vue {
         align-items: center;
         border-radius: 5px;
         background: #f5f5f5;
+        flex-direction: column;
+        audio{
+            width: 100%;
+        }
+        p{
+
+            width: 100%;
+            height: 30px;
+            padding-left: 20px;
+        }
         &.ProseMirror-selectednode {
             outline: 3px solid #F97316;
         }
+
     }
     .iframe-wrapper {
         position: relative;
@@ -371,6 +386,13 @@ export default class App extends Vue {
         img {
             max-width: 100%;
             height: auto;
+
+
+                &.ProseMirror-selectednode {
+                    margin-left: 3px;
+                    margin-top: 3px;
+                    outline: 3px solid #F97316;
+                }
         }
 
         hr {
@@ -405,16 +427,21 @@ export default class App extends Vue {
             height: 100% !important;
         }
     }
-
     .audio-wrapper {
-        width: 500px;
-        margin: 0 auto;
+        margin: 20px 20px 0 20px;
         display: flex;
         align-items: center;
-
-        padding: 20px;
         border-radius: 5px;
         background: #f5f5f5;
+        flex-direction: column;
+        audio{
+            width: 100%;
+        }
+        p{
+            width: 100%;
+            height: 30px;
+            padding-left: 20px;
+        }
         &.ProseMirror-selectednode {
             outline: 3px solid #F97316;
         }

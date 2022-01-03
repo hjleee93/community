@@ -8,7 +8,7 @@
                 <template v-if="games && games.length > 0 ">
                     <ul>
                         <li
-                            @click="moveGameChannel(game.pathname)"
+                            @click="playGame(game.pathname)"
                             v-for="game in games">
                             <p :style="`background:url(${
                             game.url_thumb_webp ||
@@ -21,7 +21,7 @@
                     </ul>
 
                     <div v-if="totalGameCnt > 5">
-                        <router-link :to="`/channel/${userUid}/games`" class="btn-default-samll w100p">더보기</router-link>
+                        <router-link :to="`/channel/${channel_id}/games`" class="btn-default-samll w100p">더보기</router-link>
                     </div>
                 </template>
                 <ul v-else class="no-game">
@@ -121,7 +121,7 @@ import {AxiosError, AxiosResponse} from "axios";
     },
 })
 export default class UserPage extends Vue {
-    userUid = this.$route.params.channel_id;
+    channel_id = this.$route.params.channel_id;
     games: any[] = [];
     totalGameCnt = 0;
     user!: any;
@@ -141,7 +141,7 @@ export default class UserPage extends Vue {
     }
 
     gameListFetch() {
-        this.$api.userChannel(this.userUid)
+        this.$api.userChannel(this.channel_id)
             .then((res: any) => {
                 const {target} = res;
                 const {games} = target;
@@ -182,11 +182,11 @@ export default class UserPage extends Vue {
         this.$router.push(`/community/${id}/timeline`);
     }
 
-    addGame() {
-        if (this.user && (this.user.uid === this.userUid)) {
-            window.location.href = this.$store.getters.studioUrl + "addGame";
-        }
+    playGame(pathname:string){
+        window.open(
+            `play/${pathname}`, "_blank")
     }
+
 
 
 }

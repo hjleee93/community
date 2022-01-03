@@ -1,11 +1,9 @@
 <template>
     <div>
         <dl class="area-title">
-            <dt>Followers <span>{{ followingList.length }}</span></dt>
+            <dt>Followings <span>{{ followingList.length }}</span></dt>
         </dl>
-        <div class="grid grid-4-4-4" v-if="$store.getters.LoadingStatus">
-            <b-skeleton-img animation="throb" variant="dark"></b-skeleton-img>
-        </div>
+        <transition name="component-fade" mode="out-in">
         <ul class="card-member" v-if="followingList.length>0">
             <MemberCard
                 v-for="member in followingList"
@@ -18,6 +16,7 @@
             <h1> 팔로잉한 유저가 없습니다</h1>
             <img src="../../../assets/images/not-found.png" width="100px" height="100px"/>
         </div>
+        </transition>
     </div>
 </template>
 
@@ -96,5 +95,15 @@ export default class FollowingList extends Vue {
     img {
         margin: 0 auto
     }
+}
+
+.component-fade-enter-active,
+.component-fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.component-fade-enter-from,
+.component-fade-leave-to {
+    opacity: 0;
 }
 </style>

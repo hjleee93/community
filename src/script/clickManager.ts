@@ -11,7 +11,6 @@ export default class ClickManager {
             this.timer = setTimeout(()=>{
                 this.flag = false;
             }, 500)
-            console.log(this.timer)
             return false;
         }
 

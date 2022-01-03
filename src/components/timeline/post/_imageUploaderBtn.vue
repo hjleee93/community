@@ -73,7 +73,6 @@ export default class ImageUploaderBtn extends Vue {
 
                 })
 
-            console.log('blogImgArr', this.$store.getters.blogImgArr)
         }
 
         (this.$refs.image as any).value = '';

@@ -110,11 +110,11 @@ export default class CommentInput extends Vue {
 
 .user{
     display: inline-block;
-    width: 60px;
-    height: 50px;
+    width: 40px;
+    height: 37px;
     border-radius: 50%;
     border: 1px solid #e9e9e9;
-    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.05));
+    margin-left: 6px;
 }
 
 .comment-box {

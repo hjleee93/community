@@ -2,18 +2,17 @@
     <div>
         <dl class="area-title">
             <dt>Game <span>{{
-                    gameList && gameList.length
+                    games && games.length
                 }}</span></dt>
             <dd>
-
-                <a @click="addGame" v-if="user && (user.uid === userUid)" class="btn-default-samll">Add
+                <a @click="addGame" v-if="$route.name === 'MyChannel'" class="btn-default-samll">Add
                     Game <i
                         class="uil uil-plus"></i></a>
             </dd>
         </dl>
-        <ul class="card-portfolio" v-if="gameList && gameList.length > 0">
-            <li v-for="game in gameList"
-                :to="{path:`/timeline/game/${game.pathname}/timeline`, query:{game_id:game.id}}"
+        <ul class="card-portfolio" v-if="games && games.length > 0">
+            <li v-for="game in games"
+                @click="playGame(game.pathname)"
                 :key="game.id"
                 :game="game">
                 <div class="cp-img" :style="{'background' : 'url(' +  game.url_thumb_webp ||
@@ -38,25 +37,35 @@ import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import {mapGetters} from "vuex";
 import {Game, User} from "@/types";
 import {AxiosError, AxiosResponse} from "axios";
+import _ from "lodash";
 @Component({
-    computed: {...mapGetters(["user"])},
-    components: {},
+    computed: {...mapGetters(["user"]),
+        games: function () {
+            return _.filter(this['gameList'], {
+                    'activated': true
+                }
+            )
+        }
+    },
+    components: {
+
+    },
 })
 export default class AllGameCard extends Vue {
     private gameList: Game[] = [];
     private tlUser: any = "";
     private user!: User;
 
-    userUid = '';
+    channel_id: any = '';
 
     async mounted() {
         await this.$store.dispatch("loginState");
 
         if (this.$route.params.channel_id) {
-            this.userUid = this.$route.params.channel_id;
+            this.channel_id = this.$route.params.channel_id;
         }
         else {
-            this.userUid = this.user.uid
+            this.channel_id = this.user.channel_id
         }
 
         this.fetch();
@@ -67,9 +76,8 @@ export default class AllGameCard extends Vue {
             this.gameList = this.$store.getters.gameList;
         }
         else {
-            this.$api.userChannel(this.userUid)
+            this.$api.userChannel(this.channel_id)
                 .then((res: any) => {
-
                     const {target} = res;
                     const {games} = target;
                     this.gameList = games;
@@ -83,9 +91,13 @@ export default class AllGameCard extends Vue {
     }
 
     addGame() {
-        if (this.user && (this.user.uid === this.userUid)) {
-            window.location.href = this.$store.getters.studioUrl + "addGame";
-        }
+        window.location.href = this.$store.getters.studioUrl + "addGame";
+
+    }
+
+    playGame(pathname:string){
+        window.open(
+            `play/${pathname}`, "_blank")
     }
 }
 </script>

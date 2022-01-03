@@ -2,7 +2,7 @@
     <p class="btn-default" @click="follow" v-if="user && (user.id !== member.id) && !member.is_following">Follow</p>
     <p class="btn-default" @click="unfollow" v-else-if="user && (user.id !== member.id) && member.is_following">
         Followed</p>
-    <p class="btn-default my-channel" @click="myChannel(member.uid)" v-else-if="user && user.id === member.id">내 채널</p>
+    <p class="btn-default my-channel" @click="myChannel(member.channel_id)" v-else-if="user && user.id === member.id">내 채널</p>
 </template>
 
 <script lang="ts">
@@ -23,7 +23,6 @@ export default class FollowBtn extends Vue {
     }
 
     mounted(){
-        console.log('FollowBtn', this.member.is_following)
     }
     follow() {
         this.$api.follow(this.member.id)
@@ -48,8 +47,8 @@ export default class FollowBtn extends Vue {
             })
     }
 
-    myChannel(uid: string) {
-        this.$router.push(`/channel/${uid}/timeline`)
+    myChannel(channel_id: string) {
+        this.$router.push(`/channel/${channel_id}/timeline`)
     }
 
 }
@@ -61,6 +60,10 @@ export default class FollowBtn extends Vue {
 
     &.my-channel {
         background-color: #28a745;
+    }
+    &.my-channel:hover {
+        color:#28a745;
+        background-color: rgba(40, 167, 69, 0.3);
     }
 }
 

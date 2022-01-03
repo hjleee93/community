@@ -26,11 +26,11 @@
             <dt>Users <span>{{ memberList && memberList.length }}</span></dt>
         </dl>
         <ul class="card-follow" v-if="memberList">
-            <li v-for="member in memberList" :key="member.id" @click="userPage(member.uid)">
+            <li v-for="member in memberList" :key="member.id" @click="userPage(member.channel_id)">
                 <div class="cf-img"></div>
                 <UserAvatar :user="member" :tag="'p'"></UserAvatar>
 
-                <!--                <p :style="{'background' : 'url(' + member.picture || '../../assets/images/zempy.png' + ') center center no-repeat', 'background-size' : 'cover'}"></p>-->
+                <!--                <p :style="{'background' : 'url(' + member.picture || '../../assets/images/300_300_default_profile.png' + ') center center no-repeat', 'background-size' : 'cover'}"></p>-->
                 <div class="cf-info">
                     <h3>{{ member.name }}</h3>
                     <p></p>
@@ -81,7 +81,7 @@
                 <dl>
                     <dt>
 
-                        <P :style="`background: url(${game.user&& game.user.picture || 'img/zempy.png'}) center center no-repeat; background-size: cover;`"></P>
+                        <P :style="`background: url(${game.user&& game.user.picture || 'img/300_300_default_profile.png'}) center center no-repeat; background-size: cover;`"></P>
                     </dt>
                     <dd>
                         <h2>{{ game && game.title }}</h2>
@@ -104,7 +104,7 @@
             <!--            </li>-->
         </ul>
 
-        <dl class="area-title">
+        <dl class="area-title"  v-if="posts && posts.length > 0">
             <dt>Posts <span>{{ posts && posts.length }}</span></dt>
         </dl>
 
@@ -299,8 +299,8 @@ export default class SearchPage extends Vue {
         this.fetch();
     }
 
-    userPage(userUid: string) {
-        this.$router.push(`/channel/${userUid}/timeline`)
+    userPage(channel_id: string) {
+        this.$router.push(`/channel/${channel_id}/timeline`)
     }
 
     playGame(pathname: string) {

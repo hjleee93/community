@@ -200,7 +200,7 @@ export default class Api {
     /* /comment */
 
     /* game */
-    async gameList() {
+    async projectList() {
         const response = await this.request('get', `${studioApi}studio/project`, undefined, false);
         return response.result || response;
     }
@@ -289,7 +289,6 @@ export default class Api {
     async channel(channel_id: any) {
         //id가 string인 경우와 number인 경우 분리
         const stringCheck = /^[0-9+]*$/;
-        console.log(stringCheck.test(channel_id))
         let result;
         if (!stringCheck.test(channel_id)) {
             result = this.request('get', `/community/channel/${channel_id}`, undefined, false);
