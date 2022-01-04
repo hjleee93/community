@@ -15,7 +15,6 @@
 </template>
 
 <script lang="ts">
-import { FileSizeCheck } from "@/script/fileManager";
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component({
