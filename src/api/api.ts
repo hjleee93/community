@@ -369,6 +369,10 @@ export default class Api {
         return response.result || response;
     }
 
+    async hasEmail(email: string) {
+        return await this.request('post', `/user/has-email`, {email}, true);
+    }
+
     /* 파일 업로드 */
 
     //multiple file 되는건가!
