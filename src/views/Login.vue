@@ -2,7 +2,7 @@
     <!--    <div class="landing">-->
     <div class="login-bg pt50 pb50 ">
         <div class="login-logo">
-            <router-link to="/"><img src="../assets/images/zempie_logo.png" alt="" title=""/></router-link>
+            <router-link to="/landing"><img src="../assets/images/zempie_logo.png" alt="" title=""/></router-link>
         </div>
 
         <div class="login-area">
