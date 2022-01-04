@@ -132,7 +132,7 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2> 최소 1글자 이상 작성해주세요 </h2>
+                    <h2> 텍스트 내용을 입력해 주세요 </h2>
                     <div>
                         <button class="btn-default" style="width:100%" @click="$modal.hide('minChar')">네</button>
                     </div>

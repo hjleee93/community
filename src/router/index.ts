@@ -30,15 +30,14 @@ const routes: Array<RouteConfig> = [
                     if(from.name === 'MyChannel'){
                         window.location.reload();
                     }else{
-                        await router.push(`/MyChannel`)
+                        next('/myChannel');
                     }
-
                     break;
                 case LoginState.no_user:
-                    await router.push('/landing')
+                    next('/landing');
                     break;
                 case LoginState.logout:
-                    await router.push('/landing')
+                    next('/landing');
                     break;
                 default:
                     next();

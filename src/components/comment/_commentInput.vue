@@ -1,7 +1,8 @@
 <template>
     <dl :class="commentId ? 'edit-comment' :''">
         <UserAvatar :user="user" :tag="'p'" class="user"/>
-        <dt><input type="text" v-model="content" name="" title="" placeholder="댓글달기" @click='checkLogin' @keyup.enter="sendComment" /></dt>
+        <dt><input type="text" v-model="content" name="" title="" placeholder="댓글달기" @click='checkLogin'
+                   @keyup.enter="sendComment"/></dt>
         <dd><a @click="sendComment"><i class="uil uil-message"></i></a></dd>
     </dl>
 </template>
@@ -24,78 +25,105 @@ export default class CommentInput extends Vue {
     @Prop() commentId!: number;
     @Prop() parentName!: string;
 
-    private content: string = "";
- 
- 
+    content: string = "";
 
-    private isPrivate: boolean = false;
-    private userTag: string = "";
-    private user!: User;
+
+    isPrivate: boolean = false;
+    user!: User;
 
     mounted() {
         if (this.editContent) {
             this.content = this.editContent;
         }
     }
-    checkLogin(){
-        if(!this.user){
+
+    checkLogin() {
+        if (!this.user) {
             this.$modal.show('needLogin')
         }
     }
 
     //수정 , 작성
     sendComment() {
-        if(!this.user){
+        const whiteSpace = /\s/g;
+
+        if (!this.user) {
             this.$modal.show('needLogin')
-        }else{
-
-
-        if(this.commentId){
-            const obj={
-                comment_id: this.commentId,
-                post_id: this.postId,
-                content:this.content
-            }
-            this.$api.updateComment(obj)
-                .then((res: AxiosResponse) => {
-                    this.$emit('sendComment')
-
-                })
-                .catch((err: AxiosError) => {
-
-                })
-            .finally(()=>{
-                this.$emit("editDone", true);
-            })
-
-
-        }else {
-            const obj = {
-                user_id: this.user.id,
-                attatchment_files: [
-                    {
-                        priority: 0,
-                        url: "string"
-                    }
-                ],
-                type: "COMMENT",
-                parent_id: this.parentId,
-                post_id: this.postId,
-                content: this.content,
-                is_private: this.isPrivate
-            }
-            this.$api.sendComment(obj)
-                .then((res: AxiosResponse) => {
-                    this.$emit('sendComment')
-                })
-                .catch((err: AxiosError) => {
-
-                })
-
-
-            this.content = "";
-            this.isPrivate = false;
         }
+        else {
+            if (!this.content ||  this.content.match(whiteSpace)) {
+                this.$modal.show({
+                    template: `<div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('minChar')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2> 텍스트 내용을 입력해 주세요. </h2>
+                    <div>
+                        <button class="btn-default" style="width:100%" @click="$modal.hide('minChar')">네</button>
+                    </div>
+                </div>
+            </div>`,
+                }, {}, {
+                    name: "minChar",
+                    width: 380,
+                    maxWidth: 380,
+                    height: "auto",
+                    class: "modal-area-type",
+                    scrollable: true
+                })
+                return;
+            }
+            if (this.commentId) {
+                const obj = {
+                    comment_id: this.commentId,
+                    post_id: this.postId,
+                    content: this.content
+                }
+                this.$api.updateComment(obj)
+                    .then((res: AxiosResponse) => {
+                        this.$emit('sendComment')
+
+                    })
+                    .catch((err: AxiosError) => {
+
+                    })
+                    .finally(() => {
+                        this.$emit("editDone", true);
+                    })
+
+
+            }
+            else {
+                const obj = {
+                    user_id: this.user.id,
+                    attatchment_files: [
+                        {
+                            priority: 0,
+                            url: "string"
+                        }
+                    ],
+                    type: "COMMENT",
+                    parent_id: this.parentId,
+                    post_id: this.postId,
+                    content: this.content,
+                    is_private: this.isPrivate
+                }
+                this.$api.sendComment(obj)
+                    .then((res: AxiosResponse) => {
+                        this.$emit('sendComment')
+                    })
+                    .catch((err: AxiosError) => {
+
+                    })
+
+
+                this.content = "";
+                this.isPrivate = false;
+            }
 
         }
 
@@ -108,7 +136,7 @@ export default class CommentInput extends Vue {
 
 <style lang="scss" scoped>
 
-.user{
+.user {
     display: inline-block;
     width: 40px;
     height: 37px;
@@ -166,6 +194,7 @@ export default class CommentInput extends Vue {
     text-align: right;
     font-size: 20px;
 }
+
 .reply-send-wrapper {
     display: flex;
     justify-content: center;
@@ -205,26 +234,31 @@ export default class CommentInput extends Vue {
     fill: transparent;
     transition: fill 0.2s ease-in-out;
 }
-.edit-comment{
+
+.edit-comment {
     display: flex;
     align-items: center;
     margin-top: 25px;
     border: #e5e5e5 1px solid;
     border-radius: 10px;
     width: 100%;
-    dt{
+
+    dt {
         width: 80%;
         padding: 0 5px;
 
     }
-    input{
+
+    input {
         width: 100%;
         border: none;
     }
-    input[type='text']:focus{
-        box-shadow:none;
+
+    input[type='text']:focus {
+        box-shadow: none;
     }
-    dd{
+
+    dd {
         width: 20%;
         padding-right: 15px;
         text-align: right;
