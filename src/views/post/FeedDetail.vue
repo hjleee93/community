@@ -329,11 +329,12 @@ export default class FeedDetail extends Vue {
     }
 
     refetch() {
-        console.log('re-fetch', this.feed.user)
         this.$store.dispatch("loginState")
             .then(() => {
-                this.fetch()
+                this.fetch();
                 this.generateKey();
+                this.$store.dispatch('reloadUserInfo')
+
             })
     }
 
@@ -372,13 +373,12 @@ export default class FeedDetail extends Vue {
         }
         this.$api.comments(this.feedId, obj)
             .then((res: any) => {
-                console.log(res.result)
                 if (this.isAddData) {
                     if (res.result.length > 0) {
                         this.comments = [...this.comments, ...res.result]
                     }
                     else {
-                        console.log('no data')
+                        // console.log('no data')
                     }
                 }
                 else {
@@ -454,7 +454,6 @@ export default class FeedDetail extends Vue {
 
         this.$api.deletePost(this.feedId)
             .then((res: any) => {
-                console.log(res)
                 if (res.success) {
                     this.$toasted.clear();
                     this.toast.successToast("포스팅이 삭제되었습니다.")

@@ -490,21 +490,20 @@ export default class Post extends Vue {
         //     }
         // }
         // else {
-        //     this.attFiles = await this.uploadAtt();
+            this.attFiles = await this.uploadAtt();
         // }
         // console.log('this.attFiles', this.attFiles)
         // console.log('this.$store.getters.blogAudioArr', this.$store.getters.blogAudioArr)
         // console.log('this.updateAudioArr', this.updateAudioArr)
-        // if (this.updateImgArr.length > 0) {
-        //     this.attFiles.unshift(...this.updateImgArr)
-        // }
-        // if (this.updateAudioArr.length > 0) {
-        //     this.attFiles.unshift(...this.updateAudioArr)
-        // }
-        // if (Object.keys(this.updateVideo).length !== 0) {
-        //     this.attFiles.unshift(this.updateVideo)
-        // }
-// console.log('====', this.attFiles)
+        if (this.updateImgArr.length > 0) {
+            this.attFiles.unshift(...this.updateImgArr)
+        }
+        if (this.updateAudioArr.length > 0) {
+            this.attFiles.unshift(...this.updateAudioArr)
+        }
+        if (Object.keys(this.updateVideo).length !== 0) {
+            this.attFiles.unshift(this.updateVideo)
+        }
 
         //todo: 백엔드 수정후 변경
         if(this.$store.getters.postContents.includes('<audio')){

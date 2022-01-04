@@ -3,25 +3,48 @@
         <dd>
             <!-- 포스트 박스 -->
             <!--        todo:내채널, 커뮤니티, 내 게임은 글 작성 가능
-                            남의 채널 남의 게임은 글 작성 불가 : v-if="this.user.uid === this.$route.params.channel_id" -->
-            <div class="ta-message-send" v-if="ableToPost() === true">
-                <p>
-                    <UserAvatar :user="user" :tag="'span'"></UserAvatar>
-                </p>
-                <dl @click="openPostModal">
-                    <dt>
-                        <input
-                            type="text"
-                            readonly
-                            placeholder="무슨 생각을 하고 계신가요"/>
-                    </dt>
-                    <dd><a><i class="uil uil-message"></i></a></dd>
-                </dl>
-            </div>
+                            남의 채널 남의 게임은 글 작성 불가 : v-if="this.user.uid === this.$route.params.channel_id"
+                            zempie 공식 커뮤니티 글 작성 블락(젬파이 지메일 계정 제외, f4cbce49-4626-4211-b954-31877da18b5b)
+                             -->
+
+
+<!--            <template v-if="community.id === 'f4cbce49-4626-4211-b954-31877da18b5b'">-->
+<!--                <div class="ta-message-send" v-if="user.uid='n8lFf5Nu51UTU4d7ph7gol0ESvs1'">-->
+<!--                    <p>-->
+<!--                        <UserAvatar :user="user" :tag="'span'"></UserAvatar>-->
+<!--                    </p>-->
+<!--                    <dl @click="openPostModal">-->
+<!--                        <dt>-->
+<!--                            <input-->
+<!--                                type="text"-->
+<!--                                readonly-->
+<!--                                placeholder="무슨 생각을 하고 계신가요"/>-->
+<!--                        </dt>-->
+<!--                        <dd><a><i class="uil uil-message"></i></a></dd>-->
+<!--                    </dl>-->
+<!--                </div>-->
+<!--            </template>-->
+<!--            <template v-else>-->
+                <div class="ta-message-send" v-if="ableToPost() === true">
+                    <p>
+                        <UserAvatar :user="user" :tag="'span'"></UserAvatar>
+                    </p>
+                    <dl @click="openPostModal">
+                        <dt>
+                            <input
+                                type="text"
+                                readonly
+                                placeholder="무슨 생각을 하고 계신가요"/>
+                        </dt>
+                        <dd><a><i class="uil uil-message"></i></a></dd>
+                    </dl>
+                </div>
+<!--            </template>-->
             <div class="ta-message-block" v-else-if="ableToPost() === 'block'">
                 <i class="uil uil-exclamation-triangle"></i> 블락으로 인해 포스팅을 작성하실 수 없습니다.
             </div>
-            <ul class="ta-post" v-if="filterDupTl.length > 0" :style="ableToPost() === false ? 'margin-top: -20px;' : ''">
+            <ul class="ta-post" v-if="filterDupTl.length > 0"
+                :style="ableToPost() === false ? 'margin-top: -20px;' : ''">
                 <Feed
                     class="mt-3"
                     data-aos-once="true"
@@ -193,8 +216,8 @@ import _ from "lodash";
         ...mapGetters(["user"]),
 
         filterDupTl: function () {
-            return _.uniqBy(this['timeline'], (e:any)=>{
-                return e.id;
+            return _.uniqBy(this['timeline'], (e: any) => {
+                    return e.id;
                 }
             )
         }
@@ -300,9 +323,9 @@ export default class Timeline extends Vue {
                     media: this.$route.query.media || this.mediaType
                 }
 
-                const channel_id: any = this.$route.name === 'MyChannel' ? this.user.channel_id :   this.$route.params.channel_id;
+                const channel_id: any = this.$route.name === 'MyChannel' ? this.user.channel_id : this.$route.params.channel_id;
 
-                this.$api.userTimeline(channel_id , userObj)
+                this.$api.userTimeline(channel_id, userObj)
                     .then((res: any) => {
                         if (this.isAddData) {
                             if (res.result.length > 0) {
@@ -380,7 +403,7 @@ export default class Timeline extends Vue {
                                 this.timeline = [...this.timeline, ...res.result]
                             }
                             else {
-                                console.log('no data')
+                                // console.log('no data')
                                 this.hasData = false
                                 window.removeEventListener("scroll", this.scrollCheck);
 
@@ -412,13 +435,12 @@ export default class Timeline extends Vue {
 
                 this.$api.channelTimeline(this.$store.getters.currPage.community[0].id, this.$store.getters.currPage.community[0].channel_id, chaObj)
                     .then((res: any) => {
-                        console.log(res)
                         if (this.isAddData) {
                             if (res.result.length > 0) {
                                 this.timeline = [...this.timeline, ...res.result]
                             }
                             else {
-                                console.log('no data')
+                                // console.log('no data')
                                 this.hasData = false
 
                             }
@@ -531,7 +553,6 @@ export default class Timeline extends Vue {
 
     @Watch('$route.query')
     watchMedia() {
-        console.log("???")
         this.initData()
         this.media = (this.$route.query.media as string);
         this.fetch();
@@ -552,7 +573,6 @@ export default class Timeline extends Vue {
 
         this.$api.deletePost(this.feedId)
             .then((res: any) => {
-                console.log(res)
                 if (res.success) {
                     this.$toasted.clear();
                     this.$toasted.show("포스팅이 삭제되었습니다.", {
@@ -603,7 +623,6 @@ export default class Timeline extends Vue {
     }
 
     commentInfo(event) {
-        console.log(event.params.commentId)
         this.$api.deleteComment(event.params.postId, event.params.commentId)
             .then((res: AxiosResponse) => {
 

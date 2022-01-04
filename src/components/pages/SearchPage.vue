@@ -81,7 +81,7 @@
                 <dl>
                     <dt>
 
-                        <P :style="`background: url(${game.user&& game.user.picture || 'img/300_300_default_profile.png'}) center center no-repeat; background-size: cover;`"></P>
+                        <P :style="`background: url(${game.user&& game.user.picture || '/img/300_300_default_profile.png'}) center center no-repeat; background-size: cover;`"></P>
                     </dt>
                     <dd>
                         <h2>{{ game && game.title }}</h2>
@@ -107,69 +107,14 @@
         <dl class="area-title"  v-if="posts && posts.length > 0">
             <dt>Posts <span>{{ posts && posts.length }}</span></dt>
         </dl>
-
-        <div class="ta-search-post" v-if="posts">
+        <div class="ta-search-post" v-if="posts" :style="posts ? 'padding:0px ;':''">
             <ul class="ta-post">
                 <div v-for="feed in posts" :key="feed.id">
                     <!--                    {{feed}}-->
                     <Feed :feed="feed"
                     ></Feed>
                 </div>
-                <!--포스트 반복 -->
-                <!--                <li class="tap-list tsp-list" v-for="post in posts" :key="post.id">-->
-                <!--                    <dl class="tapl-title">{{post.user}}-->
-                <!--                        <dt>-->
-                <!--                            <dl>-->
-                <!--                                <p style="background: url('https://i.pinimg.com/564x/70/86/0a/70860a694929c5a615deead4a9c9d259.jpg') center center no-repeat; background-size: cover;"></p>-->
-
-                <!--                                <dd>-->
-                <!--                                    <h2>젬파이 업데이트 포스트 무슨생각을 하고 계신가요?</h2>-->
-                <!--                                    <p><i class="uis uis-clock" style="color:#c1c1c1;"></i> 10시간전</p>-->
-                <!--                                </dd>-->
-                <!--                            </dl>-->
-                <!--                        </dt>-->
-                <!--                        <dd>-->
-                <!--                            <router-link to="#"><i class="uil uil-ellipsis-h font25"></i></router-link>-->
-                <!--                        </dd>-->
-                <!--                    </dl>-->
-                <!--                    <div class="tapl-content" v-html="post.content">-->
-                <!--                    </div>-->
-                <!--                    <ul class="tapl-option">-->
-                <!--                        <li>-->
-                <!--                            <ul>-->
-                <!--                                <li><i class="xi-heart" style="font-size:22px; color:#ff6e17"></i>&nbsp;-->
-                <!--                                    {{ post.like_cnt }}-->
-                <!--                                </li>-->
-                <!--                                <li @click="openComments">-->
-                <!--                                    <i class="uil uil-comment-alt-dots"-->
-                <!--                                       style="font-size:22px;"></i>&nbsp; {{ post.comment_cnt }}-->
-                <!--                                </li>-->
-                <!--                                &lt;!&ndash;                                <li><i class="uil uil-eye" style="font-size:22px;"></i>&nbsp;680</li>&ndash;&gt;-->
-                <!--                                <li><a @click="copyUrl"><i class="uil uil-share-alt" style="font-size:20px;"></i></a>-->
-                <!--                                </li>-->
-                <!--                            </ul>-->
-                <!--                        </li>-->
-                <!--                        &lt;!&ndash;                        <li><router-link to="#"><i class="uil uil-bookmark" style="font-size:24px; color:#ff6e17;"></i></router-link></li>&ndash;&gt;-->
-                <!--                    </ul>-->
-                <!--                    <div v-if="isOpenedComments" class="tapl-comment">-->
-                <!--                        <ul @scroll="scrollCheck">-->
-                <!--                            <li v-for="comment in comments" :key="comment.id">-->
-                <!--                                <Comment :comment="comment" :editContent="comment.content" :postId="post.id"-->
-                <!--                                         @editDone="editDone"/>-->
-                <!--                            </li>-->
-                <!--                        </ul>-->
-
-                <!--                        <CommentInput :postId="post.id" @sendComment="editDone"/>-->
-
-                <!--                    </div>-->
-                <!--                </li>-->
-                <!--포스트 반복 끝-->
-
             </ul>
-            <!-- <div class="post-loading">
-              <p><img src="../../assets/images/loading-icon.png" alt="" title="" /></p>
-              <h3>LOADING...</h3>
-            </div> -->
         </div>
 
 

@@ -280,11 +280,11 @@ textarea {
 }
 
 .channel {
-    opacity: 50%;
+    opacity: 0.5;
 }
 
 .channel.active, .channel:hover {
-    opacity: 100%;
+    opacity: 1;
 }
 
 </style>

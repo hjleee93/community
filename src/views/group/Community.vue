@@ -211,13 +211,13 @@ export default class Community extends Vue {
                     this.bannerImg = this.community.banner_img;
                 }
                 else {
-                    this.bannerImg = "/img/1500_300_com_channel_default.png"
+                    this.bannerImg = "img/1500_300_com_channel_default.png"
                 }
                 if (this.community.profile_img) {
                     this.profileImg = this.community.profile_img;
                 }
                 else {
-                    this.profileImg = '/img/100_100_com_profile_default.png'
+                    this.profileImg = 'img/100_100_com_profile_default.png'
                 }
             })
             .catch((err: any) => {
@@ -226,7 +226,6 @@ export default class Community extends Vue {
 
     }
     refetch(){
-        console.log('community header refetch')
         this.fetch();
     }
 

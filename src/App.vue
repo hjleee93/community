@@ -48,7 +48,6 @@ export default class App extends Vue {
     //     titleTemplate:'게임 공유 플랫폼',
     // }
     async mounted() {
-        console.log('process.env.VUE_ROUTER_MODE', process.env.VUE_APP_ROUTER_MODE)
         await this.$store.dispatch("loginState");
 
         //  if( state === LoginState.login ) {

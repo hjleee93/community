@@ -292,7 +292,7 @@ export default class TiptapBlog extends Vue {
                 //     },
                 // }),
             ],
-            autofocus: true,
+            // autofocus: 'end',
             onUpdate: () => {
                 this.$emit("isEmpty", this.editor!.isEmpty);
                 this.charCnt = this.editor!.getCharacterCount();
@@ -303,7 +303,8 @@ export default class TiptapBlog extends Vue {
     }
 
     mounted() {
-        this.feed = this.$store.getters.feed
+        this.feed = this.$store.getters.feed;
+
         if (this.feed) {
             this.editor!.commands.setContent(this.feed.content);
             this.charCnt = this.editor!.getCharacterCount();

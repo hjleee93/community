@@ -18,23 +18,20 @@ export default class FollowBtn extends Vue {
     @Prop() member!: any;
     user!: any;
 
-   async created(){
+
+    async  mounted(){
         await this.$store.dispatch("loginState")
     }
 
-    mounted(){
-    }
     follow() {
         this.$api.follow(this.member.id)
             .then((res: AxiosResponse) => {
-
+                this.$emit('refetch')
             })
             .catch((err: AxiosError) => {
 
             })
-            .finally(() => {
-                this.$emit('refetch')
-            })
+
     }
 
     unfollow() {
@@ -45,6 +42,7 @@ export default class FollowBtn extends Vue {
             .catch((err: AxiosError) => {
 
             })
+
     }
 
     myChannel(channel_id: string) {

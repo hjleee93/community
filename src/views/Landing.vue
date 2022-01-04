@@ -22,7 +22,7 @@
                     <!--                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
                 </div>
             </h3>
-            <div class="mv-play">&nbsp;</div>
+            <div class="mv-play" @click="openCommunity()">&nbsp;</div>
             <div class="mv-animal01"><img src="../assets/images/main_visual_animal01.svg" alt="" title=""/></div>
             <div class="mv-animal02"><img src="../assets/images/main_visual_animal02.svg" alt="" title=""/></div>
             <div class="mv-animal03"><img src="../assets/images/main_visual_animal03.png" alt="" title=""/></div>
@@ -33,7 +33,7 @@
                 <dl>
                     <dt>
                         <span
-                            :style="'background:url(' + require('../assets/images/favicon.png') + ') center center / cover no-repeat; background-size:cover;'"></span>
+                            :style="'background:url(' + require('../assets/images/zempie_logo_154_155.png') + ') center center / cover no-repeat; background-size:cover;'"></span>
                     </dt>
                     <dd>
                         <h2>BasketBall Papa</h2>
@@ -49,7 +49,7 @@
                 <dl>
                     <dt>
                         <span
-                            :style="'background:url(' + require('../assets/images/favicon.png') + ') center center / cover no-repeat; background-size:cover;'"></span>
+                            :style="'background:url(' + require('../assets/images/zempie_logo_154_155.png') + ') center center / cover no-repeat; background-size:cover;'"></span>
                     </dt>
                     <dd>
                         <h2>Star pop</h2>
@@ -65,7 +65,7 @@
                 <dl>
                     <dt>
                         <span
-                            :style="'background:url(' + require('../assets/images/favicon.png') + ') center center / cover no-repeat; background-size:cover;'"></span>
+                            :style="'background:url(' + require('../assets/images/zempie_logo_154_155.png') + ') center center / cover no-repeat; background-size:cover;'"></span>
                     </dt>
                     <dd>
                         <h2>Totem breaker</h2>
@@ -104,7 +104,7 @@
                             <dl>
                                 <dt>
                                     <dl>
-                                        <dt :style="`background: url(${game.user && game.user.picture || 'img/300_300_default_profile.png' }) center center / cover no-repeat; background-size: cover;`"></dt>
+                                        <dt :style="`background: url(${game.user && game.user.picture || '/img/300_300_default_profile.png' }) center center / cover no-repeat; background-size: cover;`"></dt>
                                         <dd>
                                             <h3>{{ game && game.title }}</h3>
                                             <p>{{ game.user && game.user.name }}</p>
@@ -235,11 +235,36 @@ export default class Landing extends Vue {
             `play/${pathname}`, "_blank")
     }
 
+    openCommunity(){
+        window.open('https://zempie.com/community/18a26bd9-353f-41a9-b9d7-e846a9b41a2b/timeline')
+    }
+
 }
 </script>
 
 <style scoped lang="scss">
 .mv-animal02{
     z-index: 998 !important;
+}
+.mv-play{
+    top:0px;
+}
+@media all and (max-width:479px) {
+    .mv-play{
+        top:30px;
+    }
+}
+
+@media all and (min-width:480px) and (max-width:767px) {
+
+    .mv-play{
+        top:65px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px){
+    .mv-play{
+        top:0px;
+    }
 }
 </style>

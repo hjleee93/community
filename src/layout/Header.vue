@@ -342,7 +342,7 @@ export default {
 
         playGame(pathname) {
             window.open(
-                `play/${pathname}`, "_blank")
+                this.$store.getters.homeUrl + `play/${pathname}`, "_blank");
         },
         listReset() {
             this.isOpenSearch = false;

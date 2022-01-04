@@ -92,7 +92,7 @@ export default class Comment extends Vue {
     }
 
     async init() {
-        const result = await this.$api.channel(this.comment.user_uid);
+        const result = await this.$api.channel(this.comment.user.channel_id);
         this.userInfo = result.target;
     }
 
@@ -117,7 +117,6 @@ export default class Comment extends Vue {
                 if (!this.clickManager.doubleClickCheck()) {
                     this.$api.unlikeComment(this.postId, this.comment.id)
                         .then((res: AxiosResponse) => {
-                            console.log(res)
                             this.isLiked = false;
                             this.likeCnt--;
                             // this.$emit('editDone')
@@ -131,7 +130,6 @@ export default class Comment extends Vue {
                 if (!this.clickManager.doubleClickCheck()) {
                     this.$api.likeComment(this.postId, this.comment.id)
                         .then((res: AxiosResponse) => {
-                            console.log(res)
                             this.isLiked = true;
                             this.likeCnt++;
                             // this.$emit('editDone')

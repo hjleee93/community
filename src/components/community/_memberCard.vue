@@ -43,14 +43,14 @@ import UserAvatar from "@/components/user/_userAvatar.vue";
 export default class MemberCard extends Vue {
     @Prop() member!: any;
     profileImg = '';
-    bannerImg = 'img/channel_banner.png'
+    bannerImg = '/img/channel_banner.png'
     isOpenMyDropdown = false
 
     muteUser() {
         this.isOpenMyDropdown = false;
         this.$api.userBlock(this.member.id)
             .then((res: AxiosResponse) => {
-                console.log(res)
+                // console.log(res)
             })
             .catch((err: AxiosError) => {
 
@@ -67,6 +67,7 @@ export default class MemberCard extends Vue {
 
     refetch() {
         this.$emit('refetch')
+
     }
 
     userPage() {

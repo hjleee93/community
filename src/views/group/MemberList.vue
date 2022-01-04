@@ -49,7 +49,6 @@ export default class MemberList extends Vue {
             .then((res: any) => {
                 this.totalMembers = res.totalCount;
                 this.memberList = res.result;
-                console.log(res)
             })
             .catch((err: AxiosError) => {
 
@@ -62,7 +61,7 @@ export default class MemberList extends Vue {
         this.limit = 10;
         this.offset = 0;
         this.memberList = [];
-
+        this.$store.dispatch('reloadUserInfo');
         this.fetch();
 
     }

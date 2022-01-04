@@ -36,7 +36,7 @@
                 <dt>
                     <FollowBtn v-if="user&&(userInfo.id !== user.id)" class="follow-btn" :member="userInfo"
                                :key="followKey"
-                               @refetch="fetch"/>
+                               @refetch="refetch"/>
                 </dt>
 
             </dl>
@@ -238,6 +238,7 @@ export default class UserHeader extends Vue {
 
     refetch() {
         this.fetch();
+        this.$store.dispatch('reloadUserInfo')
     }
 
     movePage(page: string) {

@@ -340,15 +340,11 @@ export default class Login extends Vue {
                 .then(async (res: any) => {
                     const {user} = res;
                     this.$store.commit("user", user);
-                    console.log("user", user);
                     await LoginManager.login();
                     // this.$store.commit('loginState', LoginState.login );
                     // await this.$router.replace('/');
                     if (this.$store.getters.redirectRouter) {
-                        console.log(
-                            "redirectRouter",
-                            this.$store.getters.redirectRouter
-                        );
+
                         const router = this.$store.getters.redirectRouter;
                         this.$store.commit("redirectRouter", null);
                         await this.$router.replace(router);

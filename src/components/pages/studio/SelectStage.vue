@@ -63,6 +63,13 @@ export default class SelectStage extends Vue {
     private uploadStage = eGameUploadStage;
 
     mounted() {
+        //
+        // window.addEventListener("beforeunload", function (event) {
+        //
+        //     event.returnValue = "진짜 나감?";
+        //
+        // });
+
         this.$store.commit("gameStage", null);
     }
 

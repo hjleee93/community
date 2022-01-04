@@ -372,7 +372,7 @@ export default class TiptapSns extends Vue {
                 // }),
 
             ],
-            autofocus: true,
+            // autofocus: 'end',
             onUpdate: () => {
                 this.$emit("isEmpty", this.editor!.isEmpty);
                 this.$store.commit("postContents", this.editor!.getHTML());

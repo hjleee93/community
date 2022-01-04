@@ -11,7 +11,7 @@
                     v-for="member in followerList"
                     :key="member.id"
                     :member="member"
-                    @refetch="fetch"
+                    @refetch="refetch"
                 ></MemberCard>
             </ul>
 
@@ -67,12 +67,15 @@ export default class FollowerList extends Vue {
             .then((res: any) => {
                 this.followerList = res.result;
                 this.totalCnt = res.totalCount;
+
             })
             .catch((err: any) => {
 
             })
-
-
+    }
+    refetch(){
+        this.fetch();
+        this.$store.dispatch('reloadUserInfo');
     }
 }
 </script>

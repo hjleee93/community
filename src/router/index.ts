@@ -35,11 +35,9 @@ const routes: Array<RouteConfig> = [
 
                     break;
                 case LoginState.no_user:
-                    console.log("no_user")
                     await router.push('/landing')
                     break;
                 case LoginState.logout:
-                    console.log("logout")
                     await router.push('/landing')
                     break;
                 default:

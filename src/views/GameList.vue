@@ -22,35 +22,38 @@
         </dl>
 
         <transition name="component-fade" mode="out-in">
-        <ul>
-            <transition-group name="list-complete" class="card-game">
-                <li v-for="game in games" :key="game.pathname" @click="playGame(game.pathname)"  >
-                    <div
-                        :style="`background: url( ${game &&( game.url_thumb_webp || game.url_thumb )} ) center center no-repeat; background-size: cover;`"></div>
-                    <dl>
-                        <dt>
-                            <P :style="`background: url(${game.user && game.user.picture || 'img/300_300_default_profile.png' }) center center no-repeat; background-size: cover;`"></P>
-                        </dt>
-                        <dd>
-                            <h2>{{ game && game.title }}</h2>
-                            <p>{{ game.user && game.user.name }}</p>
-                            <ul>
-                                <!--                            <li><img src="../../assets/images/charge_game_icon.svg" alt=""></li>-->
-                                <!--                            <li><img src="../../assets/images/hot_game_icon.svg" alt=""></li>-->
-                                <li><img src="../assets/images/zempie_game_icon.svg" alt=""></li>
-                            </ul>
-                        </dd>
-                    </dl>
-                </li>
-            </transition-group>
+            <ul>
+                <transition-group name="list-complete" class="card-game">
+                    <li v-for="game in games" :key="game.pathname">
+                        <div
+                            @click="playGame(game.pathname)"
+                            :style="`background: url( ${game &&( game.url_thumb_webp || game.url_thumb )} ) center center no-repeat; background-size: cover;`"></div>
+                        <dl>
+                            <dt>
 
-            <!--            <li class="more-card" v-if="games && games.length>3">-->
-            <!--                <div>-->
-            <!--                    <h3><i class="uil uil-plus"></i></h3>-->
-            <!--                    <p>모두보기</p>-->
-            <!--                </div>-->
-            <!--            </li>-->
-        </ul>
+                                <UserAvatar :user="game.user" :tag="'p'"></UserAvatar>
+                                <!--                            <P :style="`background: url(${game.user && game.user.picture || 'img/300_300_default_profile.png' }) center center no-repeat; background-size: cover;`"></P>-->
+                            </dt>
+                            <dd>
+                                <h2 @click="playGame(game.pathname)">{{ game && game.title }}</h2>
+                                <p>{{ game.user && game.user.name }}</p>
+                                <ul>
+                                    <!--                            <li><img src="../../assets/images/charge_game_icon.svg" alt=""></li>-->
+                                    <!--                            <li><img src="../../assets/images/hot_game_icon.svg" alt=""></li>-->
+                                    <li><img src="../assets/images/zempie_game_icon.svg" alt=""></li>
+                                </ul>
+                            </dd>
+                        </dl>
+                    </li>
+                </transition-group>
+
+                <!--            <li class="more-card" v-if="games && games.length>3">-->
+                <!--                <div>-->
+                <!--                    <h3><i class="uil uil-plus"></i></h3>-->
+                <!--                    <p>모두보기</p>-->
+                <!--                </div>-->
+                <!--            </li>-->
+            </ul>
         </transition>
 
     </div>
@@ -63,6 +66,7 @@ import MemberCard from "@/components/community/_memberCard.vue";
 import {Swiper, SwiperSlide} from 'vue-awesome-swiper'
 import Toast from "@/script/message";
 import {scrollDone} from "@/script/scrollManager";
+import UserAvatar from "@/components/user/_userAvatar.vue";
 
 
 @Component({
@@ -71,6 +75,7 @@ import {scrollDone} from "@/script/scrollManager";
         MemberCard,
         Swiper,
         SwiperSlide,
+        UserAvatar
     },
 })
 export default class gameList extends Vue {
@@ -214,9 +219,8 @@ export default class gameList extends Vue {
 
     playGame(pathname: string) {
         window.open(
-            `play/${pathname}`, "_blank")
+            this.$store.getters.homeUrl + `play/${pathname}`, "_blank");
     }
-
 
 
 }
@@ -262,7 +266,6 @@ export default class gameList extends Vue {
 .swiper-slide {
     cursor: pointer;
 }
-
 
 
 .list-complete-item {

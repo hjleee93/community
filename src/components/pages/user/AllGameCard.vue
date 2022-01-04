@@ -95,9 +95,11 @@ export default class AllGameCard extends Vue {
 
     }
 
-    playGame(pathname:string){
+
+    playGame(pathname: string) {
         window.open(
-            `play/${pathname}`, "_blank")
+            this.$store.getters.homeUrl + `play/${pathname}`, "_blank");
+
     }
 }
 </script>
@@ -105,5 +107,8 @@ export default class AllGameCard extends Vue {
 <style scoped>
 .section-header {
     margin-top: 32px;
+}
+.cp-info{
+    text-align: left !important;
 }
 </style>

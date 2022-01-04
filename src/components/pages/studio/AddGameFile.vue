@@ -69,8 +69,8 @@
         </div>
 
         <ul class="sui-btn">
-            <li><router-link to="#" class="btn-line w150"><i class="uil uil-angle-left-b"></i> 이전</router-link></li>
-            <li><router-link to="#" class="btn-default w150">다음 <i class="uil uil-angle-right-b"></i></router-link></li>
+            <li><router-link to="/addGameInfo" class="btn-line w150"><i class="uil uil-angle-left-b"></i> 이전</router-link></li>
+            <li><router-link to="#" class="btn-default w150">업로드<i class="uil uil-angle-right-b"></i></router-link></li>
         </ul>
     </div>
 </template>

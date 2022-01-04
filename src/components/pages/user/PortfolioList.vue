@@ -32,7 +32,7 @@
 
                     <div
                         :style="`background: url(${
-                            portfolio.thumbnail_img || 'img/channel_banner.png'
+                            portfolio.thumbnail_img || '/img/channel_banner.png'
                         }) center center / cover no-repeat;`"
                         class="thumb img portfolio-img"
                     />

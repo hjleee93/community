@@ -1,6 +1,7 @@
 import Login from "@/script/login";
 import firebase from "firebase/app";
 import Vue from "vue";
+import store from "@/store";
 
 enum LoginState {
     none,//초기화중,
@@ -157,8 +158,13 @@ export default {
                 wait();
             })
         },
-        async reloadUserInfo(context:any) {
-            return await Vue.$api.user()
+        async reloadUserInfo() {
+            const result = await Vue.$api.user();
+
+            if( result ) {
+                const { user } = result;
+                store.commit('user', user);
+            }
 
         },
         async logout(context: any) {

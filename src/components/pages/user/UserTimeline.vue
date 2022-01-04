@@ -184,7 +184,7 @@ export default class UserPage extends Vue {
 
     playGame(pathname:string){
         window.open(
-            `play/${pathname}`, "_blank")
+            this.$store.getters.homeUrl + `play/${pathname}`, "_blank");
     }
 
 

@@ -272,13 +272,12 @@ export default class Feed extends Vue {
         }
         this.$api.comments(this.feed.id, obj)
             .then((res: any) => {
-                console.log(res.result)
                 if (this.isAddData) {
                     if (res.result.length > 0) {
                         this.comments = [...this.comments, ...res.result]
                     }
                     else {
-                        console.log('no data')
+                        // console.log('no data')
                     }
                 }
                 else {
