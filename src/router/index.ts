@@ -27,10 +27,11 @@ const routes: Array<RouteConfig> = [
             const loginState = await store.dispatch("loginState");
             switch (loginState) {
                 case LoginState.login:
-                    if(from.name === 'MyChannel'){
+                    if (from.name === 'MyChannel') {
                         window.location.reload();
-                    }else{
-                        next('/myChannel');
+                    }
+                    else {
+                        next('/myChannel')
                     }
                     break;
                 case LoginState.no_user:
@@ -446,8 +447,8 @@ const routes: Array<RouteConfig> = [
     },
 
     /**
-    *스튜디오
-    **/
+     *스튜디오
+     **/
     {
         path: '/dashboard',
         name: 'Dashboard',
