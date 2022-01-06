@@ -11,7 +11,7 @@
                 :community="community"
             >
                 <template v-slot:subBtn>
-                    <SubscribeBtn @refetch="fetch" class="sub-btn" :community="community" @unsubscribe="unsubscribe"/>
+                    <SubscribeBtn @reFetch="fetch" class="sub-btn" :community="community" @unsubscribe="unsubscribe"/>
                 </template>
             </CommunityCard>
         </ul>

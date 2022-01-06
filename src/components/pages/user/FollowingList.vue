@@ -9,7 +9,7 @@
                 v-for="member in followingList"
                 :key="member.id"
                 :member="member"
-                @refetch="refetch"
+                @reFetch="reFetch"
             ></MemberCard>
         </ul>
         <div class="no-result" v-else>
@@ -72,7 +72,7 @@ export default class FollowingList extends Vue {
             })
     }
 
-    refetch(){
+    reFetch(){
         this.fetch();
         this.$store.dispatch('reloadUserInfo');
     }

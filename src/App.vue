@@ -103,6 +103,21 @@ export default class App extends Vue {
     -khtml-user-select: none;
     user-select: none;
 }
+//
+.tab-menu-swiper + div{
+   min-height: 500px;
+}
+
+//loading spinner
+.v-spinner{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    div{
+        background-color: #F97316 !important;
+    }
+}
 
 //toast
 .toast-success {

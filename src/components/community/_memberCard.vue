@@ -20,7 +20,7 @@
             <h3>{{ member.name }}</h3>
             <!--                    <p>@Zempieabcd</p>-->
             <div>
-                <FollowBtn :member="member" @refetch="refetch"/>
+                <FollowBtn :member="member" @reFetch="reFetch"/>
                 <!--                <router-link to="#" class="btn-default">Fellow</router-link>-->
                 <!--                        <router-link to="#" class="btn-gray">Send Message</router-link>-->
             </div>
@@ -65,8 +65,8 @@ export default class MemberCard extends Vue {
         }
     }
 
-    refetch() {
-        this.$emit('refetch')
+    reFetch() {
+        this.$emit('reFetch')
 
     }
 

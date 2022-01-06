@@ -36,19 +36,18 @@
                 <dt>
                     <FollowBtn v-if="user&&(userInfo.id !== user.id)" class="follow-btn" :member="userInfo"
                                :key="followKey"
-                               @refetch="refetch"/>
+                               @reFetch="reFetch"/>
                 </dt>
 
             </dl>
         </div>
         <div class="tab-menu-swiper">
             <swiper class="swiper-area" :options="TMSswiperOption">
-                <swiper-slide :class="
-                        $route.name === 'UserTimeline' &&
+                <swiper-slide
+                    :class=" $route.name === 'UserTimeline' &&
                         Object.keys($route.query).length === 0
                             ? 'active'
-                            : ''
-                    ">
+                            : ''">
                     <router-link :to="`/channel/${userInfo.channel_id}/timeline`">
                         <p><i class="uil uil-clock-three"></i></p>
                         <h2>타임라인(ALL)</h2>
@@ -236,7 +235,7 @@ export default class UserHeader extends Vue {
         return result;
     }
 
-    refetch() {
+    reFetch() {
         this.fetch();
         this.$store.dispatch('reloadUserInfo')
     }

@@ -10,10 +10,10 @@ export default {
     },
 
     mutations: {
-        startSpinner(state:any){
+        startLoading(state:any){
             state.LoadingStatus = true;
         },
-        endSpinner(state:any){
+        endLoading(state:any){
             state.LoadingStatus = false;
         },
 

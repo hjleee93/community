@@ -23,7 +23,7 @@ const _axios = axios.create(config);
 
 _axios.interceptors.request.use(
   (cfg) => {
-    store.commit('startSpinner');
+    store.commit('startLoading');
     // console.log('interceptor', store.getters.idToken)
     if (store.getters.idToken) {
       cfg.headers.authorization = `Bearer ${store.getters.idToken}`;
@@ -32,7 +32,7 @@ _axios.interceptors.request.use(
     return cfg;
   },
   (err) => {
-    store.commit('endSpinner');
+    store.commit('endLoading');
     // Do something with request error
     return Promise.reject(err);
   },
@@ -40,7 +40,7 @@ _axios.interceptors.request.use(
 
 _axios.interceptors.response.use(
   (res) => {
-    store.commit('endSpinner');
+    store.commit('endLoading');
     // if ( res.data.result ) {
     //   res.data = res.data.result;
     // }
@@ -51,7 +51,7 @@ _axios.interceptors.response.use(
     return res;
   },
   (err) => {
-    store.commit('endSpinner');
+    store.commit('endLoading');
     // Do something with response error
     return Promise.reject(err);
   },

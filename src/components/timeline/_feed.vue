@@ -119,7 +119,7 @@
 <script lang="ts">
 import {Component, Prop, Vue} from "vue-property-decorator";
 
-import Post from "@/components/timeline/Post.vue";
+import Post from "@/components/timeline/_post.vue";
 import TiptapSns from "@/components/timeline/_tiptapSns.vue";
 import {dateFormat} from "@/script/moment";
 import {AxiosError, AxiosResponse} from "axios";

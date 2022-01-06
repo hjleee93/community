@@ -30,7 +30,7 @@
                 :currPage="currPage"
                 :key="generateKey()"
                 :community="community"
-                @refetch="refetch"></Timeline>
+                @reFetch="reFetch"></Timeline>
         </dd>
 
         <!-- 커뮤니티 설명-->
@@ -62,7 +62,7 @@
 import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 
 
-import Post from "@/components/timeline/Post.vue";
+import Post from "@/components/timeline/_post.vue";
 import Feed from "@/components/timeline/_feed.vue";
 import {AxiosError, AxiosResponse} from "axios";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
@@ -128,8 +128,8 @@ export default class CommunityTimeline extends Vue {
         this.$store.commit('currPage', null)
     }
 
-    refetch() {
-        this.$emit('refetch')
+    reFetch() {
+        this.$emit('reFetch')
         // this.communityFetch()
     }
 

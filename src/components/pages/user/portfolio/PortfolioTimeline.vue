@@ -21,7 +21,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { mapGetters } from "vuex";
 
-import Post from "@/components/timeline/Post.vue";
+import Post from "@/components/timeline/_post.vue";
 import Feed from "@/components/timeline/_feed.vue";
 
 import { User } from "@/types";

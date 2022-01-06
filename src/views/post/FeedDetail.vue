@@ -20,7 +20,7 @@
                             </dl>
                         </dt>
                         <dd>
-                            <FollowBtn :member="feed.user" @refetch="refetch" :key="generateKey()"></FollowBtn>
+                            <FollowBtn :member="feed.user" @reFetch="reFetch" :key="generateKey()"></FollowBtn>
 
                         </dd>
 
@@ -244,7 +244,7 @@
         <modal :clickToClose="false" class="modal-area-type" name="modalPost" width="90%" height="auto" :maxWidth="550"
                :adaptive="true"
                :scrollable="true">
-            <Post @refetch="refetch"></Post>
+            <Post @reFetch="reFetch"></Post>
         </modal>
 
     </div>
@@ -266,7 +266,7 @@ import CommentInput from "@/components/comment/_commentInput.vue";
 import Comment from "@/components/timeline/Comment.vue";
 import {scrollDone} from "@/script/scrollManager";
 import {Swiper, SwiperSlide} from "vue-awesome-swiper";
-import Post from "@/components/timeline/Post.vue";
+import Post from "@/components/timeline/_post.vue";
 
 @Component({
     components: {
@@ -328,7 +328,7 @@ export default class FeedDetail extends Vue {
             })
     }
 
-    refetch() {
+    reFetch() {
         this.$store.dispatch("loginState")
             .then(() => {
                 this.fetch();
@@ -482,6 +482,9 @@ export default class FeedDetail extends Vue {
 
 .tapl-content {
     word-break: break-all;
+     + img{
+        width: 100%;
+    }
 }
 
 .user-avatar {

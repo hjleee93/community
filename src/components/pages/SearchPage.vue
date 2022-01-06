@@ -25,7 +25,8 @@
         <dl class="area-title" v-if="memberList && memberList.length > 0">
             <dt>Users <span>{{ memberList && memberList.length }}</span></dt>
         </dl>
-        <ul class="card-follow" v-if="memberList">
+        <ul v-if="memberList">
+            <transition-group name="list-complete" class="card-follow">
             <li v-for="member in memberList" :key="member.id" @click="userPage(member.channel_id)">
                 <div class="cf-img"></div>
                 <UserAvatar :user="member" :tag="'p'"></UserAvatar>
@@ -47,6 +48,7 @@
                     </dl>
                 </div>
             </li>
+            </transition-group>
             <li class="more-card" v-if="memberList && memberList.length>3">
                 <h3><i class="uil uil-plus"></i></h3>
                 <h4>모두보기</h4>
@@ -58,14 +60,14 @@
 <!--        </dl>-->
 <!--        <div class="card-follow">-->
 <!--            <community-card-->
-<!--                @refetch="refetch"-->
+<!--                @reFetch="reFetch"-->
 <!--                data-aos="zoom-in"-->
 <!--                v-for="community in communityList"-->
 <!--                :key="community.id"-->
 <!--                :community="community"-->
 <!--            >-->
 <!--                <template v-slot:subBtn>-->
-<!--                    <SubscribeBtn @refetch="refetch" class="sub-btn" :community="community" @unsubscribe="unsubscribe"/>-->
+<!--                    <SubscribeBtn @reFetch="reFetch" class="sub-btn" :community="community" @unsubscribe="unsubscribe"/>-->
 <!--                </template>-->
 <!--            </community-card>-->
 <!--        </div>-->
@@ -74,7 +76,8 @@
             <dt>Games <span>{{ games && games.length }}</span></dt>
         </dl>
 
-        <ul class="card-game" v-if="games">
+        <ul  v-if="games">
+            <transition-group name="list-complete" class="card-game">
             <li v-for="game in games" :key="game.id" @click="playGame(game.pathname)">
                 <div
                     :style="`background: url( ${game && game.url_thumb_webp ||  game.url_thumb} ) center center no-repeat; background-size: cover;`"></div>
@@ -94,7 +97,7 @@
                     </dd>
                 </dl>
             </li>
-
+            </transition-group>
 
             <!--            <li class="more-card" v-if="games && games.length>3">-->
             <!--                <div>-->
@@ -294,4 +297,24 @@ export default class SearchPage extends Vue {
 .cf-img {
     background-color: #f39800;
 }
+
+/*transition*/
+
+  .list-complete-item {
+      transition: all 1s;
+      display: inline-block;
+      margin-right: 10px;
+  }
+
+.list-complete-enter, .list-complete-leave-to
+    /* .list-complete-leave-active below version 2.1.8 */
+{
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.list-complete-leave-active {
+    position: absolute;
+}
+
 </style>
