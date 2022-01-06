@@ -20,18 +20,18 @@
         <!-- 검색/구분 -->
         <dl class="area-search-sort">
             <dt>
-<!--              커뮤니티 검색용 -->
-<!--                -->
-<!--                <div class="input-search-default">-->
-<!--                    <p><i class="uil uil-search"></i>-->
-<!--                    </p>-->
-<!--                    <div>-->
-<!--                        <input-->
-<!--                            v-model="searchInput"-->
-<!--                            @keyup.enter="searchCommunity" type="text" name="" title="keywords"-->
-<!--                            placeholder="검색어를 입력하세요."/>-->
-<!--                    </div>-->
-<!--                </div>-->
+                <!--              커뮤니티 검색용 -->
+                <!--                -->
+                <!--                <div class="input-search-default">-->
+                <!--                    <p><i class="uil uil-search"></i>-->
+                <!--                    </p>-->
+                <!--                    <div>-->
+                <!--                        <input-->
+                <!--                            v-model="searchInput"-->
+                <!--                            @keyup.enter="searchCommunity" type="text" name="" title="keywords"-->
+                <!--                            placeholder="검색어를 입력하세요."/>-->
+                <!--                    </div>-->
+                <!--                </div>-->
             </dt>
             <dd>
                 <div class="sort-default">
@@ -46,25 +46,33 @@
         </dl>
         <!-- 검색/구분 끝 -->
         <div class="result-container">
-            <div class="no-result" v-if="!communityList || communityList.length === 0">
-                <h1>검색 결과가 없습니다.</h1>
-                <img src="../../assets/images/not-found.png" width="100px" height="100px"/>
-            </div>
+            <!--            <div class="no-result" v-if="!communityList || communityList.length === 0">-->
+            <!--                <h1>검색 결과가 없습니다.</h1>-->
+            <!--                <img src="../../assets/images/not-found.png" width="100px" height="100px"/>-->
+            <!--            </div>-->
             <transition-group name="list-complete" class="card-timeline">
-                <community-card
-                    @refetch="refetch"
-                    data-aos="zoom-in"
-                    v-for="community in communityList"
-                    :key="community.id"
-                    :community="community"
-                >
-                    <template v-slot:subBtn>
-                        <SubscribeBtn @refetch="refetch" class="sub-btn" :community="community" @unsubscribe="unsubscribe"/>
-                    </template>
-                </community-card>
+                <template v-if="isFirstLoading">
+                    <li :key="Date.now()" style="list-style-type: none; opacity: 0.5;">
+                        <div>
+                        </div>
+                    </li>
+                </template>
+                <template v-else>
+                    <community-card
+                        @reFetch="reFetch"
+                        v-for="community in communityList"
+                        :key="community.id"
+                        :community="community"
+                    >
+                        <template v-slot:subBtn>
+                            <SubscribeBtn @reFetch="reFetch" class="sub-btn" :community="community"
+                                          @unsubscribe="unsubscribe"/>
+                        </template>
+                    </community-card>
+                </template>
             </transition-group>
-
         </div>
+
         <modal :clickToClose="false" class="modal-area-type" name="deleteConfirm" width="90%" height="auto"
                :maxWidth="380"
                :scrollable="true"
@@ -112,14 +120,16 @@ export default class CommunityList extends Vue {
     private isSearched: boolean = false;
 
     //fetch data object
-    private limit: number = 20;
-    private offset: number = 0;
-    private community: string = '';
-    private sort: string = '';
-    private show: string = ''
-    private isAddData: boolean = false;
+    limit: number = 20;
+    offset: number = 0;
+    community: string = '';
+    sort: string = '';
+    show: string = ''
+    isAddData: boolean = false;
     unCommunityId: string = ''
     user !: any;
+
+    isFirstLoading: boolean = true;
 
     scrollCheck() {
         if (scrollDone(document.documentElement)) {
@@ -164,11 +174,16 @@ export default class CommunityList extends Vue {
             .catch((err: AxiosError) => {
                 console.log(err)
             })
+            .finally(() => {
+                this.isFirstLoading = false;
+            })
     }
+
     unsubscribe(communityId: string) {
         this.$modal.show('deleteConfirm')
         this.unCommunityId = communityId;
     }
+
     yesUnsubscribe() {
         this.initData()
         this.$api.unsubscribe({user_id: this.user.id, community_id: this.unCommunityId})
@@ -184,6 +199,7 @@ export default class CommunityList extends Vue {
                 this.$modal.hide('deleteConfirm')
             })
     }
+
     sortGroups(filter: number) {
         this.isAddData = false;
         this.filter = filter;
@@ -228,7 +244,7 @@ export default class CommunityList extends Vue {
         this.searchInput = '';
     }
 
-    refetch() {
+    reFetch() {
         this.initData();
         this.fetch();
     }
@@ -236,10 +252,6 @@ export default class CommunityList extends Vue {
 </script>
 
 <style scoped lang="scss">
-.result-container {
-    min-height: 872px;
-}
-
 svg {
     overflow: hidden;
     vertical-align: middle;

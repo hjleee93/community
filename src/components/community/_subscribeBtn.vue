@@ -24,7 +24,7 @@ export default class SubscribeBtn extends Vue {
         if (this.user) {
             this.$api.subscribe({user_id: this.user.id, community_id: this.community.id})
                 .then((res: AxiosResponse) => {
-                    this.$emit('refetch')
+                    this.$emit('reFetch')
                 }).catch((err: AxiosError) => {
                 if (err.message) {
                     alert(err.message)

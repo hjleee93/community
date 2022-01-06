@@ -31,7 +31,7 @@
                     <h3> {{ community.description }}</h3>
                 </dd>
                 <dt >
-                    <SubscribeBtn :community="community" @unsubscribe="unsubscribe" @refetch="refetch" />
+                    <SubscribeBtn :community="community" @unsubscribe="unsubscribe" @reFetch="reFetch" />
                     <!--                    <dropdown-menu :overlay="false" class="vic-more-dropdown">-->
                     <!--                        <router-link to="#" class="btn-circle-none pt6" slot="trigger"><i-->
                     <!--                            class="uil uil-ellipsis-h"></i></router-link>-->
@@ -97,7 +97,7 @@
                 <div class="swiper-button-next" slot="button-next"></div>
             </swiper>
         </div>
-        <router-view @refetch="refetch" :key="community.is_subscribed"></router-view>
+        <router-view @reFetch="reFetch" :key="community.is_subscribed"></router-view>
         <modal :clickToClose="false" class="modal-area-type" name="deleteConfirm" width="90%" height="auto"
                :maxWidth="380"
                :scrollable="true"
@@ -225,7 +225,7 @@ export default class Community extends Vue {
             })
 
     }
-    refetch(){
+    reFetch(){
         this.fetch();
     }
 

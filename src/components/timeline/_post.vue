@@ -442,7 +442,7 @@ export default class Post extends Vue {
 
             this.$api.uploadPost(obj)
                 .then((res: AxiosResponse) => {
-                    this.$emit('refetch')
+                    this.$emit('reFetch')
                     this.toast.successToast("포스팅이 완료되었습니다.")
                 })
                 .catch((err: AxiosError) => {
@@ -549,7 +549,7 @@ export default class Post extends Vue {
 
         this.$api.updatePost(obj)
             .then((res: AxiosResponse) => {
-                this.$emit('refetch')
+                this.$emit('reFetch')
                 this.toast.successToast("포스팅이 수정되었습니다.")
             })
             .catch((err: AxiosError) => {

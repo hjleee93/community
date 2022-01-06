@@ -26,7 +26,7 @@ export default class FollowBtn extends Vue {
     follow() {
         this.$api.follow(this.member.id)
             .then((res: AxiosResponse) => {
-                this.$emit('refetch')
+                this.$emit('reFetch')
             })
             .catch((err: AxiosError) => {
 
@@ -37,7 +37,7 @@ export default class FollowBtn extends Vue {
     unfollow() {
         this.$api.unfollow(this.member.id)
             .then((res: AxiosResponse) => {
-                this.$emit('refetch')
+                this.$emit('reFetch')
             })
             .catch((err: AxiosError) => {
 

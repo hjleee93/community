@@ -8,7 +8,7 @@
                 v-for="member in memberList"
                 :key="member.id"
                 :member="member"
-                @refetch="refetch"
+                @reFetch="reFetch"
             >
             </MemberCard>
         </ul>
@@ -57,7 +57,7 @@ export default class MemberList extends Vue {
 
     }
 
-    refetch(){
+    reFetch(){
         this.limit = 10;
         this.offset = 0;
         this.memberList = [];

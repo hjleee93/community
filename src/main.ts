@@ -11,47 +11,17 @@ import 'vuedraggable'
 import 'tiny-slider'
 
 import {BootstrapVue, BootstrapVueIcons} from 'bootstrap-vue'
-// import 'bootstrap/dist/css/bootstrap.css'
-// import 'bootstrap-vue/dist/bootstrap-vue.css'
-
-Vue.use(BootstrapVue)
-Vue.use(BootstrapVueIcons)
-
-import 'remixicon/fonts/remixicon.css'
-
-import Vuelidate from 'vuelidate'
-
-Vue.use(Vuelidate)
-
 import AOS from 'aos';
 import "aos/dist/aos.css";
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
-import VTooltip from 'v-tooltip'
-
-Vue.use(VTooltip)
-
-
-import 'overlayscrollbars/css/OverlayScrollbars.css';
-import {OverlayScrollbarsPlugin} from 'overlayscrollbars-vue';
-
-Vue.use(OverlayScrollbarsPlugin);
 
 import Toasted from 'vue-toasted';
-
-Vue.use(Toasted)
-
-
-
+import 'remixicon/fonts/remixicon.css'
+import Vuelidate from 'vuelidate'
 import vueDebounce from 'vue-debounce'
-
-Vue.use(vueDebounce)
-
-//VUE-META
-import VueMeta from 'vue-meta'
-
-Vue.use(VueMeta)
 //ga
 import './plugins/analytics';
+import VueMeta from 'vue-meta'
 //퍼블리싱
 import VuePageTransition from 'vue-page-transition'
 import vSelect from 'vue-select'
@@ -62,6 +32,12 @@ import 'swiper/css/swiper.css'
 import 'vue-select/dist/vue-select.css';
 import 'v-dropdown-menu/dist/v-dropdown-menu.css';
 
+Vue.use(BootstrapVue)
+Vue.use(BootstrapVueIcons)
+Vue.use(Vuelidate)
+Vue.use(Toasted)
+Vue.use(vueDebounce)
+Vue.use(VueMeta)
 Vue.use(VuePageTransition);
 Vue.component('v-select', vSelect);
 Vue.use(DropdownMenu);
