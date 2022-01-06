@@ -434,6 +434,37 @@ export default class Api {
         return response.result || response;
     }
 
+    /**
+     * studio
+     * */
+
+    async createProject(options: { name?: string, description?: string, hashtags?: string, pathname?: string, project_picture?: File, project_picture2?: File },
+                        updateVersion: { version?: string, autoDeploy?: boolean, startFile?: string, size?: number, version_description?: string }, files: File[]) {
+
+        const formData = new FormData();
+        for (let k in options) {
+            formData.append(k, options[k]);
+        }
+
+        for (let k in updateVersion) {
+            formData.append(k, updateVersion[k]);
+        }
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i] as File;
+            formData.append(`file_${i + 1}`, file);
+        }
+
+
+        const response = await this.request('post', `${studioApi}studio/project`, formData, false);
+        return response.result || response;
+    }
+
+    async confirmGamePath(pathname: string) {
+        const response = await this.request('get', `${studioApi}studio/verify-pathname/${pathname}`, undefined, false);
+        return response.result || response;
+    }
+
 }
 
 

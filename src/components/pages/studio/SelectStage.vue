@@ -74,10 +74,9 @@ export default class SelectStage extends Vue {
     }
 
     selectStage(stage: number) {
+        this.$emit('stage', stage)
         this.$store.commit("gameStage", stage);
-        this.$store.commit("sendGameInfoDone", false);
-        this.$store.commit("sendGameFileDone", false);
-        this.$router.push("/addGameInfo");
+        // this.$router.push("/addGameInfo");
     }
 
 }

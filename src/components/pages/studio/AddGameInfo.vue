@@ -10,7 +10,7 @@
                     <input @focusout="autoSave" v-model="title" type="text" name="" title="" placeholder=""
                            class="w100p"/>
                     <transition name="component-fade" mode="out-in">
-                        <p class="valid-err"  :key="isTitleErr" :class="isTitleErr? 'active' :'' ">게임 제목을 입력해주세요.</p>
+                        <p class="valid-err" :key="isTitleErr" :class="isTitleErr? 'active' :'' ">게임 제목을 입력해주세요.</p>
                     </transition>
                 </dd>
 
@@ -21,7 +21,7 @@
                     <textarea @focusout="autoSave" v-model="description" name="" title="" placeholder=""
                               class="w100p h100"></textarea>
                     <transition name="component-fade" mode="out-in">
-                        <p class="valid-err"  :key="isDescErr" :class="isDescErr? 'active' :'' ">게임에 대한 설명을 입력해주세요.</p>
+                        <p class="valid-err" :key="isDescErr" :class="isDescErr? 'active' :'' ">게임에 대한 설명을 입력해주세요.</p>
                     </transition>
                 </dd>
             </dl>
@@ -40,7 +40,8 @@
                     </div>
                     <!--                    <input v-model="hashtagsArr" type="text" name="" title="" placeholder="" class="w100p"/>-->
                     <transition name="component-fade" mode="out-in">
-                        <p class="valid-err"  :key="isHashtagErr" :class="isHashtagErr? 'active' :'' ">최소 1개 이상 설정하세요.</p>
+                        <p class="valid-err" :key="isHashtagErr" :class="isHashtagErr? 'active' :'' ">최소 1개 이상
+                            설정하세요.</p>
                     </transition>
                     <h2>
                         게임을 나타낼 수 있는 단어로 태그를 설정합니다. 이러한 태그는 게임 검색에 사용되며 여러 태그를 사용하는 경우 엔터키로 구분
@@ -69,7 +70,8 @@
                             </div>
 
                             <transition name="component-fade" mode="out-in">
-                                <p class="valid-err"  :key="isThumbErr" :class="isThumbErr? 'active' :'' ">썸네일 이미지를 업로드해주세요.</p>
+                                <p class="valid-err" :key="isThumbErr" :class="isThumbErr? 'active' :'' ">썸네일 이미지를
+                                    업로드해주세요.</p>
                             </transition>
                             <p>
 
@@ -165,7 +167,7 @@
                 <dl class="suii-content" v-if="!autoGamePath">
                     <dt>영어게임 ID</dt>
                     <dd>
-                        <input v-model="title" type="text" name="" title="" placeholder="" class="w100p"/>
+                        <input v-model="gamePath" type="text" name="" title="" placeholder="" class="w100p"/>
                     </dd>
                 </dl>
             </transition>
@@ -173,7 +175,7 @@
 
         <ul class="sui-btn">
             <li>
-                <router-link to="/selectStage" class="btn-line w150"><i class="uil uil-angle-left-b"></i> 이전</router-link>
+                <a @click="prevPage" class="btn-line w150"><i class="uil uil-angle-left-b"></i>이전</a>
             </li>
             <li><a @click="save" class="btn-default w150">다음 <i class="uil uil-angle-right-b"></i></a></li>
         </ul>
@@ -183,12 +185,15 @@
 <script lang="ts">
 import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import _ from 'lodash';
+import {randomString} from '@/script/util'
+import {eGameUploadStage} from "@/common/enumData";
 
 @Component({
     components: {},
 })
 export default class AddGameInfo extends Vue {
     @Prop({default: false}) set!: boolean;
+    uploadStage = eGameUploadStage;
     title: string = '';
     description: string = '';
     hashtagsArr: string[] = [];
@@ -197,8 +202,10 @@ export default class AddGameInfo extends Vue {
     prevImg: any = '';
     prevGif: any = '';
     thumbFile: File = null;
-
+    gamePath: string = ""
     autoGamePath: boolean = true;
+
+    confirmedGamePath: boolean = false;
 
     isTitleErr: boolean = false;
     isDescErr: boolean = false;
@@ -222,6 +229,7 @@ export default class AddGameInfo extends Vue {
                 )
             ) {
                 this.resetLocalStorage();
+
                 next();
 
             }
@@ -234,25 +242,42 @@ export default class AddGameInfo extends Vue {
         }
     }
 
-    mounted(){
-        this.title = localStorage.getItem('title')
+    mounted() {
+        // this.callLocalStorageData();
     }
 
-    init(){
+    callLocalStorageData() {
+        this.title = localStorage.getItem('title')
+        this.description = localStorage.getItem('description')
+        this.chips = localStorage.getItem('hashtagsArr').split(',')
+    }
+
+
+    init() {
         this.isTitleErr = false;
         this.isDescErr = false;
         this.isHashtagErr = false;
         this.isThumbErr = false;
     }
 
-    resetLocalStorage(){
+    resetLocalStorage() {
         localStorage.removeItem('title')
         localStorage.removeItem('description')
-        localStorage.removeItem('isHashtagErr')
+        localStorage.removeItem('hashtagsArr')
+        localStorage.removeItem('thumbnail')
     }
 
-    save() {
+    prevPage() {
+        this.resetLocalStorage();
+        this.$store.commit("gameStage", null);
+        this.$emit('stage', null)
+        this.$emit('isActivePublish', false)
+    }
+
+    async save() {
         this.init();
+
+
         if (!this.title) {
             this.isTitleErr = true;
         }
@@ -261,19 +286,61 @@ export default class AddGameInfo extends Vue {
             this.isDescErr = true;
         }
 
-        if(this.chips.length === 0){
+        if (this.chips.length === 0) {
             this.isHashtagErr = true;
         }
 
-        if(!this.thumbFile){
+        if (!this.thumbFile) {
             this.isThumbErr = true;
         }
 
+
         else {
-            this.$router.push('/addGameFile')
+            await this.commitGameInfo();
+            this.$emit('gameInfoDone', true)
         }
 
+    }
 
+    async commitGameInfo() {
+        if (!this.confirmedGamePath) {
+            if (!this.autoGamePath) {
+                alert('게임 id 다ㅅ; 확인 ')
+
+            }
+            else {
+                let count = 0;
+                while (!this.confirmedGamePath && count < 10) {
+                    count++;
+                    this.gamePath = randomString(11);
+                    const result = await this.$api.confirmGamePath(
+                        this.gamePath
+                    );
+                    if (result && result.success) {
+                        this.confirmedGamePath = true;
+                    }
+                }
+
+                if (!this.confirmedGamePath) {
+
+                    return;
+                }
+            }
+        }
+
+        const gameInfo = {
+            name: this.title,
+            description: this.description,
+            pathname: this.gamePath,
+            project_picture: this.thumbFile,
+            project_picture2: this.thumbFile2,
+            hashtags: this.hashtagsArr.toString(),
+            stage: this.$store.getters.gameStage,
+        };
+
+        this.$store.commit("uploadGameFiles", []);
+        this.$store.commit("gameFileInfoObj", {});
+        this.$store.commit("gameInfoObj", gameInfo);
     }
 
     uploadFile() {
@@ -285,11 +352,16 @@ export default class AddGameInfo extends Vue {
     }
 
     onFileChange(event: { target: { files: any } }) {
+        console.log('file uplaod!')
+
         if (event.target.files[0].size < 1024 * 1024 * 4) {
+
             // this.fileName = event.target.files[0].name
-            this.thumbFile = event.target.files[0]
+            this.thumbFile = event.target.files[0];
+            this.checkActivePublish();
             const reader = new FileReader();
             reader.onload = e => {
+
                 this.prevImg = e.target!.result;
                 localStorage.setItem('thumbnail', e.target!.result);
                 this.isThumbErr = false;
@@ -321,6 +393,27 @@ export default class AddGameInfo extends Vue {
         }
     }
 
+
+    checkActivePublish() {
+
+        if (this.$store.getters.gameStage === this.uploadStage.Dev) {
+            if (this.title && this.description && this.chips.length !== 0 && this.thumbFile) {
+                this.commitGameInfo();
+                this.$emit('isActivePublish', true)
+            }
+            else {
+                this.$emit('isActivePublish', false)
+            }
+
+        }
+
+    }
+    @Watch('$store.getters.gameStage')
+    watchGameStage(){
+        console.log("?")
+        this.checkActivePublish()
+    }
+
     /**
      * tag chips
      */
@@ -340,11 +433,11 @@ export default class AddGameInfo extends Vue {
         which == 8 && this.currentInput === '' && this.chips.splice(this.chips.length - 1);
     }
 
-
     /**
      * 게임 정보 local storage 저장
      */
     autoSave() {
+        this.checkActivePublish();
         if (this.title) {
             localStorage.setItem('title', this.title)
             this.isTitleErr = false;
@@ -361,6 +454,9 @@ export default class AddGameInfo extends Vue {
             localStorage.removeItem('description')
         }
 
+        if (this.currentInput) {
+            this.saveChip();
+        }
         if (this.chips.length > 0) {
             this.isHashtagErr = false;
             localStorage.setItem('hashtagsArr', this.chips)
@@ -371,13 +467,14 @@ export default class AddGameInfo extends Vue {
 
     }
 
+
 }
 </script>
 
 <style scoped lang="scss">
 
-.btn-line{
-    height:40px
+.btn-line {
+    height: 40px
 }
 
 //validation
@@ -389,6 +486,7 @@ export default class AddGameInfo extends Vue {
         display: inline-block;
     }
 }
+
 // /validation
 
 //transition

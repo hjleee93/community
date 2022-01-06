@@ -477,39 +477,38 @@ const routes: Array<RouteConfig> = [
             title: 'UploadGame',
             transition: 'fade-in-down'
         },
-        redirect: '/selectStage',
-        children: [
-            {
-                path: '/selectStage',
-                name: 'SelectStage',
-                meta: {
-                    layout: LayoutStudio,
-                    title: 'SelectStage',
-                    transition: 'fade-in-down'
-                },
-                component: () => import("@/components/pages/studio/SelectStage.vue"),
-            },
-            {
-                path: '/addGameInfo',
-                name: 'AddGameInfo',
-                component: () => import(/* webpackChunkName: "about" */ "@/components/pages/studio/AddGameInfo.vue"),
-                meta: {
-                    layout: LayoutStudio,
-                    title: 'AddGameInfo',
-                    transition: 'fade-in-down'
-                },
-            },
-            {
-                path: '/addGameFile',
-                name: 'AddGameFile',
-                component: () => import(/* webpackChunkName: "about" */ "@/components/pages/studio/AddGameFile.vue"),
-                meta: {
-                    layout: LayoutStudio,
-                    title: 'AddGameFile',
-                    transition: 'fade-in-down'
-                },
-            },
-        ],
+        // children: [
+        //     {
+        //         path: '/selectStage',
+        //         name: 'SelectStage',
+        //         meta: {
+        //             layout: LayoutStudio,
+        //             title: 'SelectStage',
+        //             transition: 'fade-in-down'
+        //         },
+        //         component: () => import("@/components/pages/studio/SelectStage.vue"),
+        //     },
+        //     {
+        //         path: '/addGameInfo',
+        //         name: 'AddGameInfo',
+        //         component: () => import(/* webpackChunkName: "about" */ "@/components/pages/studio/AddGameInfo.vue"),
+        //         meta: {
+        //             layout: LayoutStudio,
+        //             title: 'AddGameInfo',
+        //             transition: 'fade-in-down'
+        //         },
+        //     },
+        //     {
+        //         path: '/addGameFile',
+        //         name: 'AddGameFile',
+        //         component: () => import(/* webpackChunkName: "about" */ "@/components/pages/studio/AddGameFile.vue"),
+        //         meta: {
+        //             layout: LayoutStudio,
+        //             title: 'AddGameFile',
+        //             transition: 'fade-in-down'
+        //         },
+        //     },
+        // ],
         component: () => import(/* webpackChunkName: "GameList" */ '@/views/studio/UploadGame.vue')
     },
 
