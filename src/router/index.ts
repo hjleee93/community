@@ -454,7 +454,7 @@ const routes: Array<RouteConfig> = [
         name: 'Dashboard',
         meta: {
             layout: LayoutStudio,
-            title: 'Dashboard',
+            title: 'Studio Dashboard',
             transition: 'fade-in-down'
         },
         component: () => import("@/views/studio/Dashboard.vue"),
@@ -474,7 +474,7 @@ const routes: Array<RouteConfig> = [
         name: 'UploadGame',
         meta: {
             layout: LayoutStudio,
-            title: 'UploadGame',
+            title: 'Studio UploadGame',
             transition: 'fade-in-down'
         },
         redirect: '/selectStage',
@@ -614,4 +614,12 @@ router.beforeEach((to, from, next) => {
     }
     next();
 });
+
+//title 설정
+router.afterEach((to, from) => {
+    Vue.nextTick(() => {
+        document.title = to.meta.title;
+    });
+});
+
 export default router
