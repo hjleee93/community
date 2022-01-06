@@ -39,6 +39,7 @@
                         <dd><a><i class="uil uil-message"></i></a></dd>
                     </dl>
                 </div>
+
 <!--            </template>-->
             <div class="ta-message-block" v-else-if="ableToPost() === 'block'">
                 <i class="uil uil-exclamation-triangle"></i> 블락으로 인해 포스팅을 작성하실 수 없습니다.
@@ -52,24 +53,32 @@
                     v-for="feed in filterDupTl"
                     :key="feed.id"
                     :feed="feed"
-                    @refetch="refetch"
+                    @reFetch="reFetch"
                     @deleteFeed="deleteFeed"
                     @reportPost="reportPost"
                     @originImg="(val)=>originImg = val"
                 ></Feed>
             </ul>
 
-            <div class="ta-post-none" :style="ableToPost() === false ? 'margin-top: 0px;' : ''" v-else>
+            <div v-else-if="this.$store.getters.LoadingStatus || isFirstLoading"
+                 style="opacity: 0.5;"
+                 class="ta-post-none">
+            </div>
+
+            <div v-else
+                 class="ta-post-none"
+                 :style="ableToPost() === false ? 'margin-top: 0px;' : ''">
                 <p><span><i class="uil uil-layers-slash"></i></span></p>
                 <h2>작성된 글이 없습니다.</h2>
             </div>
 
 
             <!--        </div>-->
-            <!--        <PulseLoader :loading="$store.getters.LoadingStatus"></PulseLoader>-->
+
+<!--                    <PulseLoader :loading="$store.getters.LoadingStatus"></PulseLoader>-->
         </dd>
         <modal name="writingModal" classes="post-modal" :clickToClose="false" :scrollable="true" height="auto">
-            <post @closePostModal="closePostModal" @refetch="refetch" @reMount="reMount">
+            <post @closePostModal="closePostModal" @reFetch="reFetch" @reMount="reMount">
             </post>
         </modal>
 
@@ -98,7 +107,7 @@
         <modal :clickToClose="false" class="modal-area-type" name="modalPost" width="90%" height="auto" :maxWidth="550"
                :adaptive="true"
                :scrollable="true">
-            <Post @refetch="refetch"></Post>
+            <Post @reFetch="reFetch"></Post>
         </modal>
 
         <modal class="modal-area-type" name="modalReport" width="90%" height="auto" :maxWidth="375" :adaptive="true"
@@ -201,7 +210,7 @@ import {AxiosError, AxiosResponse} from "axios";
 import {scrollDone} from "@/script/scrollManager";
 import {mapGetters} from "vuex";
 import {User} from "@/types";
-import Post from "@/components/timeline/Post.vue";
+import Post from "@/components/timeline/_post.vue";
 import UserAvatar from "@/components/user/_userAvatar.vue";
 import {Swiper, SwiperSlide} from "vue-awesome-swiper";
 import TiptapSns from "@/components/timeline/_tiptapSns.vue";
@@ -214,7 +223,7 @@ import _ from "lodash";
 @Component({
     computed: {
         ...mapGetters(["user"]),
-
+        //timeline 중복 제거
         filterDupTl: function () {
             return _.uniqBy(this['timeline'], (e: any) => {
                     return e.id;
@@ -250,8 +259,8 @@ export default class Timeline extends Vue {
     private media: string = '';
 
     //state
-    private isAddData: boolean = false;
-    private hasData: boolean = true;
+    isAddData: boolean = false;
+    hasData: boolean = true;
 
     activeTab: string = "SNS";
 
@@ -264,12 +273,15 @@ export default class Timeline extends Vue {
     commentId = '';
     postId = '';
 
+    isFirstLoading:boolean = true;
+
 
     mounted() {
         this.$store.dispatch("loginState")
             .then(() => {
                 this.fetch()
             });
+
         window.addEventListener("scroll", this.scrollCheck);
     }
 
@@ -277,8 +289,8 @@ export default class Timeline extends Vue {
         window.removeEventListener("scroll", this.scrollCheck);
     }
 
-    refetch() {
-        this.$emit('refetch')
+    reFetch() {
+        this.$emit('reFetch')
         this.initData()
         this.fetch()
     }
@@ -286,7 +298,7 @@ export default class Timeline extends Vue {
     deleteComment() {
         this.$api.deleteComment(this.postId, this.commentId)
             .then((res) => {
-                this.refetch()
+                this.reFetch()
             })
             .catch((err) => {
 
@@ -314,6 +326,7 @@ export default class Timeline extends Vue {
     }
 
     fetch() {
+
         switch (this.currPage) {
             case 'user':
                 const userObj = {
@@ -333,22 +346,19 @@ export default class Timeline extends Vue {
                             }
                             else {
                                 window.removeEventListener("scroll", this.scrollCheck);
-
                             }
                         }
                         else {
                             this.timeline = res.result;
                             this.isAddData = true
                         }
-
-
                     })
                     .catch((err: AxiosError) => {
                         this.$router.push('/communityList')
 
                     })
                     .finally(() => {
-                        // _.orderBy(this.timeline, 'createdAt', 'asc')
+                        this.isFirstLoading = false;
                         this.timeline = _.orderBy(this.timeline, 'createdAt', 'desc')
                     })
 
@@ -523,7 +533,7 @@ export default class Timeline extends Vue {
     needSubscribe() {
         this.$api.subscribe({user_id: this.user.id, community_id: this.community.id})
             .then((res: AxiosResponse) => {
-                this.$emit('refetch')
+                this.$emit('reFetch')
             }).catch((err: AxiosError) => {
             if (err.message) {
                 alert(err.message)
