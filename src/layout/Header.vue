@@ -7,7 +7,7 @@
                     <p>
                         <i class="uil uil-bars" v-on:click="headerSideOpenMobile"></i>
                         <router-link to="/">
-                            <img src="../assets/images/logo.svg" width="120" alt="" title=""/>
+                            <img src="../assets/images/zempie-logo-black.png" width="120"/>
                         </router-link>
                     </p>
                     <ul class="menu">
