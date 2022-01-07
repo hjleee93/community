@@ -1,10 +1,9 @@
 <template>
     <div class="studio-upload-input">
-
         <div class="sui-input">
             <div class="suii-title">게임정보</div>
             <dl class="suii-content">
-                <dt>게임 제목<span style="color: red;">*</span></dt>
+                <dt>게임 제목<span v-if="!projectInfo" style="color: red;">*</span></dt>
 
                 <dd>
                     <input @focusout="autoSave" v-model="title" type="text" name="" title="" placeholder=""
@@ -16,7 +15,7 @@
 
             </dl>
             <dl class="suii-content">
-                <dt>게임 설명<span style="color: red;">*</span></dt>
+                <dt>게임 설명<span v-if="!projectInfo" style="color: red;">*</span></dt>
                 <dd>
                     <textarea @focusout="autoSave" v-model="description" name="" title="" placeholder=""
                               class="w100p h100"></textarea>
@@ -26,10 +25,10 @@
                 </dd>
             </dl>
             <dl class="suii-content">
-                <dt>태그<span style="color: red;">*</span></dt>
+                <dt>태그<span v-if="!projectInfo" style="color: red;">*</span></dt>
                 <dd>
                     <div class="chip-container">
-                        <div class="chip" v-for="(chip, i) of chips" :key="chip.id">
+                        <div class="chip" v-for="(chip, i) of hashtagsArr" :key="chip.id">
                             {{ chip }}
                             <i class="uil uil-times" @click="deleteChip(i)"></i>
                         </div>
@@ -49,7 +48,7 @@
                 </dd>
             </dl>
             <dl class="suii-content">
-                <dt>썸네일 이미지<span style="color: red;">*</span></dt>
+                <dt>썸네일 이미지<span v-if="!projectInfo" style="color: red;">*</span></dt>
                 <dd>
                     <ul class="image-upload">
 
@@ -185,20 +184,21 @@
 <script lang="ts">
 import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import _ from 'lodash';
-import {randomString} from '@/script/util'
-import {eGameUploadStage} from "@/common/enumData";
+import {randomString} from '@/script/util';
+import {eGameStage} from "@/common/enumData";
 
 @Component({
     components: {},
 })
 export default class AddGameInfo extends Vue {
     @Prop({default: false}) set!: boolean;
-    uploadStage = eGameUploadStage;
+    @Prop() projectInfo !: any;
+    gameStage = eGameStage;
     title: string = '';
     description: string = '';
     hashtagsArr: string[] = [];
     currentInput = ''
-    chips: string[] = [];
+    // chips: string[] = [];
     prevImg: any = '';
     prevGif: any = '';
     thumbFile: File = null;
@@ -211,6 +211,7 @@ export default class AddGameInfo extends Vue {
     isDescErr: boolean = false;
     isHashtagErr: boolean = false;
     isThumbErr: boolean = false;
+
 
     beforeRouteLeave(to, from, next) {
         if (to.name == "AddGameFile") {
@@ -229,7 +230,6 @@ export default class AddGameInfo extends Vue {
                 )
             ) {
                 this.resetLocalStorage();
-
                 next();
 
             }
@@ -243,13 +243,22 @@ export default class AddGameInfo extends Vue {
     }
 
     mounted() {
+
         // this.callLocalStorageData();
     }
 
     callLocalStorageData() {
         this.title = localStorage.getItem('title')
         this.description = localStorage.getItem('description')
-        this.chips = localStorage.getItem('hashtagsArr').split(',')
+        this.hashtagsArr = localStorage.getItem('hashtagsArr').split(',')
+    }
+
+    @Watch('projectInfo')
+    callUpdateProjectData() {
+        this.title = this.projectInfo.name;
+        this.description = this.projectInfo.description;
+        this.prevImg = this.projectInfo.picture;
+        this.hashtagsArr = this.projectInfo.hashtags ? this.projectInfo.hashtags.split(',') : []
     }
 
 
@@ -277,7 +286,6 @@ export default class AddGameInfo extends Vue {
     async save() {
         this.init();
 
-
         if (!this.title) {
             this.isTitleErr = true;
         }
@@ -286,7 +294,7 @@ export default class AddGameInfo extends Vue {
             this.isDescErr = true;
         }
 
-        if (this.chips.length === 0) {
+        if (this.hashtagsArr.length === 0) {
             this.isHashtagErr = true;
         }
 
@@ -294,13 +302,14 @@ export default class AddGameInfo extends Vue {
             this.isThumbErr = true;
         }
 
-
         else {
             await this.commitGameInfo();
             this.$emit('gameInfoDone', true)
         }
 
     }
+
+
 
     async commitGameInfo() {
         if (!this.confirmedGamePath) {
@@ -327,7 +336,6 @@ export default class AddGameInfo extends Vue {
                 }
             }
         }
-
         const gameInfo = {
             name: this.title,
             description: this.description,
@@ -352,7 +360,6 @@ export default class AddGameInfo extends Vue {
     }
 
     onFileChange(event: { target: { files: any } }) {
-        console.log('file uplaod!')
 
         if (event.target.files[0].size < 1024 * 1024 * 4) {
 
@@ -361,12 +368,13 @@ export default class AddGameInfo extends Vue {
             this.checkActivePublish();
             const reader = new FileReader();
             reader.onload = e => {
-
                 this.prevImg = e.target!.result;
+                this.$store.commit('thumbFile', this.thumbFile)
                 localStorage.setItem('thumbnail', e.target!.result);
                 this.isThumbErr = false;
             };
             reader.readAsDataURL(event.target.files[0]);
+
         }
         else {
             alert(`최대 파일 크기는 4mb입니다. `)
@@ -395,9 +403,9 @@ export default class AddGameInfo extends Vue {
 
 
     checkActivePublish() {
+        if (this.$store.getters.gameStage === this.gameStage.Dev) {
+            if (this.title && this.description && this.hashtagsArr.length !== 0 && this.thumbFile) {
 
-        if (this.$store.getters.gameStage === this.uploadStage.Dev) {
-            if (this.title && this.description && this.chips.length !== 0 && this.thumbFile) {
                 this.commitGameInfo();
                 this.$emit('isActivePublish', true)
             }
@@ -408,9 +416,9 @@ export default class AddGameInfo extends Vue {
         }
 
     }
+
     @Watch('$store.getters.gameStage')
-    watchGameStage(){
-        console.log("?")
+    watchGameStage() {
         this.checkActivePublish()
     }
 
@@ -418,26 +426,28 @@ export default class AddGameInfo extends Vue {
      * tag chips
      */
     saveChip() {
-        const {chips, currentInput, set} = this;
-        if (!_.includes(chips, currentInput.trim())) {
-            ((set && chips.indexOf(currentInput) === -1) || !set) && chips.push(currentInput.trim());
+        const {hashtagsArr, currentInput, set} = this;
+        console.log(this)
+        if (!_.includes(hashtagsArr, currentInput.trim())) {
+            ((set && hashtagsArr.indexOf(currentInput) === -1) || !set) && hashtagsArr.push(currentInput.trim());
         }
+        console.log('hash', hashtagsArr)
         this.currentInput = '';
     }
 
     deleteChip(index) {
-        this.chips.splice(index, 1);
+        this.hashtagsArr.splice(index, 1);
     }
 
     backspaceDelete({which}) {
-        which == 8 && this.currentInput === '' && this.chips.splice(this.chips.length - 1);
+        which == 8 && this.currentInput === '' && this.hashtagsArr.splice(this.hashtagsArr.length - 1);
     }
 
     /**
      * 게임 정보 local storage 저장
      */
     autoSave() {
-        this.checkActivePublish();
+
         if (this.title) {
             localStorage.setItem('title', this.title)
             this.isTitleErr = false;
@@ -457,14 +467,14 @@ export default class AddGameInfo extends Vue {
         if (this.currentInput) {
             this.saveChip();
         }
-        if (this.chips.length > 0) {
+        if (this.hashtagsArr.length > 0) {
             this.isHashtagErr = false;
-            localStorage.setItem('hashtagsArr', this.chips)
+            localStorage.setItem('hashtagsArr', this.hashtagsArr)
         }
         else {
             localStorage.removeItem('hashtagsArr')
         }
-
+        this.checkActivePublish();
     }
 
 

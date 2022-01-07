@@ -45,6 +45,7 @@ export default {
         gameFileInfoObj: null,
         uploadGameFiles: null,
         zipOriginFile:null,
+        thumbFile:null,
 
     },
     getters: {
@@ -138,6 +139,9 @@ export default {
         zipOriginFile: (state: any) => {
             return state.zipOriginFile;
         },
+        thumbFile: (state: any) => {
+            return state.thumbFile;
+        },
     },
 
     mutations: {
@@ -201,6 +205,9 @@ export default {
         },
         zipOriginFile: (state: any, payload: any) => {
             state.zipOriginFile = payload;
+        },
+        thumbFile: (state: any, payload: any) => {
+            state.thumbFile = payload;
         },
     },
     actions: {

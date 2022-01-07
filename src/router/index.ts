@@ -509,7 +509,29 @@ const routes: Array<RouteConfig> = [
         //         },
         //     },
         // ],
-        component: () => import(/* webpackChunkName: "GameList" */ '@/views/studio/UploadGame.vue')
+        component: () => import(/* webpackChunkName: "UploadGame" */ '@/views/studio/UploadGame.vue')
+    },
+    {
+        path: '/projectManage',
+        name: 'ProjectManage',
+        meta: {
+            layout: LayoutStudio,
+            title: 'Project Manage',
+            transition: 'fade-in-down'
+        },
+        children:[
+            {
+                    path: '/projectUpdate/:id',
+                    name: 'ProjectUpdate',
+                    meta: {
+                        layout: LayoutStudio,
+                        title: '게임정보수정',
+                        transition: 'fade-in-down'
+                    },
+                    component: () => import("@/components/pages/studio/ProjectUpdate.vue"),
+                },
+        ],
+        component: () => import(/* webpackChunkName: "ProjectManage" */ '@/views/studio/ProjectManage.vue')
     },
 
 

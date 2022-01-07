@@ -54,13 +54,13 @@
 <script lang="ts">
 import {Component, Prop, Vue} from "vue-property-decorator";
 
-import {eGameUploadStage} from "@/common/enumData";
+import {eGameStage} from "@/common/enumData";
 
 @Component({
     components: {},
 })
 export default class SelectStage extends Vue {
-    private uploadStage = eGameUploadStage;
+    private uploadStage = eGameStage;
 
     mounted() {
         //

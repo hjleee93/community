@@ -47,4 +47,7 @@ export default class Lnb extends Vue {
 </script>
 
 <style scoped lang="scss">
+.lnb{
+    z-index: 999;
+}
 </style>

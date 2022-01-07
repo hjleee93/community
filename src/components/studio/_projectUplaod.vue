@@ -1,0 +1,306 @@
+<template>
+    <!-- 2단영역 -->
+    <dl class="studio-upload-area">
+        <dt>
+            <!-- 단계 -->
+            <ul class="studio-upload-step">
+                <li
+                    class="step"
+                    :class="
+                                stepOne() ? 'active' : ''
+                            ">
+                    <p>STEP 01</p>
+                    <h3>게임 단계 선택</h3>
+                </li>
+                <li
+                    class="step"
+                    :class="
+                               stepTwo() ? 'active' : ''
+                            ">
+                    <p>STEP 02</p>
+                    <h3>게임정보</h3>
+                </li>
+                <li
+                    class="step"
+                    :class="
+                                stepThree() ? 'active' : ''
+                            ">
+                    <p>STEP 03</p>
+                    <h3>파일 업로드</h3>
+                </li>
+                <li
+                    v-if="!isEditProject"
+                    @click="uploadGame"
+                    :class="isActivePublishBtn ? 'active' : ''"
+                    class="publish-btn ">
+                    <h4>퍼블리싱</h4>
+                </li>
+                <li
+                    v-else
+                    @click="updateProject"
+                    class="publish-btn active">
+                    <h4>업데이트</h4>
+                </li>
+            </ul>
+            <!-- 단계 끝 -->
+        </dt>
+        <dd>
+            <!-- 게임단계 -->
+
+            <transition name="component-fade" mode="out-in">
+                <SelectStage v-show="stepOne()" @stage="getStage"/>
+            </transition>
+            <transition name="component-fade" mode="out-in">
+                <AddGameInfo v-show="stepTwo()"
+                             @stage="getStage"
+                             @gameInfoDone="getGameInfo"
+                             @isActivePublish="getPublishState"
+                             :projectInfo="projectInfo"/>
+            </transition>
+            <transition name="component-fade" mode="out-in">
+                <AddGameFile v-show="stepThree()" @gameInfoDone="getGameInfo"/>
+            </transition>
+            <!--                <router-view></router-view>-->
+            <!-- 게임단계 끝 -->
+        </dd>
+    </dl>
+    <!-- 2단영역 끝 -->
+</template>
+
+<script lang="ts">
+import {Component, Prop, Vue} from "vue-property-decorator";
+import SelectStage from "../pages/studio/SelectStage.vue";
+import AddGameInfo from "../pages/studio/AddGameInfo.vue";
+import AddGameFile from "../pages/studio/AddGameFile.vue";
+import Toast from "@/script/message";
+
+
+@Component({
+    components: {SelectStage, AddGameInfo, AddGameFile},
+})
+
+export default class ProjectUpload extends Vue {
+
+    toast = new Toast();
+
+    isClickActive: boolean = false;
+    stage: number | null = null;
+
+    isGameInfoFilled: boolean = false;
+
+    isActivePublishBtn: boolean = false;
+
+    //프로젝트 수정
+    isEditProject: boolean = false;
+    projectInfo: any = null;
+
+
+    mounted() {
+        //프로젝트 업데이트 경우
+        if (this.$route.params.id) {
+            this.infoFetch()
+        }
+
+    }
+
+    updateProjectInfo() {
+
+    }
+
+    infoFetch() {
+        this.$api.getProject(this.$route.params.id)
+            .then((res: any) => {
+                this.projectInfo = res;
+                this.stage = res.stage;
+                this.$store.commit("gameStage", this.stage);
+                this.isEditProject = true;
+
+            })
+    }
+
+    uploadGame() {
+
+        const gameInfo = this.$store.getters.gameInfoObj;
+        const gameFileInfo = this.$store.getters.gameFileInfoObj;
+
+
+
+        this.$api.createProject(
+            gameInfo,
+            gameFileInfo,
+            this.$store.getters.uploadGameFiles
+        )
+            .then((res) => {
+                this.toast.successToast("게임이 업로드되었습니다.");
+                this.$router.push('/projectList')
+            })
+            .catch((err) => {
+
+            })
+    }
+
+    updateProject() {
+
+        const option: any = {
+            id: this.projectInfo.id,
+            name: localStorage.getItem('title'),
+            description: localStorage.getItem('description'),
+            hashtags: localStorage.getItem('hashtagsArr'),
+        };
+
+
+        console.log('thumbFile', this.$store.getters.thumbFile)
+
+        this.$api.updateProject(option,this.$store.getters.thumbFile)
+            .then((res) => {
+                this.toast.successToast("게임이 업로드되었습니다.");
+                this.$router.push('/projectList')
+            })
+            .catch((err) => {
+
+            })
+    }
+
+    stepOne() {
+        if (!this.stage)
+            return true;
+        else
+            return false;
+    }
+
+    stepTwo() {
+        if (this.stage && !this.isGameInfoFilled) {
+            return true
+        }
+        else {
+            return false;
+        }
+    }
+
+    stepThree() {
+        if (this.stage && this.isGameInfoFilled) {
+            return true
+        }
+        else {
+            return false;
+        }
+    }
+
+    getStage(stage: number) {
+        this.stage = stage;
+    }
+
+    getGameInfo(state: boolean) {
+        this.isGameInfoFilled = state;
+    }
+
+    getPublishState(state: boolean) {
+        this.isActivePublishBtn = state;
+    }
+}
+</script>
+
+<style scoped lang="scss">
+
+
+//transition
+.component-fade-enter-active, .component-fade-leave-active {
+    transition: opacity .3s ease;
+}
+
+.component-fade-enter, .component-fade-leave-to
+    /* .component-fade-leave-active below version 2.1.8 */
+{
+    opacity: 0;
+}
+
+
+.step {
+    opacity: 0.5;
+    pointer-events: none;
+
+    &.active {
+        opacity: 1;
+    }
+}
+
+.step:hover {
+    background-color: #fff;
+    color: #ff6e17;
+}
+
+.publish-btn {
+    pointer-events: none;
+
+    &.active {
+        background-color: #fff;
+        cursor: pointer;
+        pointer-events: all;
+
+        h4 {
+            padding: 20px 15px;
+            font-size: 16px;
+            line-height: 16px;
+            color: #fff;
+            background: rgba(255, 110, 23);
+            border-radius: 90px;
+        }
+    }
+
+    &.active:hover {
+        background-color: #fff;
+        cursor: pointer;
+
+        h4 {
+            padding: 20px 15px;
+            font-size: 16px;
+            line-height: 16px;
+            color: rgba(255, 110, 23, 0.5);
+            background: rgba(255, 110, 23, 0.1);
+            border-radius: 90px;
+        }
+    }
+
+}
+
+
+.publish-btn:hover {
+    background-color: #fff;
+    cursor: default;
+
+    h4 {
+        padding: 20px 15px;
+        font-size: 16px;
+        line-height: 16px;
+        color: rgba(255, 110, 23, 0.5);
+        background: rgba(255, 110, 23, 0.1);
+        border-radius: 90px;
+    }
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+input[type="radio"]:checked + label {
+    color: #fff;
+    background: #FF6E17;
+    border-color: #FF6E17;
+}
+
+input[type="radio"] + label {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    text-align: center;
+    font-size: 15px;
+    color: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.studio-upload-step li {
+    cursor: pointer;
+}
+</style>

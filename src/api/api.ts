@@ -465,6 +465,32 @@ export default class Api {
         return response.result || response;
     }
 
+    async updateProject(options: { id: number, name?: string, description?: string, hashtags?: string, deploy_version_id?: string }, file?: File, file2?: File) {
+        //파일 업로드
+        const formData = new FormData();
+        if (options.id) { formData.append('id', options.id.toString()); }
+        if (options.name) { formData.append('name', options.name); }
+        if (options.description) { formData.append('description', options.description); }
+        if (options.hashtags) { formData.append('hashtags', options.hashtags); }
+        else { formData.append('hashtags', ""); }
+        if (options.deploy_version_id !== undefined) { formData.append('deploy_version_id', options.deploy_version_id); }
+        if (file) {
+            formData.append('file', file);
+        }
+        if (file2) {
+            formData.append('file2', file2);
+        }
+
+
+        const response = await this.request('post', `${studioApi}studio/project/${options.id}`, formData, false);
+
+        // if (!response.error) {
+        //     store.commit('project', response.result)
+        // }
+
+        return response.result || response;
+    }
+
 }
 
 
