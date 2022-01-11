@@ -113,24 +113,21 @@ export default class ProjectUpload extends Vue {
                 this.projectInfo = res;
                 this.stage = res.stage;
                 this.$store.commit("gameStage", this.stage);
+                this.$store.commit('projectInfo', res);
                 this.isEditProject = true;
-
             })
     }
 
     uploadGame() {
-
-        const gameInfo = this.$store.getters.gameInfoObj;
-        const gameFileInfo = this.$store.getters.gameFileInfoObj;
-
-
+        const {gameInfoObj, gameFileInfoObj, uploadGameFiles} = this.$store.getters;
 
         this.$api.createProject(
-            gameInfo,
-            gameFileInfo,
-            this.$store.getters.uploadGameFiles
+            gameInfoObj,
+            gameFileInfoObj,
+            uploadGameFiles
         )
             .then((res) => {
+
                 this.toast.successToast("게임이 업로드되었습니다.");
                 this.$router.push('/projectList')
             })
@@ -146,12 +143,11 @@ export default class ProjectUpload extends Vue {
             name: localStorage.getItem('title'),
             description: localStorage.getItem('description'),
             hashtags: localStorage.getItem('hashtagsArr'),
+            stage: this.$store.getters.gameStage
         };
 
 
-        console.log('thumbFile', this.$store.getters.thumbFile)
-
-        this.$api.updateProject(option,this.$store.getters.thumbFile)
+        this.$api.updateProject(option, this.$store.getters.thumbFile)
             .then((res) => {
                 this.toast.successToast("게임이 업로드되었습니다.");
                 this.$router.push('/projectList')
@@ -162,28 +158,16 @@ export default class ProjectUpload extends Vue {
     }
 
     stepOne() {
-        if (!this.stage)
-            return true;
-        else
-            return false;
+        return !this.stage ? true : false;
     }
 
     stepTwo() {
-        if (this.stage && !this.isGameInfoFilled) {
-            return true
-        }
-        else {
-            return false;
-        }
+        return this.stage && !this.isGameInfoFilled ? true : false;
     }
 
     stepThree() {
-        if (this.stage && this.isGameInfoFilled) {
-            return true
-        }
-        else {
-            return false;
-        }
+        return this.stage && this.isGameInfoFilled ? true : false;
+
     }
 
     getStage(stage: number) {

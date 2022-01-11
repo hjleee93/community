@@ -93,6 +93,7 @@
                                            name="fileInput"/>
                                 </div>
                             </div>
+
                             <p>
                                 <button class="btn-gray" @click="uploadFile"><i class="uil uil-upload"></i>&nbsp; 이미지
                                     업로드
@@ -153,8 +154,8 @@
                     </ul>
                 </dd>
             </dl>
-            <dl class="suii-content">
-                <dt>영어게임 ID 자동 작성</dt>
+            <dl class="suii-content" v-if="!projectInfo">
+                <dt style="padding-top:5px;">영어게임 ID 자동 작성</dt>
                 <dd>
                     <label class="switch-button">
                         <input type="checkbox" name="" v-model="autoGamePath"/>
@@ -163,21 +164,67 @@
                 </dd>
             </dl>
             <transition name="component-fade" mode="out-in">
-                <dl class="suii-content" v-if="!autoGamePath">
+                <dl class="suii-content" v-if="!autoGamePath || projectInfo">
                     <dt>영어게임 ID</dt>
                     <dd>
-                        <input v-model="gamePath" type="text" name="" title="" placeholder="" class="w100p"/>
+                        <input :readonly="projectInfo" v-model="gamePath"
+                               type="text" name="" title="" placeholder="" :class="!projectInfo? 'w90p' : 'w100p'"/>
+
+                        <p style="color: #C5292A; margin-top:10px">{{ gamePathError }}</p>
+                        <p v-if="confirmedGamePath" style="color: #1fc944; margin-top:10px">사용 가능한 ID입니다.</p>
                     </dd>
+                    <a @click="checkGamePath" class="btn-default w150" v-if="!projectInfo">중복 확인</a>
+
                 </dl>
+
             </transition>
+
         </div>
 
         <ul class="sui-btn">
             <li>
                 <a @click="prevPage" class="btn-line w150"><i class="uil uil-angle-left-b"></i>이전</a>
             </li>
-            <li><a @click="save" class="btn-default w150">다음 <i class="uil uil-angle-right-b"></i></a></li>
+            <li>
+
+                <a v-if="$store.getters.gameStage !== gameStage.Dev" @click="save" class="btn-default w150">다음 <i class="uil uil-angle-right-b"></i></a>
+                <a v-else @click="save" class="btn-default w150">업로드 </a>
+            </li>
+
         </ul>
+
+
+        <div class="sui-input" style="margin-top:100px;" v-if="projectInfo">
+            <dl class="suii-content delete-area">
+                <dt>게임 삭제</dt>
+                <dd class="game-delete-btn"><a @click="$modal.show('deleteProject')" class="btn-default w150">삭제</a>
+                </dd>
+            </dl>
+
+        </div>
+
+        <modal :clickToClose="false"
+               class="modal-area-type" name="deleteProject" width="90%" height="auto" :maxWidth="380"
+               :adaptive="true"
+               :scrollable="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('deleteProject')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2>한 번 삭제한 게임은 복구할 수 없습니다. 정말 삭제하시겠습니까?</h2>
+                    <div>
+                        <button class="btn-default w48p" @click="deleteProject()">네</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('deleteProject')">아니오</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
+
+
     </div>
 </template>
 
@@ -186,6 +233,7 @@ import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import _ from 'lodash';
 import {randomString} from '@/script/util';
 import {eGameStage} from "@/common/enumData";
+import Toast from "@/script/message";
 
 @Component({
     components: {},
@@ -193,7 +241,9 @@ import {eGameStage} from "@/common/enumData";
 export default class AddGameInfo extends Vue {
     @Prop({default: false}) set!: boolean;
     @Prop() projectInfo !: any;
+    toast = new Toast();
     gameStage = eGameStage;
+
     title: string = '';
     description: string = '';
     hashtagsArr: string[] = [];
@@ -201,17 +251,21 @@ export default class AddGameInfo extends Vue {
     // chips: string[] = [];
     prevImg: any = '';
     prevGif: any = '';
-    thumbFile: File = null;
+    thumbFile: File | null = null;
     gamePath: string = ""
     autoGamePath: boolean = true;
 
-    confirmedGamePath: boolean = false;
+    confirmedGamePath: boolean |  null = null;
 
     isTitleErr: boolean = false;
     isDescErr: boolean = false;
     isHashtagErr: boolean = false;
     isThumbErr: boolean = false;
 
+    thumbFile2: File | null = null;
+
+    gamePathError: string = "";
+    waitGamePath: boolean = false;
 
     beforeRouteLeave(to, from, next) {
         if (to.name == "AddGameFile") {
@@ -248,17 +302,21 @@ export default class AddGameInfo extends Vue {
     }
 
     callLocalStorageData() {
-        this.title = localStorage.getItem('title')
-        this.description = localStorage.getItem('description')
-        this.hashtagsArr = localStorage.getItem('hashtagsArr').split(',')
+        this.title = localStorage.getItem('title')!
+        this.description = localStorage.getItem('description')!
+        this.hashtagsArr = localStorage.getItem('hashtagsArr')!.split(',')
     }
 
     @Watch('projectInfo')
     callUpdateProjectData() {
-        this.title = this.projectInfo.name;
-        this.description = this.projectInfo.description;
-        this.prevImg = this.projectInfo.picture;
-        this.hashtagsArr = this.projectInfo.hashtags ? this.projectInfo.hashtags.split(',') : []
+        const { name, description, picture, hashtags, game } = this.projectInfo;
+        const { pathname } = game;
+
+        this.title = name;
+        this.description = description;
+        this.prevImg = picture;
+        this.gamePath = pathname;
+        this.hashtagsArr = hashtags ? hashtags.split(',') : []
     }
 
 
@@ -276,6 +334,20 @@ export default class AddGameInfo extends Vue {
         localStorage.removeItem('thumbnail')
     }
 
+   async checkGamePath(){
+        this.waitGamePath = true;
+        if(this.gamePath) {
+            const result = await this.$api.confirmGamePath(this.gamePath);
+            if (result && result.success) {
+                this.confirmedGamePath = true;
+                this.gamePathError = "";
+            }
+            else {
+                this.gamePathError = '사용중인 아이디 입니다. 다른 아이디를 입력하세요.';
+            }
+        }
+        this.waitGamePath = false;
+    }
     prevPage() {
         this.resetLocalStorage();
         this.$store.commit("gameStage", null);
@@ -298,17 +370,21 @@ export default class AddGameInfo extends Vue {
             this.isHashtagErr = true;
         }
 
-        if (!this.thumbFile) {
+        if (!this.thumbFile && !this.prevImg) {
             this.isThumbErr = true;
         }
 
         else {
             await this.commitGameInfo();
-            this.$emit('gameInfoDone', true)
+            if(this.$store.getters.gameStage === this.gameStage.Dev){
+                this.uploadGame()
+            }else{
+                this.$emit('gameInfoDone', true)
+            }
+
         }
 
     }
-
 
 
     async commitGameInfo() {
@@ -370,7 +446,8 @@ export default class AddGameInfo extends Vue {
             reader.onload = e => {
                 this.prevImg = e.target!.result;
                 this.$store.commit('thumbFile', this.thumbFile)
-                localStorage.setItem('thumbnail', e.target!.result);
+
+                localStorage.setItem('thumbnail', this.prevImg);
                 this.isThumbErr = false;
             };
             reader.readAsDataURL(event.target.files[0]);
@@ -422,16 +499,52 @@ export default class AddGameInfo extends Vue {
         this.checkActivePublish()
     }
 
+
+    deleteProject() {
+        this.$api.deleteProject(this.projectInfo.id)
+            .then((res) => {
+                this.$store.getters.projects[this.projectInfo.id] = null;
+                this.toast.clear();
+                this.toast.successToast("해당 게임이 삭제되었습니다.")
+            })
+            .catch(() => {
+                this.toast.clear();
+                this.toast.failToast("게임 삭제에 실패했습니다.")
+
+            })
+            .finally(() => {
+                this.$modal.hide('deleteProject')
+                this.$router.replace("/projectList");
+            })
+    }
+
+    uploadGame() {
+        const {gameInfoObj, gameFileInfoObj, uploadGameFiles} = this.$store.getters;
+
+        this.$api.createProject(
+            gameInfoObj,
+            gameFileInfoObj,
+            uploadGameFiles
+        )
+            .then((res) => {
+
+                this.toast.successToast("개발 로그가 업로드되었습니다.");
+                this.$router.push('/projectList')
+            })
+            .catch((err) => {
+
+            })
+    }
+
+
     /**
      * tag chips
      */
     saveChip() {
         const {hashtagsArr, currentInput, set} = this;
-        console.log(this)
         if (!_.includes(hashtagsArr, currentInput.trim())) {
             ((set && hashtagsArr.indexOf(currentInput) === -1) || !set) && hashtagsArr.push(currentInput.trim());
         }
-        console.log('hash', hashtagsArr)
         this.currentInput = '';
     }
 
@@ -469,7 +582,7 @@ export default class AddGameInfo extends Vue {
         }
         if (this.hashtagsArr.length > 0) {
             this.isHashtagErr = false;
-            localStorage.setItem('hashtagsArr', this.hashtagsArr)
+            localStorage.setItem('hashtagsArr', this.hashtagsArr.toString())
         }
         else {
             localStorage.removeItem('hashtagsArr')
@@ -478,10 +591,32 @@ export default class AddGameInfo extends Vue {
     }
 
 
+
+
 }
 </script>
 
 <style scoped lang="scss">
+.delete-area {
+    border-top: 0px !important;
+}
+
+.game-delete-btn {
+    display: flex;
+    justify-content: flex-end;
+
+    a {
+        background-color: #C5292A;
+    }
+
+}
+
+.game-delete-btn:hover {
+    a {
+        background-color: #c5292a4a;
+        color: #C5292a;
+    }
+}
 
 .btn-line {
     height: 40px

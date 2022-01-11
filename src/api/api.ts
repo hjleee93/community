@@ -12,10 +12,12 @@ export default class Api {
         try {
             //파라미터 파싱용
 
-            if (method === 'get' && data) {
+            if (method === 'get') {
                 url = url + '?_=' + Date.now()
-                for (let d in data) {
-                    if (data[d]) url += `&${d}=${data[d]}`
+                if(data) {
+                    for (let d in data) {
+                        if (data[d]) url += `&${d}=${data[d]}`
+                    }
                 }
                 // let keys = Object.keys(data)
                 // const paramKeys = keys.filter((key: string) => {
@@ -205,7 +207,7 @@ export default class Api {
         return response.result || response;
     }
 
-    async getProject(id: number) {
+    async getProject(id: any) {
         const response = await this.request('get', `${zempieApi}community/project/${id}`, undefined, false);
         return response.result || response;
     }
@@ -460,12 +462,35 @@ export default class Api {
         return response.result || response;
     }
 
+    async createVersion(project_id: number, version: string, files: File[], startFile: string, autoDeploy: boolean, size: number, description: string, stage: string) {
+        //파일 업로드
+        const formData = new FormData();
+        formData.append('project_id', project_id.toString());
+        formData.append('version', version);
+        formData.append('startFile', startFile);
+        formData.append('autoDeploy', String(autoDeploy));
+        formData.append('description', description);
+        formData.append('stage', stage);
+
+        if (size) {
+            formData.append('size', size.toFixed(2));
+        }
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i] as File;
+            formData.append(`file_${i + 1}`, file);
+        }
+
+        const response = await this.request('post', `${studioApi}studio/version`, formData, false);
+        return response.result || response;
+    }
+
     async confirmGamePath(pathname: string) {
         const response = await this.request('get', `${studioApi}studio/verify-pathname/${pathname}`, undefined, false);
         return response.result || response;
     }
 
-    async updateProject(options: { id: number, name?: string, description?: string, hashtags?: string, deploy_version_id?: string }, file?: File, file2?: File) {
+    async updateProject(options: { id: number, name?: string, description?: string, hashtags?: string, deploy_version_id?: string, stage?: string }, file?: File, file2?: File) {
         //파일 업로드
         const formData = new FormData();
         if (options.id) { formData.append('id', options.id.toString()); }
@@ -473,6 +498,7 @@ export default class Api {
         if (options.description) { formData.append('description', options.description); }
         if (options.hashtags) { formData.append('hashtags', options.hashtags); }
         else { formData.append('hashtags', ""); }
+        if (options.stage) { formData.append('stage', options.stage); }
         if (options.deploy_version_id !== undefined) { formData.append('deploy_version_id', options.deploy_version_id); }
         if (file) {
             formData.append('file', file);
@@ -490,6 +516,17 @@ export default class Api {
 
         return response.result || response;
     }
+
+    async deleteVersion(id) {
+        const response = await this.request('delete', `${studioApi}studio/version/${id}`, undefined, false);
+        return response.result || response;
+    }
+
+    async deleteProject(id) {
+        const response = await this.request('delete', `${studioApi}studio/project/${id}`, undefined, false);
+        return response.result || response;
+    }
+
 
 }
 

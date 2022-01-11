@@ -98,7 +98,17 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 @Component({
     components: {},
 })
-export default class Dashboard extends Vue {}
+export default class Dashboard extends Vue {
+
+   async mounted(){
+        await this.$store.dispatch("loginState");
+        this.playCount();
+    }
+    playCount(){
+
+    }
+
+}
 </script>
 
 <style scoped lang="scss">

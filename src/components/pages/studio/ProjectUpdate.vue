@@ -1,5 +1,5 @@
 <template>
-    <ProjectUpload ></ProjectUpload>
+    <ProjectUpload></ProjectUpload>
 </template>
 
 <script lang="ts">

@@ -16,7 +16,8 @@
                             id="game-file"
                             accept=".zip">
                         <ClipLoader v-if="isLoadingFile" :color="'#ff6e17'" :size="'20px'"></ClipLoader>
-                        <button class="btn-circle-icon" @click="deleteFile" v-if="fileName"><i class="uil uil-trash-alt"></i>
+                        <button class="btn-circle-icon" @click="deleteFile" v-if="fileName"><i
+                            class="uil uil-trash-alt"></i>
                         </button>
                     </p>
                     <transition name="component-fade" mode="out-in">
@@ -28,6 +29,11 @@
                                 }}</p>
                             <p class="file-name">파일 명 : {{ fileName }}</p>
                         </div>
+                    </transition>
+                    <transition name="component-fade" mode="out-in">
+                        <h2 :class="isFileEmpty ?'file-err on' : 'file-err off' ">
+                            게임 파일을 선택해주세요
+                        </h2>
                     </transition>
                     <h2>
                         게임에 포함된 웹페이지를 압축 파일로 업로드 해주세요. <br/> ZIP 파일만 업로드가 가능하고, 압축하지 않은 파일들의 총 크기가 500MB 이하여야 합니다.
@@ -77,7 +83,7 @@
                 <a @click="prevPage" class="btn-line w150"><i class="uil uil-angle-left-b"></i> 이전
                 </a>
             </li>
-            <li><a @click="uploadGame" class="btn-default w150">업로드<i class="uil uil-angle-right-b"></i></a></li>
+            <li><a @click="upload" class="btn-default w150">업로드<i class="uil uil-angle-right-b"></i></a></li>
         </ul>
     </div>
 </template>
@@ -87,6 +93,7 @@ import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import ZipUtil from "@/script/zipUtil";
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue';
 import Toast from "@/script/message";
+import {eGameStage} from "@/common/enumData";
 
 @Component({
     components: {ClipLoader},
@@ -95,17 +102,20 @@ export default class AddGameFile extends Vue {
     toast = new Toast();
     limitSize: number = 1024 * 1000 * 500;
     totalSize: number = 0;
-    uploadGameFile: File = null;
+    uploadGameFile: File | null = null;
     uploadGameFiles: File[] = [];
     isAdvancedOpen: boolean = false;
     startFile: string = '';
     startFileOptions: string[] = [];
 
-    uploadGameFile: File = null;
     fileName: string = '';
+    versionDescription: string = "";
 
     isLoadingFile: boolean = false;
     autoDeploy: boolean = true;
+
+    isFileEmpty: boolean = false;
+    isLoadingUpload: boolean = false;
 
     async onFileChange(e) {
 
@@ -114,8 +124,8 @@ export default class AddGameFile extends Vue {
         this.isLoadingFile = true;
         const zip = await ZipUtil.zipFileToZip(this.uploadGameFile);
 
-        const files = await ZipUtil.zipToFiles(zip);
-        let size = 0;
+        const files: any = await ZipUtil.zipToFiles(zip);
+        let size: number = 0;
 
         for (let f in files) {
             size += files[f].size;
@@ -148,7 +158,7 @@ export default class AddGameFile extends Vue {
         this.startFileOptions.sort((a, b) => a.length - b.length);
 
         if (this.startFileOptions.length) {
-            this.uploadGameFileError = '';
+            // this.uploadGameFileError = '';
             this.fileName = e.target.files[0].name
         }
         else {
@@ -164,21 +174,24 @@ export default class AddGameFile extends Vue {
             this.$store.commit("sendGameFileDone", true);
             const gameFileInfo = {
                 autoDeploy: this.autoDeploy,
-                starFile: this.startFile,
+                startFile: this.startFile,
                 size: this.totalSize,
                 version_description: this.versionDescription,
             };
-            console.log(gameFileInfo);
+
             this.$store.commit("gameFileInfoObj", gameFileInfo);
             this.$store.commit("uploadGameFiles", this.uploadGameFiles);
-        } else {
+            this.isFileEmpty = false;
+        }
+        else {
             this.$store.commit("sendGameFileDone", false);
         }
 
         this.isLoadingFile = false;
     }
 
-    deleteFile(){
+    deleteFile() {
+        this.$store.commit("uploadGameFiles", []);
         this.uploadGameFile = null;
         this.uploadGameFiles = [];
         this.startFile = '';
@@ -188,36 +201,56 @@ export default class AddGameFile extends Vue {
         (this.$refs.gameFile as any).value = '';
     }
 
-    uploadGame() {
-        const gameInfo = this.$store.getters.gameInfoObj;
-        const gameFileInfo = this.$store.getters.gameFileInfoObj;
+    upload() {
+        const { gameInfoObj, gameFileInfoObj, uploadGameFiles, gameStage } = this.$store.getters;
 
-        //스크린샷
-        // const sreenshots = this.$store.getters.screenshots
-        // console.log('screenshots', sreenshots)
+        if (gameStage !== eGameStage.Dev  && uploadGameFiles.length === 0) {
+            this.isFileEmpty = true;
+        }
+        else {
+            this.$api.createProject(
+                gameInfoObj,
+                gameFileInfoObj,
+                uploadGameFiles
+            )
+                .then((res) => {
+                    this.toast.successToast("게임이 업로드되었습니다.");
+                    this.$router.push('/projectList')
+                })
+                .catch((err) => {
 
-        this.$api.createProject(
-            gameInfo,
-            gameFileInfo,
-            this.$store.getters.uploadGameFiles
-        )
-        .then((res)=>{
-            this.toast.successToast("게임이 업로드되었습니다.");
-            this.$router.push('/projectList')
-        })
-        .catch((err)=>{
+                })
 
-        })
+            this.isFileEmpty = false;
+        }
+
+
     }
 
-    prevPage(){
-        this.$emit('gameInfoDone',false)
+    updateProject() {
+
+    }
+
+    prevPage() {
+        this.$emit('gameInfoDone', false)
     }
 
 }
 </script>
 
 <style scoped lang="scss">
+
+.file-err {
+    color: #c5292a;
+
+    &.on {
+        display: inline-block;
+    }
+
+    &.off {
+        display: none;
+    }
+}
 
 //upload button
 .upload-file-container {

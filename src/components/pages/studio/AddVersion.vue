@@ -1,0 +1,430 @@
+<template>
+    <dd>
+        <div class="studio-upload-input">
+            <div class="sui-input">
+                <div class="suii-title">버전 추가</div>
+                <dl class="suii-content">
+                    <dt>게임 업로드</dt>
+                    <dd>
+
+                        <p class="upload-file-container">
+                            <label for="game-file"><i class="uil uil-file-plus" style="font-size:18px;"></i> &nbsp;
+                                파일업로드</label>
+                            <input
+                                @input="onFileChange"
+                                type="file"
+                                ref="gameFile"
+                                id="game-file"
+                                accept=".zip">
+                            <ClipLoader v-if="isLoadingFile" :color="'#ff6e17'" :size="'20px'"></ClipLoader>
+                            <button class="btn-circle-icon" @click="deleteFile" v-if="fileName"><i
+                                class="uil uil-trash-alt"></i>
+                            </button>
+                        </p>
+                        <transition name="component-fade" mode="out-in">
+                            <div v-if="fileName">
+                                <p class="file-size">파일 크기 : {{
+                                        totalSize < 1
+                                            ? `${totalSize * 1000} KB`
+                                            : `${totalSize} MB`
+                                    }}</p>
+                                <p class="file-name">파일 명 : {{ fileName }}</p>
+                            </div>
+                        </transition>
+                        <h2>
+                            게임에 포함된 웹페이지를 압축 파일로 업로드 해주세요. <br/> ZIP 파일만 업로드가 가능하고, 압축하지 않은 파일들의 총 크기가 500MB 이하여야 합니다.
+                        </h2>
+                    </dd>
+                </dl>
+                <div class="suii-open"
+                     :class="isAdvancedOpen ? 'open' : 'close'"
+                     @click="isAdvancedOpen = !isAdvancedOpen">
+                    <span>고급설정</span> &nbsp;<i class="uil uil-sliders-v-alt"></i>
+                </div>
+                <transition name="component-fade" mode="out-in">
+                    <div v-show="isAdvancedOpen">
+                        <dl class="suii-content">
+                            <dt>시작파일 선택</dt>
+                            <dd>
+                                <select name="" title="" class="w100p">
+                                    <option v-for="file in startFileOptions" :value="file">{{ file }}</option>
+                                </select>
+                            </dd>
+                        </dl>
+                        <dl class="suii-content">
+                            <dt>게임 자동 배포 선택</dt>
+                            <dd>
+                                <ul>
+                                    <li>
+                                        <label class="switch-button">
+                                            <input type="checkbox" name="" v-model="autoDeploy"/>
+                                            <span class="onoff-switch"></span>
+                                        </label>
+                                    </li>
+                                    <li>Auto-deployment mode</li>
+                                </ul>
+                                <h2>
+                                    게임에 포함된 웹페이지를 압축 파일로 업로드 해주세요. <br/> ZIP 파일만 업로드가 가능하고, 압축하지 않은 파일들의 총 크기가 100MB
+                                    이하여야
+                                    합니다.
+                                </h2>
+                            </dd>
+                        </dl>
+                        <dl class="suii-content">
+                            <dt>버전</dt>
+                            <dd>
+                                <input v-model="version" type="text" class="w100p">
+
+                            </dd>
+                        </dl>
+                        <div class="suii-close">
+                            <button class="btn-line" @click="isAdvancedOpen = !isAdvancedOpen">닫기 &nbsp;&nbsp;<i
+                                class="uil uil-angle-up"></i></button>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+
+        </div>
+
+        <ul class="sui-btn">
+            <li><a @click="upload" class="btn-default w150">업로드<i class="uil uil-angle-right-b"></i></a></li>
+        </ul>
+
+
+    </dd>
+</template>
+
+<script lang="ts">
+import {Component, Prop, Vue, Watch} from "vue-property-decorator";
+import ZipUtil from "@/script/zipUtil";
+import ClipLoader from 'vue-spinner/src/ClipLoader.vue';
+import Toast from "@/script/message";
+import Version from "@/script/version";
+import store from "@/store";
+import {eGameStage} from "@/common/enumData";
+
+@Component({
+    components: {ClipLoader},
+})
+export default class AddVersion extends Vue {
+    projectId = this.$route.params.id;
+    toast = new Toast();
+    limitSize: number = 1024 * 1000 * 500;
+    totalSize: number = 0;
+    uploadGameFile: File | null = null;
+    uploadGameFiles: File[] = [];
+    isAdvancedOpen: boolean = false;
+    startFile: string = '';
+    startFileOptions: string[] = [];
+
+    fileName: string = '';
+    versionDescription: string = "";
+
+    isLoadingFile: boolean = false;
+    autoDeploy: boolean = true;
+
+    version: string = '0.0.1';
+    isUpdate : boolean = false;
+    description : string = '';
+
+//     beforeRouteEnter(to, from, next){
+//         console.log("?")
+//         console.log('to0',store.getters.projects)
+//         const { stage } = store.getters.projects[from.params.id] || store.getters.projects[to.params.id];
+// console.log(stage)
+//         if(eGameStage.Dev === stage){
+//             alert('관리할 게임 버전이 없습니다. 개발 단계를 얼리억세스 이상으로 설정하여, 게임 파일을 업로드해주세요.')
+//         }else{
+//             next();
+//         }
+//     }
+
+
+    async mounted(){
+        await this.$store.dispatch("loginState");
+        await this.$store.dispatch("project", this.projectId);
+
+        const lastVersion = this.$store.getters.lastVersion( this.projectId );
+
+        if (lastVersion) {
+            const ver = new Version(lastVersion.version)
+            ver.patch++;
+            this.version = ver.toString();
+        }
+
+    const updateVersion = this.$store.getters.updateVersion( this.projectId );
+    this.isUpdate = updateVersion && updateVersion.state === 'process';
+
+
+    }
+
+    async onFileChange(e) {
+
+        this.uploadGameFile = e.target.files[0];
+
+        this.isLoadingFile = true;
+        const zip = await ZipUtil.zipFileToZip(this.uploadGameFile);
+
+        const files: any = await ZipUtil.zipToFiles(zip);
+        let size: number = 0;
+
+        for (let f in files) {
+            size += files[f].size;
+        }
+
+        if (size > this.limitSize) {
+            alert('100mb 초과임')
+            return;
+
+        }
+
+        this.totalSize = Number((size / (1024 * 1000)).toFixed(2));
+        this.uploadGameFiles = files;
+
+        const htmls = this.uploadGameFiles.filter((file) => {
+            return file.name.indexOf('.html') > -1;
+        });
+
+        this.startFileOptions = htmls.map(file => file.name);
+        this.startFileOptions.sort((a, b) => a.length - b.length);
+        const indexFiles = this.startFileOptions.filter(name => name.includes('index'));
+
+        if (indexFiles.length) {
+            indexFiles.sort((a, b) => a.length - b.length);
+            this.startFile = indexFiles[0];
+        }
+        else {
+            this.startFile = this.startFileOptions[0];
+        }
+
+        this.startFileOptions.sort((a, b) => a.length - b.length);
+
+        if (this.startFileOptions.length) {
+            // this.uploadGameFileError = '';
+            this.fileName = e.target.files[0].name
+        }
+        else {
+            alert('no html file')
+            this.fileName = ''
+            // this.uploadGameFileError = this.$t('projectAddVersion.error.notFoundHtml').toString();
+
+        }
+
+        if (
+            this.uploadGameFiles.length > 0 &&
+            this.startFileOptions.length > 0
+        ) {
+            this.$store.commit("sendGameFileDone", true);
+
+            const gameFileInfo = {
+                autoDeploy: this.autoDeploy,
+                startFile: this.startFile,
+                size: this.totalSize,
+                version_description: this.versionDescription,
+            };
+            console.log('gameFileInfo', gameFileInfo);
+            this.$store.commit("gameFileInfoObj", gameFileInfo);
+            this.$store.commit("uploadGameFiles", this.uploadGameFiles);
+        }
+        else {
+            this.$store.commit("sendGameFileDone", false);
+        }
+
+        this.isLoadingFile = false;
+    }
+
+    deleteFile() {
+        this.uploadGameFile = null;
+        this.uploadGameFiles = [];
+        this.startFile = '';
+        this.startFileOptions = [];
+        this.totalSize = 0;
+        this.fileName = '';
+        (this.$refs.gameFile as any).value = '';
+    }
+
+    async upload() {
+
+        let isError = false;
+
+        if (!Version.validity(this.version)) {
+            isError = true;
+            console.log('version error')
+            // this.versionError = this.$t('projectAddVersion.error.notValidVersion').toString();
+        }
+        else {
+            const lastVersion = this.$store.getters.lastVersion(this.projectId);
+
+            if (lastVersion && Version.validity(lastVersion.version)) {
+                const newVersion = new Version(this.version);
+                const oldVersion = new Version(lastVersion.version);
+
+                if (!newVersion.isNew(oldVersion)) {
+                    //이전 버전 보다 작음.
+                    isError = true;
+                    console.log('이전 버전 보다 커야함')
+                    // this.versionError = this.$t('projectAddVersion.error.lowVersion').toString();
+                    return;
+                }
+            }
+        }
+
+
+        if( !this.uploadGameFiles.length ) {
+            isError = true;
+            this.uploadGameFileError = this.$t('projectAddVersion.error.noUploadFile').toString();
+        }
+
+        if( !this.startFileOptions.length ) {
+            isError = true;
+        }
+
+        if( isError ) {
+            // this.wait = false;
+            return;
+        }
+
+
+        const version = await this.$api.createVersion(this.projectId, this.version, this.uploadGameFiles, this.startFile,
+            this.autoDeploy, this.totalSize, this.description, 1);
+
+
+
+        if( !version || version.error ) {
+            // Notify.create({
+            //     message : this.$t('projectAddVersion.error.newVersionUploadFail').toString(),
+            //     position : 'top',
+            //     color : 'negative',
+            //     timeout: 2000
+            // });
+        }
+        else {
+            const project = this.$store.getters.project( this.projectId );
+            console.log('prj', project)
+            project.update_version_id = version.id;
+            project.projectVersions.push(version);
+            project.versions[ version.id ] = version;
+
+            // Notify.create({
+            //     message : this.$t('projectAddVersion.success.uploadFile').toString(),
+            //     position : 'top',
+            //     color : 'primary',
+            //     timeout: 2000
+            // });
+            await this.$router.replace(`/projectList`);
+        }
+
+
+    }
+
+    updateProject() {
+
+    }
+
+    prevPage() {
+        this.$emit('gameInfoDone', false)
+    }
+
+}
+</script>
+
+<style scoped lang="scss">
+
+//
+.sui-btn {
+    width: 1200px;
+    margin: 30px auto;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.studio-upload-input {
+    width: 1200px;
+    margin: 30px auto;
+    background-color: #fff;
+    box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+
+    .suii-open {
+        &.close {
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .open {
+            border-bottom-left-radius: 0px;
+            border-bottom-right-radius: 0px;
+        }
+
+    }
+}
+
+@media all and (max-width: 479px) {
+    .studio-upload-input, .sui-btn {
+        width: 90%;
+        margin: 20px auto;
+        padding: 0 15px;
+    }
+}
+
+
+@media all and (min-width: 480px) and (max-width: 767px) {
+    .studio-upload-input, .sui-btn {
+        width: 470px;
+        margin: 20px auto;
+        padding: 0 15px;
+    }
+}
+
+
+@media all and (min-width: 768px) and (max-width: 991px) {
+    .studio-upload-input, .sui-btn {
+        width: 750px;
+    }
+}
+
+
+@media all and (min-width: 992px) and (max-width: 1199px) {
+    .studio-upload-input, .sui-btn {
+        width: 970px;
+    }
+}
+
+
+//upload button
+.upload-file-container {
+    display: flex;
+    align-items: center;
+
+    .btn-circle-icon {
+        margin-left: 10px
+    }
+}
+
+.file-size, .file-name {
+    margin: 10px 0px 10px;
+}
+
+
+//transition
+.component-fade-enter-active, .component-fade-leave-active {
+    transition: opacity .3s ease;
+}
+
+.component-fade-enter, .component-fade-leave-to
+    /* .component-fade-leave-active below version 2.1.8 */
+{
+    opacity: 0;
+}
+
+//spinner
+.v-spinner {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+}
+
+
+</style>

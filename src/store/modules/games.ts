@@ -47,6 +47,8 @@ export default {
         zipOriginFile:null,
         thumbFile:null,
 
+        projectInfo:null,
+
     },
     getters: {
 
@@ -142,6 +144,9 @@ export default {
         thumbFile: (state: any) => {
             return state.thumbFile;
         },
+        projectInfo: (state: any) => {
+            return state.projectInfo;
+        },
     },
 
     mutations: {
@@ -208,6 +213,9 @@ export default {
         },
         thumbFile: (state: any, payload: any) => {
             state.thumbFile = payload;
+        },
+        projectInfo: (state: any, payload: any) => {
+            state.projectInfo = payload;
         },
     },
     actions: {

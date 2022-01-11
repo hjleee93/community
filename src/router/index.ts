@@ -521,7 +521,7 @@ const routes: Array<RouteConfig> = [
         },
         children:[
             {
-                    path: '/projectUpdate/:id',
+                    path: '/project/:id',
                     name: 'ProjectUpdate',
                     meta: {
                         layout: LayoutStudio,
@@ -530,6 +530,36 @@ const routes: Array<RouteConfig> = [
                     },
                     component: () => import("@/components/pages/studio/ProjectUpdate.vue"),
                 },
+            {
+                path: '/versionManage/:id',
+                name: 'VersionManage',
+                meta: {
+                    layout: LayoutStudio,
+                    title: '버전 관리',
+                    transition: 'fade-in-down'
+                },
+                component: () => import("@/components/pages/studio/VersionManage.vue"),
+            },
+            {
+                path: '/addVersion/:id',
+                name: 'AddVersion',
+                meta: {
+                    layout: LayoutStudio,
+                    title: '버전 추가',
+                    transition: 'fade-in-down'
+                },
+                component: () => import("@/components/pages/studio/AddVersion.vue"),
+            },
+            {
+                path: '/deployManage/:id',
+                name: 'DeployManage',
+                meta: {
+                    layout: LayoutStudio,
+                    title: '배포 관리',
+                    transition: 'fade-in-down'
+                },
+                component: () => import("@/components/pages/studio/DeployManage.vue"),
+            },
         ],
         component: () => import(/* webpackChunkName: "ProjectManage" */ '@/views/studio/ProjectManage.vue')
     },
