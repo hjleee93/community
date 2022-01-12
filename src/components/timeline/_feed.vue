@@ -32,7 +32,8 @@
 
                         </template>
                         <template v-else>
-                            <router-link :to="`/channel/${feed.user&&feed.user.channel_id}/timeline`">유저 채널 방문</router-link>
+                            <router-link :to="`/channel/${feed.user&&feed.user.channel_id}/timeline`">유저 채널 방문
+                            </router-link>
                             <a v-if="user" @click="report">포스팅 신고</a>
                         </template>
                     </div>
@@ -43,8 +44,19 @@
 
         <div class="tapl-content" v-html="feed.content" @click="contentClicked" ref="contentDiv"></div>
 
-<!--        <button class="btn-default"  v-show="isOverflow" @click="contentClicked">더보기-->
-<!--        </button>-->
+
+        <!-- 더보기 -->
+
+        <div  v-if="isOverflow" class='gradient'></div>
+
+            <div  v-if="isOverflow" class="more-container">
+                <span><hr class="dot-line"/></span><a @click="moreView"> 더보기 </a><span><hr class="dot-line"/></span>
+            </div>
+
+            <div  v-if="!isOverflow && isMoreView" class="more-container">
+                <span><hr class="dot-line"/></span><a @click="closeView"> 접기 </a><span><hr class="dot-line"/></span>
+            </div>
+        <!-- /더보기 -->
 
         <template v-if="attachedFile && feed.post_type === 'SNS'">
 
@@ -167,7 +179,10 @@ export default class Feed extends Vue {
     comments: any = [];
     user!: any;
     isOpenReportModal = false;
-    isOverflow = false;
+
+    isOverflow: boolean | null = null;
+    isMoreView: boolean | null = null;
+    currScroll: number = 0;
 
     swiperOption = {
         pagination: {
@@ -227,16 +242,7 @@ export default class Feed extends Vue {
         this.toast.successToast("클립보드에 복사되었습니다.")
     }
 
-    checkOverflow() {
-        this.$nextTick(() => {
-            const ref = this.$refs.contentDiv;
 
-            if ((ref as any).clientHeight >= 500) {
-                this.isOverflow = true;
-            }
-
-        })
-    }
 
     //post
     contentClicked(e: any) {
@@ -256,7 +262,7 @@ export default class Feed extends Vue {
         //     );
         // }
         // else {
-            this.$router.push(`/feed/${this.feed.id}`);
+        this.$router.push(`/feed/${this.feed.id}`);
         // }
     }
 
@@ -319,7 +325,33 @@ export default class Feed extends Vue {
         this.isOpenReportModal = !this.isOpenReportModal
         this.$modal.show('modalReport')
     }
+    /**
+     * 더보기
+     * */
+    checkOverflow() {
+        const ref = this.$refs.contentDiv;
 
+        if ((ref as any).clientHeight >= 450) {
+            this.isOverflow = true;
+        }
+    }
+
+    moreView(){
+        const ref = this.$refs.contentDiv;
+        (ref as any).style.maxHeight= '100%';
+        this.isOverflow = false;
+        this.isMoreView = true;
+        this.currScroll = document.documentElement.scrollTop;
+
+    }
+
+    closeView(){
+        const ref = this.$refs.contentDiv;
+        (ref as any).style.maxHeight= '500px';
+        this.isOverflow = true;
+        this.isMoreView = false;
+        window.scrollTo(0, this.currScroll);
+    }
 
     /**
      * 댓글
@@ -354,6 +386,37 @@ export default class Feed extends Vue {
 }
 
 <style lang="scss" scoped>
+
+// 더보기
+.gradient{
+    background: linear-gradient(to top, #fff, #ededed00);
+    height: 50px;
+    position: fixed;
+    width: 100%;
+    bottom: 109px;
+}
+.more-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 20px 0 20px;
+
+    span, a {
+        flex: 1;
+    }
+
+    a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dot-line {
+        border-top: 1px dashed;
+    }
+}
+
+// /더보기
 
 .tapl-content {
     word-break: break-all;
@@ -500,11 +563,12 @@ pre code {
 }
 
 .tapl-content {
-    overflow: auto;
+    overflow: hidden;
     min-height: 100px;
     max-height: 500px;
 }
-.btn-default{
+
+.btn-default {
     border-radius: 10px !important;
     display: block !important;
     margin: 0 auto !important;

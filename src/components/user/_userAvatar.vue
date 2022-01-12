@@ -32,7 +32,7 @@ export default class UserAvatar extends Vue {
 
             this.picture = this.user.picture ? this.user.picture + `?t=${Date.now()}` : '/img/300_300_default_profile.png'
         }else{
-            this.picture = 'img/300_300_default_profile.png'
+            this.picture = '/img/300_300_default_profile.png'
         }
     }
 

@@ -363,6 +363,7 @@ export default class FeedDetail extends Vue {
         this.limit = 10;
         this.offset = 0;
         this.sort = '';
+        window.addEventListener("scroll", this.scrollCheck);
     }
 
     commentFetch() {
@@ -378,7 +379,7 @@ export default class FeedDetail extends Vue {
                         this.comments = [...this.comments, ...res.result]
                     }
                     else {
-                        // console.log('no data')
+                        window.removeEventListener("scroll", this.scrollCheck);
                     }
                 }
                 else {
@@ -414,6 +415,7 @@ export default class FeedDetail extends Vue {
     }
 
     editDone() {
+        this.fetch();
         this.commentInit();
         this.commentFetch()
     }
@@ -482,9 +484,12 @@ export default class FeedDetail extends Vue {
 
 .tapl-content {
     word-break: break-all;
-     + img{
-        width: 100%;
-    }
+    // + img{
+    //    width: 100%;
+    //}
+}
+.feed-img{
+    width: 100%;
 }
 
 .user-avatar {

@@ -87,7 +87,7 @@ export default class Leave extends Vue {
             }
             else {
                 await Login.logout();
-                await this.$router.push("/");
+                await this.$router.replace("/");
             }
             console.log(result);
         }
