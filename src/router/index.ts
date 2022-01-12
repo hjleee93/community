@@ -31,14 +31,14 @@ const routes: Array<RouteConfig> = [
                         window.location.reload();
                     }
                     else {
-                        next('/myChannel')
+                      await router.push('/myChannel')
                     }
                     break;
                 case LoginState.no_user:
-                    next('/landing');
+                    await router.push('/landing');
                     break;
                 case LoginState.logout:
-                    next('/landing');
+                    await router.push('/landing');
                     break;
                 default:
                     next();

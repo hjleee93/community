@@ -1,6 +1,6 @@
 <template>
     <!-- 상단영역 -->
-    <div class="header">
+    <div class="header" >
         <dl>
             <dt>
                 <div class="header-logo-menu">

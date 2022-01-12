@@ -380,7 +380,6 @@ export default class FeedDetail extends Vue {
                     }
                     else {
                         window.removeEventListener("scroll", this.scrollCheck);
-                        console.log('no data')
                     }
                 }
                 else {
