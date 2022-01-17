@@ -218,12 +218,12 @@ export default class Landing extends Vue {
         const obj = {
             limit: this.limit,
             offset: this.offset,
-            category: this.category,
+            // category: this.category,
             sort: this.sort,
             dir: this.dir
         };
 
-        this.$api.officalGameList(obj)
+        this.$api.gameList(obj)
             .then((res: any) => {
                 this.games1 = res.result.games.slice(0,2)
                 this.games2 = res.result.games.slice(2,6);
