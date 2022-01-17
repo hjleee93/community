@@ -231,7 +231,7 @@ export default class Api {
 
     }
 
-    async officalGameList(obj) {
+    async gameList(obj) {
         return await this.request('get', `${zempieApi}games`, obj, false);
     }
 

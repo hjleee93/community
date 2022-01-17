@@ -3,18 +3,18 @@
         <div class="visual-title">
             <h2><span>Games</span></h2>
         </div>
-        <div class="tab-search-swiper">
-            <swiper class="swiper-area" :options="TSSswiperOption">
-                <swiper-slide>
-                    <a @click="clickCategory(1); " :class="category === 1 ? 'active' : ''">공식 게임</a>
-                </swiper-slide>
-                <swiper-slide>
-                    <a @click="clickCategory(0); " :class="category === 0 ? 'active' : ''">도전 게임
-                        <!--                        <span>10</span>-->
-                    </a>
-                </swiper-slide>
-            </swiper>
-        </div>
+        <!--        <div class="tab-search-swiper">-->
+        <!--            <swiper class="swiper-area" :options="TSSswiperOption">-->
+        <!--                <swiper-slide>-->
+        <!--                    <a @click="clickCategory(1); " :class="category === 1 ? 'active' : ''">공식 게임</a>-->
+        <!--                </swiper-slide>-->
+        <!--                <swiper-slide>-->
+        <!--                    <a @click="clickCategory(0); " :class="category === 0 ? 'active' : ''">도전 게임-->
+        <!--                        &lt;!&ndash;                        <span>10</span>&ndash;&gt;-->
+        <!--                    </a>-->
+        <!--                </swiper-slide>-->
+        <!--            </swiper>-->
+        <!--        </div>-->
 
 
         <dl class="area-title">
@@ -132,61 +132,30 @@ export default class gameList extends Vue {
         const obj = {
             limit: this.limit,
             offset: this.offset,
-            category: this.category,
+            // category: this.category,
             sort: this.sort,
             dir: this.dir
         };
 
-        switch (this.category) {
-            //도전
-            case 0:
-                const indieObj = {
-                    limit: this.limit,
-                    offset: this.offset,
-                    category: '0',
-                    sort: this.sort,
-                    dir: this.dir
-                };
-                this.$api.officalGameList(indieObj)
-                    .then((res: any) => {
-                        if (this.isAddData) {
-                            if (res.result.games.length > 0) {
-                                this.games = [...this.games, ...res.result.games]
-                            }
-                            else {
-                                this.hasData = false
-                                window.removeEventListener("scroll", this.scrollCheck);
+        this.$api.gameList(obj)
+            .then((res: any) => {
+                if (this.isAddData) {
+                    if (res.result.games.length > 0) {
+                        this.games = [...this.games, ...res.result.games]
+                    }
+                    else {
+                        this.hasData = false
+                        window.removeEventListener("scroll", this.scrollCheck);
 
-                            }
-                        }
-                        else {
-                            this.games = res.result.games;
-                            this.isAddData = true
-                        }
-                    })
-                break;
-            //공식
-            case 1:
-                this.$api.officalGameList(obj)
-                    .then((res: any) => {
-                        if (this.isAddData) {
-                            if (res.result.games.length > 0) {
-                                this.games = [...this.games, ...res.result.games]
-                            }
-                            else {
-                                this.hasData = false
-                                window.removeEventListener("scroll", this.scrollCheck);
+                    }
+                }
+                else {
+                    this.games = res.result.games;
+                    this.isAddData = true
+                }
 
-                            }
-                        }
-                        else {
-                            this.games = res.result.games;
-                            this.isAddData = true
-                        }
+            })
 
-                    })
-                break;
-        }
 
     }
 
