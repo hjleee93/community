@@ -1,14 +1,12 @@
 <template>
-  <div class="wrap">
-
-
-    <Header></Header>
-    <slot />
-    <Footer></Footer>
-    <Lnb></Lnb>
-    
-
-  </div>
+    <transition name="component-fade" mode="out-in">
+        <div>
+            <Header></Header>
+            <slot/>
+            <Footer></Footer>
+            <Lnb></Lnb>
+        </div>
+    </transition>
 </template>
 
 <script>
@@ -18,15 +16,26 @@ import Lnb from "./Lnb.vue";
 
 
 export default {
-  name: "LayoutStudio",
-  components: {
-    Header,
-    Footer,
-    Lnb,
-  }
+    name: "LayoutStudio",
+    components: {
+        Header,
+        Footer,
+        Lnb,
+    }
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+
+//transition
+.component-fade-enter-active, .component-fade-leave-active {
+    transition: opacity .3s ease;
+}
+
+.component-fade-enter, .component-fade-leave-to
+    /* .component-fade-leave-active below version 2.1.8 */
+{
+    opacity: 0;
+}
 
 </style>

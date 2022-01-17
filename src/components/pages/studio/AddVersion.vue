@@ -23,12 +23,12 @@
                         </p>
                         <transition name="component-fade" mode="out-in">
                             <div v-if="fileName">
-                                <p class="file-size">파일 크기 : {{
+                                <p class="file-size">{{ $i18n.t('addVersion.file.size') }} : {{
                                         totalSize < 1
                                             ? `${totalSize * 1000} KB`
                                             : `${totalSize} MB`
                                     }}</p>
-                                <p class="file-name">파일 명 : {{ fileName }}</p>
+                                <p class="file-name">{{ $i18n.t('addVersion.file.name') }} : {{ fileName }}</p>
                             </div>
                         </transition>
                         <h2>
@@ -128,17 +128,18 @@ export default class AddVersion extends Vue {
     isUpdate : boolean = false;
     description : string = '';
 
-//     beforeRouteEnter(to, from, next){
-//         console.log("?")
-//         console.log('to0',store.getters.projects)
-//         const { stage } = store.getters.projects[from.params.id] || store.getters.projects[to.params.id];
-// console.log(stage)
-//         if(eGameStage.Dev === stage){
-//             alert('관리할 게임 버전이 없습니다. 개발 단계를 얼리억세스 이상으로 설정하여, 게임 파일을 업로드해주세요.')
-//         }else{
-//             next();
-//         }
-//     }
+    beforeRouteEnter(to, from, next){
+
+        if(eGameStage.Dev === (from.params.id && store.getters.projects[from.params.id].stage)){
+            alert('개발 단계를 얼리억세스 이상으로 설정하여, 게임 파일을 업로드해주세요')
+        }else if(!from.params.id){
+            next('/projectList')
+        }
+        else{
+            next();
+        }
+
+    }
 
 
     async mounted(){
@@ -273,7 +274,7 @@ export default class AddVersion extends Vue {
 
         if( !this.uploadGameFiles.length ) {
             isError = true;
-            this.uploadGameFileError = this.$t('projectAddVersion.error.noUploadFile').toString();
+            // this.uploadGameFileError = this.$t('projectAddVersion.error.noUploadFile').toString();
         }
 
         if( !this.startFileOptions.length ) {
@@ -287,9 +288,7 @@ export default class AddVersion extends Vue {
 
 
         const version = await this.$api.createVersion(this.projectId, this.version, this.uploadGameFiles, this.startFile,
-            this.autoDeploy, this.totalSize, this.description, 1);
-
-
+            this.autoDeploy, this.totalSize, this.description, this.$store.getters.gameStage);
 
         if( !version || version.error ) {
             // Notify.create({
@@ -301,7 +300,6 @@ export default class AddVersion extends Vue {
         }
         else {
             const project = this.$store.getters.project( this.projectId );
-            console.log('prj', project)
             project.update_version_id = version.id;
             project.projectVersions.push(version);
             project.versions[ version.id ] = version;

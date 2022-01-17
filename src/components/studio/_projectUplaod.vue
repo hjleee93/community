@@ -46,19 +46,24 @@
         </dt>
         <dd>
             <!-- 게임단계 -->
-
             <transition name="component-fade" mode="out-in">
-                <SelectStage v-show="stepOne()" @stage="getStage"/>
+                <SelectStage v-show="stepOne()"
+                             @stage="getStage"
+                             :projectInfo="projectInfo"/>
             </transition>
             <transition name="component-fade" mode="out-in">
                 <AddGameInfo v-show="stepTwo()"
                              @stage="getStage"
                              @gameInfoDone="getGameInfo"
                              @isActivePublish="getPublishState"
+                             :isEditProject="projectInfo ? true: false"
                              :projectInfo="projectInfo"/>
             </transition>
             <transition name="component-fade" mode="out-in">
-                <AddGameFile v-show="stepThree()" @gameInfoDone="getGameInfo"/>
+                <AddGameFile v-show="stepThree()"
+                             @gameInfoDone="getGameInfo"
+                             :isEditProject="projectInfo ? true: false"
+                />
             </transition>
             <!--                <router-view></router-view>-->
             <!-- 게임단계 끝 -->
@@ -73,6 +78,7 @@ import SelectStage from "../pages/studio/SelectStage.vue";
 import AddGameInfo from "../pages/studio/AddGameInfo.vue";
 import AddGameFile from "../pages/studio/AddGameFile.vue";
 import Toast from "@/script/message";
+import {eGameStage} from "@/common/enumData";
 
 
 @Component({
@@ -149,7 +155,7 @@ export default class ProjectUpload extends Vue {
 
         this.$api.updateProject(option, this.$store.getters.thumbFile)
             .then((res) => {
-                this.toast.successToast("게임이 업로드되었습니다.");
+                this.toast.successToast("업데이트 되었습니다.");
                 this.$router.push('/projectList')
             })
             .catch((err) => {
@@ -166,7 +172,8 @@ export default class ProjectUpload extends Vue {
     }
 
     stepThree() {
-        return this.stage && this.isGameInfoFilled ? true : false;
+        console.log('stepThree', this.isGameInfoFilled)
+        return this.stage && this.isGameInfoFilled && (this.$store.getters.gameStage !== eGameStage.Dev) ? true : false;
 
     }
 
@@ -175,6 +182,7 @@ export default class ProjectUpload extends Vue {
     }
 
     getGameInfo(state: boolean) {
+
         this.isGameInfoFilled = state;
     }
 
@@ -185,6 +193,10 @@ export default class ProjectUpload extends Vue {
 </script>
 
 <style scoped lang="scss">
+
+.studio-upload-area {
+    min-height: 700px;
+}
 
 
 //transition
@@ -197,6 +209,8 @@ export default class ProjectUpload extends Vue {
 {
     opacity: 0;
 }
+
+// /transition
 
 
 .step {

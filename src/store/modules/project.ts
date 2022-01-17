@@ -108,9 +108,9 @@ export default {
 
     actions : {
         async project( context : any, id : number ) {
-            let project = context.getters.project( id );
-            // let project = null;
-            if( !project ) {
+            // let project = context.getters.project( id );
+            let project = null;
+            // if( !project ) {
                 const result = await Vue.$api.getProject( id );
 
                 if( !result || result.error ) {
@@ -123,7 +123,7 @@ export default {
                 }
 
 
-            }
+            // }
             return project;
         }
     }

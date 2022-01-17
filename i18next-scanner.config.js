@@ -13,7 +13,7 @@ module.exports = {
     options: {
         debug: true,
         func: {
-            list: ['i18next.t', 'i18n.t', '\\$t', 'this.\\$t'],
+            list: ['i18next.t', 'i18n.ts.t', '\\$t', 'this.\\$t','\\$i18n.t'],
             extensions: ['.js', '.ts', '.vue']
         },
         trans: {

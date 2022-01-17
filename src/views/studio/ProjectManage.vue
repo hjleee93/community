@@ -8,7 +8,6 @@
         </div>
         <!-- 상단배너 끝 -->
 
-
         <!-- 탭메뉴 -->
         <div class="tab-search-swiper">
             <swiper class="swiper-area" :options="TSSswiperOption">
@@ -16,7 +15,9 @@
                 <!--                    <router-link to="#">대시보드</router-link>-->
                 <!--                </swiper-slide>-->
                 <swiper-slide>
-                    <router-link :to="`/project/${$route.params.id}`"
+                    <router-link
+
+                        :to="`/project/${$route.params.id}`"
                                  :class="$route.name === 'ProjectUpdate'? 'active' :''">게임정보수정
                     </router-link>
                 </swiper-slide>

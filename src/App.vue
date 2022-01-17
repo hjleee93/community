@@ -114,9 +114,7 @@ export default class App extends Vue {
     align-items: center;
     justify-content: center;
     height: 100px;
-    div{
-        background-color: #F97316 !important;
-    }
+
 }
 
 //toast

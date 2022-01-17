@@ -5,10 +5,11 @@
                 <!--                <input type="radio" name="stage" id="uoload1" /> <label for="uoload1"><i class="uil uil-check"></i></label>-->
             </p>
             <dl>
-                <dt><img src="../../../assets/images/studio_icon01.png" alt="" title=""/></dt>
+                <dt><img src="img/studio_icon01.png" alt="" title=""/></dt>
                 <dd>
-                    <h3>개발로그</h3>
-                    <div>아직 게임을 플레이 할 수 없지만 여러분의 게임개발 아이디어를 이미지, 게시물 등으로 다른 사람들에게 공유해보세요.</div>
+                    <h3>{{ $i18n.t('devLog') }}</h3>
+                    <div>{{ $i18n.t('devLog.info') }}
+                        </div>
                 </dd>
             </dl>
         </li>
@@ -19,8 +20,8 @@
             <dl>
                 <dt><img src="../../../assets/images/studio_icon02.png" alt="" title=""/></dt>
                 <dd>
-                    <h3>얼리억세스</h3>
-                    <div>게임을 실행할 수 있지만 아직 개발이 더 필요한 상태 입니다.</div>
+                    <h3>{{ $i18n.t('earlyAccess') }}</h3>
+                    <div>{{ $i18n.t('earlyAccess.info') }}</div>
                 </dd>
             </dl>
         </li>
@@ -31,8 +32,8 @@
             <dl>
                 <dt><img src="../../../assets/images/studio_icon03.png" alt="" title=""/></dt>
                 <dd>
-                    <h3>결과물</h3>
-                    <div>게임이 완성 되었습니다. 젬파이 퍼블리싱 화면에 멋진 작품을 공개해 주세요!</div>
+                    <h3>{{ $i18n.t('complete') }}</h3>
+                    <div>{{ $i18n.t('complete.info') }}</div>
                 </dd>
             </dl>
         </li>
@@ -43,11 +44,38 @@
             <dl>
                 <dt><img src="../../../assets/images/studio_icon04.png" alt="" title=""/></dt>
                 <dd>
-                    <h3>수익화</h3>
-                    <div>젬파이 sdk를 이용하여 완성한 게임을 통해 수익을 벌어 보세요.</div>
+                    <h3>{{ $i18n.t('monetization') }}</h3>
+                    <div>{{ $i18n.t('monetization.info') }}</div>
                 </dd>
             </dl>
         </li>
+
+        <modal :clickToClose="false"
+               class="modal-area-type"
+               name="deleteGameFile"
+               width="90%" height="auto" :maxWidth="380"
+               :adaptive="true"
+               :scrollable="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('deleteGameFile')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2>{{ $i18n.t('selectStage.alert') }}<br/> {{ $i18n.t('selectStage.alert.confirm') }}
+                        </h2>
+
+                    <div>
+                        <button class="btn-default w48p" @click="deleteGameFile()">{{ $i18n.t('yes') }}네</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('deleteGameFile')">{{ $i18n.t('no') }}아니오</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
+
+
     </ul>
 </template>
 
@@ -60,23 +88,44 @@ import {eGameStage} from "@/common/enumData";
     components: {},
 })
 export default class SelectStage extends Vue {
+    @Prop() projectInfo !: any;
     private uploadStage = eGameStage;
 
     mounted() {
-        //
-        // window.addEventListener("beforeunload", function (event) {
-        //
-        //     event.returnValue = "진짜 나감?";
-        //
-        // });
-
         this.$store.commit("gameStage", null);
     }
 
-    selectStage(stage: number) {
-        this.$emit('stage', stage)
-        this.$store.commit("gameStage", stage);
-        // this.$router.push("/addGameInfo");
+    selectStage(selectedStage: number) {
+        if (this.projectInfo) {
+            const {projectVersions, stage} = this.projectInfo
+            console.log('projectVersions', projectVersions)
+            console.log('stage', stage)
+
+
+            if (selectedStage === eGameStage.Dev) {
+                if (projectVersions.length > 0) {
+                    this.$modal.show('deleteGameFile')
+                    console.log('projectVersions', projectVersions)
+                    console.log('stage', stage)
+                }
+                else {
+                    this.$emit('stage', selectedStage)
+                    this.$store.commit("gameStage", selectedStage);
+                }
+            }
+            else {
+                this.$emit('stage', selectedStage)
+                this.$store.commit("gameStage", selectedStage);
+            }
+        }else{
+            this.$emit('stage', selectedStage)
+            this.$store.commit("gameStage", selectedStage);
+        }
+
+    }
+
+    deleteGameFile() {
+
     }
 
 }

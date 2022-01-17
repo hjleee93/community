@@ -1,6 +1,6 @@
 <template>
     <!-- 상단영역 -->
-    <div class="header" >
+    <div class="header">
         <dl>
             <dt>
                 <div class="header-logo-menu">
@@ -40,13 +40,17 @@
                         </div>
                     </div>
                 </div>
-                <!--          <div class="header-language">-->
-                <!--            <v-select class="hl-select-box" :options="['한국어', 'English']" placeholder="한국어">-->
-                <!--              <template #open-indicator="{ attributes }">-->
-                <!--                <span v-bind="attributes"><i class="uil uil-angle-down" style="font-size:20px;"></i></span>-->
-                <!--              </template>-->
-                <!--            </v-select>-->
-                <!--          </div>-->
+                <div class="header-language">
+                    <v-select class="hl-select-box" :options="options" placeholder="한국어"
+                              :reduce="lang => lang.code"
+                              label="lang"
+                              @input="setSelectedLang"
+                              v-model="selectedLang">
+                        <template #open-indicator="{ attributes }">
+                            <span v-bind="attributes"><i class="uil uil-angle-down" style="font-size:20px;"></i></span>
+                        </template>
+                    </v-select>
+                </div>
 
                 <!-- 로그인 했을 때 -->
                 <template v-if="$store.getters.user">
@@ -212,9 +216,10 @@
                                 <router-link to="/myChannel" @click.native="isOpenSetting = false"><i
                                     class="uil uil-user"></i>내 채널
                                 </router-link>
-<!--                                <a @click="moveGameDashBoard"><i class="uil uil-robot"></i>게임스튜디오</a>-->
-                                <router-link to="/dashBoard" ><i class="uil uil-robot"></i>게임스튜디오</router-link>
-                                <router-link :to="`/user/${user.channel_id}/settings`" @click.native="isOpenSetting = false"><i
+                                <!--                                <a @click="moveGameDashBoard"><i class="uil uil-robot"></i>게임스튜디오</a>-->
+                                <router-link to="/dashBoard"><i class="uil uil-robot"></i>게임스튜디오</router-link>
+                                <router-link :to="`/user/${user.channel_id}/settings`"
+                                             @click.native="isOpenSetting = false"><i
                                     class="uil uil-setting"></i>계정설정
                                 </router-link>
                             </div>
@@ -270,6 +275,7 @@ export default {
     components: {UserAvatar},
     data() {
         return {
+
             isOpenMessage: false,
             isOpenSetting: false,
             isOpenSearch: false,
@@ -282,10 +288,12 @@ export default {
             gameList: [],
             hasResult: false,
 
-
+            options: [{code: 'ko', lang: '한국어'}, {code: 'en', lang: 'English'}],
+            selectedLang: '한국어',
         }
     },
     mounted() {
+        console.log("18n", this.$i18n.locale)
         this.$store.dispatch("loginState")
             .then((res) => {
                 if (res === LoginState.login) {
@@ -445,8 +453,7 @@ export default {
                 }
 
 
-            }
-            else if (this.searchInput.length === 0) {
+            } else if (this.searchInput.length === 0) {
                 this.isOpenSearch = false
             }
         },
@@ -468,7 +475,11 @@ export default {
             document.getElementById("headerSideBgMobile").style.display = "none";
             document.body.style.overflow = "visible";
         },
+        setSelectedLang: function (lang) {
+console.log(lang)
+            this.$i18n.locale = lang;
 
+        },
 
     }
 

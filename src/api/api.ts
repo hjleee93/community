@@ -5,7 +5,12 @@ import firebase from 'firebase/app';
 
 const zempieApi = process.env.VUE_APP_BASE_API;
 const studioApi = process.env.VUE_APP_STUDIO_API;
+
 export default class Api {
+
+    constructor() {
+        console.log(studioApi)
+    }
     private communityApi = process.env.VUE_APP_COMMUNITY_API;
 
     async request(method: string, url: string, data: any, withCredentials: boolean = false, errorCallback: Function | null = null, retryCount: number = 0): Promise<any> {
@@ -462,7 +467,7 @@ export default class Api {
         return response.result || response;
     }
 
-    async createVersion(project_id: number, version: string, files: File[], startFile: string, autoDeploy: boolean, size: number, description: string, stage: string) {
+    async createVersion(project_id: number | string, version: string, files: File[], startFile: string, autoDeploy: boolean, size: number, description: string, stage: string) {
         //파일 업로드
         const formData = new FormData();
         formData.append('project_id', project_id.toString());

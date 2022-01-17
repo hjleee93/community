@@ -19,12 +19,12 @@
         </li>
       </ul>
 
-      <ol>
-        <li>
-          <i class="uil uil-sign-out-alt"></i>
-          <span>로그아웃</span>
-        </li>
-      </ol>
+<!--      <ol>-->
+<!--        <li>-->
+<!--            <i class="uil uil-sign-out-alt"></i>-->
+<!--            <span>로그아웃</span>-->
+<!--        </li>-->
+<!--    </ol>-->
     </div>
     <!-- 좌측영역 끝 -->
 

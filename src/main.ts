@@ -7,7 +7,7 @@ import './api/api';
 import './plugins/firebase'
 import './plugins/axios'
 import 'vuedraggable'
-
+import {i18n} from './plugins/i18n';
 import 'tiny-slider'
 
 import {BootstrapVue, BootstrapVueIcons} from 'bootstrap-vue'
@@ -44,7 +44,6 @@ Vue.use(DropdownMenu);
 Vue.use(VModal, {dynamic: true});
 Vue.use(VueTilt);
 
-
 Component.registerHooks([
     'beforeRouteEnter',
     'beforeRouteLeave',
@@ -57,6 +56,7 @@ Vue.config.productionTip = false;
 new Vue({
     router,
     store,
+    i18n,
     created() {
         AOS.init();
     },

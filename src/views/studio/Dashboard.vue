@@ -12,22 +12,28 @@
         <!-- 차트 -->
         <div class="studio-dashboard-chart">
             <dl>
-                <dt>그래픽 차트</dt>
+                <dt>차트</dt>
                 <dd>
-                    <v-select class="sdc-select-box" :options="['게임리스트1', '게임리스트2', '게임리스트3', '게임리스트4', '게임리스트5']" placeholder="게임">
+                    <v-select class="sdc-select-box"
+                              :options="this.gameList"
+                              placeholder="게임">
                         <template #open-indicator="{ attributes }">
                             <span v-bind="attributes"><i class="uil uil-angle-down" style="font-size:20px;"></i></span>
                         </template>
                     </v-select>
                     &nbsp; &nbsp;
-                    <v-select class="sdc-select-box" :options="['기간', '지난 30일', '지난 7일', '지난 6개월', '올해 (2021)', '작년 (2020)', '저번달', '이번달', '오늘']" placeholder="기간">
+                    <v-select class="sdc-select-box"
+                              :options="['기간', '지난 30일', '지난 7일', '지난 6개월', '올해 (2021)', '작년 (2020)', '저번달', '이번달', '오늘']"
+                              placeholder="기간">
                         <template #open-indicator="{ attributes }">
                             <span v-bind="attributes"><i class="uil uil-angle-down" style="font-size:20px;"></i></span>
                         </template>
                     </v-select>
                 </dd>
             </dl>
-            <div></div>
+            <div>
+                <LineChart :game="selectedProject" :date="selectedDate"/>
+            </div>
         </div>
 
         <ul class="studio-dashboard-info">
@@ -37,7 +43,7 @@
                         <p><i class="uil uil-play"></i></p>
                     </dt>
                     <dd>
-                        <h3>142</h3>
+                        <h3>{{ playCnt }}</h3>
                         <p>플레이</p>
                     </dd>
                 </dl>
@@ -59,7 +65,7 @@
                         <p><i class="uil uil-heart-alt"></i></p>
                     </dt>
                     <dd>
-                        <h3>142</h3>
+                        <h3>{{ likeCnt }}</h3>
                         <p>좋아요</p>
                     </dd>
                 </dl>
@@ -93,23 +99,70 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import {Component, Prop, Vue} from "vue-property-decorator";
+import LineChart from "@/components/studio/_chart.vue";
+import _ from 'lodash';
 
 @Component({
-    components: {},
+    components: {LineChart},
 })
 export default class Dashboard extends Vue {
+    projects: any[] = [];
+    selectedProject: any = '';
+    selectedDate: number = 0;
 
-   async mounted(){
+    playCnt: number = 0;
+    likeCnt: number = 0;
+
+    gameList: any[] = [];
+
+    async mounted() {
         await this.$store.dispatch("loginState");
+        this.gameListFetch();
         this.playCount();
     }
-    playCount(){
 
+    playCount() {
+
+        //
+        //
+        //
+        //
+        // const arr = [1, 2, 3];
+        //
+        // const result = arr.reduce(function add(sum, currValue) {
+        //     return sum + currValue;
+        // }, 0);
+
+    }
+
+    gameListFetch() {
+        this.$api.projectList()
+            .then((res: any) => {
+                console.log("res", res);
+                this.projects = res;
+                this.selectedProject = res[0].gameId;
+
+                this.playCnt = _.reduce(this.projects, function add(sum, currValue) {
+                    return sum + currValue.game.count_start;
+                }, 0)
+
+                this.likeCnt = _.reduce(this.projects, function add(sum, currValue) {
+                    return sum + currValue.game.count_heart;
+                }, 0)
+
+                this.gameList = _.map(this.projects, project=>{
+                    return {label: project.name, id:project.id};
+                })
+
+                console.log('gameList', this.gameList)
+
+            });
     }
 
 }
 </script>
 
 <style scoped lang="scss">
+
 </style>

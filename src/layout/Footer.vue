@@ -42,7 +42,6 @@
     </div>
     <!-- 하단영역 끝 -->
 
-
   </div>
 </template>
 
@@ -52,9 +51,10 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .insta-icon:hover{
     color: #C13584;
 }
+
 
 </style>

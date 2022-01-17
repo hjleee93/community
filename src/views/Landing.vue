@@ -14,8 +14,8 @@
 
 
         <div class="main-visual">
-            <h2><span style="font: 36px/46px 'Jalnan';">STEP BY STEP</span> 으로<br/>젬파이의 게임을 <span
-                style="font: 36px/46px 'Jalnan';">직접 개발해 보세요!</span></h2>
+            <h2><span style="font: 36px/46px 'Jalnan';">{{ $i18n.t('landing.info') }}</span> {{ $i18n.t('landing.step1.info') }}<br/>{{ $i18n.t('landing.step1.info1') }} <span
+                style="font: 36px/46px 'Jalnan';">{{ $i18n.t('landing.step1.info2') }}</span></h2>
             <h3>
                 <div><img width="100%" height="auto" src="../assets/images/landing_totem.gif"/>
                     <!--                    <iframe width="100%" height="325" src="https://www.youtube.com/embed/sasxYDWzuOk" title="YouTube video player" frameborder="0"-->
@@ -80,11 +80,11 @@
 
 
         <div class="main-upload">
-            <h2 style="font-size: 30px;line-height: 40px;">강좌를 보고 게임을 다 만들었거나,<br/>이미 만든 게임이 있으신가요?</h2>
-            <h3>나만의 멋진 <span style="font: 36px/46px 'Jalnan';">게임 페이지</span>를 가져보세요.</h3>
+            <h2 style="font-size: 30px;line-height: 40px;">{{ $i18n.t('landing.step2.info1') }}<br/>{{ $i18n.t('landing.step2.info2') }}</h2>
+            <h3>{{ $i18n.t('landing.step2.info3') }}<span style="font: 36px/46px 'Jalnan';">{{ $i18n.t('landing.step2.info4') }}</span>{{ $i18n.t('landing.step2.info5') }}</h3>
             <p><img src="../assets/images/main_upload_img.jpg" alt="" title=""/></p>
             <div class="mba-more">
-                <a @click="gameUpload">게임업로드 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i class="uil uil-import"></i></a>
+                <a @click="gameUpload">{{ $i18n.t('gameUpload') }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i class="uil uil-import"></i></a>
             </div>
         </div>
 
@@ -93,7 +93,7 @@
             <div class="mb-area">
                 <div class="mba-title">
                     <h2>Zempie Game</h2>
-                    <h3>자신의 멋진 파이 자랑하기</h3>
+                    <h3>{{ $i18n.t('landing.step3.info1') }}</h3>
                 </div>
                 <ul class="mba-best" v-if="games1">
                     <li v-for="game in games1" >
@@ -155,7 +155,7 @@
 
                 </ul>
                 <div class="mba-more">
-                    <router-link to="/gameList">더보기</router-link>
+                    <router-link to="/gameList">{{ $i18n.t('moreView') }}</router-link>
                 </div>
             </div>
         </div>
@@ -164,13 +164,13 @@
                :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>{{ $i18n.t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('gameUpload')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2>1월중으로 업데이트 예정입니다. </h2>
+                    <h2>{{ $i18n.t('landing.update.info') }} </h2>
                     <!--                    <div>-->
                     <!--                        <button class="btn-default w48p" @click="leavePost(true)">네</button>-->
                     <!--                        <button class="btn-gray w48p" @click="gameUpload(false)">아니오</button>-->

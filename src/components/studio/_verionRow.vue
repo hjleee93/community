@@ -27,10 +27,11 @@
                     possible</p>
             </li>
             <li>
-                <a @click="$modal.show('deleteVer')" class="btn-default">DELETE</a>
+                <a @click=deleteVersion() class="btn-default">DELETE</a>
             </li>
             <li></li>
         </ul>
+
     </div>
 </template>
 
@@ -50,6 +51,11 @@ export default class VersionRow extends Vue {
 
     moment = moment;
     isOpenDelete: boolean = false;
+
+    deleteVersion(){
+        this.$emit('deleteVersion', this.version)
+
+    }
 
 }
 </script>

@@ -4,6 +4,7 @@
             <div class="ii-title-one">
                 현재 배포중인 버전
             </div>
+            {{version}}
             <div v-if="version" class="ii-form">
                 <ul>
                     <li>버전표시</li>
@@ -70,6 +71,8 @@
 import {Component, Prop, Vue} from "vue-property-decorator";
 import * as _ from "lodash";
 import Toast from "@/script/message";
+import {eGameStage} from "@/common/enumData";
+import store from "@/store";
 
 
 @Component({
@@ -78,13 +81,26 @@ import Toast from "@/script/message";
 export default class DeployManage extends Vue {
     toast = new Toast();
 
-    projectId: string = this.$route.params.id;
+    projectId: any = this.$route.params.id;
     version: string = "";
     number: number = 0;
     selectVersion: string = '';
     options: string[] = [];
     deployVersion: any = null;
     wait: boolean = false;
+
+
+    beforeRouteEnter(to, from, next){
+        if(eGameStage.Dev === (from.params.id && store.getters.projects[from.params.id].stage)){
+
+            alert('배포 관리 할 게임이 없습니다. 개발 단계를 얼리억세스 이상으로 설정하여, 게임 파일을 업로드해주세요.')
+        }else if(!from.params.id){
+            next('/projectList')
+        }
+        else{
+            next();
+        }
+    }
 
     async mounted() {
         await this.$store.dispatch("loginState");
@@ -99,7 +115,6 @@ export default class DeployManage extends Vue {
                 (v) => v.id === project.deploy_version_id
             );
 
-            console.log('deployVersion', deployVersion)
 
             this.version = deployVersion.version;
             this.number = deployVersion.number;
@@ -107,6 +122,7 @@ export default class DeployManage extends Vue {
 
 
          }
+
 
         const passedList = versions.filter((version) => {
             return version.state === "passed";
@@ -122,7 +138,7 @@ export default class DeployManage extends Vue {
     loadVersions() {
         this.$api.getProject(this.$route.params.id)
             .then((res) => {
-                this.versions = res.projectVersions;
+                // this.version = res.projectVersions;
                 this.$store.commit('project', res)
 
             })
@@ -142,7 +158,7 @@ export default class DeployManage extends Vue {
 
 
         this.$api.updateProject({
-            id: this.projectId,
+            id: this.projectId as number,
             deploy_version_id,
         })
             .then((res) => {
@@ -198,7 +214,7 @@ export default class DeployManage extends Vue {
                 this.$router.replace(`/versionManage/${this.projectId}`);
             })
             .catch((err) => {
-                console.error((result && result.error) || "error");
+                console.error("error");
             })
 
 

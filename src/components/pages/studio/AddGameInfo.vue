@@ -1,31 +1,31 @@
 <template>
     <div class="studio-upload-input">
         <div class="sui-input">
-            <div class="suii-title">게임정보</div>
+            <div class="suii-title">{{ $i18n.t('addGameInfo.title') }}</div>
             <dl class="suii-content">
-                <dt>게임 제목<span v-if="!projectInfo" style="color: red;">*</span></dt>
+                <dt>{{ $i18n.t('addGameInfo.game.title') }}<span v-if="!projectInfo" style="color: red;">*</span></dt>
 
                 <dd>
                     <input @focusout="autoSave" v-model="title" type="text" name="" title="" placeholder=""
                            class="w100p"/>
                     <transition name="component-fade" mode="out-in">
-                        <p class="valid-err" :key="isTitleErr" :class="isTitleErr? 'active' :'' ">게임 제목을 입력해주세요.</p>
+                        <p class="valid-err" :key="isTitleErr" :class="isTitleErr? 'active' :'' ">{{ $i18n.t('addGameInfo.game.title.err') }}</p>
                     </transition>
                 </dd>
 
             </dl>
             <dl class="suii-content">
-                <dt>게임 설명<span v-if="!projectInfo" style="color: red;">*</span></dt>
+                <dt>{{ $i18n.t('addGameInfo.game.desc') }}<span v-if="!projectInfo" style="color: red;">*</span></dt>
                 <dd>
                     <textarea @focusout="autoSave" v-model="description" name="" title="" placeholder=""
                               class="w100p h100"></textarea>
                     <transition name="component-fade" mode="out-in">
-                        <p class="valid-err" :key="isDescErr" :class="isDescErr? 'active' :'' ">게임에 대한 설명을 입력해주세요.</p>
+                        <p class="valid-err" :key="isDescErr" :class="isDescErr? 'active' :'' ">{{ $i18n.t('addGameInfo.game.desc.err') }}</p>
                     </transition>
                 </dd>
             </dl>
             <dl class="suii-content">
-                <dt>태그<span v-if="!projectInfo" style="color: red;">*</span></dt>
+                <dt>{{ $i18n.t('addGameInfo.game.tags') }}<span v-if="!projectInfo" style="color: red;">*</span></dt>
                 <dd>
                     <div class="chip-container">
                         <div class="chip" v-for="(chip, i) of hashtagsArr" :key="chip.id">
@@ -39,16 +39,20 @@
                     </div>
                     <!--                    <input v-model="hashtagsArr" type="text" name="" title="" placeholder="" class="w100p"/>-->
                     <transition name="component-fade" mode="out-in">
-                        <p class="valid-err" :key="isHashtagErr" :class="isHashtagErr? 'active' :'' ">최소 1개 이상
-                            설정하세요.</p>
+                        <p class="valid-err" :key="isHashtagErr" :class="isHashtagErr? 'active' :'' ">
+                            {{ $i18n.t('addGameInfo.game.tags.err') }}
+                           </p>
                     </transition>
                     <h2>
-                        게임을 나타낼 수 있는 단어로 태그를 설정합니다. 이러한 태그는 게임 검색에 사용되며 여러 태그를 사용하는 경우 엔터키로 구분
+                        {{ $i18n.t('addGameInfo.game.tags.info') }}
+
                     </h2>
                 </dd>
             </dl>
             <dl class="suii-content">
-                <dt>썸네일 이미지<span v-if="!projectInfo" style="color: red;">*</span></dt>
+                <dt>
+                    {{ $i18n.t('addGameInfo.game.thumbnail') }}
+                    <span v-if="!projectInfo" style="color: red;">*</span></dt>
                 <dd>
                     <ul class="image-upload">
 
@@ -63,19 +67,21 @@
                                 </div>
                                 <p><i class="uil uil-image-v"></i></p>
                                 <h2>
-                                    이미지사이즈 512* 340<br/>
+                                    {{ $i18n.t('addGameInfo.game.thumbnail.size') }} 512* 340<br/>
                                     (up to 4MB)
                                 </h2>
                             </div>
 
                             <transition name="component-fade" mode="out-in">
-                                <p class="valid-err" :key="isThumbErr" :class="isThumbErr? 'active' :'' ">썸네일 이미지를
-                                    업로드해주세요.</p>
+                                <p class="valid-err" :key="isThumbErr" :class="isThumbErr? 'active' :'' ">
+                                    {{ $i18n.t('addGameInfo.game.thumbnail.err') }}
+                                    </p>
                             </transition>
                             <p>
 
-                                <button class="btn-gray" @click="uploadFile"><i class="uil uil-upload"></i>&nbsp; 이미지
-                                    업로드
+                                <button class="btn-gray" @click="uploadFile"><i class="uil uil-upload"></i>&nbsp;
+                                    {{ $i18n.t('addGameInfo.game.thumbnail') }}
+
                                 </button>
 
                             </p>
@@ -95,8 +101,9 @@
                             </div>
 
                             <p>
-                                <button class="btn-gray" @click="uploadFile"><i class="uil uil-upload"></i>&nbsp; 이미지
-                                    업로드
+                                <button class="btn-gray" @click="uploadFile"><i class="uil uil-upload"></i>&nbsp;
+                                    {{ $i18n.t('addGameInfo.game.thumbnail') }}
+
                                 </button>
                                 &nbsp; &nbsp;
                                 <button class="btn-circle-icon" @click="deleteThumbnail"><i
@@ -165,15 +172,20 @@
             </dl>
             <transition name="component-fade" mode="out-in">
                 <dl class="suii-content" v-if="!autoGamePath || projectInfo">
-                    <dt>영어게임 ID</dt>
+                    <dt>
+                        {{ $i18n.t('addGameInfo.game.id') }}
+                        </dt>
                     <dd>
                         <input :readonly="projectInfo" v-model="gamePath"
                                type="text" name="" title="" placeholder="" :class="!projectInfo? 'w90p' : 'w100p'"/>
-
                         <p style="color: #C5292A; margin-top:10px">{{ gamePathError }}</p>
-                        <p v-if="confirmedGamePath" style="color: #1fc944; margin-top:10px">사용 가능한 ID입니다.</p>
+                        <p v-if="confirmedGamePath" style="color: #1fc944; margin-top:10px">
+                            {{ $i18n.t('addGameInfo.game.id.passed') }}
+                            </p>
                     </dd>
-                    <a @click="checkGamePath" class="btn-default w150" v-if="!projectInfo">중복 확인</a>
+                    <a @click="checkGamePath" class="btn-default w150" v-if="!projectInfo">
+                        {{ $i18n.t('addGameInfo.game.id.check') }}
+                        </a>
 
                 </dl>
 
@@ -183,12 +195,19 @@
 
         <ul class="sui-btn">
             <li>
-                <a @click="prevPage" class="btn-line w150"><i class="uil uil-angle-left-b"></i>이전</a>
+                <a @click="prevPage" class="btn-line w150"><i class="uil uil-angle-left-b"></i>
+                    {{ $i18n.t('previous') }}
+                    </a>
             </li>
             <li>
 
-                <a v-if="$store.getters.gameStage !== gameStage.Dev" @click="save" class="btn-default w150">다음 <i class="uil uil-angle-right-b"></i></a>
-                <a v-else @click="save" class="btn-default w150">업로드 </a>
+                <a v-if="ableFileUpload()" @click="save" class="btn-default w150">
+                    {{ $i18n.t('next') }}
+                     <i class="uil uil-angle-right-b"></i></a>
+
+                <a v-else @click="save" class="btn-default w150">
+                    {{ $i18n.t('addGameInfo.upload') }}
+                    </a>
             </li>
 
         </ul>
@@ -196,8 +215,12 @@
 
         <div class="sui-input" style="margin-top:100px;" v-if="projectInfo">
             <dl class="suii-content delete-area">
-                <dt>게임 삭제</dt>
-                <dd class="game-delete-btn"><a @click="$modal.show('deleteProject')" class="btn-default w150">삭제</a>
+                <dt>
+                    {{ $i18n.t('addGameInfo.delete.game') }}
+                    </dt>
+                <dd class="game-delete-btn"><a @click="$modal.show('deleteProject')" class="btn-default w150">
+                    {{ $i18n.t('addGameInfo.delete') }}
+                    </a>
                 </dd>
             </dl>
 
@@ -209,16 +232,26 @@
                :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>
+                        {{ $i18n.t('addGameInfo.info') }}
+                        </dt>
                     <dd>
                         <button @click="$modal.hide('deleteProject')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2>한 번 삭제한 게임은 복구할 수 없습니다. 정말 삭제하시겠습니까?</h2>
+                    <h2>
+                        {{ $i18n.t('addGameInfo.delete.modal') }}
+                         <br/>
+                        {{ $i18n.t('addGameInfo.delete.modal.confirm') }}
+                        </h2>
                     <div>
-                        <button class="btn-default w48p" @click="deleteProject()">네</button>
-                        <button class="btn-gray w48p" @click="$modal.hide('deleteProject')">아니오</button>
+                        <button class="btn-default w48p" @click="deleteProject()">
+                            {{ $i18n.t('yes') }}
+                            </button>
+                        <button class="btn-gray w48p" @click="$modal.hide('deleteProject')">
+                            {{ $i18n.t('no') }}
+                            </button>
                     </div>
                 </div>
             </div>
@@ -241,6 +274,7 @@ import Toast from "@/script/message";
 export default class AddGameInfo extends Vue {
     @Prop({default: false}) set!: boolean;
     @Prop() projectInfo !: any;
+    @Prop() isEditProject !: any;
     toast = new Toast();
     gameStage = eGameStage;
 
@@ -255,7 +289,7 @@ export default class AddGameInfo extends Vue {
     gamePath: string = ""
     autoGamePath: boolean = true;
 
-    confirmedGamePath: boolean |  null = null;
+    confirmedGamePath: boolean | null = null;
 
     isTitleErr: boolean = false;
     isDescErr: boolean = false;
@@ -309,14 +343,15 @@ export default class AddGameInfo extends Vue {
 
     @Watch('projectInfo')
     callUpdateProjectData() {
-        const { name, description, picture, hashtags, game } = this.projectInfo;
-        const { pathname } = game;
+        const {name, description, picture, hashtags, game, stage} = this.projectInfo;
+        const {pathname} = game;
 
         this.title = name;
         this.description = description;
         this.prevImg = picture;
         this.gamePath = pathname;
         this.hashtagsArr = hashtags ? hashtags.split(',') : []
+        this.$store.commit("gameStage", stage);
     }
 
 
@@ -334,9 +369,9 @@ export default class AddGameInfo extends Vue {
         localStorage.removeItem('thumbnail')
     }
 
-   async checkGamePath(){
+    async checkGamePath() {
         this.waitGamePath = true;
-        if(this.gamePath) {
+        if (this.gamePath) {
             const result = await this.$api.confirmGamePath(this.gamePath);
             if (result && result.success) {
                 this.confirmedGamePath = true;
@@ -348,6 +383,7 @@ export default class AddGameInfo extends Vue {
         }
         this.waitGamePath = false;
     }
+
     prevPage() {
         this.resetLocalStorage();
         this.$store.commit("gameStage", null);
@@ -355,63 +391,119 @@ export default class AddGameInfo extends Vue {
         this.$emit('isActivePublish', false)
     }
 
-    async save() {
-        this.init();
+    validityCheck() {
+        let isError: boolean = false;
 
         if (!this.title) {
             this.isTitleErr = true;
+            isError = true;
         }
 
         if (!this.description) {
             this.isDescErr = true;
+            isError = true;
         }
 
         if (this.hashtagsArr.length === 0) {
             this.isHashtagErr = true;
+            isError = true;
         }
 
         if (!this.thumbFile && !this.prevImg) {
             this.isThumbErr = true;
+            isError = true;
         }
 
-        else {
-            await this.commitGameInfo();
-            if(this.$store.getters.gameStage === this.gameStage.Dev){
-                this.uploadGame()
-            }else{
-                this.$emit('gameInfoDone', true)
-            }
-
-        }
+        return isError ? false : true;
 
     }
 
+    async save() {
+        this.init();
+
+        if(!this.validityCheck()){
+            this.$emit('gameInfoDone', false)
+            return;
+        }
+
+        await this.commitGameInfo();
+
+        if (this.isEditProject) {
+            console.log('projectInfo', this.projectInfo.stage);
+            console.log('gameStage', this.$store.getters.gameStage)
+            // 개발 단계를 변경하면 업로드한 게임 파일이 삭제됩니다. 개발 단계를 변경하시겠습니까?
+            // if (this.$store.getters.gameStage === this.gameStage.Dev) {
+            //     this.uploadGame()
+            // }
+            // else {
+                this.updateProject();
+            // }
+
+        }
+        else {
+            if (this.$store.getters.gameStage === this.gameStage.Dev) {
+                this.uploadGame()
+            }
+            this.$emit('gameInfoDone', true)
+        }
+
+
+    }
+
+    updateProject() {
+
+        const option: any = {
+            id: this.projectInfo.id,
+            name: localStorage.getItem('title'),
+            description: localStorage.getItem('description'),
+            hashtags: localStorage.getItem('hashtagsArr'),
+            stage: this.$store.getters.gameStage
+        };
+
+
+        this.$api.updateProject(option, this.$store.getters.thumbFile)
+            .then((res) => {
+                this.$store.dispatch('project', this.projectInfo.id)
+                this.toast.successToast("업데이트 되었습니다.");
+                this.$router.push('/projectList')
+            })
+            .catch((err) => {
+
+            })
+    }
+
+
+    async createGamePath() {
+        let count = 0;
+        while (!this.confirmedGamePath && count < 10) {
+            count++;
+            this.gamePath = randomString(11);
+            const result = await this.$api.confirmGamePath(
+                this.gamePath
+            );
+            if (result && result.success) {
+                this.confirmedGamePath = true;
+            }
+        }
+    }
 
     async commitGameInfo() {
-        if (!this.confirmedGamePath) {
-            if (!this.autoGamePath) {
-                alert('게임 id 다ㅅ; 확인 ')
 
-            }
-            else {
-                let count = 0;
-                while (!this.confirmedGamePath && count < 10) {
-                    count++;
-                    this.gamePath = randomString(11);
-                    const result = await this.$api.confirmGamePath(
-                        this.gamePath
-                    );
-                    if (result && result.success) {
-                        this.confirmedGamePath = true;
-                    }
+        if (!this.isEditProject) {
+            if (!this.confirmedGamePath) {
+                if (!this.autoGamePath) {
+                    alert('게임 id 다시 확인')
+
                 }
-
-                if (!this.confirmedGamePath) {
-
-                    return;
+                else {
+                    await this.createGamePath();
+                    if (!this.confirmedGamePath) {
+                        return;
+                    }
                 }
             }
         }
+
         const gameInfo = {
             name: this.title,
             description: this.description,
@@ -536,6 +628,20 @@ export default class AddGameInfo extends Vue {
             })
     }
 
+    ableFileUpload() {
+        if (this.$store.getters.gameStage === eGameStage.Dev) {
+            console.log('dev 상태')
+            return false;
+        }
+        else if (this.projectInfo && this.projectInfo.projectVersions.length !== 0) {
+            console.log('버전이 있음 ')
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
 
     /**
      * tag chips
@@ -589,8 +695,6 @@ export default class AddGameInfo extends Vue {
         }
         this.checkActivePublish();
     }
-
-
 
 
 }

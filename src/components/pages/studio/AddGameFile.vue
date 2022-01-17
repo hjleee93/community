@@ -79,11 +79,16 @@
             </transition>
         </div>
         <ul class="sui-btn">
+
             <li>
                 <a @click="prevPage" class="btn-line w150"><i class="uil uil-angle-left-b"></i> 이전
                 </a>
             </li>
-            <li><a @click="upload" class="btn-default w150">업로드<i class="uil uil-angle-right-b"></i></a></li>
+            <li>
+                <a v-if="isEditProject" @click="updateProject" class="btn-default w150">업데이트
+                    <i class="uil uil-angle-right-b"></i></a>
+                <a v-else @click="upload" class="btn-default w150">업로드<i class="uil uil-angle-right-b"></i></a>
+            </li>
         </ul>
     </div>
 </template>
@@ -94,11 +99,15 @@ import ZipUtil from "@/script/zipUtil";
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue';
 import Toast from "@/script/message";
 import {eGameStage} from "@/common/enumData";
+import Version from "@/script/version";
 
 @Component({
     components: {ClipLoader},
 })
 export default class AddGameFile extends Vue {
+    @Prop() isEditProject !: any;
+    projectId = this.$route.params.id;
+
     toast = new Toast();
     limitSize: number = 1024 * 1000 * 500;
     totalSize: number = 0;
@@ -116,6 +125,11 @@ export default class AddGameFile extends Vue {
 
     isFileEmpty: boolean = false;
     isLoadingUpload: boolean = false;
+
+    mounted(){
+
+        console.log('isEditProject', this.isEditProject)
+    }
 
     async onFileChange(e) {
 
@@ -172,14 +186,7 @@ export default class AddGameFile extends Vue {
             this.startFileOptions.length > 0
         ) {
             this.$store.commit("sendGameFileDone", true);
-            const gameFileInfo = {
-                autoDeploy: this.autoDeploy,
-                startFile: this.startFile,
-                size: this.totalSize,
-                version_description: this.versionDescription,
-            };
 
-            this.$store.commit("gameFileInfoObj", gameFileInfo);
             this.$store.commit("uploadGameFiles", this.uploadGameFiles);
             this.isFileEmpty = false;
         }
@@ -202,7 +209,16 @@ export default class AddGameFile extends Vue {
     }
 
     upload() {
-        const { gameInfoObj, gameFileInfoObj, uploadGameFiles, gameStage } = this.$store.getters;
+        const gameFileInfo = {
+            autoDeploy: this.autoDeploy,
+            startFile: this.startFile,
+            size: this.totalSize,
+            version_description: this.versionDescription,
+        };
+
+        const { gameInfoObj, uploadGameFiles, gameStage } = this.$store.getters;
+
+        console.log('gameFileInfo', gameFileInfo)
 
         if (gameStage !== eGameStage.Dev  && uploadGameFiles.length === 0) {
             this.isFileEmpty = true;
@@ -210,7 +226,7 @@ export default class AddGameFile extends Vue {
         else {
             this.$api.createProject(
                 gameInfoObj,
-                gameFileInfoObj,
+                gameFileInfo,
                 uploadGameFiles
             )
                 .then((res) => {
@@ -227,8 +243,49 @@ export default class AddGameFile extends Vue {
 
     }
 
-    updateProject() {
+  async updateProject() {
 
+        let isError = false;
+
+        if( !this.uploadGameFiles.length ) {
+            isError = true;
+            // this.uploadGameFileError = this.$t('projectAddVersion.error.noUploadFile').toString();
+        }
+
+        if( !this.startFileOptions.length ) {
+            isError = true;
+        }
+
+        if( isError ) {
+            // this.wait = false;
+            return;
+        }
+
+
+      const option: any = {
+          id: this.projectId,
+          name: localStorage.getItem('title'),
+          description: localStorage.getItem('description'),
+          hashtags: localStorage.getItem('hashtagsArr'),
+          stage: this.$store.getters.gameStage
+      };
+
+
+      this.$api.updateProject(option, this.$store.getters.thumbFile)
+          .then((res) => {
+              // this.toast.successToast("게임이 업로드되었습니다.");
+              // this.$router.push('/projectList')
+          })
+          .catch((err) => {
+              console.log('err', err)
+              return;
+          })
+
+
+        const version = await this.$api.createVersion(this.projectId, '1.0.0', this.uploadGameFiles, this.startFile,
+            this.autoDeploy, this.totalSize,'', this.$store.getters.gameStage);
+
+      await this.$router.replace(`/projectList`);
     }
 
     prevPage() {
