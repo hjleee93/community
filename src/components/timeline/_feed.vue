@@ -41,21 +41,19 @@
             </dd>
         </dl>
 
-<div>
-        <div class="tapl-content" v-html="feed.content" @click="contentClicked" ref="contentDiv"></div>
-
-
+        <div>
+            <div class="tapl-content" v-html="feed.content" @click="contentClicked" ref="contentDiv"></div>
         <!-- 더보기 -->
+            <div  v-if="isOverflow" class='gradient'></div>
+        </div>
+        
+        <div  v-if="isOverflow" class="more-container">
+            <span><hr class="dot-line"/></span><a @click="moreView"> 더보기 </a><span><hr class="dot-line"/></span>
+        </div>
 
-        <div  v-if="isOverflow" class='gradient'></div>
-</div>
-            <div  v-if="isOverflow" class="more-container">
-                <span><hr class="dot-line"/></span><a @click="moreView"> 더보기 </a><span><hr class="dot-line"/></span>
-            </div>
-
-            <div  v-if="!isOverflow && isMoreView" class="more-container">
-                <span><hr class="dot-line"/></span><a @click="closeView"> 접기 </a><span><hr class="dot-line"/></span>
-            </div>
+        <div  v-if="!isOverflow && isMoreView" class="more-container">
+            <span><hr class="dot-line"/></span><a @click="closeView"> 접기 </a><span><hr class="dot-line"/></span>
+        </div>
         <!-- /더보기 -->
 
         <template v-if="attachedFile && feed.post_type === 'SNS'">
@@ -105,7 +103,7 @@
                 <ul>
                     <LikeBtn :feed="feed"></LikeBtn>
                     <li @click="openComments"><i class="uil uil-comment-alt-dots comment-icon"
-                                                 style="font-size:22px;"></i>&nbsp; {{ feed && feed.comment_cnt }}
+                                                 style="font-size:22px;"></i>&nbsp; {{commentCnt }}
                     </li>
                     <!--                    <li><i class="uil uil-eye" style="font-size:22px;"></i>&nbsp;680</li>-->
                     <li><a @click="copyUrl"><i class="uil uil-share-alt" style="font-size:20px;"></i></a></li>
@@ -113,17 +111,19 @@
             </li>
             <!--            <li><router-link to="#"><i class="uil uil-bookmark" style="font-size:24px; color:#ff6e17;"></i></router-link></li>-->
         </ul>
-        <div v-if="isOpenedComments" class="tapl-comment">
-            <ul @scroll="scrollCheck">
-                <li v-for="comment in comments" :key="comment.id">
-                    <Comment :comment="comment" :editContent="comment.content" :postId="feed.id" @editDone="editDone"/>
-                </li>
-            </ul>
-
-            <CommentInput :postId="feed.id" @sendComment="editDone"/>
-
-        </div>
-
+           <transition-group name="fade">
+            <div v-if="isOpenedComments" class="tapl-comment" :key="Date.now()">
+                <transition-group name="fade"  @scroll="scrollCheck" tag="ul" >
+                    <li v-for="comment in comments" :key="comment.id">
+                        <Comment :comment="comment" :editContent="comment.content" :postId="feed.id" @editDone="editDone"/>
+                    </li>
+                </transition-group>
+                <CommentInput 
+                    :postId="feed.id" 
+                    @sendComment="editDone"
+                    @updateComment="updateDone"/>
+            </div>
+         </transition-group>    
     </li>
 
 </template>
@@ -184,6 +184,8 @@ export default class Feed extends Vue {
     isMoreView: boolean | null = null;
     currScroll: number = 0;
 
+    commentCnt:number = 0;
+
     swiperOption = {
         pagination: {
             el: '.swiper-pagination'
@@ -194,6 +196,7 @@ export default class Feed extends Vue {
         this.attachedFile = Array.isArray(this.feed.attatchment_files) ? this.feed.attatchment_files : JSON.parse(this.feed.attatchment_files)
         this.hashtags = this.feed.hashtags;
         this.checkOverflow()
+        this.commentCnt = this.feed?.comment_cnt;
         // this.likeListFetch();
     }
 
@@ -210,7 +213,10 @@ export default class Feed extends Vue {
 
 
     openComments() {
+     
+        this.commentInit();
         this.isOpenedComments = !this.isOpenedComments;
+
         if (this.isOpenedComments && this.feed.comment_cnt > 0) {
             this.comments = []
             this.commentFetch()
@@ -364,6 +370,7 @@ export default class Feed extends Vue {
     }
 
     deleteComment(commentId: string) {
+         this.commentCnt--;
         this.commentInit();
         this.$api.deleteComment(this.feed.id, commentId)
             .then((res: AxiosResponse) => {
@@ -375,6 +382,12 @@ export default class Feed extends Vue {
     }
 
     editDone() {
+        this.commentCnt++;
+        this.commentInit();
+        this.commentFetch()
+    }
+
+    updateDone(){
         this.commentInit();
         this.commentFetch()
     }
@@ -386,6 +399,27 @@ export default class Feed extends Vue {
 }
 
 <style lang="scss" scoped>
+
+// transition
+
+.component-fade-enter-active,
+.component-fade-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.component-fade-enter-from,
+.component-fade-leave-to {
+    opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+}
+// /transition
 
 // 더보기
 .gradient{

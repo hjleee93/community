@@ -86,8 +86,7 @@ export default class CommentInput extends Vue {
                 }
                 this.$api.updateComment(obj)
                     .then((res: AxiosResponse) => {
-                        this.$emit('sendComment')
-
+                        this.$emit('updateComment')
                     })
                     .catch((err: AxiosError) => {
 

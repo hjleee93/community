@@ -43,6 +43,7 @@
     </dl>
     <dl v-else>
         <CommentInput
+            @updateComment="updateDone"
             @sendComment="editDone"
             :editContent="comment.content"
             :postId="postId"
@@ -102,6 +103,10 @@ export default class Comment extends Vue {
     }
 
     editDone() {
+        this.isEditing = false;
+        this.$emit('editDone')
+    }
+    updateDone() {
         this.isEditing = false;
         this.$emit('editDone')
     }
