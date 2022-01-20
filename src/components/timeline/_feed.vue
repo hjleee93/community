@@ -41,14 +41,14 @@
             </dd>
         </dl>
 
-
+<div>
         <div class="tapl-content" v-html="feed.content" @click="contentClicked" ref="contentDiv"></div>
 
 
         <!-- 더보기 -->
 
         <div  v-if="isOverflow" class='gradient'></div>
-
+</div>
             <div  v-if="isOverflow" class="more-container">
                 <span><hr class="dot-line"/></span><a @click="moreView"> 더보기 </a><span><hr class="dot-line"/></span>
             </div>
@@ -391,9 +391,9 @@ export default class Feed extends Vue {
 .gradient{
     background: linear-gradient(to top, #fff, #ededed00);
     height: 50px;
-    position: fixed;
-    width: 100%;
-    bottom: 109px;
+    width: 100%;   
+    position: relative;
+    bottom: 50px;
 }
 .more-container {
     display: flex;
