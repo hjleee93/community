@@ -10,7 +10,7 @@
                                 stepOne() ? 'active' : ''
                             ">
                     <p>STEP 01</p>
-                    <h3>게임 단계 선택</h3>
+                    <h3>  {{ $t('uploadGame.selectStage.text') }}</h3>
                 </li>
                 <li
                     class="step"
@@ -18,7 +18,7 @@
                                stepTwo() ? 'active' : ''
                             ">
                     <p>STEP 02</p>
-                    <h3>게임정보</h3>
+                    <h3>{{ $t('game.info') }}</h3>
                 </li>
                 <li
                     class="step"
@@ -26,20 +26,20 @@
                                 stepThree() ? 'active' : ''
                             ">
                     <p>STEP 03</p>
-                    <h3>파일 업로드</h3>
+                    <h3>{{ $t('file.upload') }}</h3>
                 </li>
                 <li
                     v-if="!isEditProject"
                     @click="uploadGame"
                     :class="isActivePublishBtn ? 'active' : ''"
                     class="publish-btn ">
-                    <h4>퍼블리싱</h4>
+                    <h4>{{ $t('publishing') }}</h4>
                 </li>
                 <li
                     v-else
                     @click="updateProject"
                     class="publish-btn active">
-                    <h4>업데이트</h4>
+                    <h4>{{ $t('update') }}</h4>
                 </li>
             </ul>
             <!-- 단계 끝 -->
@@ -56,6 +56,7 @@
                              @stage="getStage"
                              @gameInfoDone="getGameInfo"
                              @isActivePublish="getPublishState"
+                             :isUpdateProject = 'isUpdateProject'
                              :isEditProject="projectInfo ? true: false"
                              :projectInfo="projectInfo"/>
             </transition>
@@ -98,6 +99,7 @@ export default class ProjectUpload extends Vue {
 
     //프로젝트 수정
     isEditProject: boolean = false;
+    isUpdateProject: boolean = false;
     projectInfo: any = null;
 
 
@@ -134,33 +136,36 @@ export default class ProjectUpload extends Vue {
         )
             .then((res) => {
 
-                this.toast.successToast("게임이 업로드되었습니다.");
-                this.$router.push('/projectList')
+                this.toast.successToast(`${this.$t('projectUpload.success.upload')}`);
+                this.$router.push(`/${this.$i18n.locale}/projectList`)
             })
             .catch((err) => {
 
             })
     }
 
+
     updateProject() {
+        this.isUpdateProject = true;
+        console.log(this.isUpdateProject)
 
-        const option: any = {
-            id: this.projectInfo.id,
-            name: localStorage.getItem('title'),
-            description: localStorage.getItem('description'),
-            hashtags: localStorage.getItem('hashtagsArr'),
-            stage: this.$store.getters.gameStage
-        };
-
-
-        this.$api.updateProject(option, this.$store.getters.thumbFile)
-            .then((res) => {
-                this.toast.successToast("업데이트 되었습니다.");
-                this.$router.push('/projectList')
-            })
-            .catch((err) => {
-
-            })
+        // const option: any = {
+        //     id: this.projectInfo.id,
+        //     name: localStorage.getItem('title'),
+        //     description: localStorage.getItem('description'),
+        //     hashtags: localStorage.getItem('hashtagsArr'),
+        //     stage: this.$store.getters.gameStage
+        // };
+        //
+        //
+        // this.$api.updateProject(option, this.$store.getters.thumbFile)
+        //     .then((res) => {
+        //         this.toast.successToast("업데이트 되었습니다.");
+        //         this.$router.push('/projectList')
+        //     })
+        //     .catch((err) => {
+        //
+        //     })
     }
 
     stepOne() {
@@ -172,8 +177,9 @@ export default class ProjectUpload extends Vue {
     }
 
     stepThree() {
-        console.log('stepThree', this.isGameInfoFilled)
-        return this.stage && this.isGameInfoFilled && (this.$store.getters.gameStage !== eGameStage.Dev) ? true : false;
+        return this.stage && this.isGameInfoFilled
+        // && (this.$store.getters.gameStage !== eGameStage.Dev)
+            ? true : false;
 
     }
 
@@ -182,7 +188,7 @@ export default class ProjectUpload extends Vue {
     }
 
     getGameInfo(state: boolean) {
-
+        this.isUpdateProject = false;
         this.isGameInfoFilled = state;
     }
 

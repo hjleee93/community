@@ -1,31 +1,33 @@
 <template>
     <div class="studio-upload-input">
         <div class="sui-input">
-            <div class="suii-title">{{ $i18n.t('addGameInfo.title') }}</div>
+            <div class="suii-title">{{ $t('addGameInfo.title') }}</div>
             <dl class="suii-content">
-                <dt>{{ $i18n.t('addGameInfo.game.title') }}<span v-if="!projectInfo" style="color: red;">*</span></dt>
+                <dt>{{ $t('addGameInfo.game.title') }}<span v-if="!projectInfo" style="color: red;">*</span></dt>
 
                 <dd>
                     <input @focusout="autoSave" v-model="title" type="text" name="" title="" placeholder=""
                            class="w100p"/>
                     <transition name="component-fade" mode="out-in">
-                        <p class="valid-err" :key="isTitleErr" :class="isTitleErr? 'active' :'' ">{{ $i18n.t('addGameInfo.game.title.err') }}</p>
+                        <p class="valid-err" :key="isTitleErr" :class="isTitleErr? 'active' :'' ">
+                            {{ $t('addGameInfo.game.title.err') }}</p>
                     </transition>
                 </dd>
 
             </dl>
             <dl class="suii-content">
-                <dt>{{ $i18n.t('addGameInfo.game.desc') }}<span v-if="!projectInfo" style="color: red;">*</span></dt>
+                <dt>{{ $t('addGameInfo.game.desc') }}<span v-if="!projectInfo" style="color: red;">*</span></dt>
                 <dd>
                     <textarea @focusout="autoSave" v-model="description" name="" title="" placeholder=""
                               class="w100p h100"></textarea>
                     <transition name="component-fade" mode="out-in">
-                        <p class="valid-err" :key="isDescErr" :class="isDescErr? 'active' :'' ">{{ $i18n.t('addGameInfo.game.desc.err') }}</p>
+                        <p class="valid-err" :key="isDescErr" :class="isDescErr? 'active' :'' ">
+                            {{ $t('addGameInfo.game.desc.err') }}</p>
                     </transition>
                 </dd>
             </dl>
             <dl class="suii-content">
-                <dt>{{ $i18n.t('addGameInfo.game.tags') }}<span v-if="!projectInfo" style="color: red;">*</span></dt>
+                <dt>{{ $t('addGameInfo.game.tags') }}<span v-if="!projectInfo" style="color: red;">*</span></dt>
                 <dd>
                     <div class="chip-container">
                         <div class="chip" v-for="(chip, i) of hashtagsArr" :key="chip.id">
@@ -40,18 +42,18 @@
                     <!--                    <input v-model="hashtagsArr" type="text" name="" title="" placeholder="" class="w100p"/>-->
                     <transition name="component-fade" mode="out-in">
                         <p class="valid-err" :key="isHashtagErr" :class="isHashtagErr? 'active' :'' ">
-                            {{ $i18n.t('addGameInfo.game.tags.err') }}
-                           </p>
+                            {{ $t('addGameInfo.game.tags.err') }}
+                        </p>
                     </transition>
                     <h2>
-                        {{ $i18n.t('addGameInfo.game.tags.info') }}
+                        {{ $t('addGameInfo.game.tags.info') }}
 
                     </h2>
                 </dd>
             </dl>
             <dl class="suii-content">
                 <dt>
-                    {{ $i18n.t('addGameInfo.game.thumbnail') }}
+                    {{ $t('addGameInfo.game.thumbnail') }}
                     <span v-if="!projectInfo" style="color: red;">*</span></dt>
                 <dd>
                     <ul class="image-upload">
@@ -67,20 +69,20 @@
                                 </div>
                                 <p><i class="uil uil-image-v"></i></p>
                                 <h2>
-                                    {{ $i18n.t('addGameInfo.game.thumbnail.size') }} 512* 340<br/>
+                                    {{ $t('addGameInfo.game.thumbnail.size') }} 512* 512<br/>
                                     (up to 4MB)
                                 </h2>
                             </div>
 
                             <transition name="component-fade" mode="out-in">
                                 <p class="valid-err" :key="isThumbErr" :class="isThumbErr? 'active' :'' ">
-                                    {{ $i18n.t('addGameInfo.game.thumbnail.err') }}
-                                    </p>
+                                    {{ $t('addGameInfo.game.thumbnail.err') }}
+                                </p>
                             </transition>
                             <p>
 
                                 <button class="btn-gray" @click="uploadFile"><i class="uil uil-upload"></i>&nbsp;
-                                    {{ $i18n.t('addGameInfo.game.thumbnail') }}
+                                    {{ $t('addGameInfo.game.thumbnail') }}
 
                                 </button>
 
@@ -102,7 +104,7 @@
 
                             <p>
                                 <button class="btn-gray" @click="uploadFile"><i class="uil uil-upload"></i>&nbsp;
-                                    {{ $i18n.t('addGameInfo.game.thumbnail') }}
+                                    {{ $t('addGameInfo.game.thumbnail') }}
 
                                 </button>
                                 &nbsp; &nbsp;
@@ -123,13 +125,13 @@
                                 <div style="height: 0px; overflow: hidden">
                                     <input type="file"
                                            @change="onGifChange"
-                                           accept=image/*
+                                           accept=image/gif
                                            ref="thumbnailGif"
                                            name="fileInput"/>
                                 </div>
                                 <p><i class="uil uil-image-v"></i></p>
                                 <h2>
-                                    이미지사이즈 512* 340<br/>
+                                    이미지사이즈 512* 512<br/>
                                     (up to 4MB)
                                 </h2>
                             </div>
@@ -154,7 +156,7 @@
                             <p>
                                 <button class="btn-gray" @click="uploadGif"><i class="uil uil-upload"></i>&nbsp; 이미지 업로드
                                 </button>
-                                <button class="btn-circle-icon" @click="prevGif='';"><i class="uil uil-trash-alt"></i>
+                                <button class="btn-circle-icon" @click="deleteThumbnail2"><i class="uil uil-trash-alt"></i>
                                 </button>
                             </p>
                         </li>
@@ -162,7 +164,7 @@
                 </dd>
             </dl>
             <dl class="suii-content" v-if="!projectInfo">
-                <dt style="padding-top:5px;">영어게임 ID 자동 작성</dt>
+                <dt style="padding-top:5px;">게임 ID 자동 작성</dt>
                 <dd>
                     <label class="switch-button">
                         <input type="checkbox" name="" v-model="autoGamePath"/>
@@ -173,19 +175,21 @@
             <transition name="component-fade" mode="out-in">
                 <dl class="suii-content" v-if="!autoGamePath || projectInfo">
                     <dt>
-                        {{ $i18n.t('addGameInfo.game.id') }}
-                        </dt>
+                        {{ $t('addGameInfo.game.id') }}
+                    </dt>
                     <dd>
                         <input :readonly="projectInfo" v-model="gamePath"
-                               type="text" name="" title="" placeholder="" :class="!projectInfo? 'w90p' : 'w100p'"/>
+                               type="text" name=""
+                               class="game-id-input"
+                               title="" placeholder="" :class="!projectInfo? 'w90p' : 'w100p'"/>
                         <p style="color: #C5292A; margin-top:10px">{{ gamePathError }}</p>
                         <p v-if="confirmedGamePath" style="color: #1fc944; margin-top:10px">
-                            {{ $i18n.t('addGameInfo.game.id.passed') }}
-                            </p>
+                            {{ $t('addGameInfo.game.id.passed') }}
+                        </p>
                     </dd>
                     <a @click="checkGamePath" class="btn-default w150" v-if="!projectInfo">
-                        {{ $i18n.t('addGameInfo.game.id.check') }}
-                        </a>
+                        {{ $t('addGameInfo.game.id.check') }}
+                    </a>
 
                 </dl>
 
@@ -196,18 +200,18 @@
         <ul class="sui-btn">
             <li>
                 <a @click="prevPage" class="btn-line w150"><i class="uil uil-angle-left-b"></i>
-                    {{ $i18n.t('previous') }}
-                    </a>
+                    {{ $t('previous') }}
+                </a>
             </li>
             <li>
 
                 <a v-if="ableFileUpload()" @click="save" class="btn-default w150">
-                    {{ $i18n.t('next') }}
-                     <i class="uil uil-angle-right-b"></i></a>
+                    {{ $t('next') }}
+                    <i class="uil uil-angle-right-b"></i></a>
 
                 <a v-else @click="save" class="btn-default w150">
-                    {{ $i18n.t('addGameInfo.upload') }}
-                    </a>
+                    {{ $t('addGameInfo.upload') }}
+                </a>
             </li>
 
         </ul>
@@ -216,11 +220,11 @@
         <div class="sui-input" style="margin-top:100px;" v-if="projectInfo">
             <dl class="suii-content delete-area">
                 <dt>
-                    {{ $i18n.t('addGameInfo.delete.game') }}
-                    </dt>
+                    {{ $t('addGameInfo.delete.game') }}
+                </dt>
                 <dd class="game-delete-btn"><a @click="$modal.show('deleteProject')" class="btn-default w150">
-                    {{ $i18n.t('addGameInfo.delete') }}
-                    </a>
+                    {{ $t('addGameInfo.delete') }}
+                </a>
                 </dd>
             </dl>
 
@@ -233,25 +237,25 @@
             <div class="modal-alert">
                 <dl class="ma-header">
                     <dt>
-                        {{ $i18n.t('addGameInfo.info') }}
-                        </dt>
+                        {{ $t('addGameInfo.info') }}
+                    </dt>
                     <dd>
                         <button @click="$modal.hide('deleteProject')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">
                     <h2>
-                        {{ $i18n.t('addGameInfo.delete.modal') }}
-                         <br/>
-                        {{ $i18n.t('addGameInfo.delete.modal.confirm') }}
-                        </h2>
+                        {{ $t('addGameInfo.delete.modal') }}
+                        <br/>
+                        {{ $t('addGameInfo.delete.modal.confirm') }}
+                    </h2>
                     <div>
                         <button class="btn-default w48p" @click="deleteProject()">
-                            {{ $i18n.t('yes') }}
-                            </button>
+                            {{ $t('yes') }}
+                        </button>
                         <button class="btn-gray w48p" @click="$modal.hide('deleteProject')">
-                            {{ $i18n.t('no') }}
-                            </button>
+                            {{ $t('no') }}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -275,6 +279,7 @@ export default class AddGameInfo extends Vue {
     @Prop({default: false}) set!: boolean;
     @Prop() projectInfo !: any;
     @Prop() isEditProject !: any;
+    @Prop() isUpdateProject !: any;
     toast = new Toast();
     gameStage = eGameStage;
 
@@ -285,7 +290,7 @@ export default class AddGameInfo extends Vue {
     // chips: string[] = [];
     prevImg: any = '';
     prevGif: any = '';
-    thumbFile: File | null = null;
+    thumbFile: any = null;
     gamePath: string = ""
     autoGamePath: boolean = true;
 
@@ -296,7 +301,7 @@ export default class AddGameInfo extends Vue {
     isHashtagErr: boolean = false;
     isThumbErr: boolean = false;
 
-    thumbFile2: File | null = null;
+    thumbFile2: any = null;
 
     gamePathError: string = "";
     waitGamePath: boolean = false;
@@ -343,12 +348,14 @@ export default class AddGameInfo extends Vue {
 
     @Watch('projectInfo')
     callUpdateProjectData() {
-        const {name, description, picture, hashtags, game, stage} = this.projectInfo;
+        console.log(this.projectInfo)
+        const {name, description, picture, picture2, hashtags, game, stage, picture_webp} = this.projectInfo;
         const {pathname} = game;
 
         this.title = name;
         this.description = description;
-        this.prevImg = picture;
+        this.prevImg = (picture_webp || picture)  + '?_=' + Date.now();
+        this.prevGif = picture2;
         this.gamePath = pathname;
         this.hashtagsArr = hashtags ? hashtags.split(',') : []
         this.$store.commit("gameStage", stage);
@@ -386,7 +393,7 @@ export default class AddGameInfo extends Vue {
 
     prevPage() {
         this.resetLocalStorage();
-        this.$store.commit("gameStage", null);
+        // this.$store.commit("gameStage", null);
         this.$emit('stage', null)
         this.$emit('isActivePublish', false)
     }
@@ -421,36 +428,40 @@ export default class AddGameInfo extends Vue {
     async save() {
         this.init();
 
-        if(!this.validityCheck()){
+        if (!this.validityCheck()) {
             this.$emit('gameInfoDone', false)
             return;
         }
-
         await this.commitGameInfo();
 
         if (this.isEditProject) {
-            console.log('projectInfo', this.projectInfo.stage);
-            console.log('gameStage', this.$store.getters.gameStage)
             // 개발 단계를 변경하면 업로드한 게임 파일이 삭제됩니다. 개발 단계를 변경하시겠습니까?
-            // if (this.$store.getters.gameStage === this.gameStage.Dev) {
-            //     this.uploadGame()
-            // }
-            // else {
+            if (this.$store.getters.gameStage === this.gameStage.Dev && this.projectInfo.projectVersions.length === 0) {
+                this.$emit('gameInfoDone', true)
+            }
+            else {
                 this.updateProject();
-            // }
+            }
 
         }
         else {
-            if (this.$store.getters.gameStage === this.gameStage.Dev) {
-                this.uploadGame()
-            }
+            // if (this.$store.getters.gameStage === this.gameStage.Dev) {
+            //     this.uploadGame()
+            // }
             this.$emit('gameInfoDone', true)
         }
 
 
     }
 
+    @Watch('isUpdateProject')
     updateProject() {
+        console.log(this.isUpdateProject)
+
+        if (!this.validityCheck()) {
+            this.$emit('gameInfoDone', false)
+            return;
+        }
 
         const option: any = {
             id: this.projectInfo.id,
@@ -460,8 +471,9 @@ export default class AddGameInfo extends Vue {
             stage: this.$store.getters.gameStage
         };
 
+        console.log('this.thumbFile2', this.thumbFile2)
 
-        this.$api.updateProject(option, this.$store.getters.thumbFile)
+        this.$api.updateProject(option, this.thumbFile, this.thumbFile2)
             .then((res) => {
                 this.$store.dispatch('project', this.projectInfo.id)
                 this.toast.successToast("업데이트 되었습니다.");
@@ -514,6 +526,8 @@ export default class AddGameInfo extends Vue {
             stage: this.$store.getters.gameStage,
         };
 
+        console.log('gameInfo', gameInfo)
+
         this.$store.commit("uploadGameFiles", []);
         this.$store.commit("gameFileInfoObj", {});
         this.$store.commit("gameInfoObj", gameInfo);
@@ -555,8 +569,13 @@ export default class AddGameInfo extends Vue {
         localStorage.removeItem('thumbnail')
     }
 
+    deleteThumbnail2() {
+        this.prevGif='';
+        this.thumbFile2 = 'rm_file2';
+    }
     onGifChange(event: { target: { files: any } }) {
         if (event.target.files[0].size < 1024 * 1024 * 4) {
+            this.thumbFile2 = event.target.files[0];
             // this.fileName = event.target.files[0].name
             // this.updateFile = event.target.files[0]
             const reader = new FileReader();
@@ -629,11 +648,12 @@ export default class AddGameInfo extends Vue {
     }
 
     ableFileUpload() {
-        if (this.$store.getters.gameStage === eGameStage.Dev) {
-            console.log('dev 상태')
-            return false;
-        }
-        else if (this.projectInfo && this.projectInfo.projectVersions.length !== 0) {
+        // if (this.$store.getters.gameStage === eGameStage.Dev) {
+        //     console.log('dev 상태')
+        //     return false;
+        // }
+        // else
+        if (this.projectInfo && this.projectInfo.projectVersions.length !== 0) {
             console.log('버전이 있음 ')
             return false;
         }
@@ -642,6 +662,10 @@ export default class AddGameInfo extends Vue {
         }
     }
 
+
+    // updateProject(){
+    //     this.updateProject()
+    // }
 
     /**
      * tag chips
@@ -701,6 +725,12 @@ export default class AddGameInfo extends Vue {
 </script>
 
 <style scoped lang="scss">
+.game-id-input:focus {
+    box-shadow: 0px 4px 10px 3px rgb(0 0 0 / 0%) !important;
+    border: #e9e9e9 1px solid !important;
+
+}
+
 .delete-area {
     border-top: 0px !important;
 }

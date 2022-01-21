@@ -6,27 +6,25 @@
             </vue-page-transition>
         </component>
 
-            <modal :clickToClose="false" class="modal-area-type" name="needLogin" width="90%" height="auto" :maxWidth="380"
-                   :adaptive="true"
-                   :scrollable="true">
-                <div class="modal-alert">
-                    <dl class="ma-header">
-                        <dt>안내</dt>
-                        <dd>
-                            <button @click="$modal.hide('needLogin')"><i class="uil uil-times"></i></button>
-                        </dd>
-                    </dl>
-                    <div class="ma-content">
-                        <h2> 회원만 이용가능한 서비스입니다.<br/>로그인 하시겠습니까?</h2>
-                        <div>
-                            <button class="btn-default" style="width: 100%" @click="moveLogin">로그인</button>
-                        </div>
+        <modal :clickToClose="false" class="modal-area-type" name="needLogin" width="90%" height="auto" :maxWidth="380"
+               :adaptive="true"
+               :scrollable="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>안내</dt>
+                    <dd>
+                        <button @click="$modal.hide('needLogin')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2> 회원만 이용가능한 서비스입니다.<br/>로그인 하시겠습니까?</h2>
+                    <div>
+                        <button class="btn-default" style="width: 100%" @click="moveLogin">로그인</button>
                     </div>
-
                 </div>
+
+            </div>
         </modal>
-
-
 
 
     </div>
@@ -34,19 +32,22 @@
 
 <script lang="ts">
 import {Component, Vue, Watch} from "vue-property-decorator";
-
+import store from '@/store'
 import MetaSetting from "@/plugins/meta"
 import {mapGetters} from "vuex";
+import {SUPPORTED_LOCALES} from '@/common/locale';
 
 @Component({
     components: {},
-
 })
 export default class App extends Vue {
     // metaInfo:{
     //     title:'ZEMPIE',
     //     titleTemplate:'게임 공유 플랫폼',
     // }
+    path = "/";
+    locales =  SUPPORTED_LOCALES;
+
     async mounted() {
         await this.$store.dispatch("loginState");
 
@@ -64,8 +65,6 @@ export default class App extends Vue {
         this.$modal.hide('needLogin')
         this.$router.push('/login')
     }
-
-
 
 
 }
@@ -103,13 +102,26 @@ export default class App extends Vue {
     -khtml-user-select: none;
     user-select: none;
 }
+
+//dropdown
+.stage-select-box .vs__dropdown-toggle {display:flex; margin-top:0px !important; align-items:center; width:150px; height:38px; padding:0 5px 2px 5px; border:#e5e5e5 1px solid !important; border-radius:5px !important;}
+.stage-select-box .vs__selected-options {display:flex; margin-top:0px !important; align-items:center; flex-wrap:nowrap;}
+.stage-select-box .vs__selected {line-height:13px !important;}
+.stage-select-box .vs__actions {margin-top: 0px !important;}
+.stage-select-box .vs__dropdown-menu {min-width:120px !important;  padding:10px; border-radius:10px;}
+.stage-select-box .vs__dropdown-menu li {padding:7px; border-radius:4px;}
+.stage-select-box .vs__dropdown-menu li:hover {background:#F97316;}
+.stage-select-box .vs__dropdown-option--highlight {background:#F97316;}
+.stage-select-box .vs__clear {display:none;}
+.stage-select-box .vs__open-indicator {fill:#999;}
+
 //
-.tab-menu-swiper + div{
-   min-height: 500px;
+.tab-menu-swiper + div {
+    min-height: 500px;
 }
 
 //loading spinner
-.v-spinner{
+.v-spinner {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -162,6 +174,7 @@ export default class App extends Vue {
     border-radius: 20px !important;
     max-height: 500px !important;
 }
+
 .post-modal {
     height: 418px !important;
     border-radius: 10px !important;
@@ -175,12 +188,12 @@ export default class App extends Vue {
 //tiptap
 
 .tapl-content {
-    p{
+    p {
         margin-top: 0.75em;
         min-height: 20px;
     }
 
-    h1{
+    h1 {
         display: block !important;
         font-size: 2em !important;
         margin-block-start: 0.67em !important;
@@ -189,6 +202,7 @@ export default class App extends Vue {
         margin-inline-end: 0px !important;
         font-weight: bold !important;
     }
+
     .audio-wrapper {
         margin: 20px 20px 0 20px;
         display: flex;
@@ -196,20 +210,24 @@ export default class App extends Vue {
         border-radius: 5px;
         background: #f5f5f5;
         flex-direction: column;
-        audio{
+
+        audio {
             width: 100%;
         }
-        p{
+
+        p {
 
             width: 100%;
             height: 30px;
             padding-left: 20px;
         }
+
         &.ProseMirror-selectednode {
             outline: 3px solid #F97316;
         }
 
     }
+
     .iframe-wrapper {
         position: relative;
         overflow: hidden;
@@ -228,6 +246,7 @@ export default class App extends Vue {
             height: 100% !important;
         }
     }
+
     pre {
         overflow: auto;
         background: #0D0D0D !important;
@@ -245,6 +264,7 @@ export default class App extends Vue {
         background: none !important;
         font-size: .8rem !important;
     }
+
     ul {
         padding: 0 1.5rem;
         list-style-type: disc;
@@ -299,14 +319,17 @@ export default class App extends Vue {
         border-left: 2px solid rgba(#0D0D0D, 0.1);
     }
 }
+
 .editor-container.blog {
     .ProseMirror {
         > * + * {
             margin-top: 0.75em;
         }
+
         height: 75vh;
     }
-    h1{
+
+    h1 {
         display: block;
         font-size: 2em;
         margin-block-start: 0.67em;
@@ -400,11 +423,11 @@ export default class App extends Vue {
             height: auto;
 
 
-                &.ProseMirror-selectednode {
-                    margin-left: 3px;
-                    margin-top: 3px;
-                    outline: 3px solid #F97316;
-                }
+            &.ProseMirror-selectednode {
+                margin-left: 3px;
+                margin-top: 3px;
+                outline: 3px solid #F97316;
+            }
         }
 
         hr {
@@ -439,6 +462,7 @@ export default class App extends Vue {
             height: 100% !important;
         }
     }
+
     .audio-wrapper {
         margin: 20px 20px 0 20px;
         display: flex;
@@ -446,14 +470,17 @@ export default class App extends Vue {
         border-radius: 5px;
         background: #f5f5f5;
         flex-direction: column;
-        audio{
+
+        audio {
             width: 100%;
         }
-        p{
+
+        p {
             width: 100%;
             height: 30px;
             padding-left: 20px;
         }
+
         &.ProseMirror-selectednode {
             outline: 3px solid #F97316;
         }

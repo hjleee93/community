@@ -2,11 +2,11 @@
     <div class="content-studio">
         <!-- 상단배너 -->
         <div class="studio-banner bg02">
-            <h2>게임 단계 선택</h2>
-            <p>게임이 현재 진행중인 개발 단계를 선택하세요. 개발 도중 언제든지 개발 단계를 변경할 수 있습니다.</p>
+            <h2>{{ $t('uploadGame.selectStage.text') }}</h2>
+            <p>{{ $t('uploadGame.selectStage.info') }}
+                </p>
         </div>
         <!-- 상단배너 끝 -->
-
 
      <ProjectUpload> </ProjectUpload>
 

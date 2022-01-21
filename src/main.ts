@@ -31,6 +31,7 @@ import VModal from 'vue-js-modal'
 import 'swiper/css/swiper.css'
 import 'vue-select/dist/vue-select.css';
 import 'v-dropdown-menu/dist/v-dropdown-menu.css';
+import axios from "axios";
 
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
@@ -52,6 +53,23 @@ Component.registerHooks([
 
 
 Vue.config.productionTip = false;
+
+
+router.beforeEach((to, from, next) => {
+
+    if (from.name !== 'redirect') {
+        store.commit('fromRouterName', from.name);
+    }
+    let lang = to.params.locale;
+
+    console.log('lang', lang)
+
+    if(!lang) {
+        lang = 'ko'
+    }
+    i18n.locale = lang;
+    next();
+    })
 
 new Vue({
     router,

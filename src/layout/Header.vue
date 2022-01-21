@@ -6,18 +6,20 @@
                 <div class="header-logo-menu">
                     <p>
                         <i class="uil uil-bars" v-on:click="headerSideOpenMobile"></i>
-                        <router-link to="/">
+                        <router-link :to="`/${$i18n.locale}`">
                             <img src="../assets/images/zempie-logo-black.png" width="120"/>
                         </router-link>
                     </p>
                     <ul class="menu">
                         <li>
-                            <router-link to="/communityList" :class="$route.name === 'CommunityList' ? 'active' : ''">
+                            <router-link :to="`/${$i18n.locale}/communityList`"
+                                         :class="$route.name === 'CommunityList' ? 'active' : ''">
                                 COMMUNITY
                             </router-link>
                         </li>
                         <li>
-                            <router-link to="/gameList" :class="$route.name === 'GameList' ? 'active' : ''">GAME
+                            <router-link :to="`/${$i18n.locale}/gameList`"
+                                         :class="$route.name === 'GameList' ? 'active' : ''">GAME
                             </router-link>
                         </li>
                     </ul>
@@ -33,7 +35,7 @@
                             <input type="text"
                                    name=""
                                    title="keywords"
-                                   placeholder="검색어를 입력하세요."
+                                   :placeholder="$t('needSearchInput')"
                                    v-model="searchInput"
                                    @keyup.enter="moveSearchPage"
                                    v-debounce:150ms="searchType"/>
@@ -41,9 +43,9 @@
                     </div>
                 </div>
                 <div class="header-language">
-                    <v-select class="hl-select-box" :options="options" placeholder="한국어"
-                              :reduce="lang => lang.code"
-                              label="lang"
+                    <v-select class="hl-select-box" :options="locales"  :placeholder="$t('korean')"
+                              :reduce="name => name.code"
+                              label="name"
                               @input="setSelectedLang"
                               v-model="selectedLang">
                         <template #open-indicator="{ attributes }">
@@ -91,12 +93,16 @@
                             <div class="input-search-line-mobile" @click="isOpenSearch = !isOpenSearch">
                                 <p><i class="uil uil-search"></i>
                                 <p>
-                                <div><input type="text" name="" title="keywords" placeholder="검색어를 입력하세요."/></div>
+                                <div><input type="text" name="" title="keywords"
+                                            :placeholder="$t('needSearchInput')"/></div>
                             </div>
                         </div>
                         <div class="hsm-menu">
-                            <router-link to="/communityList"><i class="uil uil-comment"></i> Community</router-link>
-                            <router-link to="/gameList"><i class="uil uil-robot"></i> Game</router-link>
+                            <router-link :to="`/${$i18n.locale}/communityList`"><i class="uil uil-comment"></i>
+                                Community
+                            </router-link>
+                            <router-link :to="`/${$i18n.locale}/gameList`"><i class="uil uil-robot"></i> Game
+                            </router-link>
                         </div>
                         <!--                        <div class="hsm-language">-->
                         <!--                            <a href="#" class="active">Korea</a>-->
@@ -111,7 +117,7 @@
                 <!-- 로그인 했을 때 끝 -->
                 <!-- 로그인 안했을 때 -->
                 <div class="header-login" v-else>
-                    <button class="btn-default" @click="login"><i class="uil uil-user"></i> 로그인</button>
+                    <button class="btn-default" @click="login"><i class="uil uil-user"></i>{{ $t('login') }}</button>
                 </div>
                 <!-- 로그인 안했을 때 끝 -->
 
@@ -145,7 +151,7 @@
                         <div slot="body" class="header-search-list">
                             <div>
                                 <template v-if="userList && userList.length > 0">
-                                    <h2>유저이름</h2>
+                                    <h2>{{ $t('user.name') }}</h2>
                                     <div v-for="user in userList"
                                          :key="user.id"
                                          @click="userPage(user.channel_id)">
@@ -159,7 +165,7 @@
                                     </div>
                                 </template>
                                 <template v-if="gameList && gameList.length > 0">
-                                    <h2>게임이름</h2>
+                                    <h2>{{ $t('game.name') }}</h2>
                                     <div v-for="game in gameList" :key="game.id" @click="playGame(game.pathname)">
                                         <!--                                {{ game}}-->
                                         <dl>
@@ -173,7 +179,7 @@
                                     </div>
                                 </template>
                                 <template v-if="groupList &&groupList.length > 0">
-                                    <h2>커뮤니티이름</h2>
+                                    <h2>{{ $t('community.name') }}</h2>
                                     <div v-for="group in groupList" :key="group.id" @click="groupPage(group.id)">
                                         <dl>
                                             <dt>
@@ -211,29 +217,31 @@
                             </dd>
                         </dl>
                         <div>
-                            <h2>내 프로필</h2>
+                            <h2>{{ $t('myProfile') }}</h2>
                             <div>
-                                <router-link to="/myChannel" @click.native="isOpenSetting = false"><i
-                                    class="uil uil-user"></i>내 채널
+                                <router-link :to="`/${$i18n.locale}/myChannel`" @click.native="isOpenSetting = false"><i
+                                    class="uil uil-user"></i>
+                                    {{ $t('myChannel') }}
                                 </router-link>
                                 <!--                                <a @click="moveGameDashBoard"><i class="uil uil-robot"></i>게임스튜디오</a>-->
-                                <router-link to="/dashBoard"><i class="uil uil-robot"></i>게임스튜디오</router-link>
+                                <router-link :to="`/${$i18n.locale}/dashboard`"><i class="uil uil-robot"></i>{{ $t('gameStudio') }}</router-link>
                                 <router-link :to="`/user/${user.channel_id}/settings`"
                                              @click.native="isOpenSetting = false"><i
-                                    class="uil uil-setting"></i>계정설정
+                                    class="uil uil-setting"></i>
+                                    {{ $t('account.settings') }}
                                 </router-link>
                             </div>
                         </div>
                         <div>
-                            <h2>그룹</h2>
+                            <h2>{{ $t('group') }}</h2>
                             <div>
                                 <router-link @click.native="isOpenSetting = false"
                                              :to="`/user/${user.channel_id}/manageJoinedGroup`"><i
-                                    class="uil uil-users-alt"></i>가입한 그룹
+                                    class="uil uil-users-alt"></i>{{ $t('joined.group') }}
                                 </router-link>
                             </div>
                         </div>
-                        <p @click="logout"><a class="btn-default w100p">로그아웃</a></p>
+                        <p @click="logout"><a class="btn-default w100p">{{ $t('logout') }}</a></p>
                     </div>
                 </dropdown-menu>
                 <!-- 설정 끝 -->
@@ -270,6 +278,8 @@ import {AxiosError, AxiosResponse} from "axios";
 import {LoginState} from "@/store/modules/user";
 import {Watch} from "vue-property-decorator";
 
+import {SUPPORTED_LOCALES} from '@/common/locale';
+
 export default {
     name: "Header",
     components: {UserAvatar},
@@ -288,12 +298,26 @@ export default {
             gameList: [],
             hasResult: false,
 
-            options: [{code: 'ko', lang: '한국어'}, {code: 'en', lang: 'English'}],
-            selectedLang: '한국어',
+            options: [{code: 'ko', lang: '한국어'},
+                {code: 'en', lang: 'English'}],
+            selectedLang: 'ko',
+
+            path: "/",
+            locales: SUPPORTED_LOCALES
+        }
+    },
+    computed: {
+        locale() {
+            return this.$store.getters.locale;
         }
     },
     mounted() {
-        console.log("18n", this.$i18n.locale)
+        if (this.$i18n.locale === 'ko') {
+            this.selectedLang = 'ko'
+        } else {
+            this.selectedLang = 'en'
+        }
+        // console.log("18n", this.$store.getters.locale)
         this.$store.dispatch("loginState")
             .then((res) => {
                 if (res === LoginState.login) {
@@ -331,7 +355,15 @@ export default {
             if (this.groupList.length > 0) {
                 this.isOpenSearch = true
             }
-        }
+        },
+        // $route(to) {
+        //     console.log('to.path', to.path)
+        //     console.log('to', this.locale.base)
+        //     console.log('?', to.path.substring(this.locale.base.length))
+        //     this.path = this.locale.base ? this.locale.base + to.path : to.path;
+        //
+        //     console.log('this.path', this.path)
+        // }
     },
     methods: {
 
@@ -476,10 +508,14 @@ export default {
             document.body.style.overflow = "visible";
         },
         setSelectedLang: function (lang) {
-console.log(lang)
             this.$i18n.locale = lang;
 
+            this.$router.push({
+                params: {locale: lang}
+            })
+
         },
+
 
     }
 

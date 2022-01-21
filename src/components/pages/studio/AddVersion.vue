@@ -6,7 +6,6 @@
                 <dl class="suii-content">
                     <dt>게임 업로드</dt>
                     <dd>
-
                         <p class="upload-file-container">
                             <label for="game-file"><i class="uil uil-file-plus" style="font-size:18px;"></i> &nbsp;
                                 파일업로드</label>
@@ -23,12 +22,12 @@
                         </p>
                         <transition name="component-fade" mode="out-in">
                             <div v-if="fileName">
-                                <p class="file-size">{{ $i18n.t('addVersion.file.size') }} : {{
+                                <p class="file-size">{{ $t('addVersion.file.size') }} : {{
                                         totalSize < 1
                                             ? `${totalSize * 1000} KB`
                                             : `${totalSize} MB`
                                     }}</p>
-                                <p class="file-name">{{ $i18n.t('addVersion.file.name') }} : {{ fileName }}</p>
+                                <p class="file-name">{{ $t('addVersion.file.name') }} : {{ fileName }}</p>
                             </div>
                         </transition>
                         <h2>
@@ -55,6 +54,7 @@
                             <dt>게임 자동 배포 선택</dt>
                             <dd>
                                 <ul>
+                                    <li>
                                     <li>
                                         <label class="switch-button">
                                             <input type="checkbox" name="" v-model="autoDeploy"/>
@@ -88,7 +88,7 @@
         </div>
 
         <ul class="sui-btn">
-            <li><a @click="upload" class="btn-default w150">업로드<i class="uil uil-angle-right-b"></i></a></li>
+            <li><a @click="upload" class="btn-default w150">업로드</a></li>
         </ul>
 
 
@@ -124,22 +124,22 @@ export default class AddVersion extends Vue {
     isLoadingFile: boolean = false;
     autoDeploy: boolean = true;
 
-    version: string = '0.0.1';
+    version: string = '1.0.1';
     isUpdate : boolean = false;
     description : string = '';
 
-    beforeRouteEnter(to, from, next){
-
-        if(eGameStage.Dev === (from.params.id && store.getters.projects[from.params.id].stage)){
-            alert('개발 단계를 얼리억세스 이상으로 설정하여, 게임 파일을 업로드해주세요')
-        }else if(!from.params.id){
-            next('/projectList')
-        }
-        else{
-            next();
-        }
-
-    }
+    // beforeRouteEnter(to, from, next){
+    //
+    //     if(eGameStage.Dev === (from.params.id && store.getters.projects[from.params.id].stage)){
+    //         alert('개발 단계를 얼리억세스 이상으로 설정하여, 게임 파일을 업로드해주세요')
+    //     }else if(!from.params.id){
+    //         next('/projectList')
+    //     }
+    //     else{
+    //         next();
+    //     }
+    //
+    // }
 
 
     async mounted(){
@@ -286,6 +286,9 @@ export default class AddVersion extends Vue {
             return;
         }
 
+        if (this.$store.getters.gameStage === eGameStage.Dev) {
+            this.autoDeploy = false;
+        }
 
         const version = await this.$api.createVersion(this.projectId, this.version, this.uploadGameFiles, this.startFile,
             this.autoDeploy, this.totalSize, this.description, this.$store.getters.gameStage);
@@ -299,10 +302,13 @@ export default class AddVersion extends Vue {
             // });
         }
         else {
+
             const project = this.$store.getters.project( this.projectId );
             project.update_version_id = version.id;
             project.projectVersions.push(version);
-            project.versions[ version.id ] = version;
+
+            console.log(project)
+            project.versions ? project.versions[ version.id ] = version :   this.$store.commit('versions', project.projectVersions);;
 
             // Notify.create({
             //     message : this.$t('projectAddVersion.success.uploadFile').toString(),

@@ -1,51 +1,51 @@
 <template>
     <ul class="studio-game-step">
-        <li @click="selectStage(uploadStage.Dev)">
+        <li @click="selectStage(uploadStage.Dev)" :class="$store.getters.gameStage === uploadStage.Dev ? 'active' :''">
             <p>
                 <!--                <input type="radio" name="stage" id="uoload1" /> <label for="uoload1"><i class="uil uil-check"></i></label>-->
             </p>
             <dl>
-                <dt><img src="img/studio_icon01.png" alt="" title=""/></dt>
+                <dt><img src="/img/studio_icon01.png" alt="" title=""/></dt>
                 <dd>
-                    <h3>{{ $i18n.t('devLog') }}</h3>
-                    <div>{{ $i18n.t('devLog.info') }}
+                    <h3>{{ $t('devLog') }}</h3>
+                    <div>{{ $t('devLog.info') }}
                         </div>
                 </dd>
             </dl>
         </li>
-        <li @click="selectStage(uploadStage.Early)">
+        <li @click="selectStage(uploadStage.Early)" :class="$store.getters.gameStage === uploadStage.Early ? 'active' :''">
             <p>
                 <!--                <input type="radio" name="stage" id="uoload2" /> <label for="uoload2"><i class="uil uil-check"></i></label>-->
             </p>
             <dl>
-                <dt><img src="../../../assets/images/studio_icon02.png" alt="" title=""/></dt>
+                <dt><img src="/img/studio_icon02.png" alt="" title=""/></dt>
                 <dd>
-                    <h3>{{ $i18n.t('earlyAccess') }}</h3>
-                    <div>{{ $i18n.t('earlyAccess.info') }}</div>
+                    <h3>{{ $t('earlyAccess') }}</h3>
+                    <div>{{ $t('earlyAccess.info') }}</div>
                 </dd>
             </dl>
         </li>
-        <li @click="selectStage(uploadStage.Complete)">
+        <li @click="selectStage(uploadStage.Complete)" :class="$store.getters.gameStage === uploadStage.Complete ? 'active' :''">
             <p>
                 <!--                <input type="radio" name="stage" id="uoload3"/> <label for="uoload3"><i class="uil uil-check"></i></label>-->
             </p>
             <dl>
-                <dt><img src="../../../assets/images/studio_icon03.png" alt="" title=""/></dt>
+                <dt><img src="/img/studio_icon03.png" alt="" title=""/></dt>
                 <dd>
-                    <h3>{{ $i18n.t('complete') }}</h3>
-                    <div>{{ $i18n.t('complete.info') }}</div>
+                    <h3>{{ $t('complete') }}</h3>
+                    <div>{{ $t('complete.info') }}</div>
                 </dd>
             </dl>
         </li>
-        <li @click="selectStage(uploadStage.Monetization)">
+        <li @click="selectStage(uploadStage.Monetization)" :class="$store.getters.gameStage === uploadStage.Monetization ? 'active' :''">
             <p>
                 <!--                <input type="radio" name="stage" id="uoload4"/> <label for="uoload4"><i class="uil uil-check"></i></label>-->
             </p>
             <dl>
-                <dt><img src="../../../assets/images/studio_icon04.png" alt="" title=""/></dt>
+                <dt><img src="/img/studio_icon04.png" alt="" title=""/></dt>
                 <dd>
-                    <h3>{{ $i18n.t('monetization') }}</h3>
-                    <div>{{ $i18n.t('monetization.info') }}</div>
+                    <h3>{{ $t('monetization') }}</h3>
+                    <div>{{ $t('monetization.info') }}</div>
                 </dd>
             </dl>
         </li>
@@ -58,18 +58,18 @@
                :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>{{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('deleteGameFile')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2>{{ $i18n.t('selectStage.alert') }}<br/> {{ $i18n.t('selectStage.alert.confirm') }}
+                    <h2>{{ $t('selectStage.alert') }}<br/> {{ $t('selectStage.alert.confirm') }}
                         </h2>
 
                     <div>
-                        <button class="btn-default w48p" @click="deleteGameFile()">{{ $i18n.t('yes') }}네</button>
-                        <button class="btn-gray w48p" @click="$modal.hide('deleteGameFile')">{{ $i18n.t('no') }}아니오</button>
+                        <button class="btn-default w48p" @click="deleteGameFile()">{{ $t('yes') }}</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('deleteGameFile')">{{ $t('no') }}</button>
                     </div>
                 </div>
             </div>
@@ -92,6 +92,7 @@ export default class SelectStage extends Vue {
     private uploadStage = eGameStage;
 
     mounted() {
+        console.log('mount')
         this.$store.commit("gameStage", null);
     }
 
@@ -158,5 +159,8 @@ input[type="radio"] + label {
     box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.2);
     cursor: pointer;
 
+}
+.studio-game-step .active{
+    border: 2px solid #FF6E17;
 }
 </style>

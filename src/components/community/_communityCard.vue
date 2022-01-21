@@ -64,10 +64,10 @@ export default class CommunityCard extends Vue {
 //    퍼블리싱 이미지 처리
     imgClass() {
         let result = '';
-        if (this.$route.meta.title === 'ManageJoinedGroup') {
+        if (this.$route.meta?.title === 'ManageJoinedGroup') {
             result = 'cmg-img'
         }
-        else if (this.$route.meta.title === 'CommunityList') {
+        else if (this.$route.meta?.title === 'CommunityList') {
             result = 'ct-img'
         }
         return result;
@@ -75,10 +75,10 @@ export default class CommunityCard extends Vue {
 
     infoClass() {
         let result = '';
-        if (this.$route.meta.title === 'ManageJoinedGroup') {
+        if (this.$route.meta?.title === 'ManageJoinedGroup') {
             result = 'cmg-info'
         }
-        else if (this.$route.meta.title === 'CommunityList') {
+        else if (this.$route.meta?.title === 'CommunityList') {
             result = 'ct-info'
         }
         return result;

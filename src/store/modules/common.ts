@@ -1,11 +1,14 @@
-
 export default {
     state: {
         LoadingStatus: false,
+        locale: {}
     },
     getters: {
         LoadingStatus(state:any){
             return state.LoadingStatus;
+        },
+        locale(state:any){
+            return state.locale;
         }
     },
 
@@ -16,9 +19,15 @@ export default {
         endLoading(state:any){
             state.LoadingStatus = false;
         },
-
+        setLocale(state:any, payload:any) {
+            state.locale = payload
+        }
 
     },
-    actions: {}
+    actions: {
+        setLocale({ commit }, payload) {
+            commit('setLocale', payload)
+        }
+    }
 }
 

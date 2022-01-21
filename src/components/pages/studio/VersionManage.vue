@@ -9,17 +9,17 @@
                 <!--                </div>-->
             </dt>
             <dd>
-                <router-link :to="`/addVersion/${this.$route.params.id}`" class="btn-default"><i
-                    class="uil uil-plus"></i> ADD VERSION
+                <router-link :to="`/${$i18n.locale}/addVersion/${this.$route.params.id}`" class="btn-default"><i
+                    class="uil uil-plus"></i> {{ $t('versionManage.addVersion') }}
                 </router-link>
             </dd>
         </dl>
         <ul class="gv-title">
             <li></li>
-            <li>번호</li>
-            <li>Detailed version</li>
-            <li>State</li>
-            <li>Creation date and time</li>
+            <li>{{ $t('versionManage.index') }}</li>
+            <li>{{ $t('versionManage.detailedVersion') }}</li>
+            <li>{{ $t('versionManage.state') }}</li>
+            <li>{{ $t('versionManage.creationDate') }}</li>
             <li></li>
         </ul>
 
@@ -55,27 +55,67 @@
         <!--</div>-->
         <!-- 페이지네이션 끝 -->
         <modal :clickToClose="false"
-               class="modal-area-type" name="deleteVer" width="90%" height="auto" :maxWidth="380"
+               class="modal-area-type" name="deleteOneVersion" width="90%" height="auto" :maxWidth="380"
                :adaptive="true"
                :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>{{ $t('information') }}</dt>
                     <dd>
-                        <button @click="$modal.hide('deleteVer')"><i class="uil uil-times"></i></button>
+                        <button @click="$modal.hide('deleteOneVersion')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2>해당 버전을 삭제하시겠습니까?<br/>삭제한 버전은 복구되지않습니다.</h2>
+                    <h2>{{ $t('versionManage.delete.modal') }}<br/>{{ $t('versionManage.delete.modal.confirm') }}</h2>
                     <div>
-                        <button class="btn-default w48p" @click="deleteVersion()">네</button>
-                        <button class="btn-gray w48p" @click="$modal.hide('deleteVer')">아니오</button>
+                        <button class="btn-default w48p" @click="deleteOneVersion()">{{ $t('yes') }}</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('deleteOneVersion')">{{ $t('no') }}</button>
                     </div>
                 </div>
             </div>
         </modal>
 
-        <!--<AlertModal :msg="'alert'" :modalName="'alertModal'"/>-->
+        <modal :clickToClose="false"
+               class="modal-area-type" name="deleteLastVersion" width="90%" height="auto" :maxWidth="380"
+               :adaptive="true"
+               :scrollable="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>{{ $t('information') }}</dt>
+                    <dd>
+                        <button @click="$modal.hide('deleteLastVersion')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2>{{ $t('versionManage.delete.all.modal') }} <br/>{{ $t('versionManage.delete.all.modal.confirm') }}</h2>
+                    <div>
+                        <button class="btn-default w48p" @click="deleteLastVersion()">{{ $t('yes') }}</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('deleteLastVersion')">{{ $t('no') }}</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
+
+
+        <modal :clickToClose="false"
+               class="modal-area-type" name="deleteAlert" width="90%" height="auto" :maxWidth="380"
+               :adaptive="true"
+               :scrollable="true">
+            <div class="modal-alert">
+                <dl class="ma-header">
+                    <dt>{{ $t('information') }}</dt>
+                    <dd>
+                        <button @click="$modal.hide('deleteAlert')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="ma-content">
+                    <h2>{{ $t('versionManage.delete.deployVersion.') }} </h2>
+                    <div>
+                        <button class="btn-default w100p" @click="$modal.hide('deleteAlert')">{{ $t('confirm') }}</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
     </div>
 </template>
 <script lang="ts">
@@ -103,18 +143,17 @@ export default class VersionManage extends Vue {
     version:any = '';
 
 
-
-    beforeRouteEnter(to, from, next){
-
-        if(eGameStage.Dev === (from.params.id && store.getters.projects[from.params.id].stage)){
-            alert('관리할 게임 버전이 없습니다. 개발 단계를 얼리억세스 이상으로 설정하여, 게임 파일을 업로드해주세요.')
-        }else if(!from.params.id){
-            next('/projectList')
-        }
-        else{
-            next();
-        }
-    }
+    // beforeRouteEnter(to, from, next){
+    //
+    //     if(eGameStage.Dev === (from.params.id && store.getters.projects[from.params.id].stage)){
+    //         alert('관리할 게임 버전이 없습니다. 개발 단계를 얼리억세스 이상으로 설정하여, 게임 파일을 업로드해주세요.')
+    //     }else if(!from.params.id){
+    //         next('/projectList')
+    //     }
+    //     else{
+    //         next();
+    //     }
+    // }
 
     async mounted() {
         this.fecth();
@@ -134,59 +173,59 @@ export default class VersionManage extends Vue {
     // }
 
     openDeleteModal(version:any){
-        this.$modal.show('deleteVer')
         this.version = version;
+
+        if(
+            // this.version.state === 'deploy' &&
+            this.versions.length === 1){
+            this.$modal.show('deleteLastVersion')
+        }else{
+            this.$modal.show('deleteOneVersion')
+        }
     }
 
-    deleteVersion() {
-        console.log('versions', this.versions.length)
+    deleteVersion(){
+        this.$api.deleteVersion(this.version.id)
+            .then((res:any)=>{
+                this.toast.successToast(`${this.$t('versionManage.deleted.version')}` );//"해당 게임이 삭제되었습니다."
+                this.fecth();
+            })
+            .catch((err:any)=>{
+            })
+            .finally(()=>{
+                this.$modal.hide('deleteVer')
+                this.version = '';
+            })
+    }
 
-        // this.$modal.show('deleteVer')
-        //
-        // this.$api.deleteVersion(this.version.id)
-        // .then((res:any)=>{
-        //     this.toast.successToast("해당 게임이 삭제되었습니다.");
-        //     this.fecth();
-        // })
-        // .catch((err:any)=>{
-        //
-        // })
-        // .finally(()=>{
-        //     this.$modal.hide('deleteVer')
-        //     this.version = '';
-        // })
+    deleteLastVersion(){
+
+        if(
+            this.version.state === 'deploy'){
+            this.$modal.hide('deleteLastVersion');
+            this.$modal.show('deleteAlert');
+        }
+        else{
+            this.$modal.hide('deleteLastVersion');
+            this.deleteVersion();
+        }
+    }
+
+    deleteOneVersion() {
+
+        if(
+            this.version.state === 'deploy'){
+            this.$modal.hide('deleteOneVersion');
+            this.$modal.show('deleteAlert');
+        }
+        else{
+            this.deleteVersion();
+            this.$modal.hide('deleteOneVersion');
+        }
+
     }
 
 
-
-    // openDeleteModal(verObj: any ){
-    //     const { version, id } = verObj;
-    //
-    //     this.$modal.show({
-    //         template: `<div class="modal-alert">
-    //             <dl class="ma-header">
-    //                 <dt>안내</dt>
-    //                 <dd>
-    //                     <button @click="$modal.hide('deleteVer')"><i class="uil uil-times"></i></button>
-    //                 </dd>
-    //             </dl>
-    //             <div class="ma-content">
-    //                 <h2> 버전 ${version}을 삭제하시겠습니까? <br/>삭제하신 버전은 복구되지않습니다.  </h2>
-    //                <div>
-    //                     <button class="btn-default" style="width:48%" @click="${this.deleteVersion()}">네</button>
-    //                     <button class="btn-default" style="width:48%" @click="$modal.hide('deleteVer')">아니오</button>
-    //                 </div>
-    //             </div>
-    //         </div>`,
-    //     },  {},{
-    //         name: "deleteVer",
-    //         width: 380,
-    //         maxWidth: 380,
-    //         height: "auto",
-    //         class: "modal-area-type",
-    //         scrollable: true
-    //     })
-    // }
 
 
 }

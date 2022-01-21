@@ -495,7 +495,8 @@ export default class Api {
         return response.result || response;
     }
 
-    async updateProject(options: { id: number, name?: string, description?: string, hashtags?: string, deploy_version_id?: string, stage?: string }, file?: File, file2?: File) {
+    async updateProject(options: { id: number, name?: string, description?: string, hashtags?: string, deploy_version_id?: string, stage?: string },
+                        file?: File, file2?: File | string) {
         //파일 업로드
         const formData = new FormData();
         if (options.id) { formData.append('id', options.id.toString()); }

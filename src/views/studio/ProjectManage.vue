@@ -4,7 +4,7 @@
         <!-- 상단배너 -->
         <div class="studio-banner bg02">
             <h2>{{ $route.meta.title }}</h2>
-            <p>게임이 현재 진행중인 개발 단계를 선택하세요. 개발 도중 언제든지 개발 단계를 변경할 수 있습니다.</p>
+            <p>{{ $route.meta.desc }}</p>
         </div>
         <!-- 상단배너 끝 -->
 
@@ -17,23 +17,27 @@
                 <swiper-slide>
                     <router-link
 
-                        :to="`/project/${$route.params.id}`"
-                                 :class="$route.name === 'ProjectUpdate'? 'active' :''">게임정보수정
+                        :to="`/${$i18n.locale}/project/${$route.params.id}`"
+                                 :class="$route.name === 'ProjectUpdate'? 'active' :''">
+                        {{ $t('projectManager.edit.gameInfo') }}
                     </router-link>
                 </swiper-slide>
                 <swiper-slide>
-                    <router-link :to="`/versionManage/${$route.params.id}`"
-                                 :class="$route.name === 'VersionManage'? 'active' :''">버전관리
+                    <router-link :to="`/${$i18n.locale}/versionManage/${$route.params.id}`"
+                                 :class="$route.name === 'VersionManage'? 'active' :''">
+                        {{ $t('projectManager.manage.version') }}
                     </router-link>
                 </swiper-slide>
                 <swiper-slide>
-                    <router-link :to="`/addVersion/${$route.params.id}`"
-                                 :class="$route.name === 'AddVersion'? 'active' :''">버전추가
+                    <router-link :to="`/${$i18n.locale}/addVersion/${$route.params.id}`"
+                                 :class="$route.name === 'AddVersion'? 'active' :''">
+                        {{ $t('projectManager.add.version') }}
                     </router-link>
                 </swiper-slide>
                 <swiper-slide>
-                    <router-link :to="`/deployManage/${$route.params.id}`"
-                                 :class="$route.name === 'DeployManage'? 'active' :''">배포관리
+                    <router-link :to="`/${$i18n.locale}/deployManage/${$route.params.id}`"
+                                 :class="$route.name === 'DeployManage'? 'active' :''">
+                        {{ $t('projectManager.manage.deploy') }}
                     </router-link>
                 </swiper-slide>
             </swiper>

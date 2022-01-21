@@ -378,8 +378,6 @@ export default class Feed extends Vue {
         this.commentInit();
         this.commentFetch()
     }
-
-
 }
 </script>
 

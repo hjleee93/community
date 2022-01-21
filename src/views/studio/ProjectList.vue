@@ -1,17 +1,13 @@
 <template>
     <div class="content-studio">
-
-
         <!-- 상단배너 -->
         <div class="studio-banner bg03">
-            <h2>모든게임</h2>
-            <p>게임이 현재 진행중인 개발 단계를 선택하세요. 개발 도중 언제든지 개발 단계를 변경할 수 있습니다.</p>
+            <h2>{{ $t('projectList.banner.text') }}</h2>
+            <p>{{ $t('projectList.banner.info') }}</p>
         </div>
         <!-- 상단배너 끝 -->
 
-
         <!-- 모든게임 끝 -->
-
         <div class="studio-all-game">
             <dl>
                 <dt>
@@ -21,32 +17,32 @@
                         <div>
                             <input type="text" name=""
                                    title="keywords"
-                                   placeholder="검색어를 입력하세요."
+                                   :placeholder="$t('needSearchInput')"
                                    v-debounce:200ms="searchGame"
                                    v-model="inputKeyword"/>
                         </div>
                     </div>
                 </dt>
                 <dd>
-                    <router-link to="/uploadGame" class="btn-default"><i class="uil uil-plus"></i> 게임 업로드</router-link>
+                    <router-link :to="`/${$i18n.locale}/uploadGame`" class="btn-default"><i class="uil uil-plus"></i>{{ $t('gameUpload') }}</router-link>
                 </dd>
             </dl>
 
             <ul class="ag-title">
-                <li>썸네일</li>
-                <li>게임이름
+                <li>{{ $t('game.thumbnail') }} </li>
+                <li>{{ $t('game.title') }}
                     <Sorting :sort="'name'" :array="orginList" @sortedArray="sortedArray"/>
                 </li>
-                <li>업로드 날짜
+                <li>{{ $t('game.uploadDate') }}
                     <Sorting :sort="'created_at'" :array="orginList" @sortedArray="sortedArray"/>
                 </li>
-                <li>상태
+                <li>{{ $t('game.status') }}
                     <Sorting :sort="'stage'" :array="orginList" @sortedArray="sortedArray"/>
                 </li>
-                <li>플레이수
+                <li>{{ $t('game.playCnt') }}
                     <Sorting :sort="'game.count_start'" :array="orginList" @sortedArray="sortedArray"/>
                 </li>
-                <li>좋아요수
+                <li>{{ $t('game.likeCnt') }}
                     <Sorting :sort="'game.count_heart'" :array="orginList" @sortedArray="sortedArray"/>
                 </li>
             </ul>
@@ -55,24 +51,24 @@
                 <ul v-for="project in pagingData()" @click="editProject(project.id)" :key="project.id">
 
                     <li>
-                        <span>&ndash; 썸네일: </span>
+                        <span>&ndash; {{ $t('game.thumbnail') }}: </span>
                         <p :style="`background: url(${project.picture_web || project.picture || 'img/default.png' }?t=${Date.now()}) center center / cover no-repeat; background-size: cover;`"></p>
                     </li>
                     <li>
-                        <span>&ndash; 게임이름: </span> &nbsp;&nbsp;{{ project.name }}
+                        <span>&ndash; {{ $t('game.title') }}: </span> &nbsp;&nbsp;{{ project.name }}
                     </li>
 
                     <li>
-                        <span>&ndash; 업로드 날짜: </span> &nbsp;&nbsp;{{ moment(project.created_at).format('yyyy-MM-DD') }}
+                        <span>&ndash; {{ $t('game.uploadDate') }}: </span> &nbsp;&nbsp;{{ moment(project.created_at).format('yyyy-MM-DD') }}
                     </li>
                     <li>
-                        <span>&ndash; 상태: </span> &nbsp;&nbsp;{{ gameStage[project.stage] }}
+                        <span>&ndash; {{ $t('game.status') }}: </span> &nbsp;&nbsp;{{ gameStage[project.stage] }}
                     </li>
                     <li>
-                        <span>&ndash; 플레이수: </span> &nbsp;&nbsp;{{ project.game.count_start }}
+                        <span>&ndash; {{ $t('game.playCnt') }}: </span> &nbsp;&nbsp;{{ project.game.count_start }}
                     </li>
                     <li>
-                        <span>&ndash; 좋아요수:</span> &nbsp;&nbsp;{{ project.game.count_heart }}
+                        <span>&ndash; {{ $t('game.likeCnt') }}:</span> &nbsp;&nbsp;{{ project.game.count_heart }}
                     </li>
 
                 </ul>
@@ -139,7 +135,7 @@ export default class ProjectList extends Vue {
     fetch() {
         this.$api.projectList()
             .then((res: any) => {
-                this.projectList = res;
+                this.projectList = _.sortBy(res, res.created_at).reverse();
                 this.orginList = res;
             })
     }
@@ -165,7 +161,7 @@ export default class ProjectList extends Vue {
     }
 
     editProject(id: string) {
-        this.$router.push(`/project/${id}`)
+        this.$router.push(`/${this.$i18n.locale}/project/${id}`)
     }
 
     sortedArray(array: any) {

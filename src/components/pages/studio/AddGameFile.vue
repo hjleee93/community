@@ -41,19 +41,21 @@
                 </dd>
             </dl>
             <div class="suii-open" @click="isAdvancedOpen = !isAdvancedOpen">
-                <span>고급설정</span> &nbsp;<i class="uil uil-sliders-v-alt"></i>
+                <span>{{ $t('advanced.setting') }}</span> &nbsp;<i class="uil uil-sliders-v-alt"></i>
             </div>
             <transition name="component-fade" mode="out-in">
                 <div v-if="isAdvancedOpen">
                     <dl class="suii-content">
-                        <dt>게임정보</dt>
+                        <dt>게임 시작 파일 선택 </dt>
                         <dd>
-                            <select name="" title="" class="w100p">
+                            <select name="" title="" class="w100p" >
+                                <option value='' selected disabled v-if="startFileOptions.length === 0">시작 파일을 선택해주세요.</option>
                                 <option v-for="file in startFileOptions" :value="file">{{ file }}</option>
                             </select>
                         </dd>
                     </dl>
-                    <dl class="suii-content">
+
+                    <dl class="suii-content" v-if="($store.getters.gameStage !== eGameStage.Dev ) && isEditProject">
                         <dt>게임 자동 배포 선택</dt>
                         <dd>
                             <ul>
@@ -71,6 +73,7 @@
                             </h2>
                         </dd>
                     </dl>
+
                     <div class="suii-close">
                         <button class="btn-line" @click="isAdvancedOpen = !isAdvancedOpen">닫기 &nbsp;&nbsp;<i
                             class="uil uil-angle-up"></i></button>
@@ -86,8 +89,8 @@
             </li>
             <li>
                 <a v-if="isEditProject" @click="updateProject" class="btn-default w150">업데이트
-                    <i class="uil uil-angle-right-b"></i></a>
-                <a v-else @click="upload" class="btn-default w150">업로드<i class="uil uil-angle-right-b"></i></a>
+                </a>
+                <a v-else @click="upload" class="btn-default w150">업로드</a>
             </li>
         </ul>
     </div>
@@ -106,6 +109,7 @@ import Version from "@/script/version";
 })
 export default class AddGameFile extends Vue {
     @Prop() isEditProject !: any;
+    eGameStage = eGameStage;
     projectId = this.$route.params.id;
 
     toast = new Toast();
@@ -126,7 +130,7 @@ export default class AddGameFile extends Vue {
     isFileEmpty: boolean = false;
     isLoadingUpload: boolean = false;
 
-    mounted(){
+    mounted() {
 
         console.log('isEditProject', this.isEditProject)
     }
@@ -209,21 +213,23 @@ export default class AddGameFile extends Vue {
     }
 
     upload() {
+        const {gameInfoObj, uploadGameFiles, gameStage} = this.$store.getters;
+
         const gameFileInfo = {
-            autoDeploy: this.autoDeploy,
+            autoDeploy: gameStage === eGameStage.Dev ? false :this.autoDeploy ,
             startFile: this.startFile,
             size: this.totalSize,
             version_description: this.versionDescription,
         };
 
-        const { gameInfoObj, uploadGameFiles, gameStage } = this.$store.getters;
-
         console.log('gameFileInfo', gameFileInfo)
 
-        if (gameStage !== eGameStage.Dev  && uploadGameFiles.length === 0) {
+
+        if (gameStage !== eGameStage.Dev && uploadGameFiles.length === 0) {
             this.isFileEmpty = true;
         }
         else {
+
             this.$api.createProject(
                 gameInfoObj,
                 gameFileInfo,
@@ -243,49 +249,52 @@ export default class AddGameFile extends Vue {
 
     }
 
-  async updateProject() {
+    async updateProject() {
 
         let isError = false;
 
-        if( !this.uploadGameFiles.length ) {
+        if (!this.uploadGameFiles.length) {
             isError = true;
             // this.uploadGameFileError = this.$t('projectAddVersion.error.noUploadFile').toString();
         }
 
-        if( !this.startFileOptions.length ) {
+        if (!this.startFileOptions.length) {
             isError = true;
         }
 
-        if( isError ) {
+        if (isError) {
             // this.wait = false;
             return;
         }
 
 
-      const option: any = {
-          id: this.projectId,
-          name: localStorage.getItem('title'),
-          description: localStorage.getItem('description'),
-          hashtags: localStorage.getItem('hashtagsArr'),
-          stage: this.$store.getters.gameStage
-      };
+        const option: any = {
+            id: this.projectId,
+            name: localStorage.getItem('title'),
+            description: localStorage.getItem('description'),
+            hashtags: localStorage.getItem('hashtagsArr'),
+            stage: this.$store.getters.gameStage
+        };
 
+        if (this.$store.getters.gameStage === eGameStage.Dev) {
+            this.autoDeploy = false;
+        }
 
-      this.$api.updateProject(option, this.$store.getters.thumbFile)
-          .then((res) => {
-              // this.toast.successToast("게임이 업로드되었습니다.");
-              // this.$router.push('/projectList')
-          })
-          .catch((err) => {
-              console.log('err', err)
-              return;
-          })
+        this.$api.updateProject(option, this.$store.getters.thumbFile)
+            .then((res) => {
+                // this.toast.successToast("게임이 업로드되었습니다.");
+                // this.$router.push('/projectList')
+            })
+            .catch((err) => {
+                console.log('err', err)
+                return;
+            })
 
 
         const version = await this.$api.createVersion(this.projectId, '1.0.0', this.uploadGameFiles, this.startFile,
-            this.autoDeploy, this.totalSize,'', this.$store.getters.gameStage);
+            this.autoDeploy, this.totalSize, '', this.$store.getters.gameStage);
 
-      await this.$router.replace(`/projectList`);
+        await this.$router.replace(`/projectList`);
     }
 
     prevPage() {
