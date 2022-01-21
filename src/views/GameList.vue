@@ -24,27 +24,7 @@
         <transition name="component-fade" mode="out-in">
             <ul>
                 <transition-group name="list-complete" class="card-game">
-                    <li v-for="game in games" :key="game.pathname">
-                        <div
-                            @click="playGame(game.pathname)"
-                            :style="`background: url( ${game &&( game.url_thumb_webp || game.url_thumb )} ) center center no-repeat; background-size: cover;`"></div>
-                        <dl>
-                            <dt>
-
-                                <UserAvatar :user="game.user" :tag="'p'"></UserAvatar>
-                                <!--                            <P :style="`background: url(${game.user && game.user.picture || 'img/300_300_default_profile.png' }) center center no-repeat; background-size: cover;`"></P>-->
-                            </dt>
-                            <dd>
-                                <h2 @click="playGame(game.pathname)">{{ game && game.title }}</h2>
-                                <p>{{ game.user && game.user.name }}</p>
-                                <ul>
-                                    <!--                            <li><img src="../../assets/images/charge_game_icon.svg" alt=""></li>-->
-                                    <!--                            <li><img src="../../assets/images/hot_game_icon.svg" alt=""></li>-->
-                                    <li><img src="../assets/images/zempie_game_icon.svg" alt=""></li>
-                                </ul>
-                            </dd>
-                        </dl>
-                    </li>
+                    <GameCard v-for="game in games" :key="game.id" :game="game"/>
                 </transition-group>
 
                 <!--            <li class="more-card" v-if="games && games.length>3">-->
@@ -67,7 +47,7 @@ import {Swiper, SwiperSlide} from 'vue-awesome-swiper'
 import Toast from "@/script/message";
 import {scrollDone} from "@/script/scrollManager";
 import UserAvatar from "@/components/user/_userAvatar.vue";
-
+import GameCard from "@/components/game/_gameCard.vue";
 
 @Component({
     components: {
@@ -75,7 +55,8 @@ import UserAvatar from "@/components/user/_userAvatar.vue";
         MemberCard,
         Swiper,
         SwiperSlide,
-        UserAvatar
+        UserAvatar,
+        GameCard
     },
 })
 export default class gameList extends Vue {
@@ -184,11 +165,6 @@ export default class gameList extends Vue {
             this.offset += this.limit;
             this.fetch();
         }
-    }
-
-    playGame(pathname: string) {
-        window.open(
-            this.$store.getters.homeUrl + `play/${pathname}`, "_blank");
     }
 
 

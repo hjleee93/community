@@ -45,13 +45,14 @@ export default class CommentInput extends Vue {
 
     //수정 , 작성
     sendComment() {
-        const whiteSpace = /\s/g;
 
+        const whiteSpace = /\s/g;
+    
         if (!this.user) {
             this.$modal.show('needLogin')
         }
         else {
-            if (!this.content ||  this.content.match(whiteSpace)) {
+            if (!this.content ||  this.content === ' ') {
                 this.$modal.show({
                     template: `<div class="modal-alert">
                 <dl class="ma-header">
@@ -85,8 +86,7 @@ export default class CommentInput extends Vue {
                 }
                 this.$api.updateComment(obj)
                     .then((res: AxiosResponse) => {
-                        this.$emit('sendComment')
-
+                        this.$emit('updateComment')
                     })
                     .catch((err: AxiosError) => {
 
