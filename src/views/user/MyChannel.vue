@@ -186,7 +186,7 @@
                             </dl>
                         </template>
                     </div>
-                    <p v-if="communityList.length>5"><a href="#" class="btn-default-samll w100p">더보기</a></p>
+                    <p v-if="communityList.length>5"><a href="#" class="btn-default-samll w100p">{{ $t('moreView') }}</a></p>
                 </div>
             </dt>
         </dl>

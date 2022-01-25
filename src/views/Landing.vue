@@ -172,8 +172,8 @@
                 <div class="ma-content">
                     <h2>{{ $t('landing.update.info') }} </h2>
                     <!--                    <div>-->
-                    <!--                        <button class="btn-default w48p" @click="leavePost(true)">네</button>-->
-                    <!--                        <button class="btn-gray w48p" @click="gameUpload(false)">아니오</button>-->
+                    <!--                        <button class="btn-default w48p" @click="leavePost(true)">{{ $t('yes') }}</button>-->
+                    <!--                        <button class="btn-gray w48p" @click="gameUpload(false)">{{ $t('no') }}</button>-->
                     <!--                    </div>-->
                 </div>
             </div>

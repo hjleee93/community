@@ -13,7 +13,7 @@
 
                     </dd>
                     <dd v-else>
-                        <h2>탈퇴한 유저가 작성한 포스팅입니다.</h2>
+                        <h2>{{ $t('feed.noUser.post') }}</h2>
                         <p><i class="uis uis-clock" style="color:#c1c1c1;"></i> {{ dateFormat(feed.createdAt) }}</p>
 
                     </dd>
@@ -27,14 +27,15 @@
                         class="uil uil-ellipsis-h font25"></i></a>
                     <div slot="body" class="more-list fixed">
                         <template v-if="user && (user.id === (feed.user && feed.user.id))">
-                            <a @click="openEdit">포스팅 수정</a>
-                            <a @click="deletePost">포스팅 삭제</a>
+                            <a @click="openEdit">{{ $t('feed.edit') }}</a>
+                            <a @click="deletePost">{{ $t('feed.delete') }}</a>
 
                         </template>
                         <template v-else>
-                            <router-link :to="`/channel/${feed.user&&feed.user.channel_id}/timeline`">유저 채널 방문
+                            <router-link :to="`/channel/${feed.user&&feed.user.channel_id}/timeline`">
+                                {{ $t('visit.userChannel') }}
                             </router-link>
-                            <a v-if="user" @click="report">포스팅 신고</a>
+                            <a v-if="user" @click="report">{{ $t('post.report') }}</a>
                         </template>
                     </div>
                 </dropdown-menu>
@@ -48,11 +49,12 @@
         </div>
         
         <div  v-if="isOverflow" class="more-container">
-            <span><hr class="dot-line"/></span><a @click="moreView"> 더보기 </a><span><hr class="dot-line"/></span>
+            <span><hr class="dot-line"/></span><a @click="moreView">
+            {{ $t('moreView') }}  </a><span><hr class="dot-line"/></span>
         </div>
 
         <div  v-if="!isOverflow && isMoreView" class="more-container">
-            <span><hr class="dot-line"/></span><a @click="closeView"> 접기 </a><span><hr class="dot-line"/></span>
+            <span><hr class="dot-line"/></span><a @click="closeView">{{ $t('closeView') }}  </a><span><hr class="dot-line"/></span>
         </div>
         <!-- /더보기 -->
 
@@ -113,7 +115,7 @@
         </ul>
            <transition-group name="fade">
             <div v-if="isOpenedComments" class="tapl-comment" :key="Date.now()">
-                <transition-group name="fade"  @scroll="scrollCheck" tag="ul" >
+                <transition-group name="fade" @scroll="scrollCheck" tag="ul">
                     <li v-for="comment in comments" :key="comment.id">
                         <Comment :comment="comment" :editContent="comment.content" :postId="feed.id" @editDone="editDone"/>
                     </li>
@@ -123,7 +125,8 @@
                     @sendComment="editDone"
                     @updateComment="updateDone"/>
             </div>
-         </transition-group>    
+         </transition-group>
+
     </li>
 
 </template>

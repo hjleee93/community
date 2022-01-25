@@ -4,11 +4,11 @@
             <div class="sui-input">
                 <div class="suii-title">버전 추가</div>
                 <dl class="suii-content">
-                    <dt>게임 업로드</dt>
+                    <dt>{{ $t('gameUpload') }}게임 업로드</dt>
                     <dd>
                         <p class="upload-file-container">
                             <label for="game-file"><i class="uil uil-file-plus" style="font-size:18px;"></i> &nbsp;
-                                파일업로드</label>
+                                {{ $t('fileUpload') }}파일업로드</label>
                             <input
                                 @input="onFileChange"
                                 type="file"
@@ -22,12 +22,12 @@
                         </p>
                         <transition name="component-fade" mode="out-in">
                             <div v-if="fileName">
-                                <p class="file-size">{{ $t('addVersion.file.size') }} : {{
+                                <p class="file-size">{{ $t('file.size') }} : {{
                                         totalSize < 1
                                             ? `${totalSize * 1000} KB`
                                             : `${totalSize} MB`
                                     }}</p>
-                                <p class="file-name">{{ $t('addVersion.file.name') }} : {{ fileName }}</p>
+                                <p class="file-name">{{ $t('file.name') }} : {{ fileName }}</p>
                             </div>
                         </transition>
                         <h2>
@@ -78,7 +78,7 @@
                             </dd>
                         </dl>
                         <div class="suii-close">
-                            <button class="btn-line" @click="isAdvancedOpen = !isAdvancedOpen">닫기 &nbsp;&nbsp;<i
+                            <button class="btn-line" @click="isAdvancedOpen = !isAdvancedOpen">{{ $t('close') }}닫기 &nbsp;&nbsp;<i
                                 class="uil uil-angle-up"></i></button>
                         </div>
                     </div>
@@ -88,7 +88,7 @@
         </div>
 
         <ul class="sui-btn">
-            <li><a @click="upload" class="btn-default w150">업로드</a></li>
+            <li><a @click="upload" class="btn-default w150">{{ $t('upload') }}</a></li>
         </ul>
 
 

@@ -38,7 +38,6 @@ export default class LikeBtn extends Vue {
                 if (!this.clickManager.doubleClickCheck()) {
                     this.$api.unlike(this.feed.id)
                         .then((res: any) => {
-
                             if (res.success) {
                                 this.isLiked = false;
                                 this.likeCnt--;
@@ -59,6 +58,11 @@ export default class LikeBtn extends Vue {
                             if (res.is_liked) {
                                 this.isLiked = true;
                                 this.likeCnt++;
+
+                                this.$gtag.event('like_feed', {
+                                    'feedId': this.feed.id,
+                                });
+
                             }
                         })
                         .catch((err: any) => {

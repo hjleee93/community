@@ -21,7 +21,7 @@
                     </ul>
 
                     <div v-if="totalGameCnt > 5">
-                        <router-link :to="`/channel/${channel_id}/games`" class="btn-default-samll w100p">더보기</router-link>
+                        <router-link :to="`/channel/${channel_id}/games`" class="btn-default-samll w100p">{{ $t('moreView') }}</router-link>
                     </div>
                 </template>
                 <ul v-else class="no-game">

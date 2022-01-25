@@ -31,7 +31,8 @@
     </dt>
     <dd>
 
-      <Timeline :currPage="'game'" :id="game.id" :key="this.$route.query.media"></Timeline>
+      <Timeline :currPage="'game'" :id="game.id" :game="game" :key="this.$route.query.media"
+      ></Timeline>
     </dd>
 
 
@@ -83,13 +84,14 @@ export default class GameTimeline extends Vue {
   }
   gamePath = this.$route.params.gamePath;
   user!: any;
-  game: any = {};
+  game: any =  this.$store.getters.gameInfo;
   imgSrc = '';
   hashtags = [];
 
 
   mounted() {
     this.fetch();
+
   }
 
   fetch() {
@@ -101,11 +103,12 @@ export default class GameTimeline extends Vue {
           this.game = game;
           this.user = game.user
           this.hashtags = (game.hashtags.length > 0) ? game.hashtags.split(",") : undefined;
+
           this.$store.commit('currPage', {
             game_id: game.id
           })
-          //@ts-ignore
-          Vue.$gtag.event('visit_game_page', {
+
+          this.$gtag.event('visit_game_page', {
             'gameId': game.id,
           });
 
@@ -132,7 +135,7 @@ export default class GameTimeline extends Vue {
     const url = `${process.env.VUE_APP_LAUNCHER_URL}game/${this.game.pathname}`;
     execCommandCopy(url)
     this.toast.clear();
-    this.toast.successToast("클립보드에 복사되었습니다.")
+    this.toast.successToast(`${this.$t('copied.clipboard')}`)
   }
 }
 </script>

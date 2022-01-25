@@ -262,8 +262,8 @@
     <!--            <div class="ma-content">-->
     <!--                <h2> 해당 댓글을 삭제하시겠습니까?</h2>-->
     <!--                <div>-->
-    <!--                    <button class="btn-default w48p" @click="deleteComment">네</button>-->
-    <!--                    <button class="btn-gray w48p" @click="$modal.hide('deleteComment')">아니오</button>-->
+    <!--                    <button class="btn-default w48p" @click="deleteComment">{{ $t('yes') }}</button>-->
+    <!--                    <button class="btn-gray w48p" @click="$modal.hide('deleteComment')">{{ $t('no') }}</button>-->
     <!--                </div>-->
     <!--            </div>-->
     <!--        </div>-->

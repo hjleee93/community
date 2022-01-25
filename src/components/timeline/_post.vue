@@ -83,16 +83,16 @@
                :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>{{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('alertModal')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2>작성 중인 내용이 저장되지 않고 사라집니다.<br/>작성을 끝내시겠습니까?</h2>
+                    <h2>{{ $t('post.noSave.text1') }}<br/>{{ $t('post.noSave.text2') }}</h2>
                     <div>
-                        <button class="btn-default w48p" @click="leavePost(true)">네</button>
-                        <button class="btn-gray w48p" @click="leavePost(false)">아니오</button>
+                        <button class="btn-default w48p" @click="leavePost(true)">{{ $t('yes') }}</button>
+                        <button class="btn-gray w48p" @click="leavePost(false)">{{ $t('no') }}</button>
                     </div>
                 </div>
             </div>
@@ -104,17 +104,17 @@
                :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>{{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('alertAttrModal')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2>같은 포맷의 파일만 업로드할 수 있습니다. 다양한 포맷의 파일을 업로드 하고 싶은 경우 블로그 포스팅을 이용해주세요.</h2>
-                    <p>기존 첨부파일을 지우시겠습니까?</p>
+                    <h2>{{ $t('post.fileType.err.text1') }}</h2>
+                    <p>{{ $t('post.fileType.err.text2') }}</p>
                     <div>
-                        <button class="btn-default w48p" @click="resetAttr(false)">아니오</button>
-                        <button class="btn-gray w48p" @click="resetAttr(true)">네</button>
+                        <button class="btn-default w48p" @click="resetAttr(false)">{{ $t('no') }}</button>
+                        <button class="btn-gray w48p" @click="resetAttr(true)">{{ $t('yes') }}</button>
                     </div>
                 </div>
             </div>
@@ -126,15 +126,15 @@
                :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>{{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('minChar')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2> 텍스트 내용을 입력해 주세요 </h2>
+                    <h2>{{ $t('post.empty.text') }}  </h2>
                     <div>
-                        <button class="btn-default" style="width:100%" @click="$modal.hide('minChar')">네</button>
+                        <button class="btn-default" style="width:100%" @click="$modal.hide('minChar')">{{ $t('yes') }}</button>
                     </div>
                 </div>
             </div>
@@ -443,10 +443,10 @@ export default class Post extends Vue {
             this.$api.uploadPost(obj)
                 .then((res: AxiosResponse) => {
                     this.$emit('reFetch')
-                    this.toast.successToast("포스팅이 완료되었습니다.")
+                    this.toast.successToast(`${this.$t('posting.done')}`)
                 })
                 .catch((err: AxiosError) => {
-                    this.toast.failToast("업로드에 실패하였습니다.")
+                    this.toast.failToast(`${this.$t('posting.fail')}`)
                 })
                 .finally(() => {
                     this.$modal.hide("modalPost");
@@ -550,10 +550,10 @@ export default class Post extends Vue {
         this.$api.updatePost(obj)
             .then((res: AxiosResponse) => {
                 this.$emit('reFetch')
-                this.toast.successToast("포스팅이 수정되었습니다.")
+                this.toast.successToast(`${this.$t('posting.edit.done')}`)
             })
             .catch((err: AxiosError) => {
-                this.toast.failToast("포스팅 수정에 실패하였습니다.")
+                this.toast.failToast(`${this.$t('posting.edit.fail')}`)
             })
             .finally(() => {
                 this.init();

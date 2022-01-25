@@ -56,7 +56,7 @@ export default class CommentInput extends Vue {
                 this.$modal.show({
                     template: `<div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>{{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('minChar')"><i class="uil uil-times"></i></button>
                     </dd>
@@ -64,7 +64,7 @@ export default class CommentInput extends Vue {
                 <div class="ma-content">
                     <h2> 텍스트 내용을 입력해 주세요. </h2>
                     <div>
-                        <button class="btn-default" style="width:100%" @click="$modal.hide('minChar')">네</button>
+                        <button class="btn-default" style="width:100%" @click="$modal.hide('minChar')">{{ $t('yes') }}</button>
                     </div>
                 </div>
             </div>`,

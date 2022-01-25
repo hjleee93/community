@@ -205,7 +205,7 @@
                @before-open="beforeOpen">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>{{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('deleteComment')"><i class="uil uil-times"></i></button>
                     </dd>
@@ -213,8 +213,8 @@
                 <div class="ma-content">
                     <h2> 해당 댓글을 삭제하시겠습니까?</h2>
                     <div>
-                        <button class="btn-default w48p" @click="deleteComment">네</button>
-                        <button class="btn-gray w48p" @click="$modal.hide('deleteComment')">아니오</button>
+                        <button class="btn-default w48p" @click="deleteComment">{{ $t('yes') }}</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('deleteComment')">{{ $t('no') }}</button>
                     </div>
                 </div>
             </div>
@@ -226,7 +226,7 @@
                :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>{{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('deleteModal')"><i class="uil uil-times"></i></button>
                     </dd>
@@ -234,8 +234,8 @@
                 <div class="ma-content">
                     <h2> 삭제된 포스트는 복구가 불가능합니다.<br/>해당 포스트를 삭제하시겠습니까?</h2>
                     <div>
-                        <button class="btn-default w48p" @click="yesDeletePost">네</button>
-                        <button class="btn-gray w48p" @@click="$modal.hide('deleteModal')">아니오</button>
+                        <button class="btn-default w48p" @click="yesDeletePost">{{ $t('yes') }}</button>
+                        <button class="btn-gray w48p" @@click="$modal.hide('deleteModal')">{{ $t('no') }}</button>
                     </div>
                 </div>
             </div>

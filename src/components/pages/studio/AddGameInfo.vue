@@ -210,7 +210,7 @@
                     <i class="uil uil-angle-right-b"></i></a>
 
                 <a v-else @click="save" class="btn-default w150">
-                    {{ $t('addGameInfo.upload') }}
+                    {{ $t('upload') }}
                 </a>
             </li>
 
@@ -528,7 +528,7 @@ export default class AddGameInfo extends Vue {
 
         console.log('gameInfo', gameInfo)
 
-        this.$store.commit("uploadGameFiles", []);
+        // this.$store.commit("uploadGameFiles", []);
         this.$store.commit("gameFileInfoObj", {});
         this.$store.commit("gameInfoObj", gameInfo);
     }

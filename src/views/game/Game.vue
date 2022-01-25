@@ -1,14 +1,14 @@
 <template>
     <div class="content">
         <div class="visual-info-left"
-             :style="{'background' : 'url(' + game && game.url_thumb_webp+ ') center no-repeat', 'background-size' : 'cover'}">
+             :style="{'background' : 'url(' + game && game.url_thumb_webp+ ') center center / cover no-repeat', 'background-size' : 'cover'}">
             <dl>
                 <dt>
                     <dl>
                         <dt>
                             &nbsp;
                             <div
-                                :style="`background:url(${game && game.url_thumb}); background-size:cover;`">
+                                :style="`background:url(${game && game.url_thumb}) center center / cover no-repeat; background-size:cover;`">
                                 <span></span>
                             </div>
                         </dt>

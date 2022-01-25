@@ -33,6 +33,14 @@ const router = new VueRouter({
           path:'/',
           redirect:`/${i18n.locale}`
         },
+        /**
+         * 서버 리다이렉트용
+         */
+        {
+            name: 'redirect',
+            path: '/redirect*',
+            component: () => import( '@/views/Redirect.vue' ),
+        },
         {
         path: `/:locale${getLocaleRegex()}?`,
         component: {

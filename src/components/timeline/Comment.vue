@@ -19,7 +19,7 @@
                             <i class="xi-heart like-icon"
                                style="color:red"></i>
                         </a>
-                        좋아요 {{ likeCnt }}개
+                        {{ $t('like') }}     {{ likeCnt }}{{ $t('like.unit') }}
                         <!--                    <a href="#"><i class="uil uil-edit-alt"></i> 댓글 작성</a>-->
                     </p>
                 </dd>
@@ -33,8 +33,8 @@
                 </a>
 
                 <div slot="body" :class="$route.name === 'feedDetail' ? 'more-list':'more-list fixed'">
-                    <a @click="editComment(comment.id)">댓글 수정</a>
-                    <a @click="$modal.show('deleteComment', {commentId:comment.id, postId:postId})">댓글 삭제</a>
+                    <a @click="editComment(comment.id)">{{ $t('comment.edit') }}</a>
+                    <a @click="$modal.show('deleteComment', {commentId:comment.id, postId:postId})">{{ $t('comment.delete') }}</a>
                     <!--                    <a @click="deleteComment(comment.id)">댓글 삭제</a>-->
                 </div>
             </dropdown-menu>
@@ -125,6 +125,7 @@ export default class Comment extends Vue {
                             this.isLiked = false;
                             this.likeCnt--;
                             // this.$emit('editDone')
+
                         })
                         .catch((err: AxiosError) => {
 

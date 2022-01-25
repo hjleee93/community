@@ -104,7 +104,7 @@
                :adaptive="true">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>{{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('deleteConfirm')"><i class="uil uil-times"></i></button>
                     </dd>
@@ -112,8 +112,8 @@
                 <div class="ma-content">
                     <h2>커뮤니티에서 탈퇴하시겠습니까?<br/>※ 커뮤니티 탈퇴시 작성한 포스팅은 자동으로 삭제되지 않습니다.</h2>
                     <div>
-                        <button class="btn-default w48p" @click="yesUnsubscribe">네</button>
-                        <button class="btn-gray w48p" @click="$modal.hide('deleteConfirm')">아니오</button>
+                        <button class="btn-default w48p" @click="yesUnsubscribe">{{ $t('yes') }}</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('deleteConfirm')">{{ $t('no') }}</button>
                     </div>
                 </div>
             </div>

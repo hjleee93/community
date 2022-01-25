@@ -40,7 +40,7 @@
                :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>{{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('deleteAccount')"><i class="uil uil-times"></i></button>
                     </dd>
@@ -48,8 +48,8 @@
                 <div class="ma-content">
                     <h2> 회원탈퇴 시 모든 정보가 삭제되며, 복구되지 않습니다.<br/>정말 탈퇴하시겠습니까? </h2>
                     <div>
-                        <button class="btn-default w48p" @click="leave(true)">네</button>
-                        <button class="btn-gray w48p" @click="$modal.hide('deleteAccount')">아니오</button>
+                        <button class="btn-default w48p" @click="leave(true)">{{ $t('yes') }}</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('deleteAccount')">{{ $t('no') }}</button>
                     </div>
                 </div>
             </div>

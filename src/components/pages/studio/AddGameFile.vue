@@ -1,14 +1,14 @@
 <template>
     <div class="studio-upload-input">
         <div class="sui-input">
-            <div class="suii-title">첫번째 버전 추가</div>
+            <div class="suii-title">{{ $t('addGameFile.title') }}</div>
             <dl class="suii-content">
-                <dt>게임 업로드</dt>
+                <dt>{{ $t('gameUpload') }}게임 업로드</dt>
                 <dd>
 
                     <p class="upload-file-container">
                         <label for="game-file"><i class="uil uil-file-plus" style="font-size:18px;"></i> &nbsp;
-                            파일업로드</label>
+                            {{ $t('fileUpload') }}</label>
                         <input
                             @input="onFileChange"
                             type="file"
@@ -22,21 +22,22 @@
                     </p>
                     <transition name="component-fade" mode="out-in">
                         <div v-if="fileName">
-                            <p class="file-size">파일 크기 : {{
+                            <p class="file-size">{{ $t('file.size') }} : {{
                                     totalSize < 1
                                         ? `${totalSize * 1000} KB`
                                         : `${totalSize} MB`
                                 }}</p>
-                            <p class="file-name">파일 명 : {{ fileName }}</p>
+                            <p class="file-name">{{ $t('file.name') }} : {{ fileName }}</p>
                         </div>
                     </transition>
                     <transition name="component-fade" mode="out-in">
                         <h2 :class="isFileEmpty ?'file-err on' : 'file-err off' ">
-                            게임 파일을 선택해주세요
+                            {{ $t('addGameFile.selectFile.text1') }}
                         </h2>
                     </transition>
                     <h2>
-                        게임에 포함된 웹페이지를 압축 파일로 업로드 해주세요. <br/> ZIP 파일만 업로드가 가능하고, 압축하지 않은 파일들의 총 크기가 500MB 이하여야 합니다.
+                        {{ $t('addGameFile.selectFile.text2') }} <br/> {{ $t('addGameFile.selectFile.text3') }}
+
                     </h2>
                 </dd>
             </dl>
@@ -46,17 +47,18 @@
             <transition name="component-fade" mode="out-in">
                 <div v-if="isAdvancedOpen">
                     <dl class="suii-content">
-                        <dt>게임 시작 파일 선택 </dt>
+                        <dt>{{ $t('addGameFile.select.startFile.text1') }} </dt>
                         <dd>
                             <select name="" title="" class="w100p" >
-                                <option value='' selected disabled v-if="startFileOptions.length === 0">시작 파일을 선택해주세요.</option>
+                                <option value='' selected disabled v-if="startFileOptions.length === 0">
+                                    {{ $t('addGameFile.select.startFile.text2') }}</option>
                                 <option v-for="file in startFileOptions" :value="file">{{ file }}</option>
                             </select>
                         </dd>
                     </dl>
 
                     <dl class="suii-content" v-if="($store.getters.gameStage !== eGameStage.Dev ) && isEditProject">
-                        <dt>게임 자동 배포 선택</dt>
+                        <dt>{{ $t('addGameFile.selectMode') }}</dt>
                         <dd>
                             <ul>
                                 <li>
@@ -68,14 +70,16 @@
                                 <li>Auto-deployment mode</li>
                             </ul>
                             <h2>
-                                게임에 포함된 웹페이지를 압축 파일로 업로드 해주세요. <br/> ZIP 파일만 업로드가 가능하고, 압축하지 않은 파일들의 총 크기가 100MB 이하여야
-                                합니다.
+                                {{ $t('addGameFile.selectMode.text1') }}
+                                 <br/>
+                                {{ $t('addGameFile.selectMode.text2') }}
+
                             </h2>
                         </dd>
                     </dl>
 
                     <div class="suii-close">
-                        <button class="btn-line" @click="isAdvancedOpen = !isAdvancedOpen">닫기 &nbsp;&nbsp;<i
+                        <button class="btn-line" @click="isAdvancedOpen = !isAdvancedOpen">{{ $t('close') }} &nbsp;&nbsp;<i
                             class="uil uil-angle-up"></i></button>
                     </div>
                 </div>
@@ -84,13 +88,13 @@
         <ul class="sui-btn">
 
             <li>
-                <a @click="prevPage" class="btn-line w150"><i class="uil uil-angle-left-b"></i> 이전
+                <a @click="prevPage" class="btn-line w150"><i class="uil uil-angle-left-b"></i> {{ $t('previous') }}
                 </a>
             </li>
             <li>
-                <a v-if="isEditProject" @click="updateProject" class="btn-default w150">업데이트
+                <a v-if="isEditProject" @click="updateProject" class="btn-default w150">{{ $t('update') }}
                 </a>
-                <a v-else @click="upload" class="btn-default w150">업로드</a>
+                <a v-else @click="upload" class="btn-default w150">{{ $t('upload') }}</a>
             </li>
         </ul>
     </div>
@@ -150,7 +154,7 @@ export default class AddGameFile extends Vue {
         }
 
         if (size > this.limitSize) {
-            alert('100mb 초과임')
+            alert('500mb 초과')
             return;
         }
 

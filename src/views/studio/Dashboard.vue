@@ -17,7 +17,7 @@
                     <v-select class="sdc-select-box"
                               :options="this.gameList"
                               v-model="selectedProject"
-                              placeholder="게임">
+                              :placeholder="$t('game')">
                         <template #open-indicator="{ attributes }">
                             <span v-bind="attributes"><i class="uil uil-angle-down" style="font-size:20px;"></i></span>
                         </template>
@@ -28,7 +28,7 @@
                               :reduce="name => name.date"
                               label="name"
                               :options="dataOptions"
-                              placeholder="기간">
+                              :placeholder="$t('period')">
                         <template #open-indicator="{ attributes }">
                             <span v-bind="attributes"><i class="uil uil-angle-down" style="font-size:20px;"></i></span>
                         </template>
@@ -106,12 +106,14 @@
 import {Component, Prop, Vue} from "vue-property-decorator";
 import LineChart from "@/components/studio/_chart.vue";
 import _ from 'lodash';
-import {eGameStage} from "@/common/enumData";
+import MetaSetting from "@/script/metaSetting";
 
 @Component({
-    components: {LineChart},
+    components: {LineChart}
 })
 export default class Dashboard extends Vue {
+    metaSetting !: MetaSetting;
+
     projects: any[] = [];
     selectedProject: any = '';
     selectedDate: any = 'today';
@@ -126,6 +128,17 @@ export default class Dashboard extends Vue {
         {name: '오늘', date: 'today'}, {name: '지난 7일', date: '7'}, {name: '지난 30일', date: '30'}];
 
     async mounted() {
+        this.metaSetting = new MetaSetting({
+            title: `${this.$t('dashboard')} | Zempie.com`,
+            meta: [
+                {name: 'description', content: `${this.$t('dashboard.desc')}`},
+                {property: 'og:url', content: `${this.$store.getters.homeUrl}/${this.$i18n.locale}/dashboard`},
+                {property: 'og:title', content: `${this.$t('dashboard')} | Zempie.com`},
+                {property: 'og:description', content: `${this.$t('dashboard.desc')}`},
+            ]
+        });
+
+
         await this.$store.dispatch("loginState");
         this.gameListFetch();
 

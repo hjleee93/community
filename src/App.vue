@@ -11,7 +11,7 @@
                :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>{{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('needLogin')"><i class="uil uil-times"></i></button>
                     </dd>

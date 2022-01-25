@@ -52,7 +52,7 @@
 
         <modal :clickToClose="false"
                class="modal-area-type"
-               name="deleteGameFile"
+               name="changedStage"
                width="90%" height="auto" :maxWidth="380"
                :adaptive="true"
                :scrollable="true">
@@ -60,7 +60,7 @@
                 <dl class="ma-header">
                     <dt>{{ $t('information') }}</dt>
                     <dd>
-                        <button @click="$modal.hide('deleteGameFile')"><i class="uil uil-times"></i></button>
+                        <button @click="$modal.hide('changedStage')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">
@@ -68,8 +68,8 @@
                         </h2>
 
                     <div>
-                        <button class="btn-default w48p" @click="deleteGameFile()">{{ $t('yes') }}</button>
-                        <button class="btn-gray w48p" @click="$modal.hide('deleteGameFile')">{{ $t('no') }}</button>
+                        <button class="btn-default w48p" @click="changedStage()">{{ $t('yes') }}</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('changedStage')">{{ $t('no') }}</button>
                     </div>
                 </div>
             </div>
@@ -89,44 +89,45 @@ import {eGameStage} from "@/common/enumData";
 })
 export default class SelectStage extends Vue {
     @Prop() projectInfo !: any;
-    private uploadStage = eGameStage;
+    uploadStage = eGameStage;
+
+    selectedStage:number = 0;
 
     mounted() {
-        console.log('mount')
         this.$store.commit("gameStage", null);
     }
 
     selectStage(selectedStage: number) {
         if (this.projectInfo) {
-            const {projectVersions, stage} = this.projectInfo
-            console.log('projectVersions', projectVersions)
-            console.log('stage', stage)
-
+            const {projectVersions, stage} = this.projectInfo;
 
             if (selectedStage === eGameStage.Dev) {
                 if (projectVersions.length > 0) {
-                    this.$modal.show('deleteGameFile')
-                    console.log('projectVersions', projectVersions)
-                    console.log('stage', stage)
+                    this.$modal.show('changedStage')
+                    this.selectedStage = selectedStage;
                 }
                 else {
-                    this.$emit('stage', selectedStage)
-                    this.$store.commit("gameStage", selectedStage);
+                    this.saveStage(selectedStage);
                 }
             }
             else {
-                this.$emit('stage', selectedStage)
-                this.$store.commit("gameStage", selectedStage);
+                this.saveStage(selectedStage);
+
             }
         }else{
-            this.$emit('stage', selectedStage)
-            this.$store.commit("gameStage", selectedStage);
+            this.saveStage(selectedStage);
         }
 
     }
 
-    deleteGameFile() {
+    changedStage() {
+        this.saveStage(this.selectedStage);
+        this.$modal.hide('changedStage')
+    }
 
+    saveStage(stage:number){
+        this.$emit('stage', stage)
+        this.$store.commit("gameStage", stage);
     }
 
 }

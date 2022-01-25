@@ -34,7 +34,7 @@
                             <input
                                 type="text"
                                 readonly
-                                placeholder="무슨 생각을 하고 계신가요"/>
+                                :placeholder="$t('postModalInput')"/>
                         </dt>
                         <dd><a><i class="uil uil-message"></i></a></dd>
                     </dl>
@@ -42,7 +42,9 @@
 
 <!--            </template>-->
             <div class="ta-message-block" v-else-if="ableToPost() === 'block'">
-                <i class="uil uil-exclamation-triangle"></i> 블락으로 인해 포스팅을 작성하실 수 없습니다.
+                <i class="uil uil-exclamation-triangle"></i>
+                {{ $t('post.modal.block.text') }}
+
             </div>
             <ul class="ta-post" v-if="filterDupTl.length > 0"
                 :style="ableToPost() === false ? 'margin-top: -20px;' : ''">
@@ -69,7 +71,7 @@
                  class="ta-post-none"
                  :style="ableToPost() === false ? 'margin-top: 0px;' : ''">
                 <p><span><i class="uil uil-layers-slash"></i></span></p>
-                <h2>작성된 글이 없습니다.</h2>
+                <h2>  {{ $t('timeline.noPost') }}</h2>
             </div>
 
 
@@ -89,16 +91,17 @@
                :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>  {{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('deleteModal')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2> 삭제된 포스트는 복구가 불가능합니다.<br/>해당 포스트를 삭제하시겠습니까?</h2>
+                    <h2>{{ $t('post.delete.modal.text1') }} <br/>{{ $t('post.delete.modal.text2') }}
+                        </h2>
                     <div>
-                        <button class="btn-default w48p" @click="yesDeletePost">네</button>
-                        <button class="btn-gray w48p" @click="closeModal">아니오</button>
+                        <button class="btn-default w48p" @click="yesDeletePost">{{ $t('yes') }}</button>
+                        <button class="btn-gray w48p" @click="closeModal">{{ $t('no') }}</button>
                     </div>
                 </div>
             </div>
@@ -114,7 +117,7 @@
                :scrollable="true">
             <div class="modal-report">
                 <dl class="mr-header">
-                    <dt>포스트 신고하기</dt>
+                    <dt>{{ $t('post.report.text') }}</dt>
                     <dd>
                         <button @click="$modal.hide('modalReport')"><i class="uil uil-times"></i></button>
                     </dd>
@@ -124,17 +127,17 @@
                         <li>
                             <input type="radio" v-model="pickedReason" value="1" id="report1"/> <label
                             for="report1"><i class="uil uil-check"></i></label>&nbsp;
-                            <span><label for="report1"> 욕설</label></span>
+                            <span><label for="report1">{{ $t('post.report.reason1') }} </label></span>
                         </li>
                         <li>
                             <input type="radio" v-model="pickedReason" value="2" id="report2"/> <label
                             for="report2"><i class="uil uil-check"></i></label>&nbsp; <span><label
-                            for="report2"> 스팸</label></span>
+                            for="report2"> {{ $t('post.report.reason2') }}</label></span>
                         </li>
                         <li>
                             <input type="radio" v-model="pickedReason" value="3" id="report3"/> <label
                             for="report3"><i class="uil uil-check"></i></label>&nbsp; <span><label
-                            for="report3"> 음란성</label></span>
+                            for="report3"> {{ $t('post.report.reason3') }}</label></span>
                         </li>
                         <!--            <li>-->
                         <!--              <input type="radio" v-model="pickedReason" value="report4" id="report4"/> <label for="report4"><i class="uil uil-check"></i></label>&nbsp; <span><label for="report4"> 기타</label></span>-->
@@ -142,7 +145,7 @@
                         <!--            </li>-->
                     </ul>
                     <div @click="sendReport">
-                        <button class="btn-default" style="width: 100% !important;">신고</button>
+                        <button class="btn-default" style="width: 100% !important;">{{ $t('post.report.btn') }}</button>
                     </div>
                 </div>
             </div>
@@ -154,16 +157,16 @@
                @before-open="beforeOpen">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>{{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('deleteComment')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2> 해당 댓글을 삭제하시겠습니까?</h2>
+                    <h2>{{ $t('comment.delete.text') }} </h2>
                     <div>
-                        <button class="btn-default w48p" @click="deleteComment">네</button>
-                        <button class="btn-gray w48p" @click="$modal.hide('deleteComment')">아니오</button>
+                        <button class="btn-default w48p" @click="deleteComment">{{ $t('yes') }}</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('deleteComment')">{{ $t('no') }}</button>
                     </div>
                 </div>
             </div>
@@ -175,16 +178,16 @@
                :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>안내</dt>
+                    <dt>{{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('needSubscribe')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2> 커뮤니티 멤버만 이용가능한 서비스입니다.<br/>가입 하시겠습니까?</h2>
+                    <h2>{{ $t('community.subscribe.text1') }} <br/>{{ $t('community.subscribe.text2') }} </h2>
                     <div>
-                        <button class="btn-default w48p" @click="needSubscribe">네</button>
-                        <button class="btn-gray w48p" @click="$modal.hide('needSubscribe')">아니오</button>
+                        <button class="btn-default w48p" @click="needSubscribe">{{ $t('yes') }}</button>
+                        <button class="btn-gray w48p" @click="$modal.hide('needSubscribe')">{{ $t('no') }}</button>
                     </div>
                 </div>
             </div>
@@ -248,6 +251,7 @@ export default class Timeline extends Vue {
     @Prop() currPage!: string;
     @Prop() id!: any;
     @Prop() community!: any;
+    @Prop() game!: any;
     @Prop() mediaType!: any;
     private timeline: any = [];
     private user!: User;
@@ -263,7 +267,6 @@ export default class Timeline extends Vue {
     hasData: boolean = true;
 
     activeTab: string = "SNS";
-
 
     feedId = '';
     pickedReason: any = '';
@@ -364,14 +367,14 @@ export default class Timeline extends Vue {
 
                 break;
             case 'game':
-
                 const gameObj = {
-                    game_id: this.$route.query.game_id,
+                    game_id:this.game.id,
                     limit: this.limit,
                     offset: this.offset,
                     sort: this.sort,
                     media: this.$route.query.media
                 }
+
                 this.$api.gameTimeline(gameObj)
                     .then((res: any) => {
                         if (this.isAddData) {
@@ -381,20 +384,20 @@ export default class Timeline extends Vue {
                             else {
                                 this.hasData = false
                                 window.removeEventListener("scroll", this.scrollCheck);
-
                             }
                         }
                         else {
-
                             this.timeline = res.result;
                             this.isAddData = true
                         }
-
-
                     })
                     .catch((err: AxiosError) => {
 
 
+                    })
+                    .finally(() => {
+                        this.isFirstLoading = false;
+                        // this.timeline = _.orderBy(this.timeline, 'createdAt', 'desc')
                     })
                 break;
             case 'community':
@@ -431,6 +434,10 @@ export default class Timeline extends Vue {
 
 
                     })
+                    .finally(() => {
+                    this.isFirstLoading = false;
+                    this.timeline = _.orderBy(this.timeline, 'createdAt', 'desc')
+                })
 
                 break;
             //커뮤니티 내의 채널
@@ -467,6 +474,10 @@ export default class Timeline extends Vue {
 
 
                     })
+                    .finally(() => {
+                        this.isFirstLoading = false;
+                        this.timeline = _.orderBy(this.timeline, 'createdAt', 'desc')
+                    })
 
                 break;
         }
@@ -477,26 +488,34 @@ export default class Timeline extends Vue {
     ableToPost() {
         let result: any = ''
         //커뮤니티 블락당한 경우
-        switch (this.currPage) {
-            case 'user':
-                if (this.user && (this.user.uid === this.$route.params.channel_id) || this.$route.name === 'MyChannel') {
+        if(this.user) {
+            switch (this.currPage) {
+                case 'user':
+                    if (this.user.uid === this.$route.params.channel_id || this.$route.name === 'MyChannel') {
+                        result = true;
+                    }
+                    else {
+                        result = false;
+                    }
+                    break;
+                case 'community' :
+                    if (this.community.user_block) {
+                        result = 'block'
+                    }
+                    else {
+                        result = true;
+                    }
+                    break;
+                case 'channel' :
                     result = true;
-                }
-                else {
-                    result = false;
-                }
-                break;
-            case 'community' :
-                if (this.community.user_block) {
-                    result = 'block'
-                }
-                else {
-                    result = true;
-                }
-                break;
-            case 'channel' :
-                result = true;
-                break;
+                    break;
+                case 'game' :
+                    if ((this.game && this.game.user.uid) === this.user.uid) {
+                        result = true;
+                    }
+
+                    break;
+            }
         }
         return result;
 
@@ -518,14 +537,24 @@ export default class Timeline extends Vue {
             this.$modal.show('needLogin')
             this.$store.commit('needLogin', true)
         }
-        else if (this.user && this.currPage === 'user') {
-            this.$modal.show('modalPost')
-        }
-        else if (!this.community.is_subscribed) {
-            this.$modal.show('needSubscribe')
-        }
-        else {
-            this.$modal.show('modalPost')
+        else if (this.user) {
+            switch (this.currPage) {
+                case 'user' :
+                    this.$modal.show('modalPost')
+                    break;
+                case 'community' :
+                    if(!this.community.is_subscribed){
+                        this.$modal.show('needSubscribe')
+                    }else{
+                        this.$modal.show('modalPost')
+                    }
+                    break;
+                case 'game' :
+                    // if(this.game.user.uid === this.user.uid){
+                        this.$modal.show('modalPost')
+                    // }
+                    break;
+            }
         }
 
     }

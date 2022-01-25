@@ -1,8 +1,9 @@
 <template>
     <li @mouseenter="enterCard" @mouseleave="leaveCard">
         <div
+
             class="thumbnail"
-            @click="playGame(game.pathname)"
+            @click="moveGamePage(game.pathname)"
             :style="`background: url( ${thumbnail} ) center center / cover no-repeat; background-size: cover;`"
         ></div>
 
@@ -59,6 +60,10 @@ export default class GameCard extends Vue {
 
     playGame(pathname: string) {
         window.open(this.$store.getters.homeUrl + `play/${pathname}`, "_blank");
+    }
+
+    moveGamePage(pathname: string){
+        this.$router.push(`/timeline/game/${pathname}`)
     }
 }
 </script>
