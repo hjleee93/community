@@ -63,7 +63,7 @@ export default class App extends Vue {
 
     moveLogin() {
         this.$modal.hide('needLogin')
-        this.$router.push('/login')
+        this.$router.push(`/${this.$i18n.locale}/login`)
     }
 
 

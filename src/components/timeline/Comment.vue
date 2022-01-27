@@ -8,7 +8,7 @@
                 <dd>
                     <h2>{{ comment.user && comment.user.name }} <span>{{  }}</span></h2>
                     <div>
-                        {{ comment.content }}
+                        {{ updatedContent }}
                     </div>
                     <p :key="likeCnt">
                         <!--                        is_liked-->
@@ -74,12 +74,14 @@ import ClickManager from "@/script/clickManager";
 export default class Comment extends Vue {
     @Prop() comment!: any;
     @Prop() postId!: any;
-    private userInfo: any = [];
-    private content: string = this.comment.content;
-    private isEditing: boolean = false;
-    private parentId: number = -1;
-    private modalTitle: string = "Report Comment";
-    private createdDate: string = "";
+    userInfo: any = [];
+    content: string = this.comment.content;
+    isEditing: boolean = false;
+    parentId: number = -1;
+    modalTitle: string = "Report Comment";
+    createdDate: string = "";
+    updatedContent: string = '';
+
 
     showModal: boolean = false;
     user!: User;
@@ -90,6 +92,7 @@ export default class Comment extends Vue {
     mounted() {
         this.init();
         this.createdDate = dateFormat(this.comment.createdAt);
+        this.updatedContent = this.comment.content
     }
 
     async init() {
@@ -106,9 +109,10 @@ export default class Comment extends Vue {
         this.isEditing = false;
         this.$emit('editDone')
     }
-    updateDone() {
+    updateDone(comment:any) {
         this.isEditing = false;
-        this.$emit('editDone')
+        this.updatedContent = comment.content
+        // this.$emit('updateDone')
     }
 
     editComment() {
@@ -153,7 +157,7 @@ export default class Comment extends Vue {
     }
 
     moveUserChannel(channel_id: string) {
-        this.$router.push(`/channel/${channel_id}/timeline`)
+        this.$router.push(`/${this.$i18n.locale}/channel/${channel_id}/timeline`)
     }
 
 }

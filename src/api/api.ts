@@ -462,7 +462,6 @@ export default class Api {
             formData.append(`file_${i + 1}`, file);
         }
 
-
         const response = await this.request('post', `${studioApi}studio/project`, formData, false);
         return response.result || response;
     }
@@ -505,7 +504,8 @@ export default class Api {
         if (options.hashtags) { formData.append('hashtags', options.hashtags); }
         else { formData.append('hashtags', ""); }
         if (options.stage) { formData.append('stage', options.stage); }
-        if (options.deploy_version_id !== undefined) { formData.append('deploy_version_id', options.deploy_version_id); }
+        if (options.deploy_version_id !== undefined) {
+            formData.append('deploy_version_id', options.deploy_version_id); }
         if (file) {
             formData.append('file', file);
         }

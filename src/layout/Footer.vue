@@ -19,16 +19,16 @@
       <dl>
         <dt>
           <p>
-            <a href="https://fromthered.com/ " target="_blank">회사소개</a>
+            <a href="https://fromthered.com/ " target="_blank">{{$t('company.info.title')}}</a>
 <!--            <a href="#">서비스소개</a>-->
-            <router-link to="/terms">약관</router-link>
+            <router-link :to="`/${$i18n.locale}/terms`">{{$t('terms')}}</router-link>
 <!--            <a href="#">개인정보처리방침</a>-->
 <!--            <a href="#">고객센터</a>-->
           </p>
           <div>
-              (주) 프롬더레드 &nbsp; | &nbsp; 대표이사 : 서상욱 &nbsp; | &nbsp;사업자등록번호 : 178-88-00617<br /><br />
+              {{$t('fromthered')}} &nbsp; | &nbsp; {{$t('company.owner')}} : {{$t('company.owner.name')}} &nbsp; | &nbsp;{{$t('company.id')}} : 178-88-00617<br /><br />
 
-              주소 : 서울특별시 서대문구 북아현로 105, 3층 &nbsp; | &nbsp; 이메일 : <a :href="'mailto:' +  $store.getters.supportEmail" style="color: #30a6d8">support@fromthered.com</a><br />
+              {{$t('company.address')}} &nbsp; | &nbsp; {{$t('email')}} : <a :href="'mailto:' +  $store.getters.supportEmail" style="color: #30a6d8">support@fromthered.com</a><br />
             Copyright ⓒ Fromthered Inc. All rights reserved.
           </div>
         </dt>

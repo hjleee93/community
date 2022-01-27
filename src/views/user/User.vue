@@ -48,45 +48,45 @@
                         Object.keys($route.query).length === 0
                             ? 'active'
                             : ''">
-                    <router-link :to="`/channel/${userInfo.channel_id}/timeline`">
+                    <router-link :to="`/${$i18n.locale}/channel/${userInfo.channel_id}/timeline`">
                         <p><i class="uil uil-clock-three"></i></p>
-                        <h2>타임라인(ALL)</h2>
+                        <h2>{{ $t('timeline')}}(ALL)</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'sns' ? 'active' : ''">
-                    <router-link :to="`/channel/${userInfo.channel_id}/timeline?media=sns`">
+                    <router-link :to="`/${$i18n.locale}/channel/${userInfo.channel_id}/timeline?media=sns`">
                         <p><i class="uil uil-comment-dots"></i></p>
                         <h2>SNS</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'blog' ? 'active' : ''">
-                    <router-link :to="`/channel/${userInfo.channel_id}/timeline?media=blog`">
+                    <router-link :to="`/${$i18n.locale}/channel/${userInfo.channel_id}/timeline?media=blog`">
                         <p><i class="uil uil-edit"></i></p>
-                        <h2>블로그</h2>
+                        <h2>{{ $t('blog')}}</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'image' ? 'active' : ''">
-                    <router-link :to="`/channel/${userInfo.channel_id}/timeline?media=image`">
+                    <router-link :to="`/${$i18n.locale}/channel/${userInfo.channel_id}/timeline?media=image`">
                         <p><i class="uil uil-image-edit"></i></p>
-                        <h2>이미지</h2>
+                        <h2>{{ $t('image')}}</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'video' ? 'active' : ''">
-                    <router-link :to="`/channel/${userInfo.channel_id}/timeline?media=video`">
+                    <router-link :to="`/${$i18n.locale}/channel/${userInfo.channel_id}/timeline?media=video`">
                         <p><i class="uil uil-play-circle"></i></p>
-                        <h2>동영상</h2>
+                        <h2>{{ $t('video')}}</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'sound' ? 'active' : ''">
-                    <router-link :to="`/channel/${userInfo.channel_id}/timeline?media=sound`">
+                    <router-link :to="`/${$i18n.locale}/channel/${userInfo.channel_id}/timeline?media=sound`">
                         <p><i class="uil uil-music"></i></p>
-                        <h2>오디오</h2>
+                        <h2>{{ $t('audio')}}</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.name === 'AllGameCard' ? 'active' : ''">
-                    <router-link :to="`/channel/${userInfo.channel_id}/games`">
+                    <router-link :to="`/${$i18n.locale}/channel/${userInfo.channel_id}/games`">
                         <p><i class="uil uil-map-pin-alt"></i></p>
-                        <h2>게임</h2>
+                        <h2>{{ $t('game')}}</h2>
                     </router-link>
                 </swiper-slide>
                 <div class="swiper-button-prev" slot="button-prev"></div>
@@ -242,15 +242,15 @@ export default class UserHeader extends Vue {
 
     movePage(page: string) {
         if (page === 'timeline') {
-            this.$router.push(`/channel/${this.userInfo && this.userInfo.channel_id}/timeline`)
+            this.$router.push(`/${this.$i18n.locale}/channel/${this.userInfo && this.userInfo.channel_id}/timeline`)
         }
         else if (page === 'following') {
 
-            this.$router.push(`/channel/${this.userInfo && this.userInfo.id}/followings`)
+            this.$router.push(`/${this.$i18n.locale}/channel/${this.userInfo && this.userInfo.id}/followings`)
 
         }
         else if (page === 'follower') {
-            this.$router.push(`/channel/${this.userInfo && this.userInfo.id}/followers`)
+            this.$router.push(`/${this.$i18n.locale}/channel/${this.userInfo && this.userInfo.id}/followers`)
         }
     }
 

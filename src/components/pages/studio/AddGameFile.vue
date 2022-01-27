@@ -3,7 +3,7 @@
         <div class="sui-input">
             <div class="suii-title">{{ $t('addGameFile.title') }}</div>
             <dl class="suii-content">
-                <dt>{{ $t('gameUpload') }}게임 업로드</dt>
+                <dt>{{ $t('gameUpload') }}</dt>
                 <dd>
 
                     <p class="upload-file-container">
@@ -47,11 +47,12 @@
             <transition name="component-fade" mode="out-in">
                 <div v-if="isAdvancedOpen">
                     <dl class="suii-content">
-                        <dt>{{ $t('addGameFile.select.startFile.text1') }} </dt>
+                        <dt>{{ $t('addGameFile.select.startFile.text1') }}</dt>
                         <dd>
-                            <select name="" title="" class="w100p" >
+                            <select name="" title="" class="w100p">
                                 <option value='' selected disabled v-if="startFileOptions.length === 0">
-                                    {{ $t('addGameFile.select.startFile.text2') }}</option>
+                                    {{ $t('addGameFile.select.startFile.text2') }}
+                                </option>
                                 <option v-for="file in startFileOptions" :value="file">{{ file }}</option>
                             </select>
                         </dd>
@@ -71,7 +72,7 @@
                             </ul>
                             <h2>
                                 {{ $t('addGameFile.selectMode.text1') }}
-                                 <br/>
+                                <br/>
                                 {{ $t('addGameFile.selectMode.text2') }}
 
                             </h2>
@@ -92,9 +93,14 @@
                 </a>
             </li>
             <li>
-                <a v-if="isEditProject" @click="updateProject" class="btn-default w150">{{ $t('update') }}
+
+                <a v-if="isEditProject" @click="updateProject" class="btn-default w150">
+                    <ClipLoader v-if="isLoadingUpload" :color="'#fff'" :size="'20px'" style="height: 20px"></ClipLoader>
+                    <span v-else> {{ $t('update') }}</span>
                 </a>
-                <a v-else @click="upload" class="btn-default w150">{{ $t('upload') }}</a>
+                <a v-else @click="upload" class="btn-default w150">
+                    <ClipLoader v-if="isLoadingUpload" :color="'#fff'" :size="'20px'" style="height: 20px"></ClipLoader>
+                    <span v-else>  {{ $t('upload') }}</span></a>
             </li>
         </ul>
     </div>
@@ -135,8 +141,13 @@ export default class AddGameFile extends Vue {
     isLoadingUpload: boolean = false;
 
     mounted() {
+        this.init();
+    }
 
-        console.log('isEditProject', this.isEditProject)
+    init() {
+        this.isLoadingUpload = false;
+        this.uploadGameFiles = [];
+        this.$store.commit('uploadGameFiles', [])
     }
 
     async onFileChange(e) {
@@ -184,7 +195,7 @@ export default class AddGameFile extends Vue {
             this.fileName = e.target.files[0].name
         }
         else {
-            alert('no html file')
+            alert(`${this.$t('notFoundHtml')}`)
             this.fileName = ''
             // this.uploadGameFileError = this.$t('projectAddVersion.error.notFoundHtml').toString();
 
@@ -217,60 +228,91 @@ export default class AddGameFile extends Vue {
     }
 
     upload() {
-        const {gameInfoObj, uploadGameFiles, gameStage} = this.$store.getters;
-
-        const gameFileInfo = {
-            autoDeploy: gameStage === eGameStage.Dev ? false :this.autoDeploy ,
-            startFile: this.startFile,
-            size: this.totalSize,
-            version_description: this.versionDescription,
-        };
-
-        console.log('gameFileInfo', gameFileInfo)
+        if (this.isLoadingUpload) {
+            return;
+        }
 
 
-        if (gameStage !== eGameStage.Dev && uploadGameFiles.length === 0) {
-            this.isFileEmpty = true;
+        const {uploadGameFiles, gameStage} = this.$store.getters;
+
+        if (gameStage !== eGameStage.Dev) {
+            if (!uploadGameFiles) {
+                this.isFileEmpty = true;
+            }
+            else if (uploadGameFiles && uploadGameFiles.length === 0) {
+                this.isFileEmpty = true;
+            }
+            else{
+                this.isLoadingUpload = true;
+                this.createProject();
+            }
+
         }
         else {
-
-            this.$api.createProject(
-                gameInfoObj,
-                gameFileInfo,
-                uploadGameFiles
-            )
-                .then((res) => {
-                    this.toast.successToast("게임이 업로드되었습니다.");
-                    this.$router.push('/projectList')
-                })
-                .catch((err) => {
-
-                })
-
+            this.isLoadingUpload = true;
+            this.createProject();
             this.isFileEmpty = false;
         }
 
 
     }
 
+    createProject() {
+        const {gameInfoObj, uploadGameFiles, gameStage} = this.$store.getters;
+
+
+        const gameFileInfo = {
+            autoDeploy: gameStage === eGameStage.Dev ? false : this.autoDeploy,
+            startFile: this.startFile,
+            size: this.totalSize,
+            version_description: this.versionDescription,
+        };
+        this.$api.createProject(
+            gameInfoObj,
+            gameFileInfo,
+            uploadGameFiles
+        )
+            .then((res) => {
+                this.toast.successToast(`${this.$t('gameUpload.done')}`);
+                this.$router.push(`/${this.$i18n.locale}/projectList`)
+
+            })
+            .catch((err) => {
+            })
+            .finally(() => {
+                this.isLoadingUpload = false;
+            })
+    }
+
     async updateProject() {
-
-        let isError = false;
-
-        if (!this.uploadGameFiles.length) {
-            isError = true;
-            // this.uploadGameFileError = this.$t('projectAddVersion.error.noUploadFile').toString();
-        }
-
-        if (!this.startFileOptions.length) {
-            isError = true;
-        }
-
-        if (isError) {
-            // this.wait = false;
+        const {gameStage} = this.$store.getters;
+        if (this.isLoadingUpload) {
             return;
         }
 
+
+        let isError = false;
+
+        if (gameStage !== eGameStage.Dev) {
+            if (!this.uploadGameFiles.length) {
+                isError = true;
+                this.isFileEmpty = true;
+            }
+
+
+            if (!this.startFileOptions.length) {
+                isError = true;
+            }
+
+            if (isError) {
+                // this.wait = false;
+                return;
+            }
+        }
+        else {
+            this.isFileEmpty = false;
+        }
+        this.isLoadingUpload = true;
 
         const option: any = {
             id: this.projectId,
@@ -293,12 +335,14 @@ export default class AddGameFile extends Vue {
                 console.log('err', err)
                 return;
             })
-
-
-        const version = await this.$api.createVersion(this.projectId, '1.0.0', this.uploadGameFiles, this.startFile,
+            .finally(() => {
+                this.isLoadingUpload = false;
+            })
+        if(this.uploadGameFiles && this.uploadGameFiles.length > 0) {
+            const version = await this.$api.createVersion(this.projectId, '1.0.0', this.uploadGameFiles, this.startFile,
             this.autoDeploy, this.totalSize, '', this.$store.getters.gameStage);
-
-        await this.$router.replace(`/projectList`);
+        }
+        await this.$router.replace(`/${this.$i18n.locale}/projectList`);
     }
 
     prevPage() {

@@ -76,7 +76,7 @@
             <router-link
                 @click.native="closeDropdown"
                 class="dropdown-box-button secondary"
-                :to="`/user/${user.uid}/notificationList`"
+                :to="`/${$i18n.locale}/user/${user.uid}/notificationList`"
                 >View all Notifications</router-link
             >
         </div>
@@ -101,7 +101,7 @@ export default class Notification extends Vue {
     }
 
     toGeneralSettings() {
-        this.$router.push(`/user/${this.user.uid}/settings`);
+        this.$router.push(`/${this.$i18n.locale}/user/${this.user.uid}/settings`);
         this.closeDropdown();
     }
     closeDropdown() {

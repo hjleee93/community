@@ -13,7 +13,7 @@
 
                     <router-link
                         class="section-header-action"
-                        :to="`/user/${this.user.uid}/settings`"
+                        :to="`/${$i18n.locale}/user/${this.user.uid}/settings`"
                     >
                         Settings
                     </router-link>

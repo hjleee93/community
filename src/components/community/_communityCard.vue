@@ -55,10 +55,10 @@ export default class CommunityCard extends Vue {
 
 
     moveCommunity() {
-        this.$router.push(`/community/${this.community.id}/timeline`)
+        this.$router.push(`/${this.$i18n.locale}/community/${this.community.id}/timeline`)
     }
     moveMemberList(){
-        this.$router.push(`/community/${this.community.id}/members`)
+        this.$router.push(`/${this.$i18n.locale}/community/${this.community.id}/members`)
     }
 
 //    퍼블리싱 이미지 처리

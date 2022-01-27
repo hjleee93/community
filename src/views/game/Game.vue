@@ -1,6 +1,8 @@
 <template>
     <div class="content">
+
         <div class="visual-info-left"
+             :key="$route.params.gamePath"
              :style="{'background' : 'url(' + game && game.url_thumb_webp+ ') center center / cover no-repeat', 'background-size' : 'cover'}">
             <dl>
                 <dt>
@@ -9,7 +11,7 @@
                             &nbsp;
                             <div
                                 :style="`background:url(${game && game.url_thumb}) center center / cover no-repeat; background-size:cover;`">
-                                <span></span>
+                                <!--                                <span></span>-->
                             </div>
                         </dt>
                         <dd>
@@ -26,9 +28,10 @@
                         </dd>
                     </dl>
                 </dt>
+
                 <dd>
-                    <a @click="playGame(game.pathname)" class="btn-default w150">Play Game</a>
-                    <a v-if="loginUser" @click="subscribe" class="btn-sub w150 ml10">구독</a>
+                    <a v-if="game.stage !== eGameStage.Dev" @click="playGame(game.pathname)" class="btn-default w150">Play Game</a>
+                    <!--                    <a v-if="loginUser" @click="subscribe" class="btn-sub w150 ml10">{{ $t('subscribe')}} </a>-->
                 </dd>
             </dl>
         </div>
@@ -40,37 +43,44 @@
                             ? 'active'
                             : ''
                     ">
-                    <router-link :to="{path:`/timeline/game/${game.pathname}`, query:{game_id:game.id}}">
+                    <router-link :to="`/${$i18n.locale}/timeline/game/${game.pathname}`">
                         <p><i class="uil uil-clock-three"></i></p>
-                        <h2>타임라인(ALL)</h2>
+                        <h2>{{ $t('timeline') }}(ALL)</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'sns' ? 'active' : ''">
                     <router-link
-                        :to="{path:`/timeline/game/${game.pathname}/timeline`, query:{game_id:game.id, media:'sns'}}">
+                        :to="{path:`/${$i18n.locale}/timeline/game/${game.pathname}`, query:{media:'sns'}}">
                         <p><i class="uil uil-comment-dots"></i></p>
                         <h2>SNS</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'blog' ? 'active' : ''">
                     <router-link
-                        :to="{path:`/timeline/game/${game.pathname}/timeline`, query:{game_id:game.id, media:'blog'}}">
+                        :to="{path:`/${$i18n.locale}/timeline/game/${game.pathname}`, query:{media:'blog'}}">
                         <p><i class="uil uil-edit"></i></p>
-                        <h2>블로그</h2>
+                        <h2>{{ $t('blog') }}</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'image' ? 'active' : ''">
                     <router-link
-                        :to="{path:`/timeline/game/${game.pathname}/timeline`, query:{game_id:game.id, media:'image'}}">
+                        :to="{path:`/${$i18n.locale}/timeline/game/${game.pathname}`, query:{ media:'image'}}">
                         <p><i class="uil uil-image-edit"></i></p>
-                        <h2>이미지</h2>
+                        <h2>{{ $t('image') }}</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'video' ? 'active' : ''">
                     <router-link
-                        :to="{path:`/timeline/game/${game.pathname}/timeline`, query:{game_id:game.id, media:'video'}}">
+                        :to="{path:`/${$i18n.locale}/timeline/game/${game.pathname}`, query:{ media:'video'}}">
                         <p><i class="uil uil-play-circle"></i></p>
-                        <h2>동영상</h2>
+                        <h2>{{ $t('video') }}</h2>
+                    </router-link>
+                </swiper-slide>
+                <swiper-slide :class="$route.query.media === 'sound' ? 'active' : ''">
+                    <router-link
+                        :to="{path:`/${$i18n.locale}/timeline/game/${game.pathname}`, query:{media:'sound'}}">
+                        <p><i class="uil uil-music"></i></p>
+                        <h2>{{ $t('audio') }}</h2>
                     </router-link>
                 </swiper-slide>
 
@@ -89,14 +99,8 @@ import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 
 import {AxiosResponse} from "axios";
 import {Swiper, SwiperSlide} from 'vue-awesome-swiper'
+import {eGameStage} from "@/common/enumData";
 
-
-enum eStage {
-    Dev = 1,
-    Early,
-    Complete,
-    Monetization
-}
 
 @Component({
     components: {
@@ -105,17 +109,17 @@ enum eStage {
     },
 })
 export default class GameHeader extends Vue {
+    eGameStage = eGameStage;
+    gamePath = this.$route.params.gamePath;
+    game: any = {};
 
-    private gamePath = this.$route.params.gamePath;
-    private game: any = {};
+    loginUser = {};
+    user: any = {}
 
-    private loginUser = {};
-    private user: any = {}
-
-    private hashtags: string[] = [];
-    private userInfo: any = [];
-    private followingCnt: number = 0;
-    private followerCnt: number = 0;
+    hashtags: string[] = [];
+    userInfo: any = [];
+    followingCnt: number = 0;
+    followerCnt: number = 0;
 
     gameId = this.$route.query.game_id
 
@@ -147,8 +151,15 @@ export default class GameHeader extends Vue {
 
 
     async mounted() {
-        this.fetch()
-        this.loginUser = this.$store.getters.user
+        this.$store.dispatch("loginState")
+            .then(() => {
+                this.fetch()
+                this.loginUser = this.$store.getters.user;
+            })
+            .finally(() => {
+
+            })
+
 
     }
 
@@ -162,24 +173,30 @@ export default class GameHeader extends Vue {
                 this.user = game.user
                 this.hashtags = (game.hashtags.length > 0) ? game.hashtags.split(",") : undefined;
 
+                // this.hashtags = ['a','b','b']
+                // this.projectFetch();
+
             })
             .catch((err: any) => {
 
-
-            })
-        this.$api.getProject(Number(this.gameId))
-            .then((res: any) => {
-                // console.log('getProject', eStage[res.stage])
-            })
-            .catch((err: any) => {
 
             })
 
 
     }
 
+    projectFetch() {
+        this.$api.getProject(this.game.id)
+            .then((res: any) => {
+                console.log('projectFetch', res)
+            })
+            .catch((err: any) => {
+
+            })
+    }
+
     moveHashtag(hashtag: string) {
-        this.$router.push(`/search?hashtag=${hashtag}`)
+        this.$router.push(`/${this.$i18n.locale}/search?q=${hashtag}`)
     }
 
     subscribe() {
@@ -194,12 +211,10 @@ export default class GameHeader extends Vue {
 
     }
 
-    @Watch("game", {immediate: true})
-    watchImg(val: any) {
-        // console.log("watch userInfo", val);
-        this.$nextTick(() => {
-
-        });
+    @Watch('$route.params.gamePath')
+    watchParams() {
+        this.gamePath = this.$route.params.gamePath
+        this.fetch();
     }
 }
 </script>
@@ -213,5 +228,11 @@ export default class GameHeader extends Vue {
     &:hover {
         --swiper-navigation-color: #FF6216;
     }
+}
+
+.tag-item {
+    display: inline-block !important;
+    margin-right: 10px;
+    cursor: pointer;
 }
 </style>

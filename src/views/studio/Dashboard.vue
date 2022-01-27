@@ -10,93 +10,96 @@
 
 
         <!-- 차트 -->
-        <div class="studio-dashboard-chart">
-            <dl>
-                <dt>{{ $t('chart') }}</dt>
-                <dd>
-                    <v-select class="sdc-select-box"
-                              :options="this.gameList"
-                              v-model="selectedProject"
-                              :placeholder="$t('game')">
-                        <template #open-indicator="{ attributes }">
-                            <span v-bind="attributes"><i class="uil uil-angle-down" style="font-size:20px;"></i></span>
-                        </template>
-                    </v-select>
-                    &nbsp; &nbsp;
-                    <v-select class="sdc-select-box"
-                              v-model="selectedDate"
-                              :reduce="name => name.date"
-                              label="name"
-                              :options="dataOptions"
-                              :placeholder="$t('period')">
-                        <template #open-indicator="{ attributes }">
-                            <span v-bind="attributes"><i class="uil uil-angle-down" style="font-size:20px;"></i></span>
-                        </template>
-                    </v-select>
-                </dd>
-            </dl>
-            <div>
-                <LineChart :game="selectedProject" :date="selectedDate"/>
-            </div>
+        <div class="update-info">
+            {{ $t('dashboard.update.info') }}
         </div>
+<!--        <div class="studio-dashboard-chart">-->
+<!--            <dl>-->
+<!--                <dt>{{ $t('chart') }}</dt>-->
+<!--                <dd>-->
+<!--                    <v-select class="sdc-select-box"-->
+<!--                              :options="this.gameList"-->
+<!--                              v-model="selectedProject"-->
+<!--                              :placeholder="$t('game')">-->
+<!--                        <template #open-indicator="{ attributes }">-->
+<!--                            <span v-bind="attributes"><i class="uil uil-angle-down" style="font-size:20px;"></i></span>-->
+<!--                        </template>-->
+<!--                    </v-select>-->
+<!--                    &nbsp; &nbsp;-->
+<!--                    <v-select class="sdc-select-box"-->
+<!--                              v-model="selectedDate"-->
+<!--                              :reduce="name => name.date"-->
+<!--                              label="name"-->
+<!--                              :options="dataOptions"-->
+<!--                              :placeholder="$t('period')">-->
+<!--                        <template #open-indicator="{ attributes }">-->
+<!--                            <span v-bind="attributes"><i class="uil uil-angle-down" style="font-size:20px;"></i></span>-->
+<!--                        </template>-->
+<!--                    </v-select>-->
+<!--                </dd>-->
+<!--            </dl>-->
+<!--            <div>-->
+<!--                <LineChart :game="selectedProject" :date="selectedDate"/>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <ul class="studio-dashboard-info">
-            <li style="background-color:#f97316;">
-                <dl>
-                    <dt>
-                        <p><i class="uil uil-play"></i></p>
-                    </dt>
-                    <dd>
-                        <h3>{{ playCnt }}</h3>
-                        <p>{{ $t('dashboard.play') }}</p>
-                    </dd>
-                </dl>
-            </li>
-            <li style="background-color:#feb100;">
-                <dl>
-                    <dt>
-                        <p><i class="uil uil-eye"></i></p>
-                    </dt>
-                    <dd>
-                        <h3>142</h3>
-                        <p>{{ $t('dashboard.gamePage.visit') }}</p>
-                    </dd>
-                </dl>
-            </li>
-            <li style="background-color:#5d5ffe;">
-                <dl>
-                    <dt>
-                        <p><i class="uil uil-heart-alt"></i></p>
-                    </dt>
-                    <dd>
-                        <h3>{{ likeCnt }}</h3>
-                        <p>{{ $t('dashboard.like') }}</p>
-                    </dd>
-                </dl>
-            </li>
-            <li style="background-color:#33e4ce;">
-                <dl>
-                    <dt>
-                        <p><i class="uil uil-stopwatch"></i></p>
-                    </dt>
-                    <dd>
-                        <h3>142</h3>
-                        <p>{{ $t('dashboard.playTime') }}</p>
-                    </dd>
-                </dl>
-            </li>
-            <li style="background-color:#b53bff;">
-                <dl>
-                    <dt>
-                        <p><i class="uil uil-play-circle"></i></p>
-                    </dt>
-                    <dd>
-                        <h3>142</h3>
-                        <p>{{ $t('dashboard.replayCnt') }}</p>
-                    </dd>
-                </dl>
-            </li>
-        </ul>
+<!--        <ul class="studio-dashboard-info">-->
+<!--            <li style="background-color:#f97316;">-->
+<!--                <dl>-->
+<!--                    <dt>-->
+<!--                        <p><i class="uil uil-play"></i></p>-->
+<!--                    </dt>-->
+<!--                    <dd>-->
+<!--                        <h3>{{ playCnt }}</h3>-->
+<!--                        <p>{{ $t('dashboard.play') }}</p>-->
+<!--                    </dd>-->
+<!--                </dl>-->
+<!--            </li>-->
+<!--            <li style="background-color:#feb100;">-->
+<!--                <dl>-->
+<!--                    <dt>-->
+<!--                        <p><i class="uil uil-eye"></i></p>-->
+<!--                    </dt>-->
+<!--                    <dd>-->
+<!--                        <h3>142</h3>-->
+<!--                        <p>{{ $t('dashboard.gamePage.visit') }}</p>-->
+<!--                    </dd>-->
+<!--                </dl>-->
+<!--            </li>-->
+<!--            <li style="background-color:#5d5ffe;">-->
+<!--                <dl>-->
+<!--                    <dt>-->
+<!--                        <p><i class="uil uil-heart-alt"></i></p>-->
+<!--                    </dt>-->
+<!--                    <dd>-->
+<!--                        <h3>{{ likeCnt }}</h3>-->
+<!--                        <p>{{ $t('dashboard.like') }}</p>-->
+<!--                    </dd>-->
+<!--                </dl>-->
+<!--            </li>-->
+<!--            <li style="background-color:#33e4ce;">-->
+<!--                <dl>-->
+<!--                    <dt>-->
+<!--                        <p><i class="uil uil-stopwatch"></i></p>-->
+<!--                    </dt>-->
+<!--                    <dd>-->
+<!--                        <h3>142</h3>-->
+<!--                        <p>{{ $t('dashboard.playTime') }}</p>-->
+<!--                    </dd>-->
+<!--                </dl>-->
+<!--            </li>-->
+<!--            <li style="background-color:#b53bff;">-->
+<!--                <dl>-->
+<!--                    <dt>-->
+<!--                        <p><i class="uil uil-play-circle"></i></p>-->
+<!--                    </dt>-->
+<!--                    <dd>-->
+<!--                        <h3>142</h3>-->
+<!--                        <p>{{ $t('dashboard.replayCnt') }}</p>-->
+<!--                    </dd>-->
+<!--                </dl>-->
+<!--            </li>-->
+<!--        </ul>-->
 
 
     </div>
@@ -128,21 +131,22 @@ export default class Dashboard extends Vue {
         {name: '오늘', date: 'today'}, {name: '지난 7일', date: '7'}, {name: '지난 30일', date: '30'}];
 
     async mounted() {
+        await this.$store.dispatch("loginState");
+        this.createMetaSetting();
+        this.gameListFetch();
+        this.playCount();
+    }
+
+    createMetaSetting(){
         this.metaSetting = new MetaSetting({
-            title: `${this.$t('dashboard')} | Zempie.com`,
-            meta: [
+            title: `${this.$t('dashboard')} | Zempie.com`
+            ,meta: [
                 {name: 'description', content: `${this.$t('dashboard.desc')}`},
                 {property: 'og:url', content: `${this.$store.getters.homeUrl}/${this.$i18n.locale}/dashboard`},
                 {property: 'og:title', content: `${this.$t('dashboard')} | Zempie.com`},
                 {property: 'og:description', content: `${this.$t('dashboard.desc')}`},
             ]
         });
-
-
-        await this.$store.dispatch("loginState");
-        this.gameListFetch();
-
-        this.playCount();
     }
 
     playCount() {
@@ -186,5 +190,17 @@ export default class Dashboard extends Vue {
 </script>
 
 <style scoped lang="scss">
-
+.update-info{
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    text-align: center;
+    width: 1200px;
+    min-height: 500px;
+    margin: 0 auto;
+    padding: 45px 50px 0 50px;
+}
 </style>

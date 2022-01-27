@@ -38,7 +38,8 @@
                 <li
                     v-else
                     @click="updateProject"
-                    class="publish-btn active">
+                    :class="isActivePublishBtn ? 'active' : ''"
+                    class="publish-btn">
                     <h4>{{ $t('update') }}</h4>
                 </li>
             </ul>
@@ -147,8 +148,7 @@ export default class ProjectUpload extends Vue {
 
     updateProject() {
         this.isUpdateProject = true;
-        console.log(this.isUpdateProject)
-
+console.log("here?")
         // const option: any = {
         //     id: this.projectInfo.id,
         //     name: localStorage.getItem('title'),
@@ -193,6 +193,7 @@ export default class ProjectUpload extends Vue {
     }
 
     getPublishState(state: boolean) {
+        console.log('isActivePublish', state)
         this.isActivePublishBtn = state;
     }
 }

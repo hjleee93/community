@@ -2,20 +2,23 @@
     <div>
         <div class="info-input">
             <div class="ii-title">
-                <h2>비밀번호 변경</h2>
-                <h3>&nbsp;비밀번호를 재설정하려는 계정(이메일)을 입력해주세요.</h3>
+                <h2>{{ $t('changePwd.title') }}</h2>
+                <h3>&nbsp;{{ $t('changePwd.info') }}</h3>
             </div>
             <dl class="ii-card">
 
                 <div>
-                    <input @keyup.enter="sendEmail" type="text" v-model="email" name="" title="" placeholder="이메일 주소 입력"
+                    <input @keyup.enter="sendEmail" type="text" v-model="email" name="" title=""
+                           :placeholder="$t('login.email.placeholder')"
                            @input="isEmailErr=false"
                            class="w100p h60"/>
-                    <p :class="isEmailErr?'email-error':'email-no-error'">올바른 이메일 주소를 입력해주세요</p>
+                    <p :class="isEmailErr?'email-error':'email-no-error'">{{ $t('login.email.format.err') }}
+                        </p>
                 </div>
 
                 <p>
-                    <button @click="sendEmail" class="btn-default-big">이메일 전송</button>
+                    <button @click="sendEmail" class="btn-default-big">
+                        {{ $t('send.email') }}</button>
                 </p>
             </dl>
         </div>
@@ -32,9 +35,10 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2>작성하신 이메일로 비밀번호 재설정 메일을 보냈습니다.<br/>메일함을 확인해주세요</h2>
+                    <h2>{{ $t('send.email.info1') }}<br/>
+                        {{ $t('send.email.info2') }}</h2>
                     <div>
-                        <button class="btn-default" style="width: 100%" @click="$modal.hide('checkMailModal')">확인
+                        <button class="btn-default" style="width: 100%" @click="$modal.hide('checkMailModal')">{{ $t('confirm') }}
                         </button>
                     </div>
                 </div>

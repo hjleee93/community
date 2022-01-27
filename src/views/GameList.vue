@@ -48,6 +48,7 @@ import Toast from "@/script/message";
 import {scrollDone} from "@/script/scrollManager";
 import UserAvatar from "@/components/user/_userAvatar.vue";
 import GameCard from "@/components/game/_gameCard.vue";
+import MetaSetting from "@/script/metaSetting";
 
 @Component({
     components: {
@@ -60,6 +61,7 @@ import GameCard from "@/components/game/_gameCard.vue";
     },
 })
 export default class gameList extends Vue {
+    metaSetting !: MetaSetting;
     toast = new Toast();
     games: any = [];
     category: number = 1;
@@ -98,8 +100,19 @@ export default class gameList extends Vue {
         }
     }
 
-    mounted() {
+    async mounted() {
+
+        await this.$store.dispatch("loginState");
         this.fetch()
+        this.metaSetting = new MetaSetting({
+            title: `${this.$t('gameList')} | Zempie.com`, //게임 리스트
+            meta: [
+                {name: 'description', content: `${this.$t('gameList.desc')}`},
+                {property: 'og:url', content: `${this.$store.getters.homeUrl}/${this.$i18n.locale}/gameList`},
+                {property: 'og:title', content: `${this.$t('gameList')} | Zempie.com`},
+                {property: 'og:description', content: `${this.$t('gameList.desc')}`},
+            ]
+        });
         window.addEventListener("scroll", this.scrollCheck);
     }
 

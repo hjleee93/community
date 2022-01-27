@@ -4,7 +4,7 @@
         <div class="info-input">
             <div class="ii-title">
                 <h2>General Settings</h2>
-                <h3>프로필 사진을 ZEMPIE가 제공하는 커뮤니티를 나타내는 위치에 표시됩니다.</h3>
+                <h3>{{ $t('userSetting.title') }}</h3>
             </div>
 
             <dl class="ii-card">
@@ -60,7 +60,7 @@
                     <li>&nbsp;</li>
                 </ol>
                 <ol>
-                    <li>유저이름</li>
+                    <li>{{ $t('userSetting.name') }}</li>
                     <li><input type="text" name="" title="" readonly class="w100p" :value="user && user.name"/>
                     </li>
                     <!--                    <li>-->
@@ -74,20 +74,22 @@
 
         <!-- 버튼영역 -->
         <div class="area-btn">
-            <a @click="uploadProfile" class="btn-default w250">저장</a>
+            <a @click="uploadProfile" class="btn-default w250">{{ $t('save') }}</a>
         </div>
         <!-- 버튼영역 끝 -->
         <div class="delete-account">
-            <h2>비밀 번호 번경</h2>
+            <h2>{{ $t('userSetting.pwd.change') }}</h2>
             <div>
-                <p>비밀번호를 변경하시려면 <span><router-link :to="`/user/${this.$route.params.channel_id}/changePwd`">클릭</router-link></span>해주세요.
+                <p>{{ $t('userSetting.pwd.change.info1') }} <span><router-link :to="`/${$i18n.locale}/user/${this.$route.params.channel_id}/changePwd`">
+                    {{ $t('click') }}</router-link></span>{{ $t('userSetting.pwd.change.info2') }}
                 </p>
             </div>
         </div>
         <div class="delete-account">
-            <h2>계정삭제</h2>
+            <h2>{{ $t('userSetting.account.leave') }}</h2>
             <div>
-                <p>계정을 비활성화 하려면 <span><router-link :to="`/user/${this.$route.params.channel_id}/leave`">클릭</router-link></span>해주세요.
+                <p>{{ $t('userSetting.account.leave.info1') }}<span><router-link :to="`/${$i18n.locale}/user/${this.$route.params.channel_id}/leave`">{{ $t('click') }}</router-link></span>
+                    {{ $t('userSetting.pwd.change.info2') }}
                 </p>
             </div>
         </div>
@@ -185,7 +187,7 @@ export default class UserGeneralSetting extends Vue {
 
             this.$api.updateUser(formData)
                 .then((res) => {
-                    this.toast.successToast("계정 업데이트가 완료되었습니다.")
+                    this.toast.successToast(`${this.$t('userSetting.done')}`)//""
                     // this.$store.dispatch('userInfoUpdate', res.picture)
 
                     // console.log(' this.$store.getters.user.picture',  res)
@@ -198,7 +200,7 @@ export default class UserGeneralSetting extends Vue {
             formData.append('rm_picture', 'true');
             this.$api.updateUser(formData)
                 .then(() => {
-                    this.toast.successToast("계정 업데이트가 완료되었습니다.")
+                    this.toast.successToast(`${this.$t('userSetting.done')}`)
                     // this.$store.dispatch('userInfoUpdate', res.picture)
 
                     this.$store.commit('userInfoUpdate', {

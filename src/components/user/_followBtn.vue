@@ -46,7 +46,7 @@ export default class FollowBtn extends Vue {
     }
 
     myChannel(channel_id: string) {
-        this.$router.push(`/channel/${channel_id}/timeline`)
+        this.$router.push(`/${this.$i18n.locale}/channel/${channel_id}/timeline`)
 
     }
 

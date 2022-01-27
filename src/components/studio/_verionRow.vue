@@ -5,10 +5,10 @@
                 <!--                    <input type="checkbox" id="virsion1"/> <label for="virsion1"><i-->
                 <!--                    class="uil uil-check"></i></label>-->
             </li>
-            <li><span>&ndash; 번호: </span> &nbsp;&nbsp;{{ idx + 1 }}</li>
-            <li><span>&ndash; Detailed version : </span> &nbsp;&nbsp;ver {{ version.version }}</li>
-            <li><span>&ndash; State : &nbsp;&nbsp; </span> <span class="state01"></span>{{ version.state }}</li>
-            <li><span>&ndash; Creation date and time : </span>
+            <li><span>&ndash;    {{ $t('versionManage.index') }} : </span> &nbsp;&nbsp;{{ idx + 1 }}</li>
+            <li><span>&ndash; {{ $t('versionManage.detailedVersion') }} : </span> &nbsp;&nbsp;ver {{ version.version }}</li>
+            <li><span>&ndash; {{ $t('versionManage.state') }} : &nbsp;&nbsp; </span> <span class="state01"></span>{{ version.state }}</li>
+            <li><span>&ndash; {{ $t('versionManage.creationDate') }} : </span>
                 &nbsp;&nbsp;{{ moment(version.created_at).format('yyyy-MM-DD HH:mm:ss') }}
             </li>
             <li @click=" isOpenDelete = !isOpenDelete"><i class="uil uil-angle-down"
@@ -22,12 +22,11 @@
                 <p><span>&ndash;</span> Delete version </p>
             </li>
             <li>
-                <p><span>&ndash;</span> File size : {{ version.size }}MB</p>
-                <p> the deleted version cannot be recovered Deletion of the deployed version is not
-                    possible</p>
+                <p><span>&ndash;</span> {{ $t('file.size') }} : {{ version.size }}MB</p>
+                <p> {{ $t('versionManage.delete.modal.confirm') }}</p>
             </li>
             <li>
-                <a @click=deleteVersion() class="btn-default">DELETE</a>
+                <a @click=deleteVersion() class="btn-default">{{ $t('delete') }}</a>
             </li>
             <li></li>
         </ul>

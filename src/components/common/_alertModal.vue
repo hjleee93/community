@@ -17,7 +17,7 @@
             <div class="ma-content">
                 <h2>{{msg}}}</h2>
                 <div>
-                    <button class="btn-gray w48p" style="width: 100%;" @click="$modal.hide(modalName)">확인</button>
+                    <button class="btn-gray w48p" style="width: 100%;" @click="$modal.hide(modalName)">{{ $t('confirm') }}</button>
                 </div>
             </div>
         </div>

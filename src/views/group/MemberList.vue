@@ -23,18 +23,20 @@ import MemberCard from "@/components/community/_memberCard.vue";
 import {User} from "@/types";
 import FollowBtn from "@/components/user/_followBtn.vue";
 import {AxiosError, AxiosResponse} from "axios";
+import MetaSetting from "@/script/metaSetting";
 
 @Component({
     computed: {...mapGetters(["user"])},
     components: {MemberCard, FollowBtn},
 })
 export default class MemberList extends Vue {
-    private communityId = this.$route.params.community_id;
-    private totalMembers: number = 0;
-    private memberList: User[] = [];
-    private user!: User;
-    private limit: number = 10;
-    private offset: number = 0;
+    metaSetting !: MetaSetting;
+    communityId = this.$route.params.community_id;
+    totalMembers: number = 0;
+    memberList: User[] = [];
+    user!: User;
+    limit: number = 10;
+    offset: number = 0;
 
     mounted() {
         this.fetch();
@@ -56,6 +58,8 @@ export default class MemberList extends Vue {
 
 
     }
+
+
 
     reFetch(){
         this.limit = 10;

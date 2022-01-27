@@ -38,7 +38,7 @@ export default class UserAvatar extends Vue {
 
     moveUserPage() {
         if(this.user.channel_id)
-        this.$router.push(`/channel/${this.user.channel_id}/timeline`)
+        this.$router.push(`/${this.$i18n.locale}/channel/${this.user.channel_id}/timeline`)
     }
 }
 </script>

@@ -26,7 +26,7 @@
             </div>
             <div v-else class="ii-form">
                 <ul>
-                    <li> {{ $t('deployManage.noDeployVersion') }}</li>
+                    <li style="width: 100%;"> {{ $t('deployManage.noDeployVersion') }}</li>
                 </ul>
             </div>
 
@@ -250,8 +250,8 @@ export default class DeployManage extends Vue {
                     }
 
                     this.toast.clear();
-                    this.toast.successToast(`${this.selectVersion} 버전이 배포되었습니다.`)
-                    this.$router.replace(`/versionManage/${this.projectId}`);
+                    this.toast.successToast(`${this.selectVersion} ${this.$t('deployed.version')}`)
+                    this.$router.replace(`/${this.i18n.locale}/versionManage/${this.projectId}`);
                 })
                 .catch(() => {
 
@@ -288,10 +288,10 @@ export default class DeployManage extends Vue {
                 this.toast.clear();
                 this.toast.successToast(`${this.$t('deployVersion.version')}`)
 
-                this.$router.replace(`/versionManage/${this.projectId}`);
+                this.$router.replace(`/${this.$i18n.locale}/versionManage/${this.projectId}`);
             })
             .catch((err) => {
-                console.error("error");
+                console.error("error",err);
             })
 
 

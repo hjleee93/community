@@ -8,39 +8,39 @@
                              -->
 
 
-<!--            <template v-if="community.id === 'f4cbce49-4626-4211-b954-31877da18b5b'">-->
-<!--                <div class="ta-message-send" v-if="user.uid='n8lFf5Nu51UTU4d7ph7gol0ESvs1'">-->
-<!--                    <p>-->
-<!--                        <UserAvatar :user="user" :tag="'span'"></UserAvatar>-->
-<!--                    </p>-->
-<!--                    <dl @click="openPostModal">-->
-<!--                        <dt>-->
-<!--                            <input-->
-<!--                                type="text"-->
-<!--                                readonly-->
-<!--                                placeholder="무슨 생각을 하고 계신가요"/>-->
-<!--                        </dt>-->
-<!--                        <dd><a><i class="uil uil-message"></i></a></dd>-->
-<!--                    </dl>-->
-<!--                </div>-->
-<!--            </template>-->
-<!--            <template v-else>-->
-                <div class="ta-message-send" v-if="ableToPost() === true">
-                    <p>
-                        <UserAvatar :user="user" :tag="'span'"></UserAvatar>
-                    </p>
-                    <dl @click="openPostModal">
-                        <dt>
-                            <input
-                                type="text"
-                                readonly
-                                :placeholder="$t('postModalInput')"/>
-                        </dt>
-                        <dd><a><i class="uil uil-message"></i></a></dd>
-                    </dl>
-                </div>
+            <!--            <template v-if="community.id === 'f4cbce49-4626-4211-b954-31877da18b5b'">-->
+            <!--                <div class="ta-message-send" v-if="user.uid='n8lFf5Nu51UTU4d7ph7gol0ESvs1'">-->
+            <!--                    <p>-->
+            <!--                        <UserAvatar :user="user" :tag="'span'"></UserAvatar>-->
+            <!--                    </p>-->
+            <!--                    <dl @click="openPostModal">-->
+            <!--                        <dt>-->
+            <!--                            <input-->
+            <!--                                type="text"-->
+            <!--                                readonly-->
+            <!--                                placeholder="무슨 생각을 하고 계신가요"/>-->
+            <!--                        </dt>-->
+            <!--                        <dd><a><i class="uil uil-message"></i></a></dd>-->
+            <!--                    </dl>-->
+            <!--                </div>-->
+            <!--            </template>-->
+            <!--            <template v-else>-->
+            <div class="ta-message-send" v-if="ableToPost() === true">
+                <p>
+                    <UserAvatar :user="user" :tag="'span'"></UserAvatar>
+                </p>
+                <dl @click="openPostModal">
+                    <dt>
+                        <input
+                            type="text"
+                            readonly
+                            :placeholder="$t('postModalInput')"/>
+                    </dt>
+                    <dd><a><i class="uil uil-message"></i></a></dd>
+                </dl>
+            </div>
 
-<!--            </template>-->
+            <!--            </template>-->
             <div class="ta-message-block" v-else-if="ableToPost() === 'block'">
                 <i class="uil uil-exclamation-triangle"></i>
                 {{ $t('post.modal.block.text') }}
@@ -69,15 +69,15 @@
 
             <div v-else
                  class="ta-post-none"
-                 :style="ableToPost() === false ? 'margin-top: 0px;' : ''">
+                 :style="ableToPost() === false ? 'margin-top: 0px' : ''">
                 <p><span><i class="uil uil-layers-slash"></i></span></p>
-                <h2>  {{ $t('timeline.noPost') }}</h2>
+                <h2> {{ $t('timeline.noPost') }}</h2>
             </div>
 
 
             <!--        </div>-->
 
-<!--                    <PulseLoader :loading="$store.getters.LoadingStatus"></PulseLoader>-->
+            <!--                    <PulseLoader :loading="$store.getters.LoadingStatus"></PulseLoader>-->
         </dd>
         <modal name="writingModal" classes="post-modal" :clickToClose="false" :scrollable="true" height="auto">
             <post @closePostModal="closePostModal" @reFetch="reFetch" @reMount="reMount">
@@ -91,14 +91,14 @@
                :scrollable="true">
             <div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>  {{ $t('information') }}</dt>
+                    <dt> {{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('deleteModal')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">
                     <h2>{{ $t('post.delete.modal.text1') }} <br/>{{ $t('post.delete.modal.text2') }}
-                        </h2>
+                    </h2>
                     <div>
                         <button class="btn-default w48p" @click="yesDeletePost">{{ $t('yes') }}</button>
                         <button class="btn-gray w48p" @click="closeModal">{{ $t('no') }}</button>
@@ -222,6 +222,7 @@ import ImageUploaderBtn from "@/components/timeline/post/_imageUploaderBtn.vue";
 import Toast from "@/script/message";
 import SubscribeBtn from "@/components/community/_subscribeBtn.vue";
 import _ from "lodash";
+import MetaSetting from "@/script/metaSetting";
 
 @Component({
     computed: {
@@ -253,14 +254,18 @@ export default class Timeline extends Vue {
     @Prop() community!: any;
     @Prop() game!: any;
     @Prop() mediaType!: any;
-    private timeline: any = [];
-    private user!: User;
+
+    toast = new Toast();
+    metaSetting !: MetaSetting;
+
+    timeline: any = [];
+    user!: User;
 
     //parameters
-    private limit: number = 10;
-    private offset: number = 0;
-    private sort: string = '';
-    private media: string = '';
+    limit: number = 10;
+    offset: number = 0;
+    sort: string = '';
+    media: string = '';
 
     //state
     isAddData: boolean = false;
@@ -271,18 +276,18 @@ export default class Timeline extends Vue {
     feedId = '';
     pickedReason: any = '';
     originImg = '';
-    toast = new Toast();
 
     commentId = '';
     postId = '';
 
-    isFirstLoading:boolean = true;
+    isFirstLoading: boolean = true;
 
 
     mounted() {
         this.$store.dispatch("loginState")
             .then(() => {
                 this.fetch()
+                this.createMetaSetting();
             });
 
         window.addEventListener("scroll", this.scrollCheck);
@@ -290,6 +295,34 @@ export default class Timeline extends Vue {
 
     beforeDestroy() {
         window.removeEventListener("scroll", this.scrollCheck);
+    }
+
+    createMetaSetting() {
+        switch (this.currPage) {
+            case 'user':
+
+                break;
+            case 'game':
+                break;
+            case 'community':
+                this.metaSetting = new MetaSetting({
+                    title: `${this.community.name} | Zempie.com`,
+                    meta: [
+                        {name: 'description', content: this.community.description},
+                        {
+                            property: 'og:url',
+                            content: `${this.$store.getters.homeUrl}/${this.$i18n.locale}/community/${this.community.id}/timeline`
+                        },
+                        {property: 'og:title', content: `${this.community.name} | Zempie.com`},
+                        {property: 'og:description', content: this.community.description},
+                    ]
+                });
+                break;
+            case 'channel':
+                break;
+        }
+
+
     }
 
     reFetch() {
@@ -328,8 +361,8 @@ export default class Timeline extends Vue {
         window.scrollTo(0, 0)
     }
 
-    fetch() {
 
+    fetch() {
         switch (this.currPage) {
             case 'user':
                 const userObj = {
@@ -357,7 +390,7 @@ export default class Timeline extends Vue {
                         }
                     })
                     .catch((err: AxiosError) => {
-                        this.$router.push('/communityList')
+                        this.$router.push(`/${this.$i18n.locale}/communityList`)
 
                     })
                     .finally(() => {
@@ -368,13 +401,12 @@ export default class Timeline extends Vue {
                 break;
             case 'game':
                 const gameObj = {
-                    game_id:this.game.id,
+                    game_id: this.game.id,
                     limit: this.limit,
                     offset: this.offset,
                     sort: this.sort,
                     media: this.$route.query.media
                 }
-
                 this.$api.gameTimeline(gameObj)
                     .then((res: any) => {
                         if (this.isAddData) {
@@ -435,9 +467,9 @@ export default class Timeline extends Vue {
 
                     })
                     .finally(() => {
-                    this.isFirstLoading = false;
-                    this.timeline = _.orderBy(this.timeline, 'createdAt', 'desc')
-                })
+                        this.isFirstLoading = false;
+                        this.timeline = _.orderBy(this.timeline, 'createdAt', 'desc')
+                    })
 
                 break;
             //커뮤니티 내의 채널
@@ -486,9 +518,9 @@ export default class Timeline extends Vue {
 
 
     ableToPost() {
-        let result: any = ''
+        let result: any = false;
         //커뮤니티 블락당한 경우
-        if(this.user) {
+        if (this.user) {
             switch (this.currPage) {
                 case 'user':
                     if (this.user.uid === this.$route.params.channel_id || this.$route.name === 'MyChannel') {
@@ -510,7 +542,7 @@ export default class Timeline extends Vue {
                     result = true;
                     break;
                 case 'game' :
-                    if ((this.game && this.game.user.uid) === this.user.uid) {
+                    if ((this.game.user && this.game.user.uid) === this.user.uid) {
                         result = true;
                     }
 
@@ -543,15 +575,16 @@ export default class Timeline extends Vue {
                     this.$modal.show('modalPost')
                     break;
                 case 'community' :
-                    if(!this.community.is_subscribed){
+                    if (!this.community.is_subscribed) {
                         this.$modal.show('needSubscribe')
-                    }else{
+                    }
+                    else {
                         this.$modal.show('modalPost')
                     }
                     break;
                 case 'game' :
                     // if(this.game.user.uid === this.user.uid){
-                        this.$modal.show('modalPost')
+                    this.$modal.show('modalPost')
                     // }
                     break;
             }
@@ -595,6 +628,7 @@ export default class Timeline extends Vue {
         this.initData()
         this.media = (this.$route.query.media as string);
         this.fetch();
+        this.createMetaSetting();
     }
 
     deleteFeed(feedId: any) {
@@ -614,21 +648,7 @@ export default class Timeline extends Vue {
             .then((res: any) => {
                 if (res.success) {
                     this.$toasted.clear();
-                    this.$toasted.show("포스팅이 삭제되었습니다.", {
-                        singleton: true,
-                        fullWidth: false,
-                        fitToScreen: true,
-                        theme: "outline",
-                        position: "bottom-left",
-                        className: "toast-danger",
-                        duration: 3000,
-                        action: {
-                            text: "X",
-                            onClick: (e, toastObject) => {
-                                toastObject.goAway(0);
-                            },
-                        },
-                    });
+                    this.toast.successToast(`${this.$t('posting.deleted')}`)
                 }
                 this.timeline = []
                 this.initData();

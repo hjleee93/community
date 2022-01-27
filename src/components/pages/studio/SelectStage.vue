@@ -37,18 +37,26 @@
                 </dd>
             </dl>
         </li>
-        <li @click="selectStage(uploadStage.Monetization)" :class="$store.getters.gameStage === uploadStage.Monetization ? 'active' :''">
+        <li>
+<!--            @click="selectStage(uploadStage.Monetization)" :class="$store.getters.gameStage === uploadStage.Monetization ? 'active' :''"-->
             <p>
                 <!--                <input type="radio" name="stage" id="uoload4"/> <label for="uoload4"><i class="uil uil-check"></i></label>-->
             </p>
-            <dl>
+<!--            <dl>-->
+<!--                <dt><img src="/img/studio_icon04.png" alt="" title=""/></dt>-->
+<!--                <dd>-->
+<!--                    <h3>{{ $t('monetization') }}</h3>-->
+<!--                    <div>{{ $t('monetization.info') }}</div>-->
+<!--                </dd>-->
+<!--            </dl>-->
+            <dl >
                 <dt><img src="/img/studio_icon04.png" alt="" title=""/></dt>
                 <dd>
-                    <h3>{{ $t('monetization') }}</h3>
-                    <div>{{ $t('monetization.info') }}</div>
-                </dd>
+                    <h3>추후 게임 수익화를 위한 Zempie 파트너 서비스를 제공할 예정입니다.</h3>
+            </dd>
             </dl>
         </li>
+
 
         <modal :clickToClose="false"
                class="modal-area-type"
@@ -163,5 +171,10 @@ input[type="radio"] + label {
 }
 .studio-game-step .active{
     border: 2px solid #FF6E17;
+}
+.dimmed{
+    width: 100%;
+    opacity: 0.2;
+    pointer-events: none;
 }
 </style>

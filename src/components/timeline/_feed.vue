@@ -32,7 +32,7 @@
 
                         </template>
                         <template v-else>
-                            <router-link :to="`/channel/${feed.user&&feed.user.channel_id}/timeline`">
+                            <router-link :to="`/${$i18n.locale}/channel/${feed.user&&feed.user.channel_id}/timeline`">
                                 {{ $t('visit.userChannel') }}
                             </router-link>
                             <a v-if="user" @click="report">{{ $t('post.report') }}</a>
@@ -44,17 +44,18 @@
 
         <div>
             <div class="tapl-content" v-html="feed.content" @click="contentClicked" ref="contentDiv"></div>
-        <!-- 더보기 -->
-            <div  v-if="isOverflow" class='gradient'></div>
-        </div>
-        
-        <div  v-if="isOverflow" class="more-container">
-            <span><hr class="dot-line"/></span><a @click="moreView">
-            {{ $t('moreView') }}  </a><span><hr class="dot-line"/></span>
+            <!-- 더보기 -->
+            <div v-if="isOverflow" class='gradient'></div>
         </div>
 
-        <div  v-if="!isOverflow && isMoreView" class="more-container">
-            <span><hr class="dot-line"/></span><a @click="closeView">{{ $t('closeView') }}  </a><span><hr class="dot-line"/></span>
+        <div v-if="isOverflow" class="more-container">
+            <span><hr class="dot-line"/></span><a @click="moreView">
+            {{ $t('moreView') }} </a><span><hr class="dot-line"/></span>
+        </div>
+
+        <div v-if="!isOverflow && isMoreView" class="more-container">
+            <span><hr class="dot-line"/></span><a @click="closeView">{{ $t('closeView') }} </a><span><hr
+            class="dot-line"/></span>
         </div>
         <!-- /더보기 -->
 
@@ -105,7 +106,7 @@
                 <ul>
                     <LikeBtn :feed="feed"></LikeBtn>
                     <li @click="openComments"><i class="uil uil-comment-alt-dots comment-icon"
-                                                 style="font-size:22px;"></i>&nbsp; {{commentCnt }}
+                                                 style="font-size:22px;"></i>&nbsp; {{ commentCnt }}
                     </li>
                     <!--                    <li><i class="uil uil-eye" style="font-size:22px;"></i>&nbsp;680</li>-->
                     <li><a @click="copyUrl"><i class="uil uil-share-alt" style="font-size:20px;"></i></a></li>
@@ -113,19 +114,20 @@
             </li>
             <!--            <li><router-link to="#"><i class="uil uil-bookmark" style="font-size:24px; color:#ff6e17;"></i></router-link></li>-->
         </ul>
-           <transition-group name="fade">
-            <div v-if="isOpenedComments" class="tapl-comment" :key="Date.now()">
-                <transition-group name="fade" @scroll="scrollCheck" tag="ul">
-                    <li v-for="comment in comments" :key="comment.id">
-                        <Comment :comment="comment" :editContent="comment.content" :postId="feed.id" @editDone="editDone"/>
-                    </li>
-                </transition-group>
-                <CommentInput 
-                    :postId="feed.id" 
-                    @sendComment="editDone"
-                    @updateComment="updateDone"/>
-            </div>
-         </transition-group>
+
+        <div v-show="isOpenedComments"  :class="['tapl-comment', isOpenedComments ? 'open' : 'close']"  :key="Date.now()">
+            <ul @scroll="scrollCheck">
+
+                <li v-for="comment in comments" :key="comment.id">
+                    <Comment :comment="comment" :editContent="comment.content" :postId="feed.id"
+                             @editDone="editDone"/>
+                </li>
+            </ul>
+            <CommentInput
+                :postId="feed.id"
+                @sendComment="editDone"
+                @updateComment="updateDone"/>
+        </div>
 
     </li>
 
@@ -187,7 +189,7 @@ export default class Feed extends Vue {
     isMoreView: boolean | null = null;
     currScroll: number = 0;
 
-    commentCnt:number = 0;
+    commentCnt: number = 0;
 
     swiperOption = {
         pagination: {
@@ -204,7 +206,9 @@ export default class Feed extends Vue {
     }
 
     scrollCheck(e) {
+        console.log(e.tartget)
         if (scrollDone(e.target)) {
+
             this.offset += this.limit;
             this.commentFetch();
         }
@@ -216,7 +220,7 @@ export default class Feed extends Vue {
 
 
     openComments() {
-     
+
         this.commentInit();
         this.isOpenedComments = !this.isOpenedComments;
 
@@ -248,9 +252,8 @@ export default class Feed extends Vue {
     copyUrl() {
         execCommandCopy(`${this.$store.getters.communityUrl}feed/${this.feed.id}`)
         this.toast.clear();
-        this.toast.successToast("클립보드에 복사되었습니다.")
+        this.toast.successToast(`${this.$t('copied.clipboard')}`)
     }
-
 
 
     //post
@@ -271,12 +274,12 @@ export default class Feed extends Vue {
         //     );
         // }
         // else {
-        this.$router.push(`/feed/${this.feed.id}`);
+        this.$router.push(`/${this.$i18n.locale}/feed/${this.feed.id}`);
         // }
     }
 
     moveHashtag(hashtag: string) {
-        this.$router.push(`/search?hashtag=${hashtag}`)
+        this.$router.push(`/${this.$i18n.locale}/search?hashtag=${hashtag}`)
     }
 
     commentFetch() {
@@ -334,6 +337,7 @@ export default class Feed extends Vue {
         this.isOpenReportModal = !this.isOpenReportModal
         this.$modal.show('modalReport')
     }
+
     /**
      * 더보기
      * */
@@ -345,18 +349,18 @@ export default class Feed extends Vue {
         }
     }
 
-    moreView(){
+    moreView() {
         const ref = this.$refs.contentDiv;
-        (ref as any).style.maxHeight= '100%';
+        (ref as any).style.maxHeight = '100%';
         this.isOverflow = false;
         this.isMoreView = true;
         this.currScroll = document.documentElement.scrollTop;
 
     }
 
-    closeView(){
+    closeView() {
         const ref = this.$refs.contentDiv;
-        (ref as any).style.maxHeight= '500px';
+        (ref as any).style.maxHeight = '500px';
         this.isOverflow = true;
         this.isMoreView = false;
         window.scrollTo(0, this.currScroll);
@@ -373,7 +377,7 @@ export default class Feed extends Vue {
     }
 
     deleteComment(commentId: string) {
-         this.commentCnt--;
+        this.commentCnt--;
         this.commentInit();
         this.$api.deleteComment(this.feed.id, commentId)
             .then((res: AxiosResponse) => {
@@ -384,15 +388,17 @@ export default class Feed extends Vue {
             })
     }
 
-    editDone() {
+    editDone(comment:any) {
         this.commentCnt++;
-        this.commentInit();
-        this.commentFetch()
+        this.comments = [comment, ...this.comments]
+
+        // this.commentInit();
+        // this.commentFetch()
     }
 
-    updateDone(){
-        this.commentInit();
-        this.commentFetch()
+    updateDone() {
+        // this.commentInit();
+        // this.commentFetch()
     }
 }
 </script>
@@ -417,19 +423,23 @@ export default class Feed extends Vue {
 .fade-leave-active {
     transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
+{
     opacity: 0;
 }
+
 // /transition
 
 // 더보기
-.gradient{
+.gradient {
     background: linear-gradient(to top, #fff, #ededed00);
     height: 50px;
-    width: 100%;   
+    width: 100%;
     position: relative;
     bottom: 50px;
 }
+
 .more-container {
     display: flex;
     align-items: center;
@@ -607,5 +617,32 @@ pre code {
     border-radius: 10px !important;
     display: block !important;
     margin: 0 auto !important;
+}
+.tapl-comment.close{
+    animation: fade-out 1s;
+    animation-fill-mode: forwards;
+}
+.tapl-comment.open{
+    animation: fade-in 0.5s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fade-out {
+    from {
+        opacity: 1;
+
+    }
+    to {
+        opacity: 0;
+    }
 }
 </style>

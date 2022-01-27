@@ -10,8 +10,8 @@
                 <router-link to="#"><img src="../assets/images/logo.svg" width="140" alt="" title=""/></router-link>
             </div>
             <div class="la-title">
-                <h3>젬파이에 오신것을 환영합니다.</h3>
-                <p>젬파이 회원가입으로 다양한 혜택을 누려보세요!</p>
+                <h3>{{ $t('login.text1') }}</h3>
+                <p>{{ $t('login.text2') }}</p>
             </div>
             <div class="la-content">
                 <b-form>
@@ -19,7 +19,7 @@
                         <b-form-input v-model="$v.form.email.$model" type="text"
                                       name="login-email"
                                       title=""
-                                      placeholder="이메일 주소 또는 아이디"
+                                      :placeholder="$t('login.email.placeholder')"
                                       class="w100p h60"
                                       :state="login?validateState('email') :undefined"
                                       @keydown="checkLogin"/>
@@ -27,13 +27,13 @@
                         <!--                        <h2><i class="uil uil-check"></i> 이메일 주소를 입력하세요.</h2>-->
                         <b-form-invalid-feedback
                             v-if="!$v.form.email.emailValidator"
-                        ><i class="uil uil-check"></i> 올바른 이메일 형식을
-                            작성해주세요
+                        ><i class="uil uil-check"></i>
+                            {{ $t('login.email.format.err') }}
                         </b-form-invalid-feedback
                         >
                         <b-form-invalid-feedback
                             v-if="!$v.form.email.required"
-                        ><i class="uil uil-check"></i> 이메일을 입력해주세요
+                        ><i class="uil uil-check"></i> {{ $t('login.empty.email') }}
                         </b-form-invalid-feedback
                         >
                     </b-form-group>
@@ -43,20 +43,21 @@
                                       :state="login ? validateState('password'): undefined"
                                       type="password"
                                       name="login-password"
-                                      title="" placeholder="비밀번호를 입력하세요."
+                                      title=""
+                                      :placeholder="$t('login.pwd.placeholder')"
                                       class="w100p h60"
                                       @keydown="checkLogin">
                         </b-form-input>
 
                         <b-form-invalid-feedback
                             v-if="!$v.form.password.pwdValidator"
-                        ><i class="uil uil-check"></i> 영문과 최소 1개의 숫자 혹은 특수 문자를
-                            포함한 6~20자리 비밀번호를
-                            입력해주세요.
+                        ><i class="uil uil-check"></i>
+                            {{ $t('login.pwd.format.err') }}
                         </b-form-invalid-feedback>
                         <b-form-invalid-feedback
                             v-if="!$v.form.password.required"
-                        ><i class="uil uil-check"></i> 비밀번호를 입력해주세요
+                        ><i class="uil uil-check"></i>
+                            {{ $t('login.empty.pwd') }}
                         </b-form-invalid-feedback>
                     </b-form-group>
                 </b-form>
@@ -66,7 +67,7 @@
                 <!--                    <input type="checkbox" name="" title="" id="auto-login"/> <label for="id-save"><i-->
                 <!--                    class="uil uil-check"></i></label>&nbsp; <span><label for="auto-login">자동로그인</label></span>-->
                 <!--                </div>-->
-                <p><a @click="login" class="btn-default-big">로그인</a></p>
+                <p><a @click="login" class="btn-default-big">{{ $t('login') }}</a></p>
 
 
                 <dl>
@@ -75,18 +76,18 @@
                     <!--                    </dt>-->
                     <!--                    <dd>|</dd>-->
                     <dt>
-                        <router-link to="PasswordSearch">비밀번호 재설정</router-link>
+                        <router-link to="PasswordSearch">{{ $t('reset.pwd') }}</router-link>
                     </dt>
                     <dd>|</dd>
                     <dt>
-                        <router-link to="join">회원가입</router-link>
+                        <router-link :to="`/${$i18n.locale}/join`">{{ $t('join') }}</router-link>
                     </dt>
                 </dl>
             </div>
             <div class="la-bottom">
                 <dl>
                     <dt></dt>
-                    <dd>또는 다른 서비스 계정으로 로그인</dd>
+                    <dd>{{ $t('login.text3') }}</dd>
                     <dt></dt>
                 </dl>
                 <ul>
@@ -108,8 +109,8 @@
                     <!--                    </li>-->
                 </ul>
                 <p>
-                    <span><i class="uil uil-info-circle" style="font-size:16px; line-height:24px;"></i></span> &nbsp;SNS계정으로
-                    간편하게 가입하여 서비스를 이용하실 수 있습니다.
+                    <span><i class="uil uil-info-circle" style="font-size:16px; line-height:24px;"></i></span>
+                    {{ $t('login.text4') }}&nbsp;
                 </p>
             </div>
         </div>
@@ -126,9 +127,9 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2>존재하지 않는 회원정보입니다. 회원가입을 진행해주세요.</h2>
+                    <h2>{{ $t('login.err.text1') }}</h2>
                     <div>
-                        <button class="btn-default" @click="closeModal">확인</button>
+                        <button class="btn-default" @click="closeModal">{{ $t('confirm') }}확인</button>
                     </div>
                 </div>
             </div>
@@ -145,9 +146,9 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2>잘못된 정보입니다. 다시 한 번 입력해주세요</h2>
+                    <h2>{{ $t('login.err.text2') }}</h2>
                     <div>
-                        <button class="btn-default" @click="$modal.hide('wrongInfo')">확인</button>
+                        <button class="btn-default" @click="$modal.hide('wrongInfo')">{{ $t('confirm') }}</button>
                     </div>
                 </div>
             </div>
@@ -206,13 +207,6 @@ export default class Login extends Vue {
 
     // private googleBtn: string = "img/btn_google_signin_dark_normal_web.png";
 
-    goolgeBtnHover() {
-        // this.googleBtn = "img/btn_google_signin_dark_focus_web.png";
-    }
-
-    goolgeBtnOut() {
-        // this.googleBtn = "img/btn_google_signin_dark_normal_web.png";
-    }
 
     // vuelidate
     validateState(name) {
@@ -272,7 +266,7 @@ export default class Login extends Vue {
                     window.location.href = url;
                 }
                 else {
-                    await this.$router.replace("/");
+                    await this.$router.replace('/');
                 }
             }
         }
@@ -312,7 +306,7 @@ export default class Login extends Vue {
                 //     await this.$router.replace('/');
                 // }
 
-                await this.$router.replace("/");
+                await this.$router.replace('/');
                 break;
         }
 
@@ -356,9 +350,7 @@ export default class Login extends Vue {
                     }
                     else {
 
-                        await this.$router.push(
-
-                            `/channel/${this.$store.getters.user.channel_id}/timeline`
+                        await this.$router.push(`/${this.i18n.locale}/channel/${this.$store.getters.user.channel_id}/timeline`
                         );
                     }
 
@@ -366,7 +358,7 @@ export default class Login extends Vue {
                 .catch((err: any) => {
                     if (err.error.code === 20001) {
                         this.$store.commit("loginState", LoginState.no_user);
-                        this.$router.replace("/googleJoin");
+                        this.$router.replace(`/${this.i18n.locale}/googleJoin`);
                         return;
                     }
                 })

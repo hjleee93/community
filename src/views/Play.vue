@@ -113,7 +113,7 @@ export default class Play extends Vue {
                 break;
             }
             case "@moveChannel": {
-                await this.$router.push(`/channel/${channel_id}`);
+                await this.$router.push(`/${this.$i18n.locale}/channel/${channel_id}`);
                 break;
             }
         }
@@ -130,7 +130,7 @@ export default class Play extends Vue {
         if (this.$store.getters.fromRouterName) {
             this.$router.back();
         } else {
-            this.$router.push("/");
+            this.$router.push(`/${this.$i18n.locale}`);
         }
     }
 

@@ -6,7 +6,7 @@
                 <div class="header-logo-menu">
                     <p>
                         <i class="uil uil-bars" v-on:click="headerSideOpenMobile"></i>
-                        <router-link :to="`/${$i18n.locale}`">
+                        <router-link :to="`/`">
                             <img src="../assets/images/zempie-logo-black.png" width="120"/>
                         </router-link>
                     </p>
@@ -43,7 +43,7 @@
                     </div>
                 </div>
                 <div class="header-language">
-                    <v-select class="hl-select-box" :options="locales"  :placeholder="$t('korean')"
+                    <v-select class="hl-select-box" :options="locales" :placeholder="$t('korean')"
                               :reduce="name => name.code"
                               label="name"
                               @input="setSelectedLang"
@@ -87,7 +87,8 @@
                     </div>
                     <!-- 모바일 - 우측버튼 끝 -->
                     <!-- 모바일 - 좌측영역 -->
-                    <div class="header-side-mobile" id="headerSideMobile">
+                    <div class="header-side-mobile" :style="isHeaderSideMobile ? 'left:0px;' : '' "
+                         id="headerSideMobile">
                         <div class="hsm-close"><i class="uil uil-times" v-on:click="headerSideCloseMobile"></i></div>
                         <div class="hsm-search">
                             <div class="input-search-line-mobile" @click="isOpenSearch = !isOpenSearch">
@@ -109,14 +110,15 @@
                         <!--                            <a href="#">English</a>-->
                         <!--                        </div>-->
                     </div>
-                    <div class="header-side-bg-mobile" id="headerSideBgMobile" v-on:click="headerSideCloseMobile">
+                    <div class="header-side-bg-mobile" :style="isHeaderSideBgMobile ? 'display:block;' : '' "
+                         id="headerSideBgMobile" v-on:click="headerSideCloseMobile">
                         &nbsp;
                     </div>
                     <!-- 모바일 - 좌측영역 끝 -->
                 </template>
                 <!-- 로그인 했을 때 끝 -->
                 <!-- 로그인 안했을 때 -->
-                <div class="header-login" v-else>
+                <div class="header-login" v-show="!$store.getters.user">
                     <button class="btn-default" @click="login"><i class="uil uil-user"></i>{{ $t('login') }}</button>
                 </div>
                 <!-- 로그인 안했을 때 끝 -->
@@ -166,7 +168,9 @@
                                 </template>
                                 <template v-if="gameList && gameList.length > 0">
                                     <h2>{{ $t('game.name') }}</h2>
-                                    <div v-for="game in gameList" :key="game.id" @click="playGame(game.pathname)">
+                                    <div v-for="game in gameList" :key="game.id"
+                                         @click="moveGamePage(game.pathname)"
+                                    >
                                         <!--                                {{ game}}-->
                                         <dl>
                                             <dt>
@@ -224,8 +228,10 @@
                                     {{ $t('myChannel') }}
                                 </router-link>
                                 <!--                                <a @click="moveGameDashBoard"><i class="uil uil-robot"></i>게임스튜디오</a>-->
-                                <router-link :to="`/${$i18n.locale}/dashboard`"><i class="uil uil-robot"></i>{{ $t('gameStudio') }}</router-link>
-                                <router-link :to="`/user/${user.channel_id}/settings`"
+                                <router-link :to="`/${$i18n.locale}/projectList`"><i class="uil uil-robot"></i>
+                                    {{ $t('gameStudio') }}
+                                </router-link>
+                                <router-link :to="`/${$i18n.locale}/user/${user.channel_id}/settings`"
                                              @click.native="isOpenSetting = false"><i
                                     class="uil uil-setting"></i>
                                     {{ $t('account.settings') }}
@@ -236,8 +242,9 @@
                             <h2>{{ $t('group') }}</h2>
                             <div>
                                 <router-link @click.native="isOpenSetting = false"
-                                             :to="`/user/${user.channel_id}/manageJoinedGroup`"><i
-                                    class="uil uil-users-alt"></i>{{ $t('joined.group') }}
+                                             :to="`/${$i18n.locale}/user/${user.channel_id}/manageJoinedGroup`"><i
+                                    class="uil uil-users-alt"></i>
+                                    {{ $t('joined.group') }}
                                 </router-link>
                             </div>
                         </div>
@@ -303,7 +310,9 @@ export default {
             selectedLang: 'ko',
 
             path: "/",
-            locales: SUPPORTED_LOCALES
+            locales: SUPPORTED_LOCALES,
+            isHeaderSideMobile: false,
+            isHeaderSideBgMobile: false
         }
     },
     computed: {
@@ -356,14 +365,9 @@ export default {
                 this.isOpenSearch = true
             }
         },
-        // $route(to) {
-        //     console.log('to.path', to.path)
-        //     console.log('to', this.locale.base)
-        //     console.log('?', to.path.substring(this.locale.base.length))
-        //     this.path = this.locale.base ? this.locale.base + to.path : to.path;
-        //
-        //     console.log('this.path', this.path)
-        // }
+        $route() {
+            this.selectedLang = this.$i18n.locale;
+        }
     },
     methods: {
 
@@ -374,10 +378,10 @@ export default {
         async logout() {
             this.$store.state.pathName = "logout";
             await Login.logout();
-            await this.$router.push("/landing");
+            await this.$router.push(`/${this.$i18n.locale}/landing`);
         },
         login() {
-            this.$router.push('/login')
+            this.$router.push(`/${this.$i18n.locale}/login`)
         },
 
         playGame(pathname) {
@@ -393,15 +397,15 @@ export default {
         },
         groupPage(groupId) {
             this.listReset()
-            this.$router.push(`/community/${groupId}/timeline`)
+            this.$router.push(`/${this.$i18n.locale}/community/${groupId}/timeline`)
         },
         userPage(channel_id) {
             this.listReset()
-            this.$router.push(`/channel/${channel_id}/timeline`)
+            this.$router.push(`/${this.$i18n.locale}/channel/${channel_id}/timeline`)
         },
         gamePage(pathname) {
             this.listReset()
-            this.$router.push(`/timeline/game/${pathname}`)
+            this.$router.push(`/${this.$i18n.locale}/timeline/game/${pathname}`)
         },
         async searchType(event) {
             if (event.keyCode === 27) {
@@ -491,17 +495,18 @@ export default {
         },
 
         moveSearchPage: function () {
-            this.$router.push(`/search?q=${this.searchInput}`)
+            this.$router.push(`/${this.$i18n.locale}/search?q=${this.searchInput}`)
             this.listReset();
 
         },
         headerSideOpenMobile: function () {
-            //document.getElementById("headerMobileSideMobile").style.display = "block";
-            document.getElementById("headerSideMobile").style.left = "0";
-            document.getElementById("headerSideBgMobile").style.display = "block";
+            this.isHeaderSideMobile = true;
+            this.isHeaderSideBgMobile = true;
             document.body.style.overflow = "hidden";
         },
         headerSideCloseMobile: function () {
+            this.isHeaderSideMobile = false;
+            this.isHeaderSideBgMobile = false;
             //document.getElementById("headerMobileSideMobile").style.display = "none";
             document.getElementById("headerSideMobile").style.left = "-305px";
             document.getElementById("headerSideBgMobile").style.display = "none";
@@ -515,7 +520,10 @@ export default {
             })
 
         },
-
+        moveGamePage(pathname) {
+            this.$router.push(`/${this.$i18n.locale}/timeline/game/${pathname}`);
+            this.isOpenSearch = !this.isOpenSearch;
+        }
 
     }
 

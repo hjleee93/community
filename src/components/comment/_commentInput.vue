@@ -1,7 +1,9 @@
 <template>
     <dl :class="commentId ? 'edit-comment' :''">
         <UserAvatar :user="user" :tag="'p'" class="user"/>
-        <dt><input type="text" v-model="content" name="" title="" placeholder="댓글달기" @click='checkLogin'
+        <dt><input type="text" v-model="content" name="" title=""
+                   :placeholder="$t('comment.input.placeholder')"
+                   @click='checkLogin'
                    @keyup.enter="sendComment"/></dt>
         <dd><a @click="sendComment"><i class="uil uil-message"></i></a></dd>
     </dl>
@@ -45,8 +47,6 @@ export default class CommentInput extends Vue {
 
     //수정 , 작성
     sendComment() {
-
-        const whiteSpace = /\s/g;
     
         if (!this.user) {
             this.$modal.show('needLogin')
@@ -56,13 +56,13 @@ export default class CommentInput extends Vue {
                 this.$modal.show({
                     template: `<div class="modal-alert">
                 <dl class="ma-header">
-                    <dt>{{ $t('information') }}</dt>
+                    <dt> {{ $t('information') }}</dt>
                     <dd>
                         <button @click="$modal.hide('minChar')"><i class="uil uil-times"></i></button>
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2> 텍스트 내용을 입력해 주세요. </h2>
+                    <h2> {{ $t('post.empty.text') }}</h2>
                     <div>
                         <button class="btn-default" style="width:100%" @click="$modal.hide('minChar')">{{ $t('yes') }}</button>
                     </div>
@@ -86,13 +86,12 @@ export default class CommentInput extends Vue {
                 }
                 this.$api.updateComment(obj)
                     .then((res: AxiosResponse) => {
-                        this.$emit('updateComment')
+                        this.$emit('updateComment', res)
                     })
                     .catch((err: AxiosError) => {
-
                     })
                     .finally(() => {
-                        this.$emit("editDone", true);
+                        // this.$emit("editDone", true);
                     })
 
 
@@ -100,12 +99,6 @@ export default class CommentInput extends Vue {
             else {
                 const obj = {
                     user_id: this.user.id,
-                    attatchment_files: [
-                        {
-                            priority: 0,
-                            url: "string"
-                        }
-                    ],
                     type: "COMMENT",
                     parent_id: this.parentId,
                     post_id: this.postId,
@@ -114,7 +107,8 @@ export default class CommentInput extends Vue {
                 }
                 this.$api.sendComment(obj)
                     .then((res: AxiosResponse) => {
-                        this.$emit('sendComment')
+
+                        this.$emit('sendComment', res)
                     })
                     .catch((err: AxiosError) => {
 

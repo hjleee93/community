@@ -2,13 +2,13 @@
     <dd>
         <div class="studio-upload-input">
             <div class="sui-input">
-                <div class="suii-title">버전 추가</div>
+                <div class="suii-title">{{ $t('versionManage.addVersion') }}</div>
                 <dl class="suii-content">
-                    <dt>{{ $t('gameUpload') }}게임 업로드</dt>
+                    <dt>{{ $t('gameUpload') }}</dt>
                     <dd>
                         <p class="upload-file-container">
                             <label for="game-file"><i class="uil uil-file-plus" style="font-size:18px;"></i> &nbsp;
-                                {{ $t('fileUpload') }}파일업로드</label>
+                                {{ $t('fileUpload') }}</label>
                             <input
                                 @input="onFileChange"
                                 type="file"
@@ -31,19 +31,20 @@
                             </div>
                         </transition>
                         <h2>
-                            게임에 포함된 웹페이지를 압축 파일로 업로드 해주세요. <br/> ZIP 파일만 업로드가 가능하고, 압축하지 않은 파일들의 총 크기가 500MB 이하여야 합니다.
+                            {{ $t('addGameFile.selectMode.text1') }}<br/>
+                            {{ $t('addGameFile.selectFile.text3') }}
                         </h2>
                     </dd>
                 </dl>
                 <div class="suii-open"
                      :class="isAdvancedOpen ? 'open' : 'close'"
                      @click="isAdvancedOpen = !isAdvancedOpen">
-                    <span>고급설정</span> &nbsp;<i class="uil uil-sliders-v-alt"></i>
+                    <span>  {{ $t('advanced.setting') }}</span> &nbsp;<i class="uil uil-sliders-v-alt"></i>
                 </div>
                 <transition name="component-fade" mode="out-in">
                     <div v-show="isAdvancedOpen">
                         <dl class="suii-content">
-                            <dt>시작파일 선택</dt>
+                            <dt>{{ $t('addGameFile.select.startFile.text1') }}</dt>
                             <dd>
                                 <select name="" title="" class="w100p">
                                     <option v-for="file in startFileOptions" :value="file">{{ file }}</option>
@@ -51,7 +52,7 @@
                             </dd>
                         </dl>
                         <dl class="suii-content">
-                            <dt>게임 자동 배포 선택</dt>
+                            <dt>{{ $t('addGameFile.selectMode') }}</dt>
                             <dd>
                                 <ul>
                                     <li>
@@ -64,21 +65,20 @@
                                     <li>Auto-deployment mode</li>
                                 </ul>
                                 <h2>
-                                    게임에 포함된 웹페이지를 압축 파일로 업로드 해주세요. <br/> ZIP 파일만 업로드가 가능하고, 압축하지 않은 파일들의 총 크기가 100MB
-                                    이하여야
-                                    합니다.
+                                    {{ $t('addGameFile.selectMode.text1') }}<br/>
+                                    {{ $t('addGameFile.selectFile.text3') }}
                                 </h2>
                             </dd>
                         </dl>
                         <dl class="suii-content">
-                            <dt>버전</dt>
+                            <dt>{{ $t('version') }}</dt>
                             <dd>
                                 <input v-model="version" type="text" class="w100p">
 
                             </dd>
                         </dl>
                         <div class="suii-close">
-                            <button class="btn-line" @click="isAdvancedOpen = !isAdvancedOpen">{{ $t('close') }}닫기 &nbsp;&nbsp;<i
+                            <button class="btn-line" @click="isAdvancedOpen = !isAdvancedOpen">{{ $t('close') }} &nbsp;&nbsp;<i
                                 class="uil uil-angle-up"></i></button>
                         </div>
                     </div>
@@ -88,7 +88,8 @@
         </div>
 
         <ul class="sui-btn">
-            <li><a @click="upload" class="btn-default w150">{{ $t('upload') }}</a></li>
+            <li><a @click="upload" class="btn-default w150"><ClipLoader v-if="isLoadingUpload" :color="'#fff'" :size="'20px'" style="height: 20px"></ClipLoader>
+                <span v-else>{{ $t('upload') }}</span></a></li>
         </ul>
 
 
@@ -125,8 +126,10 @@ export default class AddVersion extends Vue {
     autoDeploy: boolean = true;
 
     version: string = '1.0.1';
-    isUpdate : boolean = false;
-    description : string = '';
+    isUpdate: boolean = false;
+    description: string = '';
+
+    isLoadingUpload: boolean = false;
 
     // beforeRouteEnter(to, from, next){
     //
@@ -142,11 +145,11 @@ export default class AddVersion extends Vue {
     // }
 
 
-    async mounted(){
+    async mounted() {
         await this.$store.dispatch("loginState");
         await this.$store.dispatch("project", this.projectId);
 
-        const lastVersion = this.$store.getters.lastVersion( this.projectId );
+        const lastVersion = this.$store.getters.lastVersion(this.projectId);
 
         if (lastVersion) {
             const ver = new Version(lastVersion.version)
@@ -154,8 +157,8 @@ export default class AddVersion extends Vue {
             this.version = ver.toString();
         }
 
-    const updateVersion = this.$store.getters.updateVersion( this.projectId );
-    this.isUpdate = updateVersion && updateVersion.state === 'process';
+        const updateVersion = this.$store.getters.updateVersion(this.projectId);
+        this.isUpdate = updateVersion && updateVersion.state === 'process';
 
 
     }
@@ -175,7 +178,7 @@ export default class AddVersion extends Vue {
         }
 
         if (size > this.limitSize) {
-            alert('100mb 초과임')
+            alert(`${this.$t('file.upload.overSize.500')}`)
             return;
 
         }
@@ -206,7 +209,7 @@ export default class AddVersion extends Vue {
             this.fileName = e.target.files[0].name
         }
         else {
-            alert('no html file')
+            alert(`${this.$t('notFoundHtml')}`)
             this.fileName = ''
             // this.uploadGameFileError = this.$t('projectAddVersion.error.notFoundHtml').toString();
 
@@ -246,6 +249,9 @@ export default class AddVersion extends Vue {
     }
 
     async upload() {
+        if (this.isLoadingUpload) {
+            return;
+        }
 
         let isError = false;
 
@@ -255,6 +261,7 @@ export default class AddVersion extends Vue {
             // this.versionError = this.$t('projectAddVersion.error.notValidVersion').toString();
         }
         else {
+
             const lastVersion = this.$store.getters.lastVersion(this.projectId);
 
             if (lastVersion && Version.validity(lastVersion.version)) {
@@ -264,7 +271,6 @@ export default class AddVersion extends Vue {
                 if (!newVersion.isNew(oldVersion)) {
                     //이전 버전 보다 작음.
                     isError = true;
-                    console.log('이전 버전 보다 커야함')
                     // this.versionError = this.$t('projectAddVersion.error.lowVersion').toString();
                     return;
                 }
@@ -272,16 +278,16 @@ export default class AddVersion extends Vue {
         }
 
 
-        if( !this.uploadGameFiles.length ) {
+        if (!this.uploadGameFiles.length) {
             isError = true;
             // this.uploadGameFileError = this.$t('projectAddVersion.error.noUploadFile').toString();
         }
 
-        if( !this.startFileOptions.length ) {
+        if (!this.startFileOptions.length) {
             isError = true;
         }
 
-        if( isError ) {
+        if (isError) {
             // this.wait = false;
             return;
         }
@@ -289,11 +295,11 @@ export default class AddVersion extends Vue {
         if (this.$store.getters.gameStage === eGameStage.Dev) {
             this.autoDeploy = false;
         }
-
+        this.isLoadingUpload = true;
         const version = await this.$api.createVersion(this.projectId, this.version, this.uploadGameFiles, this.startFile,
             this.autoDeploy, this.totalSize, this.description, this.$store.getters.gameStage);
 
-        if( !version || version.error ) {
+        if (!version || version.error) {
             // Notify.create({
             //     message : this.$t('projectAddVersion.error.newVersionUploadFail').toString(),
             //     position : 'top',
@@ -302,13 +308,14 @@ export default class AddVersion extends Vue {
             // });
         }
         else {
-
-            const project = this.$store.getters.project( this.projectId );
+            this.isLoadingUpload = false;
+            const project = this.$store.getters.project(this.projectId);
             project.update_version_id = version.id;
             project.projectVersions.push(version);
 
             console.log(project)
-            project.versions ? project.versions[ version.id ] = version :   this.$store.commit('versions', project.projectVersions);;
+            project.versions ? project.versions[version.id] = version : this.$store.commit('versions', project.projectVersions);
+            ;
 
             // Notify.create({
             //     message : this.$t('projectAddVersion.success.uploadFile').toString(),
@@ -316,7 +323,7 @@ export default class AddVersion extends Vue {
             //     color : 'primary',
             //     timeout: 2000
             // });
-            await this.$router.replace(`/projectList`);
+            await this.$router.replace(`/${this.$i18n.locale}/projectList`);
         }
 
 

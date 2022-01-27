@@ -10,8 +10,8 @@
                 </router-link>
             </div>
             <div class="lj-title">
-                <h3>회원가입</h3>
-                <p>젬파이 회원가입으로 다양한 혜택을 누려보세요!</p>
+                <h3>{{ $t('join')}}</h3>
+                <p>{{ $t('join.text1')}}</p>
             </div>
             <form class="lj-content" @submit="register">
                 <ul>
@@ -22,20 +22,21 @@
                                           :state=" register
                                         ? validateState('email')
                                         : undefined"
-                                          placeholder="이메일"
+                                          :placeholder="$t('login.email.placeholder')"
                                           readonly
                                           class="w100p h60"/>
                             <span></span>
                             <h3>
                                 <b-form-invalid-feedback
                                     v-if="!$v.form.email.emailValidator"
-                                ><i class="uil uil-check"></i>올바른 이메일 형식을
-                                    작성해주세요
+                                ><i class="uil uil-check"></i>
+                                    {{ $t('login.email.format.err')}}
                                 </b-form-invalid-feedback
                                 >
                                 <b-form-invalid-feedback
                                     v-if="!$v.form.email.required"
-                                ><i class="uil uil-check"></i>이메일을 입력해주세요
+                                ><i class="uil uil-check"></i>
+                                    {{ $t('login.empty.email')}}
                                 </b-form-invalid-feedback
                                 >
                             </h3>
@@ -49,18 +50,21 @@
                                     register
                                         ? validateState('username')
                                         : undefined
-                                " title="" placeholder="이름"
+                                " title=""
+                                          :placeholder="$t('name')"
                                           readonly
                                           class="w100p h60"></b-form-input>
                             <span></span>
                             <h3>
                                 <b-form-invalid-feedback
                                     v-if="!$v.form.username.required"
-                                ><i class="uil uil-check"></i>이름은 최소 두글자 이상입력해주세요
+                                ><i class="uil uil-check"></i>
+                                    {{ $t('join.name.empty.err')}}
                                 </b-form-invalid-feedback>
                                 <b-form-invalid-feedback
                                     v-if="!$v.form.username.maxLength"
-                                ><i class="uil uil-check"></i>이름은 20글자 이내로 작성해주세요.
+                                ><i class="uil uil-check"></i>
+                                    {{ $t('join.name.format.err')}}
                                 </b-form-invalid-feedback>
                             </h3>
                             <!--                            <h2><i class="uil uil-check"></i> 실명을 입력하세요.</h2>-->
@@ -104,15 +108,16 @@
                                                @click="agreement1"/>
                                         <label for="agree2"><i class="uil uil-check"></i></label>&nbsp;
                                         <span><label for="agree2"
-                                                     style="text-decoration:underline;">이용약관 (필수)</label></span>
+                                                     style="text-decoration:underline;">
+                                            {{ $t('terms')}} ({{ $t('required')}})</label></span>
                                     </dt>
                                     <dd>
-                                        <router-link to="/terms" target="_blank">보기</router-link>
+                                        <router-link :to="`/${$i18n.locale}/terms`" target="_blank">{{ $t('view')}}</router-link>
                                     </dd>
                                 </dl>
                             </li>
-                            <h3 :class="errorAgree1 ?'error-agree1' :'agree1'"><i class="uil uil-check"></i>이용약관에 동의
-                                해주세요</h3>
+                            <h3 :class="errorAgree1 ?'error-agree1' :'agree1'"><i class="uil uil-check"></i>
+                                {{ $t('agreement.text')}}</h3>
 
                         </ul>
 
@@ -120,7 +125,7 @@
 
                 </div>
                 <p>
-                    <a @click="register" class="btn-default-big">회원가입</a>
+                    <a @click="register" class="btn-default-big">{{ $t('join')}}</a>
                 </p>
                 <!--                <dl>
                                     <dt></dt>
@@ -241,7 +246,7 @@ export default class Login extends Vue {
         if (!result || result.error) {
             // if (result && result.error && result.error.message === '사용할 수 없는 단어') {
             if (result?.error?.code === 40101) {
-                alert("사용할 수 없는 이름입니다");
+                alert(`${this.$t('name.err.text')}`);
                 // todo 닉네임 필터 에러 처리
                 // alert(this.$t('join.joinNicknameError'));
             }

@@ -76,7 +76,7 @@ export default class TiptapBlog extends Vue {
                 }),
                 Placeholder.configure({
                     emptyEditorClass: 'is-editor-empty',
-                    placeholder: "멋진 생각을 공유해주세요.",
+                    placeholder: `${this.$t('posting.placeholder')}`,
                 }),
                 CharacterCount.configure({
                     limit: this.limit,

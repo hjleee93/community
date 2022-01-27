@@ -71,6 +71,7 @@ import Timeline from "@/components/timeline/_timeline.vue";
 import {dateFormat} from "@/script/moment";
 
 import _ from 'lodash';
+import MetaSetting from "@/script/metaSetting";
 
 @Component({
     computed: {
@@ -83,20 +84,21 @@ import _ from 'lodash';
     components: {Post, Feed, PulseLoader, Timeline},
 })
 export default class CommunityTimeline extends Vue {
+    metaSetting !: MetaSetting;
     communityId = this.$route.params.community_id;
     community: any = this.$store.getters.communityInfo;
     channelId: any = -1;
     channelList = []
 
     //parameters
-    private limit: number = 10;
-    private offset: number = 0;
-    private sort: string = '';
-    private media: string = '';
+    limit: number = 10;
+    offset: number = 0;
+    sort: string = '';
+    media: string = '';
 
     //state
-    private isAddData: boolean = false;
-    private hasData: boolean = true;
+    isAddData: boolean = false;
+    hasData: boolean = true;
 
     currPage: string = '';
 
@@ -104,6 +106,7 @@ export default class CommunityTimeline extends Vue {
     createdDate: string = dateFormat(this.community.createdAt);
 
     mounted() {
+
         this.currPage = 'community';
 
         this.$store.dispatch("loginState")
@@ -120,12 +123,27 @@ export default class CommunityTimeline extends Vue {
                         }]
                     })
                 }
+                // this.createMetaSetting();
 
             })
     }
 
     beforeDestroy() {
         this.$store.commit('currPage', null)
+    }
+
+
+    createMetaSetting(){
+        console.log(' this.createMetaSetting()');
+        this.metaSetting = new MetaSetting({
+            title: `${this.community.name} | Zempie.com`,
+            meta: [
+                {name: 'description', content: this.community.description},
+                {property: 'og:url', content: `${this.$store.getters.homeUrl}/${this.$i18n.locale}/community/${this.community.id}/timeline`},
+                {property: 'og:title', content: `${this.community.name} | Zempie.com`},
+                {property: 'og:description', content: this.community.description},
+            ]
+        });
     }
 
     reFetch() {
@@ -139,8 +157,6 @@ export default class CommunityTimeline extends Vue {
                 this.$store.commit('communityInfo', res);
                 this.community = res
                 this.createdDate = dateFormat(res.createdAt);
-
-
             })
             .catch((err: any) => {
                 console.log(err)
@@ -203,6 +219,8 @@ export default class CommunityTimeline extends Vue {
     generateKey() {
         return Date.now();
     }
+
+
 
 
 }

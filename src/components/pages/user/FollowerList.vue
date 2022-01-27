@@ -16,7 +16,7 @@
             </ul>
 
             <div class="no-result" v-else>
-                <h1>해당 유저의 팔로워가 없습니다</h1>
+                <h1>{{ $t('no.followers') }}</h1>
                 <img src="../../../assets/images/not-found.png" width="100px" height="100px"/>
 
             </div>

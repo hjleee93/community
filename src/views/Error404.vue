@@ -4,7 +4,7 @@
             <router-link to="/"><img src="../assets/images/zempie_logo.png" alt="" title=""/></router-link>
         </div>
         <img class="img404" src="../assets/images/404.png"/>
-        <button class='btn-default' @click="$router.go(-1)">뒤로가기</button>
+        <button class='btn-default' @click="$router.go(-1)">{{ $t('goBack') }}뒤로가기</button>
 <!--        <p class="error-section-text">-->
 <!--            If the problem persists, please send us an email to our support-->
 <!--            team at <a :href="'mailto:' +  $store.getters.supportEmail" style="color: #30a6d8">-->

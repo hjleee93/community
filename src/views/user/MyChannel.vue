@@ -19,7 +19,7 @@
                     ">
                     <a @click="media=''">
                         <p><i class="uil uil-clock-three"></i></p>
-                        <h2>타임라인(ALL)</h2>
+                        <h2>{{ $t('timeline')}}(ALL)</h2>
                     </a>
                 </swiper-slide>
                 <swiper-slide :class="media=== 'sns' ? 'active' : ''">
@@ -31,31 +31,31 @@
                 <swiper-slide :class="media=== 'blog' ? 'active' : ''">
                     <a @click="media='blog'">
                         <p><i class="uil uil-edit"></i></p>
-                        <h2>블로그</h2>
+                        <h2>{{ $t('blog')}}</h2>
                     </a>
                 </swiper-slide>
                 <swiper-slide :class="media=== 'image' ? 'active' : ''">
                     <a @click="media='image'">
                         <p><i class="uil uil-image-edit"></i></p>
-                        <h2>이미지</h2>
+                        <h2>{{ $t('image')}}</h2>
                     </a>
                 </swiper-slide>
                 <swiper-slide :class="media=== 'video' ? 'active' : ''">
                     <a @click="media='video'">
                         <p><i class="uil uil-play-circle"></i></p>
-                        <h2>동영상</h2>
+                        <h2>{{ $t('video')}}</h2>
                     </a>
                 </swiper-slide>
                 <swiper-slide :class="media=== 'sound' ? 'active' : ''">
                     <a @click="media='sound'">
                         <p><i class="uil uil-music"></i></p>
-                        <h2>오디오</h2>
+                        <h2>{{ $t('audio')}}</h2>
                     </a>
                 </swiper-slide>
                 <swiper-slide :class="media=== 'game' ? 'active' : ''">
                     <a @click="media='game'">
                         <p><i class="uil uil-map-pin-alt"></i></p>
-                        <h2>게임</h2>
+                        <h2>{{ $t('game')}}</h2>
                     </a>
                 </swiper-slide>
                 <div class="swiper-button-prev" slot="button-prev"></div>
@@ -176,13 +176,13 @@
                                 </dt>
                                 <dd>
                                     <h2>{{ community.name }}</h2>
-                                    <h3><i class="uil uil-chat-bubble-user"></i> 멤버 {{ community.member_cnt }}명</h3>
+                                    <h3><i class="uil uil-chat-bubble-user"></i>{{ $t('member') }}  {{ community.member_cnt }}</h3>
                                 </dd>
                             </dl>
                         </template>
                         <template v-else>
                             <dl>
-                                가입한 커뮤니티가 없습니다.
+                                {{ $t('noJoined.community') }}
                             </dl>
                         </template>
                     </div>
@@ -207,6 +207,7 @@ import AllGameCard from "@/components/pages/user/AllGameCard.vue";
 import FollowerList from "@/components/pages/user/FollowerList.vue";
 import FollowingList from "@/components/pages/user/FollowingList.vue";
 import UserAvatar from "@/components/user/_userAvatar.vue";
+import MetaSetting from "@/script/metaSetting";
 
 @Component({
     components: {
@@ -221,6 +222,7 @@ import UserAvatar from "@/components/user/_userAvatar.vue";
     computed: {...mapGetters(["user"])},
 })
 export default class MyChannel extends Vue {
+    metaSetting !: MetaSetting;
     TMSswiperOption = {
         slidesPerView: 'auto',
         spaceBetween: '0.2%',
@@ -252,15 +254,27 @@ export default class MyChannel extends Vue {
     media = '';
 
     mounted() {
+
+
         this.$store.dispatch("loginState")
             .then((res: any) => {
                 if (res === 4) {
+                    this.metaSetting = new MetaSetting({
+                        title: `${this.$t('myChannel')} | Zempie.com`,
+                        meta: [
+                            {name: 'description', content: `${this.user.name} ${this.$t('myChannel.desc')}`}, //~의 채널입니다.
+                            {property: 'og:url', content: `${this.$store.getters.homeUrl}/${this.$i18n.locale}/myChannel`},
+                            {property: 'og:title', content: `${this.$t('myChannel')} | Zempie.com`},
+                            {property: 'og:description', content: `${this.user.name} ${this.$t('myChannel.desc')}`},
+                        ]
+                    });
                     this.postCntFetch(this.user.id)
                     this.joinedComFetch(this.user.id)
                 }
                 else {
-                    this.$router.push('/login')
+                    this.$router.push(`/${this.i18n.locale}/login`)
                 }
+
             })
     }
 
@@ -286,7 +300,7 @@ export default class MyChannel extends Vue {
     }
 
     moveCommunity(id: string) {
-        this.$router.push(`/community/${id}/timeline`)
+        this.$router.push(`/${this.$i18n.locale}/community/${id}/timeline`)
     }
 
 }

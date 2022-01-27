@@ -54,43 +54,43 @@
                             ? 'active'
                             : ''
                     ">
-                    <router-link :to="`/community/${community.id}/timeline`">
+                    <router-link :to="`/${$i18n.locale}/community/${community.id}/timeline`">
                         <p><i class="uil uil-clock-three"></i></p>
-                        <h2>타임라인(ALL)</h2>
+                        <h2>{{ $t('timeline')}}(ALL)</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'sns' ? 'active' : ''">
-                    <router-link :to="`/community/${community.id}/timeline?media=sns`">
+                    <router-link :to="`/${$i18n.locale}/community/${community.id}/timeline?media=sns`">
                         <p><i class="uil uil-comment-dots"></i></p>
                         <h2>SNS</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'blog' ? 'active' : ''">
-                    <router-link :to="`/community/${community.id}/timeline?media=blog`">
+                    <router-link :to="`/${$i18n.locale}/community/${community.id}/timeline?media=blog`">
                         <p><i class="uil uil-edit"></i></p>
-                        <h2>블로그</h2>
+                        <h2>{{ $t('blog')}}</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'image' ? 'active' : ''">
                     <router-link
-                        :to="`/community/${community.id}/timeline?media=image`"
+                        :to="`/${$i18n.locale}/community/${community.id}/timeline?media=image`"
 
                     >
                         <p><i class="uil uil-image-edit"></i></p>
-                        <h2>이미지</h2>
+                        <h2>{{ $t('image')}}</h2>
                     </router-link>
                 </swiper-slide>
 
                 <swiper-slide :class="$route.query.media === 'video' ? 'active' : ''">
-                    <router-link :to="`/community/${community.id}/timeline?media=video`">
+                    <router-link :to="`/${$i18n.locale}/community/${community.id}/timeline?media=video`">
                         <p><i class="uil uil-play-circle"></i></p>
-                        <h2>동영상</h2>
+                        <h2>{{ $t('video')}}</h2>
                     </router-link>
                 </swiper-slide>
                 <swiper-slide :class="$route.query.media === 'sound' ? 'active' : ''">
-                    <router-link :to="`/community/${community.id}/timeline?media=sound`">
+                    <router-link :to="`/${$i18n.locale}/community/${community.id}/timeline?media=sound`">
                         <p><i class="uil uil-music"></i></p>
-                        <h2>오디오</h2>
+                        <h2>{{ $t('audio')}}</h2>
                     </router-link>
                 </swiper-slide>
                 <div class="swiper-button-prev" slot="button-prev"></div>
@@ -110,7 +110,7 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2>커뮤니티에서 탈퇴하시겠습니까?<br/>※ 커뮤니티 탈퇴시 작성한 포스팅은 자동으로 삭제되지 않습니다.</h2>
+                    <h2>{{ $t('leave.community.text1') }}<br/>※ {{ $t('leave.community.text2') }}</h2>
                     <div>
                         <button class="btn-default w48p" @click="yesUnsubscribe">{{ $t('yes') }}</button>
                         <button class="btn-gray w48p" @click="$modal.hide('deleteConfirm')">{{ $t('no') }}</button>
@@ -249,8 +249,8 @@ export default class Community extends Vue {
     }
 
     movePage(router: string) {
-        if (router === 'members') this.$router.push(`/community/${this.community.id}/members`)
-        else if (router === 'timeline') this.$router.push(`/community/${this.community.id}/timeline`)
+        if (router === 'members') this.$router.push(`/${this.$i18n.locale}/community/${this.community.id}/members`)
+        else if (router === 'timeline') this.$router.push(`/${this.$i18n.locale}/community/${this.community.id}/timeline`)
     }
 }
 </script>

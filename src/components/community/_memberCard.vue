@@ -71,7 +71,7 @@ export default class MemberCard extends Vue {
     }
 
     userPage() {
-        this.$router.push(`/channel/${this.member.channel_id}/timeline`)
+        this.$router.push(`/${this.$i18n.locale}/channel/${this.member.channel_id}/timeline`)
     }
 }
 </script>

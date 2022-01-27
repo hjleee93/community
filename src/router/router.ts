@@ -21,7 +21,7 @@ export default [
                         window.location.reload();
                     }
                     else {
-                        await router.push('/myChannel')
+                        await router.push(`/${i18n.locale}/myChannel`)
                     }
                     break;
                 case LoginState.no_user:
@@ -46,7 +46,7 @@ export default [
     //     component: () => import("@/views/Update.vue"),
     // },
     {
-        path: '/login',
+        path: 'login',
         name: 'Login',
         meta: {
             layout: LayoutNone,
@@ -56,7 +56,7 @@ export default [
         component: () => import("@/views/Login.vue"),
     },
     {
-        path: '/passwordSearch',
+        path: 'passwordSearch',
         name: 'PasswordSearch',
         meta: {
             layout: LayoutNone,
@@ -87,7 +87,7 @@ export default [
         component: () => import(/* webpackChunkName: "Join" */ '@/views/user/Join.vue')
     },
     {
-        path: '/googleJoin',
+        path: 'googleJoin',
         name: 'GoogleJoin',
         meta: {
             layout: LayoutNone,
@@ -265,7 +265,7 @@ export default [
         component: () => import("@/components/pages/community/CommunityCreate.vue"),
     },
     {
-        path: '/community/:community_id',
+        path: '',
         name: 'Community',
         meta: {
             layout: LayoutDefault,
@@ -274,10 +274,10 @@ export default [
         },
         props: true,
         component: () => import(/* webpackChunkName: "CommunityTimeline" */ "@/views/group/Community.vue"),
-        redirect: '/community/:community_id/timeline',
+        redirect: 'community/:community_id/timeline',
         children: [
             {
-                path: '/community/:community_id/timeline',
+                path: 'community/:community_id/timeline',
                 name: 'CommunityTimeline',
                 meta: {
                     layout: LayoutDefault,
@@ -288,7 +288,7 @@ export default [
                 component: () => import("@/components/pages/community/CommunityTimeline.vue"),
             },
             {
-                path: '/community/:community_id/members',
+                path: 'community/:community_id/members',
                 name: 'MemberList',
                 meta: {
                     layout: LayoutDefault,
@@ -302,7 +302,7 @@ export default [
         ]
     },
     {
-        path: '/search',
+        path: 'search',
         name: 'Search',
         meta: {
             layout: LayoutDefault,
@@ -319,10 +319,10 @@ export default [
         // ]
     },
     {
-        path: '/channel/:channel_id',
+        path: '',
         name: 'UserChannel',
         component: () => import("@/views/user/User.vue"),
-        redirect: '/channel/:channel_id/timeline',
+        redirect: 'channel/:channel_id/timeline',
         meta: {
             layout: LayoutDefault,
             title: 'User',
@@ -332,7 +332,7 @@ export default [
             const loginState = await store.dispatch("loginState");
 
             if ((loginState === LoginState.login) && (store.getters.user.channel_id === to.params.channel_id)) {
-                await router.push('/myChannel')
+                await router.push(`/${i18n.locale}/myChannel`)
             }
             else {
                 next();
@@ -340,7 +340,7 @@ export default [
         },
         children: [
             {
-                path: '/channel/:channel_id/timeline',
+                path: 'channel/:channel_id/timeline',
                 name: 'UserTimeline',
                 component: () => import("@/components/pages/user/UserTimeline.vue"),
                 meta: {
@@ -352,7 +352,7 @@ export default [
                     const loginState = await store.dispatch("loginState");
 
                     if ((loginState === LoginState.login) && (store.getters.user.channel_id === to.params.channel_id)) {
-                        await router.push('/myChannel')
+                        await router.push(`/${i18n.locale}/myChannel`)
                     }
                     else {
                         next();
@@ -360,7 +360,7 @@ export default [
                 },
             },
             {
-                path: '/channel/:channel_id/followers',
+                path: 'channel/:channel_id/followers',
                 name: 'Followers',
                 component: () => import("@/components/pages/user/FollowerList.vue"),
                 meta: {
@@ -370,7 +370,7 @@ export default [
                 },
             },
             {
-                path: '/channel/:channel_id/followings',
+                path: 'channel/:channel_id/followings',
                 name: 'Followings',
                 component: () => import("@/components/pages/user/FollowingList.vue"),
                 meta: {
@@ -380,7 +380,7 @@ export default [
                 },
             },
             {
-                path: '/channel/:channel_id/games',
+                path: 'channel/:channel_id/games',
                 name: 'AllGameCard',
                 component: () => import("@/components/pages/user/AllGameCard.vue"),
                 meta: {
@@ -390,7 +390,7 @@ export default [
                 },
             },
             {
-                path: '/channel/:channel_id/portfolio',
+                path: 'channel/:channel_id/portfolio',
                 name: 'PortfolioList',
                 meta: {
                     layout: LayoutDefault,
@@ -400,7 +400,7 @@ export default [
                 component: () => import("@/components/pages/user/portfolio/PortfolioList.vue"),
             },
             {
-                path: '/channel/:channel_id/portfolio/:porfolio_id/timeline',
+                path: 'channel/:channel_id/portfolio/:porfolio_id/timeline',
                 name: 'PortfolioTimeline',
                 meta: {
                     layout: LayoutDefault,
@@ -413,10 +413,10 @@ export default [
         ]
     },
     {
-        path: '/timeline/game/:gamePath',
+        path: '',
         name: 'Game',
         component: () => import("@/views/game/Game.vue"),
-        redirect: '/timeline/game/:gamePath/timeline',
+        redirect: 'timeline/game/:gamePath',
         meta: {
             layout: LayoutDefault,
             title: 'Game',
@@ -424,7 +424,7 @@ export default [
         },
         children: [
             {
-                path: '/timeline/game/:gamePath/timeline',
+                path: 'timeline/game/:gamePath',
                 name: 'GameTimeline',
                 meta: {
                     layout: LayoutDefault,
@@ -546,7 +546,7 @@ export default [
     //     component: () => import(/* webpackChunkName: "Home" */ '../views/Home.vue')
     // },
     {
-        path: '/feed/:feedId',
+        path: 'feed/:feedId',
         name: 'feedDetail',
         meta: {
             layout: LayoutDefault,
@@ -562,7 +562,7 @@ export default [
         props: true
     },
     {
-        path: '/terms',
+        path: 'terms',
         name: 'Terms',
         component: () => import('@/views/Terms.vue'),
         meta: {

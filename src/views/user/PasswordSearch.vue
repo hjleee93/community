@@ -8,21 +8,22 @@
 
     <div class="pw-find">
       <div class="pf-title">
-        <h3>비밀번호 찾기</h3>
-        <p>비밀번호를 잊으셨나요?</p>
+        <h3>{{ $t('find.pwd.text') }}</h3>
+        <p>{{ $t('find.pwd.desc') }}</p>
       </div>
       <div class="pf-content">
-        <div><i class="uil uil-info-circle" style="font-size:16px; line-height:24px;"></i>&nbsp;&nbsp;비밀번호를 재설정하려는 계정(이메일)을 입력해주세요.</div>
+        <div><i class="uil uil-info-circle" style="font-size:16px; line-height:24px;"></i>&nbsp;&nbsp;{{ $t('find.pwd.input.text') }}</div>
         <ul>
           <li>
             <div>
-                <input @keyup.enter="sendEmail" type="text"v-model="$v.email.$model" name="" title="" placeholder="이메일 주소 입력" class="w100p h60" /></div>
+                <input @keyup.enter="sendEmail" type="text"v-model="$v.email.$model" name="" title=""
+                       :placeholder="$t('login.email.placeholder')" class="w100p h60" /></div>
           </li>
         </ul>
-        <p><button  @click="sendEmail" class="btn-default-big">이메일 전송</button></p>
+        <p><button  @click="sendEmail" class="btn-default-big">
+            {{ $t('send.email.btn') }}</button></p>
       </div>
     </div>
-      <!--   todo:모달 퍼블리싱 다 오면 수정-->
 
 
       <modal :clickToClose="false" class="modal-area-type" name="checkMailModal" width="90%" height="auto" :maxWidth="380"
@@ -36,9 +37,10 @@
                   </dd>
               </dl>
               <div class="ma-content">
-                  <h2>작성하신 이메일로 비밀번호 재설정 메일을 보냈습니다.<br/>메일함을 확인해주세요</h2>
+                  <h2>{{ $t('send.email.modal.text1') }}<br/>
+                      {{ $t('send.email.modal.text2') }}</h2>
                   <div>
-                      <button class="btn-default" style="width: 100%" @click="closeModal">확인</button>
+                      <button class="btn-default" style="width: 100%" @click="closeModal">{{ $t('confirm') }}</button>
                   </div>
               </div>
           </div>
@@ -109,7 +111,7 @@ export default class PasswordSearch extends Vue {
 
     closeModal() {
         this.$modal.hide('checkMailModal')
-        this.$router.push('/login')
+        this.$router.push(`/${this.i18n.locale}/login`)
     }
 
 }

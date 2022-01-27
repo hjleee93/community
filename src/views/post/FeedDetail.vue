@@ -14,7 +14,7 @@
                                     <p><i class="uis uis-clock" style="color:#c1c1c1;"></i> {{ createdDate }}</p>
                                 </dd>
                                 <dd v-else>
-                                    <h2>탈퇴한 유저가 작성한 포스팅입니다.</h2>
+                                    <h2>{{ $t('feed.noUser.post')}}</h2>
                                     <p><i class="uis uis-clock" style="color:#c1c1c1;"></i> {{ createdDate }}</p>
                                 </dd>
                             </dl>
@@ -89,14 +89,15 @@
                                     class="uil uil-ellipsis-h font25"></i></a>
                                 <div slot="body" class="more-list fixed">
                                     <template v-if="user && (user.id === (feed.user && feed.user.id))">
-                                        <a @click="openEdit">포스팅 수정</a>
-                                        <a @click="deletePost">포스팅 삭제</a>
+                                        <a @click="openEdit">{{ $t('feed.edit')}}</a>
+                                        <a @click="deletePost">{{ $t('feed.delete')}}</a>
 
                                     </template>
                                     <template v-else>
-                                        <router-link :to="`/channel/${feed.user&&feed.user.channel_id}/timeline`">유저 채널 방문
+                                        <router-link :to="`/${$i18n.locale}/channel/${feed.user&&feed.user.channel_id}/timeline`">
+                                            {{ $t('visit.userChannel')}}
                                         </router-link>
-                                        <a v-if="user" @click="report">포스팅 신고</a>
+                                        <a v-if="user" @click="report">{{ $t('post.report')}}</a>
                                     </template>
                                 </div>
                             </dropdown-menu>
@@ -107,7 +108,7 @@
                         <!--                    </li>-->
                     </ul>
                     <div class="tapl-comment">
-                        <h2>댓글 {{ feed.comment_cnt }}개 </h2>
+                        <h2>{{ $t('comment')}} {{ feed.comment_cnt }}{{ $t('comment.count.unit')}} </h2>
                         <CommentInput :postId="feed.id" @sendComment="editDone"/>
                         <ul>
                             <li v-for="comment in comments" :key="comment.id">
@@ -211,7 +212,7 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2> 해당 댓글을 삭제하시겠습니까?</h2>
+                    <h2>{{ $t('comment.delete.text') }}</h2>
                     <div>
                         <button class="btn-default w48p" @click="deleteComment">{{ $t('yes') }}</button>
                         <button class="btn-gray w48p" @click="$modal.hide('deleteComment')">{{ $t('no') }}</button>
@@ -232,7 +233,7 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2> 삭제된 포스트는 복구가 불가능합니다.<br/>해당 포스트를 삭제하시겠습니까?</h2>
+                    <h2>{{ $t('post.delete.modal.text1') }}<br/>{{ $t('post.delete.modal.text2') }}</h2>
                     <div>
                         <button class="btn-default w48p" @click="yesDeletePost">{{ $t('yes') }}</button>
                         <button class="btn-gray w48p" @@click="$modal.hide('deleteModal')">{{ $t('no') }}</button>
@@ -341,7 +342,7 @@ export default class FeedDetail extends Vue {
     copyUrl() {
         execCommandCopy(window.location.href)
         this.toast.clear();
-        this.toast.successToast("클립보드에 복사되었습니다.")
+        this.toast.successToast(`${this.$t('copied.clipboard')}`)
     }
 
     scrollCheck() {
@@ -426,14 +427,10 @@ export default class FeedDetail extends Vue {
             (this.$refs.originImgModal as any).show();
         }
         else if (e.target.matches(".hashtag")) {
-            this.$router.push(
-                `/search?hashtag=${e.target.attributes["data-id"].nodeValue}`
-            );
+            this.$router.push(`/${this.$i18n.locale}/search?hashtag=${e.target.attributes["data-id"].nodeValue}`);
         }
         else if (e.target.matches(".mention")) {
-            this.$router.push(
-                `/channel/${e.target.attributes["channel-id"].nodeValue}/timeline`
-            );
+            this.$router.push(`/${this.$i18n.locale}/channel/${e.target.attributes["channel-id"].nodeValue}/timeline`);
         }
     }
 
@@ -458,9 +455,9 @@ export default class FeedDetail extends Vue {
             .then((res: any) => {
                 if (res.success) {
                     this.$toasted.clear();
-                    this.toast.successToast("포스팅이 삭제되었습니다.")
+                    this.toast.successToast(`${this.$t('posting.deleted')}`)
                 }
-                this.$router.push('/')
+                this.$router.push(`/${this.i18n.locale}`)
             })
             .catch((err: any) => {
 

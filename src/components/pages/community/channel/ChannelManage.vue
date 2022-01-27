@@ -27,7 +27,7 @@
                         <p class="create-entity-box-text">Create channel</p>
 
                         <router-link
-                            :to="`/community/${$route.params.community_id}/channelCreate`"
+                            :to="`/${$i18n.locale}/community/${$route.params.community_id}/channelCreate`"
                             class="
                                 button
                                 secondary
@@ -127,7 +127,7 @@
                         </div>
 
                         <router-link
-                            :to="`/community/${communityId}/setting/channel/${channel.id}`"
+                            :to="`/${$i18n.locale}/community/${communityId}/setting/channel/${channel.id}`"
                             class="button white full popup-manage-group-trigger"
                         >
                             Manage

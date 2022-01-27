@@ -50,13 +50,13 @@ export default class AudioUploaderBtn extends Vue {
                 onSelectFile(input.files, this.maxFileNum, 10, 'audioArr')
             }
             else {
-                alert(`최대 파일 개수는 ${this.maxFileNum}개입니다.`)
+                alert(`${this.$t('maxFile.count.text1')} ${this.maxFileNum}${this.$t('maxFile.count.text2')}`) //
             }
 
         }
         else if (this.activeTab === 'BLOG') {
             if (input.files.length > 10) {
-                alert(`최대 파일 개수는 10개입니다.`)
+                alert(`${this.$t('maxFile.count.ten.text')}`)
                 return;
             }
 
@@ -64,7 +64,7 @@ export default class AudioUploaderBtn extends Vue {
 
             for (let i = 0; i < input.files.length; i++) {
                 if (input.files[i].size > mbToByte(10)) {
-                    alert(`최대 파일 크기는 10mb입니다.`)
+                    alert(`${this.$t('maxFile.size.ten.text')}`)
                 }
                 else {
                     formData.append(input.files[i].name, input.files[i]);

@@ -13,7 +13,7 @@
             ></MemberCard>
         </ul>
         <div class="no-result" v-else>
-            <h1> 팔로잉한 유저가 없습니다</h1>
+            <h1>{{ $t('no.following') }} </h1>
             <img src="../../../assets/images/not-found.png" width="100px" height="100px"/>
         </div>
         </transition>

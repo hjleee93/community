@@ -52,7 +52,7 @@
 
                     <li>
                         <span>&ndash; {{ $t('game.thumbnail') }}: </span>
-                        <p :style="`background: url(${project.picture_web || project.picture || 'img/default.png' }?t=${Date.now()}) center center / cover no-repeat; background-size: cover;`"></p>
+                        <p :style="`background: url(${project.picture_web || project.picture || project.url_thumb || 'img/default.png' }?t=${Date.now()}) center center / cover no-repeat; background-size: cover;`"></p>
                     </li>
                     <li>
                         <span>&ndash; {{ $t('game.title') }}: </span> &nbsp;&nbsp;{{ project.name }}

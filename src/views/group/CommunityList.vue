@@ -36,11 +36,11 @@
             <dd>
                 <div class="sort-default">
                     <a @click="sortGroups(0)" :class="filter === 0 ? 'active' : ''"><i class="uis uis-check"></i>
-                        신규순</a>
+                        {{ $t('filter.recent') }} </a>
                     <span>·</span>
-                    <a @click="sortGroups(1)" :class="filter === 1 ? 'active' : ''"><i class="uis uis-check"></i> 가입많은순</a>
+                    <a @click="sortGroups(1)" :class="filter === 1 ? 'active' : ''"><i class="uis uis-check"></i>{{ $t('filter.subscribe') }} </a>
                     <span>·</span>
-                    <a @click="sortGroups(2)" :class="filter === 2? 'active' : ''"><i class="uis uis-check"></i> 글자순</a>
+                    <a @click="sortGroups(2)" :class="filter === 2? 'active' : ''"><i class="uis uis-check"></i>{{ $t('filter.alphabet') }} </a>
                 </div>
             </dd>
         </dl>
@@ -85,7 +85,7 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2> 커뮤니티에서 탈퇴하시겠습니까?<br/>※ 커뮤니티 탈퇴시 작성한 포스팅은 자동으로 삭제되지 않습니다.</h2>
+                    <h2>{{ $t('leave.community.text1') }} <br/>※ {{ $t('leave.community.text2') }}</h2>
                     <div>
                         <button class="btn-default w48p" @click="yesUnsubscribe">{{ $t('yes') }}</button>
                         <button class="btn-gray w48p" @click="$modal.hide('deleteConfirm')">{{ $t('no') }}</button>
@@ -107,12 +107,14 @@ import {mapGetters} from "vuex";
 import SubscribeBtn from "@/components/community/_subscribeBtn.vue";
 import UniCons from '@iconscout/vue-unicons'
 import ClickManager from "@/script/clickManager";
+import MetaSetting from "@/script/metaSetting";
 
 @Component({
     components: {PageLoader, CommunityCard, SubscribeBtn, UniCons},
     computed: {...mapGetters(["user"])},
 })
 export default class CommunityList extends Vue {
+    metaSetting !: MetaSetting;
     clickManager: ClickManager = new ClickManager();
     private communityList: any = [];
     private searchInput: string = "";
@@ -130,13 +132,6 @@ export default class CommunityList extends Vue {
     user !: any;
 
     isFirstLoading: boolean = true;
-
-    scrollCheck() {
-        if (scrollDone(document.documentElement)) {
-            this.offset += this.limit;
-            this.fetch();
-        }
-    }
 
     mounted() {
         this.fetch();
@@ -176,7 +171,27 @@ export default class CommunityList extends Vue {
             })
             .finally(() => {
                 this.isFirstLoading = false;
+                this.createMetaSetting();
             })
+    }
+
+    scrollCheck() {
+        if (scrollDone(document.documentElement)) {
+            this.offset += this.limit;
+            this.fetch();
+        }
+    }
+
+    createMetaSetting(){
+        this.metaSetting = new MetaSetting({
+            title: `${this.$t('communityList')} | Zempie.com`, //커뮤니티 리스트
+            meta: [
+                {name: 'description', content: `${this.$t('communityList.desc')}`},
+                {property: 'og:url', content: `${this.$store.getters.homeUrl}/${this.$i18n.locale}/communityList`},
+                {property: 'og:title', content: `${this.$t('communityList')} | Zempie.com`},
+                {property: 'og:description', content: `${this.$t('communityList.desc')}`},
+            ]
+        });
     }
 
     unsubscribe(communityId: string) {

@@ -26,7 +26,7 @@
                     :key="portfolio.id"
                     class="user-status-list"
                     @click="movePortfolio(portfolio.id)"
-                    :to="`/channel/${userUid}/portfolio/${portfolio.id}/timeline`"
+                    :to="`/${$i18n.locale}/channel/${userUid}/portfolio/${portfolio.id}/timeline`"
                 >
                     <span class="portfolio-title">{{ portfolio.title }}</span>
 
@@ -40,7 +40,7 @@
             </template>
             <router-link
                 class="user-status-list all-btn"
-                :to="`/channel/${userUid}/portfolio`"
+                :to="`/${$i18n.locale}/channel/${userUid}/portfolio`"
                 >View all</router-link
             >
         </div>

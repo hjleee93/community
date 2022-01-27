@@ -13,7 +13,7 @@
             <router-link
                 class="simple-tab-item"
                 :class="$route.name === 'CommunitySetting' ? 'active' : ''"
-                :to="`/community/${community.id}/setting`"
+                :to="`/${$i18n.locale}/community/${community.id}/setting`"
                 >정보</router-link
             >
 
@@ -22,13 +22,13 @@
                 :class="
                     $route.name === 'CommunitySettingMember' ? 'active' : ''
                 "
-                :to="`/community/${community.id}/setting/member`"
+                :to="`/${$i18n.locale}/community/${community.id}/setting/member`"
                 >유저 관리</router-link
             >
             <router-link
                 class="simple-tab-item"
                 :class="$route.name === 'ChannelManage' ? 'active' : ''"
-                :to="`/community/${community.id}/setting/channel`"
+                :to="`/${$i18n.locale}/community/${community.id}/setting/channel`"
                 >채널 관리</router-link
             >
         </div>

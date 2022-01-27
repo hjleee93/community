@@ -21,11 +21,13 @@
                     </ul>
 
                     <div v-if="totalGameCnt > 5">
-                        <router-link :to="`/channel/${channel_id}/games`" class="btn-default-samll w100p">{{ $t('moreView') }}</router-link>
+                        <router-link :to="`/${$i18n.locale}/channel/${channel_id}/games`"
+                                     class="btn-default-samll w100p">{{ $t('moreView') }}
+                        </router-link>
                     </div>
                 </template>
                 <ul v-else class="no-game">
-                    <li>등록된 게임이 없습니다.</li>
+                    <li>{{ $t('no.game') }}</li>
                 </ul>
             </div>
         </dt>
@@ -54,13 +56,14 @@
                             </dt>
                             <dd>
                                 <h2>{{ community.name }}</h2>
-                                <h3><i class="uil uil-chat-bubble-user"></i>{{ community.member_cnt }} 명</h3>
+                                <h3><i class="uil uil-chat-bubble-user"></i>{{ community.member_cnt }}
+                                    {{ $t('member.count.unit') }}</h3>
                             </dd>
                         </dl>
                     </template>
                     <template v-else>
                         <dl>
-                            가입한 커뮤니티가 없습니다.
+                            {{ $t('noJoined.community') }}
                         </dl>
                     </template>
                 </div>
@@ -155,7 +158,7 @@ export default class UserPage extends Vue {
                 this.communityFetch();
             })
             .catch((err: AxiosError) => {
-                this.$router.push('/')
+                // this.$router.push(`/${this.$i18n.locale}`)
                 // console.log('err', err)
             })
 
@@ -168,25 +171,24 @@ export default class UserPage extends Vue {
                 this.communityList = res;
             })
             .catch((err: AxiosError) => {
-                this.$router.push('/')
+                this.$router.push(`/${this.i18n.locale}`)
             })
 
 
     }
 
     moveGameChannel(gamePath: string) {
-        this.$router.push(`/timeline/game/${gamePath}`);
+        this.$router.push(`/${this.$i18n.locale}/timeline/game/${gamePath}`);
     }
 
     moveGroupPage(id: any) {
-        this.$router.push(`/community/${id}/timeline`);
+        this.$router.push(`/${this.$i18n.locale}/community/${id}/timeline`);
     }
 
-    playGame(pathname:string){
+    playGame(pathname: string) {
         window.open(
             this.$store.getters.homeUrl + `play/${pathname}`, "_blank");
     }
-
 
 
 }

@@ -1,8 +1,9 @@
 <template>
-    <a class="btn-sub w120 mr10" v-if="this.$route.meta.title === 'ManageJoinedGroup'" @click="unsubscribe">가입중</a>
+    <a class="btn-sub w120 mr10" v-if="this.$route.meta.title === 'ManageJoinedGroup'" @click="unsubscribe">
+        {{ $t('isSubscribing') }}</a>
     <a class="btn-default w120 mr10" v-else-if="!community.is_subscribed" :community="community"
-       @click="subscribe">가입하기</a>
-    <a class="btn-sub w120 mr10" v-else @click="unsubscribe">가입중</a>
+       @click="subscribe">{{ $t('subscribe.btn') }}</a>
+    <a class="btn-sub w120 mr10" v-else @click="unsubscribe">{{ $t('isSubscribing') }}</a>
 </template>
 
 <script lang="ts">

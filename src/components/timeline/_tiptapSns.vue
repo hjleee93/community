@@ -121,7 +121,7 @@ export default class TiptapSns extends Vue {
                 }),
                 Placeholder.configure({
                     emptyEditorClass: 'is-editor-empty',
-                    placeholder: "멋진 생각을 공유해주세요.",
+                    placeholder: `${this.$t('posting.placeholder')}`,
                 }),
                 Video,
                 Iframe,

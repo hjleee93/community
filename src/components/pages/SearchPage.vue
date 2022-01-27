@@ -1,7 +1,7 @@
 <template>
     <div class="content">
         <div class="visual-title">
-            <h2>'{{ keyword }}' <span>검색결과</span></h2>
+            <h2>'{{ keyword }}' <span>{{ $t('search.result') }}</span></h2>
         </div>
 
         <!--        <div class="tab-search-swiper">-->
@@ -51,7 +51,7 @@
             </transition-group>
             <li class="more-card" v-if="memberList && memberList.length>3">
                 <h3><i class="uil uil-plus"></i></h3>
-                <h4>모두보기</h4>
+                <h4>{{ $t('search.viewAll') }}</h4>
             </li>
         </ul>
 
@@ -236,7 +236,7 @@ export default class SearchPage extends Vue {
 
 
     toGamePage(gamePath: string, gameId: number) {
-        this.$router.push(`/timeline/game/${gamePath}?game_id=${gameId}`)
+        this.$router.push(`/${this.$i18n.locale}/timeline/game/${gamePath}?game_id=${gameId}`)
 
 
     }
@@ -248,7 +248,7 @@ export default class SearchPage extends Vue {
     }
 
     userPage(channel_id: string) {
-        this.$router.push(`/channel/${channel_id}/timeline`)
+        this.$router.push(`/${this.$i18n.locale}/channel/${channel_id}/timeline`)
     }
 
     playGame(pathname: string) {

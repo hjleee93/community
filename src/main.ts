@@ -62,14 +62,12 @@ router.beforeEach((to, from, next) => {
     }
     let lang = to.params.locale;
 
-    console.log('lang', lang)
-
-    if(!lang) {
+    if (!lang) {
         lang = 'ko'
     }
     i18n.locale = lang;
     next();
-    })
+})
 
 new Vue({
     router,

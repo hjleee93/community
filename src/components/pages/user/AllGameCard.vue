@@ -12,7 +12,7 @@
         </dl>
         <ul class="card-portfolio" v-if="games && games.length > 0">
             <li v-for="game in games"
-                @click="playGame(game.pathname)"
+                @click="moveGamePage(game.pathname)"
                 :key="game.id"
                 :game="game">
                 <div class="cp-img" :style="{'background' : 'url(' +  game.url_thumb_webp ||
@@ -25,7 +25,7 @@
             </li>
         </ul>
         <div class="no-result" v-else>
-            <h1> 게임 없음</h1>
+            <h1>{{ $t('no.game') }}</h1>
             <img src="../../../assets/images/not-found.png" width="100px" height="100px"/>
         </div>
 
@@ -99,7 +99,9 @@ export default class AllGameCard extends Vue {
     playGame(pathname: string) {
         window.open(
             this.$store.getters.homeUrl + `play/${pathname}`, "_blank");
-
+    }
+    moveGamePage(pathname: string){
+        this.$router.push(`/${this.$i18n.locale}/timeline/game/${pathname}`)
     }
 }
 </script>

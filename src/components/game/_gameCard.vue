@@ -63,7 +63,7 @@ export default class GameCard extends Vue {
     }
 
     moveGamePage(pathname: string){
-        this.$router.push(`/timeline/game/${pathname}`)
+        this.$router.push(`/${this.$i18n.locale}/timeline/game/${pathname}`)
     }
 }
 </script>

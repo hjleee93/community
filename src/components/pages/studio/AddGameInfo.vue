@@ -63,7 +63,7 @@
                                 <div style="height: 0px; overflow: hidden">
                                     <input type="file"
                                            @change="onFileChange"
-                                           accept=image/*
+                                           accept="image/jpeg, image/png, image/svg, image/jpg, image/webp, image/bmp,"
                                            ref="thumbnail"
                                            name="fileInput"/>
                                 </div>
@@ -97,6 +97,7 @@
                                     <input type="file"
                                            @change="onFileChange"
                                            accept=image/*
+
                                            ref="thumbnail"
                                            name="fileInput"/>
                                 </div>
@@ -117,7 +118,7 @@
                 </dd>
             </dl>
             <dl class="suii-content">
-                <dt>미리보기 이미지</dt>
+                <dt> {{ $t('previewImage.title') }}</dt>
                 <dd>
                     <ul class="image-upload">
                         <li v-if="!prevGif">
@@ -131,12 +132,13 @@
                                 </div>
                                 <p><i class="uil uil-image-v"></i></p>
                                 <h2>
-                                    이미지사이즈 512* 512<br/>
+                                    {{ $t('addGameInfo.game.thumbnail.size') }} 512* 512<br/>
                                     (up to 4MB)
                                 </h2>
                             </div>
                             <p>
-                                <button class="btn-gray" @click="uploadGif"><i class="uil uil-upload"></i>&nbsp; 이미지 업로드
+                                <button class="btn-gray" @click="uploadGif"><i class="uil uil-upload"></i>&nbsp;
+                                    {{ $t('addGameInfo.game.thumbnail') }}
                                 </button>
 
                             </p>
@@ -154,9 +156,11 @@
                                 </div>
                             </div>
                             <p>
-                                <button class="btn-gray" @click="uploadGif"><i class="uil uil-upload"></i>&nbsp; 이미지 업로드
+                                <button class="btn-gray" @click="uploadGif"><i class="uil uil-upload"></i>&nbsp;
+                                    {{ $t('addGameInfo.game.thumbnail') }}
                                 </button>
-                                <button class="btn-circle-icon" @click="deleteThumbnail2"><i class="uil uil-trash-alt"></i>
+                                <button class="btn-circle-icon" @click="deleteThumbnail2"><i
+                                    class="uil uil-trash-alt"></i>
                                 </button>
                             </p>
                         </li>
@@ -337,6 +341,7 @@ export default class AddGameInfo extends Vue {
 
     mounted() {
 
+
         // this.callLocalStorageData();
     }
 
@@ -348,13 +353,12 @@ export default class AddGameInfo extends Vue {
 
     @Watch('projectInfo')
     callUpdateProjectData() {
-        console.log(this.projectInfo)
         const {name, description, picture, picture2, hashtags, game, stage, picture_webp} = this.projectInfo;
         const {pathname} = game;
 
         this.title = name;
         this.description = description;
-        this.prevImg = (picture_webp || picture)  + '?_=' + Date.now();
+        this.prevImg = (picture_webp || picture) + '?_=' + Date.now();
         this.prevGif = picture2;
         this.gamePath = pathname;
         this.hashtagsArr = hashtags ? hashtags.split(',') : []
@@ -385,7 +389,7 @@ export default class AddGameInfo extends Vue {
                 this.gamePathError = "";
             }
             else {
-                this.gamePathError = '사용중인 아이디 입니다. 다른 아이디를 입력하세요.';
+                this.gamePathError = `${this.$t('usedId')}`;// '사용중인 아이디 입니다. 다른 아이디를 입력하세요.';
             }
         }
         this.waitGamePath = false;
@@ -415,12 +419,10 @@ export default class AddGameInfo extends Vue {
             this.isHashtagErr = true;
             isError = true;
         }
-
         if (!this.thumbFile && !this.prevImg) {
             this.isThumbErr = true;
             isError = true;
         }
-
         return isError ? false : true;
 
     }
@@ -432,16 +434,33 @@ export default class AddGameInfo extends Vue {
             this.$emit('gameInfoDone', false)
             return;
         }
-        await this.commitGameInfo();
 
+
+        console.log('gameStage', this.$store.getters.gameStage)
+        console.log('projectInfo', this.projectInfo)
+
+        await this.commitGameInfo();
         if (this.isEditProject) {
             // 개발 단계를 변경하면 업로드한 게임 파일이 삭제됩니다. 개발 단계를 변경하시겠습니까?
-            if (this.$store.getters.gameStage === this.gameStage.Dev && this.projectInfo.projectVersions.length === 0) {
-                this.$emit('gameInfoDone', true)
+            if (this.$store.getters.gameStage === this.gameStage.Dev) {
+                if (this.projectInfo.projectVersions.length === 0) {
+                    this.$emit('gameInfoDone', true)
+                }else{
+                    this.updateProject();
+                    return;
+                }
             }
             else {
-                this.updateProject();
+                if (this.projectInfo.projectVersions.length === 0) {
+                    this.$emit('gameInfoDone', true)
+                }else{
+                    this.updateProject();
+                    return;
+                }
+                this.$emit('gameInfoDone', true)
             }
+
+
 
         }
         else {
@@ -456,8 +475,9 @@ export default class AddGameInfo extends Vue {
 
     @Watch('isUpdateProject')
     updateProject() {
-        console.log(this.isUpdateProject)
-
+        // if (!this.isUpdateProject ) {
+        //     return;
+        // }
         if (!this.validityCheck()) {
             this.$emit('gameInfoDone', false)
             return;
@@ -475,12 +495,13 @@ export default class AddGameInfo extends Vue {
 
         this.$api.updateProject(option, this.thumbFile, this.thumbFile2)
             .then((res) => {
+
                 this.$store.dispatch('project', this.projectInfo.id)
-                this.toast.successToast("업데이트 되었습니다.");
-                this.$router.push('/projectList')
+                this.toast.clear();
+                this.toast.successToast(`${this.$t('update.done')}`);
+                this.$router.push(`/${this.$i18n.locale}/projectList`)
             })
             .catch((err) => {
-
             })
     }
 
@@ -504,7 +525,7 @@ export default class AddGameInfo extends Vue {
         if (!this.isEditProject) {
             if (!this.confirmedGamePath) {
                 if (!this.autoGamePath) {
-                    alert('게임 id 다시 확인')
+                    alert(`${this.$t('check.gameId')}`)
 
                 }
                 else {
@@ -525,8 +546,6 @@ export default class AddGameInfo extends Vue {
             hashtags: this.hashtagsArr.toString(),
             stage: this.$store.getters.gameStage,
         };
-
-        console.log('gameInfo', gameInfo)
 
         // this.$store.commit("uploadGameFiles", []);
         this.$store.commit("gameFileInfoObj", {});
@@ -560,7 +579,8 @@ export default class AddGameInfo extends Vue {
 
         }
         else {
-            alert(`최대 파일 크기는 4mb입니다. `)
+            alert(`${this.$t('maxFile.size.4mb')}`)
+
         }
     }
 
@@ -570,9 +590,10 @@ export default class AddGameInfo extends Vue {
     }
 
     deleteThumbnail2() {
-        this.prevGif='';
+        this.prevGif = '';
         this.thumbFile2 = 'rm_file2';
     }
+
     onGifChange(event: { target: { files: any } }) {
         if (event.target.files[0].size < 1024 * 1024 * 4) {
             this.thumbFile2 = event.target.files[0];
@@ -585,15 +606,14 @@ export default class AddGameInfo extends Vue {
             reader.readAsDataURL(event.target.files[0]);
         }
         else {
-            alert(`최대 파일 크기는 4mb입니다. `)
+            alert(`${this.$t('maxFile.size.4mb')}`)
         }
     }
 
 
     checkActivePublish() {
         if (this.$store.getters.gameStage === this.gameStage.Dev) {
-            if (this.title && this.description && this.hashtagsArr.length !== 0 && this.thumbFile) {
-
+            if (this.title && this.description && this.hashtagsArr.length !== 0 && (this.thumbFile || (this.projectInfo && this.projectInfo.picture))) {
                 this.commitGameInfo();
                 this.$emit('isActivePublish', true)
             }
@@ -616,16 +636,16 @@ export default class AddGameInfo extends Vue {
             .then((res) => {
                 this.$store.getters.projects[this.projectInfo.id] = null;
                 this.toast.clear();
-                this.toast.successToast("해당 게임이 삭제되었습니다.")
+                this.toast.successToast(`${this.$t('deleted.game.success.msg')}`)
             })
             .catch(() => {
                 this.toast.clear();
-                this.toast.failToast("게임 삭제에 실패했습니다.")
+                this.toast.failToast(`${this.$t('deleted.game.fail.msg')}`)
 
             })
             .finally(() => {
                 this.$modal.hide('deleteProject')
-                this.$router.replace("/projectList");
+                this.$router.replace(`/${this.$i18n.locale}/projectList`);
             })
     }
 
@@ -639,8 +659,8 @@ export default class AddGameInfo extends Vue {
         )
             .then((res) => {
 
-                this.toast.successToast("개발 로그가 업로드되었습니다.");
-                this.$router.push('/projectList')
+                this.toast.successToast(`${this.$t('devLog.upload.done')}`);
+                this.$router.push(`/${this.i18n.locale}/projectList`)
             })
             .catch((err) => {
 
@@ -654,7 +674,6 @@ export default class AddGameInfo extends Vue {
         // }
         // else
         if (this.projectInfo && this.projectInfo.projectVersions.length !== 0) {
-            console.log('버전이 있음 ')
             return false;
         }
         else {
@@ -662,10 +681,6 @@ export default class AddGameInfo extends Vue {
         }
     }
 
-
-    // updateProject(){
-    //     this.updateProject()
-    // }
 
     /**
      * tag chips
