@@ -272,7 +272,7 @@ export default class MyChannel extends Vue {
                     this.joinedComFetch(this.user.id)
                 }
                 else {
-                    this.$router.push(`/${this.i18n.locale}/login`)
+                    this.$router.push(`/${this.$i18n.locale}/login`)
                 }
 
             })

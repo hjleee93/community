@@ -67,7 +67,7 @@
         <dt>
             <div class="ta-about">
                 <h2>About Us</h2>
-                <div>
+                <div class="desc">
                     {{ game.description }}
                 </div>
                 <dl>
@@ -127,6 +127,7 @@ export default class GameTimeline extends Vue {
     }
 
     fetch() {
+
         this.$api.gameInfo(this.gamePath)
             .then((res: any) => {
                 const {result} = res;
@@ -267,6 +268,11 @@ export default class GameTimeline extends Vue {
         height: 40px;
         margin-top: 0px;
         padding-bottom: 20px
+    }
+}
+.ta-about{
+    .desc{
+        line-break: auto;
     }
 }
 </style>

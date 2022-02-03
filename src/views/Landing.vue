@@ -207,7 +207,7 @@ export default class Landing extends Vue {
     }
 
     login() {
-        this.$router.push(`/${this.i18n.locale}/login`)
+        this.$router.push(`/${this.$i18n.locale}/login`)
     }
 
     gameUpload() {

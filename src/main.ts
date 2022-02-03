@@ -32,7 +32,9 @@ import 'swiper/css/swiper.css'
 import 'vue-select/dist/vue-select.css';
 import 'v-dropdown-menu/dist/v-dropdown-menu.css';
 import axios from "axios";
+import Popover from 'vue-js-popover'
 
+Vue.use(Popover)
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 Vue.use(Vuelidate)

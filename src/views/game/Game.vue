@@ -2,6 +2,7 @@
     <div class="content">
 
         <div class="visual-info-left"
+             style="background-color:#f973165c;"
              :key="$route.params.gamePath"
              :style="{'background' : 'url(' + game && game.url_thumb_webp+ ') center center / cover no-repeat', 'background-size' : 'cover'}">
             <dl>

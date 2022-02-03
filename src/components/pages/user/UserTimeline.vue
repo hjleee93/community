@@ -171,7 +171,7 @@ export default class UserPage extends Vue {
                 this.communityList = res;
             })
             .catch((err: AxiosError) => {
-                this.$router.push(`/${this.i18n.locale}`)
+                this.$router.push(`/${this.$i18n.locale}`)
             })
 
 

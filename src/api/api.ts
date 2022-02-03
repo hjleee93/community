@@ -5,13 +5,8 @@ import firebase from 'firebase/app';
 
 const zempieApi = process.env.VUE_APP_BASE_API;
 const studioApi = process.env.VUE_APP_STUDIO_API;
-
+const communityApi = process.env.VUE_APP_COMMUNITY_API;
 export default class Api {
-
-    constructor() {
-        console.log(studioApi)
-    }
-    private communityApi = process.env.VUE_APP_COMMUNITY_API;
 
     async request(method: string, url: string, data: any, withCredentials: boolean = false, errorCallback: Function | null = null, retryCount: number = 0): Promise<any> {
         try {
@@ -83,57 +78,57 @@ export default class Api {
 
     /* community */
     async communityList(obj: any) {
-        return await this.request('get', `${this.communityApi}community/list`, obj, false)
+        return await this.request('get', `${communityApi}community/list`, obj, false)
     };
 
     async channelList(community_id: string, obj: any) {
-        return await this.request('get', `${this.communityApi}community/${community_id}/channels`, obj, false)
+        return await this.request('get', `${communityApi}community/${community_id}/channels`, obj, false)
     }
 
     async communityInfo(id: string) {
-        return await this.request('get', `${this.communityApi}community/${id}`, undefined, false);
+        return await this.request('get', `${communityApi}community/${id}`, undefined, false);
     };
 
     async subscribe(obj: any) {
-        return await this.request('post', `${this.communityApi}community/${obj.community_id}/subscribe?user_id=${obj.user_id}`, undefined, false);
+        return await this.request('post', `${communityApi}community/${obj.community_id}/subscribe?user_id=${obj.user_id}`, undefined, false);
     }
 
     async unsubscribe(obj: any) {
-        return await this.request('post', `${this.communityApi}community/${obj.community_id}/unsubscribe?user_id=${obj.user_id}`, undefined, false);
+        return await this.request('post', `${communityApi}community/${obj.community_id}/unsubscribe?user_id=${obj.user_id}`, undefined, false);
     }
 
     async communityTimeline(obj: any) {
-        return await this.request('get', `${this.communityApi}timeline/${obj.community_id}/post`, obj, false)
+        return await this.request('get', `${communityApi}timeline/${obj.community_id}/post`, obj, false)
     }
 
     async communityMembers(community_id: string, obj: any) {
-        return await this.request('get', `${this.communityApi}community/${community_id}/members`, obj, false);
+        return await this.request('get', `${communityApi}community/${community_id}/members`, obj, false);
     }
 
     async channelInfo(community_id: string, channel_id: string) {
-        return await this.request('get', `${this.communityApi}community/${community_id}/channel/${channel_id}`, undefined, false);
+        return await this.request('get', `${communityApi}community/${community_id}/channel/${channel_id}`, undefined, false);
     }
 
     async channelTimeline(community_id: string, channel_id: string, obj: any) {
-        return await this.request('get', `${this.communityApi}timeline/${community_id}/channel/${channel_id}`, obj, false);
+        return await this.request('get', `${communityApi}timeline/${community_id}/channel/${channel_id}`, obj, false);
     }
 
     /* /community */
 
     /* search */
     async search(obj: any) {
-        return await this.request('get', `${this.communityApi}search`, obj, false)
+        return await this.request('get', `${communityApi}search`, obj, false)
     }
 
     /* /search */
 
     /* fcm */
     async saveFcmToken(user_id: number, token: string) {
-        return await this.request('post', `${this.communityApi}fcm/${user_id}?token="${token}`, undefined, false)
+        return await this.request('post', `${communityApi}fcm/${user_id}?token="${token}`, undefined, false)
     }
 
     async removeFcmToken(user_id: number) {
-        return await this.request('post', `${this.communityApi}fcm/${user_id}`, undefined, false);
+        return await this.request('post', `${communityApi}fcm/${user_id}`, undefined, false);
     }
 
     /* /fcm */
@@ -142,66 +137,66 @@ export default class Api {
     /* post */
 
     async uploadPost(obj: any) {
-        return await this.request('post', `${this.communityApi}post`, obj, false);
+        return await this.request('post', `${communityApi}post`, obj, false);
     }
 
     async updatePost(obj: any) {
-        return await this.request('put', `${this.communityApi}post/${obj.post_id}`, obj, false);
+        return await this.request('put', `${communityApi}post/${obj.post_id}`, obj, false);
     }
 
     async likeList(obj: any) {
-        return await this.request('get', `${this.communityApi}post/${obj.post_id}/like/list`, obj, false)
+        return await this.request('get', `${communityApi}post/${obj.post_id}/like/list`, obj, false)
     }
 
     async like(post_id: string) {
-        return await this.request('post', `${this.communityApi}post/${post_id}/like`, undefined, false);
+        return await this.request('post', `${communityApi}post/${post_id}/like`, undefined, false);
     }
 
     async unlike(post_id: string) {
-        return await this.request('post', `${this.communityApi}post/${post_id}/unlike`, undefined, false);
+        return await this.request('post', `${communityApi}post/${post_id}/unlike`, undefined, false);
     }
 
     async feed(post_id: string) {
-        return await this.request('get', `${this.communityApi}post/${post_id}`, undefined, false)
+        return await this.request('get', `${communityApi}post/${post_id}`, undefined, false)
     }
 
     async deletePost(post_id: string) {
-        return await this.request('delete', `${this.communityApi}post/${post_id}`, undefined, false);
+        return await this.request('delete', `${communityApi}post/${post_id}`, undefined, false);
     }
 
     async retweet(post_id: string) {
-        return await this.request('post', `${this.communityApi}post/${post_id}/retweet`, undefined, false);
+        return await this.request('post', `${communityApi}post/${post_id}/retweet`, undefined, false);
     }
 
     async userPostCnt(user_id: number) {
-        return await this.request('get', `${this.communityApi}user/${user_id}/totalPost`, undefined, false);
+        return await this.request('get', `${communityApi}user/${user_id}/totalPost`, undefined, false);
     }
 
     /* /post */
 
     /* comment */
     async comments(post_id: string, obj: any) {
-        return await this.request('get', `${this.communityApi}post/${post_id}/comment/list`, obj, false)
+        return await this.request('get', `${communityApi}post/${post_id}/comment/list`, obj, false)
     }
 
     async sendComment(obj: any) {
-        return await this.request('post', `${this.communityApi}post/${obj.post_id}/comment`, obj, false)
+        return await this.request('post', `${communityApi}post/${obj.post_id}/comment`, obj, false)
     }
 
     async deleteComment(post_id: string, comment_id: string) {
-        return await this.request('delete', `${this.communityApi}post/${post_id}/comment/${comment_id}`, undefined, false);
+        return await this.request('delete', `${communityApi}post/${post_id}/comment/${comment_id}`, undefined, false);
     }
 
     async updateComment(obj: any) {
-        return await this.request('post', `${this.communityApi}post/${obj.post_id}/comment/${obj.comment_id}`, obj, false)
+        return await this.request('post', `${communityApi}post/${obj.post_id}/comment/${obj.comment_id}`, obj, false)
     }
 
     async likeComment(post_id: string, comment_id: string) {
-        return await this.request('post', `${this.communityApi}post/${post_id}/comment/${comment_id}/like`, undefined, false);
+        return await this.request('post', `${communityApi}post/${post_id}/comment/${comment_id}/like`, undefined, false);
     }
 
     async unlikeComment(post_id: string, comment_id: string) {
-        return await this.request('post', `${this.communityApi}post/${post_id}/comment/${comment_id}/unlike`, undefined, false);
+        return await this.request('post', `${communityApi}post/${post_id}/comment/${comment_id}/unlike`, undefined, false);
     }
 
     /* /comment */
@@ -227,7 +222,7 @@ export default class Api {
     }
 
     async gameTimeline(obj: any) {
-        return await this.request('get', `${this.communityApi}timeline/game/${obj.game_id}`, obj, false)
+        return await this.request('get', `${communityApi}timeline/game/${obj.game_id}`, obj, false)
 
     }
 
@@ -239,7 +234,11 @@ export default class Api {
 
     /* report */
     async reportPost(obj) {
-        return await this.request('post', `${this.communityApi}post/${obj.post_id}/report`, obj, false);
+        return await this.request('post', `${communityApi}post/${obj.post_id}/report`, obj, false);
+    }
+
+    async reportUser(obj){
+        return await this.request('post', `${zempieApi}report/user`, obj, false);
     }
 
     /* /report */
@@ -247,35 +246,35 @@ export default class Api {
 
     //USER
     async joinedCommunityList(user_id: number) {
-        return await this.request('get', `${this.communityApi}user/${user_id}/list/community`, undefined, false)
+        return await this.request('get', `${communityApi}user/${user_id}/list/community`, undefined, false)
     }
 
     async follow(user_id: number) {
-        return await this.request('post', `${this.communityApi}user/${user_id}/follow`, undefined, false);
+        return await this.request('post', `${communityApi}user/${user_id}/follow`, undefined, false);
     }
 
     async unfollow(user_id: number) {
-        return await this.request('post', `${this.communityApi}user/${user_id}/unfollow`, undefined, false);
+        return await this.request('post', `${communityApi}user/${user_id}/unfollow`, undefined, false);
     }
 
     async followingList(obj: any, user_id: any) {
-        return await this.request('get', `${this.communityApi}user/${user_id}/list/following`, obj, false);
+        return await this.request('get', `${communityApi}user/${user_id}/list/following`, obj, false);
     }
 
     async followerList(obj: any, user_id: any) {
-        return await this.request('get', `${this.communityApi}user/${user_id}/list/follower`, obj, false);
+        return await this.request('get', `${communityApi}user/${user_id}/list/follower`, obj, false);
     }
 
     async userTimeline(channel_id: string, obj: any) {
-        return await this.request('get', `${this.communityApi}timeline/channel/${channel_id}`, obj, false)
+        return await this.request('get', `${communityApi}timeline/channel/${channel_id}`, obj, false)
     }
 
     async userMute(user_id: number) {
-        return await this.request('post', `${this.communityApi}member/${user_id}/mute`, undefined, false)
+        return await this.request('post', `${communityApi}member/${user_id}/mute`, undefined, false)
     }
 
     async userBlock(user_id: number) {
-        return await this.request('post', `${this.communityApi}member/${user_id}/mute`, undefined, false)
+        return await this.request('post', `${communityApi}member/${user_id}/mute`, undefined, false)
     }
 
     async session() {

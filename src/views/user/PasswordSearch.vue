@@ -111,7 +111,7 @@ export default class PasswordSearch extends Vue {
 
     closeModal() {
         this.$modal.hide('checkMailModal')
-        this.$router.push(`/${this.i18n.locale}/login`)
+        this.$router.push(`/${this.$i18n.locale}/login`)
     }
 
 }

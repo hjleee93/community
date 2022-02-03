@@ -251,7 +251,7 @@ export default class DeployManage extends Vue {
 
                     this.toast.clear();
                     this.toast.successToast(`${this.selectVersion} ${this.$t('deployed.version')}`)
-                    this.$router.replace(`/${this.i18n.locale}/versionManage/${this.projectId}`);
+                    this.$router.replace(`/${this.$i18n.locale}/versionManage/${this.projectId}`);
                 })
                 .catch(() => {
 

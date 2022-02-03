@@ -660,7 +660,7 @@ export default class AddGameInfo extends Vue {
             .then((res) => {
 
                 this.toast.successToast(`${this.$t('devLog.upload.done')}`);
-                this.$router.push(`/${this.i18n.locale}/projectList`)
+                this.$router.push(`/${this.$i18n.locale}/projectList`)
             })
             .catch((err) => {
 

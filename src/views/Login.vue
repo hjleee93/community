@@ -129,7 +129,7 @@
                 <div class="ma-content">
                     <h2>{{ $t('login.err.text1') }}</h2>
                     <div>
-                        <button class="btn-default" @click="closeModal">{{ $t('confirm') }}확인</button>
+                        <button class="btn-default" @click="closeModal">{{ $t('confirm') }}</button>
                     </div>
                 </div>
             </div>
@@ -271,8 +271,6 @@ export default class Login extends Vue {
             }
         }
         catch (e) {
-
-
             const code = e.code;
             // console.log(code);
             if (code) {
@@ -294,7 +292,6 @@ export default class Login extends Vue {
     }
 
     async mounted() {
-
         //로그인
         const loginState = await this.$store.dispatch("loginState");
         switch (loginState) {
@@ -349,8 +346,7 @@ export default class Login extends Vue {
                         window.location.href = url;
                     }
                     else {
-
-                        await this.$router.push(`/${this.i18n.locale}/channel/${this.$store.getters.user.channel_id}/timeline`
+                        await this.$router.push(`/${this.$i18n.locale}/channel/${this.$store.getters.user.channel_id}/timeline`
                         );
                     }
 
@@ -358,7 +354,7 @@ export default class Login extends Vue {
                 .catch((err: any) => {
                     if (err.error.code === 20001) {
                         this.$store.commit("loginState", LoginState.no_user);
-                        this.$router.replace(`/${this.i18n.locale}/googleJoin`);
+                        this.$router.replace(`/${this.$i18n.locale}/googleJoin`);
                         return;
                     }
                 })
