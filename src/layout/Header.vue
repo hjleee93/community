@@ -55,8 +55,8 @@
                 </div>
 
                 <!-- 로그인 했을 때 -->
-                <template v-if="$store.getters.user">
-                    <div class="header-info">
+                <template>
+                    <div class="header-info"   v-if="$store.getters.user">
                         <!--            <button class="btn-circle-icon" @click="isOpenMessage = !isOpenMessage">-->
                         <!--              <i class="uil uil-comment-alt"></i>-->
                         <!--              <span></span>-->
@@ -71,8 +71,12 @@
                             <i class="uil uil-setting"></i>
                         </button>
                     </div>
+<!--                    <div class="header-login" v-else>-->
+<!--                        <button class="btn-default" @click="login"><i class="uil uil-user"></i>{{ $t('login') }}</button>-->
+<!--                    </div>-->
+
                     <!-- 모바일 - 우측버튼 -->
-                    <div class="header-info-mobile">
+                    <div class="header-info-mobile" v-if="$store.getters.user">
                         <!--                    <button class="btn-none" @click="isOpenMessage = !isOpenMessage">-->
                         <!--                        <i class="uil uil-comment" style="font-size:21px;"></i>-->
                         <!--                        <span></span>-->
@@ -85,6 +89,9 @@
                             <i class="uil uil-setting"></i>
                         </button>
                     </div>
+<!--                    <div class="header-login" v-else>-->
+<!--                        <button class="btn-default" @click="login"><i class="uil uil-user"></i>{{ $t('login') }}</button>-->
+<!--                    </div>-->
                     <!-- 모바일 - 우측버튼 끝 -->
                     <!-- 모바일 - 좌측영역 -->
                     <div class="header-side-mobile" :style="isHeaderSideMobile ? 'left:0px;' : '' "
@@ -99,10 +106,10 @@
                             </div>
                         </div>
                         <div class="hsm-menu">
-                            <router-link :to="`/${$i18n.locale}/communityList`"><i class="uil uil-comment"></i>
+                            <router-link :to="`/${$i18n.locale}/communityList`" @click.native="headerSideCloseMobile"><i class="uil uil-comment"></i>
                                 Community
                             </router-link>
-                            <router-link :to="`/${$i18n.locale}/gameList`"><i class="uil uil-robot"></i> Game
+                            <router-link :to="`/${$i18n.locale}/gameList`" @click.native="headerSideCloseMobile"><i class="uil uil-robot"></i> Game
                             </router-link>
                         </div>
                         <!--                        <div class="hsm-language">-->
@@ -500,6 +507,7 @@ export default {
 
         },
         headerSideOpenMobile: function () {
+            console.log("?")
             this.isHeaderSideMobile = true;
             this.isHeaderSideBgMobile = true;
             document.body.style.overflow = "hidden";
@@ -534,6 +542,47 @@ export default {
 <style lang="scss" scoped>
 .menu li .active {
     color: #F97316;
+}
+
+
+@media all and (max-width:479px) {
+    //.header > dl {width:90%; padding:15px 0;}
+    //.header-logo-menu p {display:flex; align-items:center; margin-right:0;}
+    //.header-logo-menu p i {display:block; font-size:22px; margin-right:10px;}
+    //.header-logo-menu p a img {width:100px;}
+    //.header-logo-menu ul {display:none;}
+    //.header-search {display:none;}
+    //.header-language {display:none;}
+    .header-login {display:block !important;}
+    //.header-info {display:none;}
+    //.header-info-mobile {display:block;}
+}
+@media all and (min-width:480px) and (max-width:767px) {
+    //.header > dl {width:470px; padding:15px 0;}
+    //.header-logo-menu p {display:flex; align-items:center; margin-right:0;}
+    //.header-logo-menu p i {display:block; font-size:22px; margin-right:10px;}
+    //.header-logo-menu p a img {width:100px;}
+    //.header-logo-menu ul {display:none;}
+    //.header-search {display:none;}
+    //.header-language {display:none;}
+    .header-login {display:block !important;}
+    //.header-info {display:none;}
+    //.header-info-mobile {display:block;}
+}
+@media all and (min-width:768px) and (max-width:991px) {
+    //.header > dl {width:750px;}
+    //.header-search {display:none;}
+    //.header-language {display:none;}
+    .header-login {display:block !important;}
+    //.header-info {display:none;}
+    //.header-info-mobile {display:block;}
+}
+@media all and (min-width:992px) and (max-width:1199px) {
+    .header > dl {width:970px;}
+    .header-info-mobile {display:none;}
+}
+@media all and (min-width:1200px) {
+
 }
 
 </style>

@@ -14,7 +14,7 @@
                     <li v-for="channel in orderedChannelList"
                         class="channel"
                         :class="{ active: isActive(channel.id) }"
-                        @click="openChannelTl(channel.id)"
+                        @click="openChannelTl(channel)"
                         :id="channel.id"
                         :style="`background: url(${channel.profile_img || '/img/1500_300_com_channel_default.png'}) center center / cover no-repeat;`">
                         <span>{{ channel.title }}</span>
@@ -118,8 +118,11 @@ export default class CommunityTimeline extends Vue {
                     this.$store.commit('currPage', {
                         community: [{
                             id: this.communityId,
+                            community:this.community,
                             //@ts-ignore
-                            channel_id: this.orderedChannelList[0].id
+                            channel_id: this.orderedChannelList[0].id,
+                            //@ts-ignore
+                            channel:this.orderedChannelList[0]
                         }]
                     })
                 }
@@ -172,8 +175,11 @@ export default class CommunityTimeline extends Vue {
         this.$store.commit('currPage', {
             community: [{
                 id: this.communityId,
+                community:this.community,
                 //@ts-ignore
-                channel_id: this.orderedChannelList[0].id
+                channel_id: this.orderedChannelList[0].id,
+                //@ts-ignore
+                channel:this.orderedChannelList[0]
             }]
         })
     }
@@ -204,13 +210,15 @@ export default class CommunityTimeline extends Vue {
     }
 
 
-    openChannelTl(channel_id: string) {
-        this.channelId = channel_id;
+    openChannelTl(channel: any) {
+        this.channelId = channel.id;
         this.currPage = 'channel'
         this.$store.commit('currPage', {
             community: [{
                 id: this.communityId,
-                channel_id: channel_id
+                community:this.community,
+                channel_id: channel.id,
+                channel:channel
             }]
         })
     }

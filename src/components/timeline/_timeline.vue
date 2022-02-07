@@ -58,6 +58,7 @@
                     @reFetch="reFetch"
                     @deleteFeed="deleteFeed"
                     @reportPost="reportPost"
+                    @reportUser="reportUser"
                     @originImg="(val)=>originImg = val"
                 ></Feed>
             </ul>
@@ -80,8 +81,8 @@
             <!--                    <PulseLoader :loading="$store.getters.LoadingStatus"></PulseLoader>-->
         </dd>
         <modal name="writingModal" classes="post-modal" :clickToClose="false" :scrollable="true" height="auto">
-            <post @closePostModal="closePostModal" @reFetch="reFetch" @reMount="reMount">
-            </post>
+            <Post @closePostModal="closePostModal" @reFetch="reFetch" @reMount="reMount" >
+            </Post>
         </modal>
 
 
@@ -113,6 +114,7 @@
             <Post @reFetch="reFetch"></Post>
         </modal>
 
+        <!-- 포스팅 신고 -->
         <modal class="modal-area-type" name="modalReport" width="90%" height="auto" :maxWidth="375" :adaptive="true"
                :scrollable="true">
             <div class="modal-report">
@@ -150,6 +152,52 @@
                 </div>
             </div>
         </modal>
+        <!-- /포스팅 신고 -->
+
+        <!-- 유저 신고 -->
+        <modal class="modal-area-type" name="modalUserReport" width="90%" height="auto" :maxWidth="375" :adaptive="true"
+               :scrollable="true">
+            <div class="modal-report">
+                <dl class="mr-header">
+                    <dt>{{ $t('post.report.text') }}</dt>
+                    <dd>
+                        <button @click="$modal.hide('modalUserReport')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="mr-content">
+                    <ul>
+                        <li>
+                            <input type="radio" v-model="pickedUserReason" value="1" id="reportUser1"/> <label
+                            for="reportUser1"><i class="uil uil-check"></i></label>&nbsp;
+                            <span><label for="reportUser1">{{ $t('해킹 당한 계정입니다.') }} </label></span>
+                        </li>
+                        <li>
+                            <input type="radio" v-model="pickedUserReason" value="2" id="reportUser2"/> <label
+                            for="reportUser2"><i class="uil uil-check"></i></label>&nbsp; <span><label
+                            for="reportUser2"> {{ $t('사칭하는 계정인 것 같습니다.') }}</label></span>
+                        </li>
+                        <li style="display: flex;">
+                            <div>
+                            <input type="radio" v-model="pickedUserReason" value="3" id="reportUser3"/>
+                            <label for="reportUser3"><i class="uil uil-check"></i></label>&nbsp;
+                            </div>
+                            <div> <span>
+                            <label for="reportUser3"> {{ $t('프로필 정보 또는 이미지가 혐오스러운 내용을 포함하고 있습니다.') }}</label></span>
+                            </div>
+                        </li>
+                        <!--            <li>-->
+                        <!--              <input type="radio" v-model="pickedReason" value="report4" id="report4"/> <label for="report4"><i class="uil uil-check"></i></label>&nbsp; <span><label for="report4"> 기타</label></span>-->
+                        <!--              <div><textarea name=""></textarea></div>-->
+                        <!--            </li>-->
+                    </ul>
+                    <div @click="sendUserReport">
+                        <button class="btn-default" style="width: 100% !important;">{{ $t('post.report.btn') }}</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
+        <!-- /유저 신고 -->
+
         <modal name="deleteComment" :clickToClose="false" class="modal-area-type" width="90%" height="auto"
                :maxWidth="380"
                :adaptive="true"
@@ -281,6 +329,8 @@ export default class Timeline extends Vue {
     postId = '';
 
     isFirstLoading: boolean = true;
+    pickedUserReason: any = '';
+    targetId!:any;
 
 
     mounted() {
@@ -409,7 +459,7 @@ export default class Timeline extends Vue {
                 }
                 this.$api.gameTimeline(gameObj)
                     .then((res: any) => {
-                        if (this.isAddData) {
+                        if (this.isAddData, res) {
                             if (res.result.length > 0) {
                                 this.timeline = [...this.timeline, ...res.result]
                             }
@@ -425,11 +475,10 @@ export default class Timeline extends Vue {
                     })
                     .catch((err: AxiosError) => {
 
-
                     })
                     .finally(() => {
                         this.isFirstLoading = false;
-                        // this.timeline = _.orderBy(this.timeline, 'createdAt', 'desc')
+                        this.timeline = _.orderBy(this.timeline, 'createdAt', 'desc')
                     })
                 break;
             case 'community':
@@ -448,7 +497,6 @@ export default class Timeline extends Vue {
                                 this.timeline = [...this.timeline, ...res.result]
                             }
                             else {
-                                // console.log('no data')
                                 this.hasData = false
                                 window.removeEventListener("scroll", this.scrollCheck);
 
@@ -565,6 +613,7 @@ export default class Timeline extends Vue {
     }
 
     openPostModal() {
+
         if (!this.user) {
             this.$modal.show('needLogin')
             this.$store.commit('needLogin', true)
@@ -575,6 +624,14 @@ export default class Timeline extends Vue {
                     this.$modal.show('modalPost')
                     break;
                 case 'community' :
+                    if (!this.community.is_subscribed) {
+                        this.$modal.show('needSubscribe')
+                    }
+                    else {
+                        this.$modal.show('modalPost')
+                    }
+                    break;
+                case 'channel' :
                     if (!this.community.is_subscribed) {
                         this.$modal.show('needSubscribe')
                     }
@@ -639,6 +696,9 @@ export default class Timeline extends Vue {
     reportPost(feedId: any) {
         this.feedId = feedId;
     }
+    reportUser(targetId: any){
+        this.targetId=targetId;
+    }
 
     yesDeletePost() {
         this.$modal.hide('deleteModal')
@@ -659,7 +719,25 @@ export default class Timeline extends Vue {
             })
 
     }
+    sendUserReport(){
 
+        const formData = new FormData();
+        // formData.append('target_type', 0);
+        formData.append('target_id', this.targetId);
+        formData.append('reporter_id', (this.user.id).toString());
+        formData.append('reason', this.pickedUserReason);
+
+
+        this.$api.reportUser(formData)
+            .then((res: AxiosResponse) => {
+                console.log('res', res)
+
+            })
+            .catch((err: AxiosError) => {
+                console.log('err', err)
+            })
+
+    }
     sendReport() {
         const obj = {
             post_id: this.feedId,
@@ -667,7 +745,8 @@ export default class Timeline extends Vue {
             targetType: 'POST',
             report_reason: this.pickedReason
         }
-        this.$api.reportPost(obj)
+
+        this.$api.reportUser(obj)
             .then((res: AxiosResponse) => {
 
             })

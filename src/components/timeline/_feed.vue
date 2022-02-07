@@ -36,6 +36,7 @@
                                 {{ $t('visit.userChannel') }}
                             </router-link>
                             <a v-if="user" @click="report">{{ $t('post.report') }}</a>
+                            <a v-if="user" @click="userReportModalOpen">{{ $t('post.report') }}유저 신고하기</a>
                         </template>
                     </div>
                 </dropdown-menu>
@@ -128,6 +129,9 @@
                 @sendComment="editDone"
                 @updateComment="updateDone"/>
         </div>
+
+
+
 
     </li>
 
@@ -399,6 +403,20 @@ export default class Feed extends Vue {
     updateDone() {
         // this.commentInit();
         // this.commentFetch()
+    }
+
+    /**
+     * 유저 신고
+     */
+
+    userReportModalOpen() {
+        this.$emit('reportUser', this.feed.user.id)
+        // this.isOpenReportModal = !this.isOpenReportModal
+        this.$modal.show('modalUserReport')
+    }
+
+    userReport(){
+        console.log("?")
     }
 }
 </script>

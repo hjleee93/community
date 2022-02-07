@@ -248,6 +248,48 @@
             <Post @reFetch="reFetch"></Post>
         </modal>
 
+        <modal class="modal-area-type" name="modalReport" width="90%" height="auto" :maxWidth="375" :adaptive="true"
+               :scrollable="true">
+            <div class="modal-report">
+                <dl class="mr-header">
+                    <dt>{{ $t('post.report.text') }}</dt>
+                    <dd>
+                        <button @click="$modal.hide('modalReport')"><i class="uil uil-times"></i></button>
+                    </dd>
+                </dl>
+                <div class="mr-content">
+                    <ul>
+                        <li>
+                            <input type="radio" v-model="pickedReason" value="1" id="report1"/> <label
+                            for="report1"><i class="uil uil-check"></i></label>&nbsp;
+                            <span><label for="report1">{{ $t('post.report.reason1') }} </label></span>
+                        </li>
+                        <li>
+                            <input type="radio" v-model="pickedReason" value="2" id="report2"/> <label
+                            for="report2"><i class="uil uil-check"></i></label>&nbsp; <span><label
+                            for="report2"> {{ $t('post.report.reason2') }}</label></span>
+                        </li>
+                        <li>
+                            <input type="radio" v-model="pickedReason" value="3" id="report3"/> <label
+                            for="report3"><i class="uil uil-check"></i></label>&nbsp; <span><label
+                            for="report3"> {{ $t('post.report.reason3') }}</label></span>
+                        </li>
+                        <li>
+                          <input type="radio" v-model="pickedReason" value="4" id="report4"/>
+                            <label for="report4"><i class="uil uil-check"></i></label>&nbsp; <span><label for="report4"> 기타</label></span>
+                            <transition name="component-fade" mode="out-in">
+                          <div v-if="pickedReason === '4'"><textarea name=""></textarea></div>
+                            </transition>
+                        </li>
+                    </ul>
+                    <div @click="sendReport">
+                        <button class="btn-default" style="width: 100% !important;">{{ $t('post.report.btn') }}</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
+
+
     </div>
 </template>
 
@@ -306,7 +348,7 @@ export default class FeedDetail extends Vue {
     }
 
     isOpenReportModal = false;
-
+    pickedReason: any = '';
     mounted() {
         this.$store.dispatch("loginState")
             .then(() => {
@@ -319,6 +361,27 @@ export default class FeedDetail extends Vue {
 
     beforeDestroy() {
         window.removeEventListener("scroll", this.scrollCheck);
+    }
+
+    sendReport() {
+        const obj = {
+            post_id: this.feedId,
+            user_id: this.user.id,
+            targetType: 'POST',
+            report_reason: this.pickedReason
+        }
+        this.$api.reportPost(obj)
+            .then((res: AxiosResponse) => {
+
+            })
+            .catch((err: AxiosError) => {
+
+                this.toast.failToast(err.message)
+            })
+            .finally(() => {
+                this.$modal.hide('modalReport')
+                this.pickedReason = ''
+            })
     }
 
     fetch() {
@@ -457,7 +520,7 @@ export default class FeedDetail extends Vue {
                     this.$toasted.clear();
                     this.toast.successToast(`${this.$t('posting.deleted')}`)
                 }
-                this.$router.push(`/${this.i18n.locale}`)
+                this.$router.push(`/${this.$i18n.locale}`)
             })
             .catch((err: any) => {
 
@@ -565,6 +628,41 @@ export default class FeedDetail extends Vue {
         height: 30px;
         padding-left: 20px;
     }
+}
+
+
+
+input[type="radio"] + label {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    text-align: center;
+    font-size: 15px;
+    color: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    cursor: pointer;
+}
+input[type="radio"]:checked + label {
+    color: #fff;
+    background: #FF6E17;
+    border-color: #FF6E17;
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+
+//transition
+.component-fade-enter-active, .component-fade-leave-active {
+    transition: opacity .3s ease;
+}
+
+.component-fade-enter, .component-fade-leave-to
+    /* .component-fade-leave-active below version 2.1.8 */
+{
+    opacity: 0;
 }
 
 </style>

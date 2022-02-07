@@ -23,7 +23,7 @@
         </div>
         <template v-if="activeTab === 'SNS'">
             <div class="mp-image" style="padding-bottom: 0px">
-                <dd style="width: 100%;">
+                <dd style="width: 100%;" :style="imgPreviewArr.length > 0 ? 'height: 130px;':''">
                     <swiper class="swiper-area" :options="MPIswiperOption" v-if="imgPreviewArr.length > 0">
 
                         <swiper-slide
@@ -53,8 +53,46 @@
                 </ul>
             </div>
         </template>
-        <dl class="mp-category">
-        </dl>
+
+        <!-- 포스팅 카테고리 -->
+        <div class="mp-category" :style="imgPreviewArr.length > 0?'#e9e9e9 1px solid;':''">
+            <button v-popover:category class="btn-line-small" style="width:25%;" @click="fetch"><i class="uil uil-plus"></i> Add Group
+            </button>
+            <popover name="category" :pointer="true" :transition="'fade-out'" @hide="clickOutside" ref="popoverRef">
+                <div class="mpc-more-dropdown">
+                    <button class="category-group group-btn" @click="openChannel(group)"
+                            :class="isGroupListOpen ? 'on' : 'off'" v-for="group in communityList">
+                       <p style="margin: 0 auto;"> {{ group.name }}</p>
+                    </button>
+                    <div :class="['channel-btn', isChannelListOpen ? 'on' : 'off']">
+                        <div class="back-group-btn">
+                            <button class="category-group"
+                                    @click="isChannelListOpen = !isChannelListOpen; isGroupListOpen = !isGroupListOpen">
+                                <i
+                                    class="uil uil-arrow-circle-left"></i>
+                                {{ selectedGroup.name }}
+                            </button>
+                        </div>
+                        <button class="category-group" v-for="channel in channels" @click="selectChannel(channel)">
+                            {{ channel.title }}
+                        </button>
+                    </div>
+                </div>
+            </popover>
+
+            <swiper class="swiper-area" style="margin-left: 10px;" :options="MPCswiperOption">
+                <swiper-slide v-for="(postedAt, index) in postingChannels" :key="index">
+                    <div class="category-select-finish">
+                        <div style="margin-left:10px;">
+                            <span>{{ postedAt.group.name }}</span> /
+                            <em>{{ postedAt.channel.title }}</em>
+                        </div>
+                        <p class="cross-btn" @click="deletePostingChannel(index)"><i class="uil uil-times"></i></p>
+                    </div>
+                </swiper-slide>
+            </swiper>
+
+        </div>
         <dl class="mp-type" :style="activeTab === 'BLOG'? 'margin-top:20px;':''">
             <dt>
                 <image-uploader-btn
@@ -132,9 +170,12 @@
                     </dd>
                 </dl>
                 <div class="ma-content">
-                    <h2>{{ $t('post.empty.text') }}  </h2>
+                    <h2>{{ $t('post.empty.text') }} </h2>
                     <div>
-                        <button class="btn-default" style="width:100%" @click="$modal.hide('minChar')">{{ $t('yes') }}</button>
+                        <button class="btn-default" style="width:100%" @click="$modal.hide('minChar')">{{
+                                $t('yes')
+                            }}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -159,7 +200,7 @@ import Messages from "@/components/pages/user/Messages.vue";
 import {AxiosError, AxiosResponse} from "axios";
 import {Swiper, SwiperSlide} from "vue-awesome-swiper";
 import Toast from "@/script/message";
-import {forEach} from "lodash";
+import _ from "lodash";
 
 @Component({
     computed: {...mapGetters(["user"])},
@@ -178,39 +219,38 @@ export default class Post extends Vue {
     toast = new Toast();
     feed: any = {};
     isEditorEmpty: boolean = true;
-    private youtubeLink: string[] = [];
+    youtubeLink: string[] = [];
 
-    private communityList: any[] = [];
-    private isChannelOn: boolean = false;
-    private communities: string = "Communities";
-    private channels: string = "Channels";
+    communityList: any[] = [];
+    communities: string = "Communities";
+    channels: any = "";
 
     // 첨부파일
-    private imgPreviewArr: any[] = [];
-    private videoSrc: any = {};
-    private audioPreviewArr: any[] = [];
+    imgPreviewArr: any[] = [];
+    videoSrc: any = {};
+    audioPreviewArr: any[] = [];
 
-    private user!: User;
+    user!: User;
     // follow 공개 여부
-    private isPrivate: boolean = false;
-    private isScheduledPost: boolean = false;
-    private time: any = 0;
+    isPrivate: boolean = false;
+    isScheduledPost: boolean = false;
+    time: any = 0;
 
-    private selectedCommunityId: number = -1;
-    private selectedChannelId: number = -1;
+    selectedCommunityId: number = -1;
+    selectedChannel: any = '';
 
     // 예약 포스팅
-    private minDate = new Date();
-    private reserved_date: string = "";
-    private reserved_time: string = "";
+    minDate = new Date();
+    reserved_date: string = "";
+    reserved_time: string = "";
 
     //community
-    private isCommunityClick: boolean = false;
+    isCommunityClick: boolean = false;
 
-    private selectedCommunity: any = "";
-    private selectedCategory: any[] = [];
+    selectedGroup: any = "";
+    selectedCategory: any[] = [];
 
-    private attFiles: any[] = [];
+    attFiles: any[] = [];
     updateImgArr: any = [];
     updateAudioArr: any = [];
     updateVideo: any = {};
@@ -245,10 +285,19 @@ export default class Post extends Vue {
         }
     }
 
+    MPCswiperOption = {
+        slidesPerView: 'auto',
+        spaceBetween: 5,
+    }
 
+    isGroupListOpen: boolean = true;
+    isChannelListOpen: boolean = false;
     // 해시태그 멘션
     private hasTagSuggestion: boolean = false;
     private postedHashtag: string[] = [];
+
+
+    postingChannels: any[] = [];
 
     async mounted() {
 
@@ -257,6 +306,21 @@ export default class Post extends Vue {
             this.feed = this.$store.getters.feed
             this.prefill();
         }
+        const community = this.$store.getters.currPage?.community;
+
+        const channel = this.$store.getters.currPage?.channel;
+
+        console.log('channel', this.$store.getters.currPage)
+        if (community) {
+            this.postingChannels = [{
+                group: community[0].community,
+                channel: community[0].channel
+            }]
+        }else if ( channel ) {
+            console.log(channel)
+        }
+
+        // console.log( this.postingChannels)
         // this.fetch();
     }
 
@@ -314,6 +378,7 @@ export default class Post extends Vue {
         this.$api.joinedCommunityList(this.user.id)
             .then((res: any) => {
                 this.communityList = res;
+                console.log(res)
             })
             .catch((err: AxiosError) => {
 
@@ -380,6 +445,15 @@ export default class Post extends Vue {
 
     //포스팅 업로드
     async uploadPost() {
+
+        const postedAt = _.map(this.postingChannels, community => {
+            return {
+                id: community.group.id,
+                channel_id: community.channel.id,
+            }
+        })
+
+
         this.attFiles = [];
         let date = this.reserved_date + "T" + this.reserved_time;
         let scheduledTime = moment(date).valueOf();
@@ -434,7 +508,8 @@ export default class Post extends Vue {
                 ],
                 game_id: "",
                 channel_id: this.user.channel_id,
-                ...this.$store.getters.currPage,
+                community: postedAt,
+                // ...this.$store.getters.currPage,
                 // portfolio_ids: [
                 // ],
                 scheduled_for: null
@@ -490,7 +565,7 @@ export default class Post extends Vue {
         //     }
         // }
         // else {
-            this.attFiles = await this.uploadAtt();
+        this.attFiles = await this.uploadAtt();
         // }
         // console.log('this.attFiles', this.attFiles)
         // console.log('this.$store.getters.blogAudioArr', this.$store.getters.blogAudioArr)
@@ -506,26 +581,26 @@ export default class Post extends Vue {
         }
 
         //todo: 백엔드 수정후 변경
-        if(this.$store.getters.postContents.includes('<audio')){
-            this.attFiles.push( {
+        if (this.$store.getters.postContents.includes('<audio')) {
+            this.attFiles.push({
                 priority: 0,
-                url:'audio',
-                type:'sound'
+                url: 'audio',
+                type: 'sound'
             })
         }
-        if(this.$store.getters.postContents.includes('<iframe')){
-            this.attFiles.push( {
+        if (this.$store.getters.postContents.includes('<iframe')) {
+            this.attFiles.push({
                 priority: 0,
-                url:'video',
-                type:'video'
+                url: 'video',
+                type: 'video'
             })
 
         }
-        if(this.$store.getters.postContents.includes('<img')){
-            this.attFiles.push( {
+        if (this.$store.getters.postContents.includes('<img')) {
+            this.attFiles.push({
                 priority: 0,
-                url:'image',
-                type:'image'
+                url: 'image',
+                type: 'image'
             })
         }
 
@@ -655,6 +730,36 @@ export default class Post extends Vue {
 
     }
 
+    openChannel(group) {
+        this.selectedGroup = group;
+        this.channels = _.sortBy(group.channels, group.channels.createdAt).reverse();
+
+        this.isGroupListOpen = !this.isGroupListOpen;
+        this.isChannelListOpen = !this.isChannelListOpen;
+    }
+
+    clickOutside() {
+        this.isGroupListOpen = true;
+        this.isChannelListOpen = false;
+    }
+
+    selectChannel(channel) {
+        (this.$refs.popoverRef as any).visible = false;
+        this.clickOutside();
+
+        this.postingChannels = [...this.postingChannels, {
+            group: this.selectedGroup,
+            channel: channel
+        }]
+
+        this.postingChannels = _.uniqBy( this.postingChannels, 'channel.id')
+    }
+
+    deletePostingChannel(index) {
+        this.postingChannels.splice(index, 1)
+    }
+
+
     /**
      * 예약 포스팅
      * */
@@ -673,50 +778,21 @@ export default class Post extends Vue {
         }
     }
 
-    /**
-     * 포스팅 카테고리 선택
-     * */
-    // select category
-    selectCommunity(e) {
-        let selectedItem = e.target.value;
-        if (selectedItem.toLowerCase() === "communities") {
-            this.isChannelOn = false;
-        }
-        else {
-            this.isChannelOn = true;
-            // this.channelList = this.$api.getCommunityInfo(
-            //     selectedItem.id
-            // ).channels;
-        }
-        this.communities = selectedItem.name;
-        this.selectedCommunityId = selectedItem.id;
-    }
-
-    selectChannel(selectedItem: any) {
-        this.channels = selectedItem.name;
-        this.selectedChannelId = selectedItem.id;
-        // console.log(selectedItem);
-    }
-
-    getChannel(channel) {
-        this.selectedCommunity = Object.assign(this.selectedCommunity, {
-            channel: channel,
-        });
-
-        this.selectedCategory.push(this.selectedCommunity);
-    }
-
-    getCommunity(community) {
-        this.selectedCommunity = community;
-    }
-
-    deleteCategory(idx: number) {
-        this.selectedCategory.splice(idx, 1);
-    }
 }
 </script>
 
 <style lang="scss" scoped>
+
+.swiper-button-next,
+.swiper-button-prev {
+    --swiper-navigation-color: #999;
+    --swiper-navigation-size: 20px;
+
+    &:hover {
+        --swiper-navigation-color: #FF6216;
+    }
+}
+
 .btn-default-samll {
     width: 30%;
     float: right;
@@ -995,8 +1071,14 @@ export default class Post extends Vue {
 }
 
 .mp-category {
+    width: 100%;
+    display: inline-flex;
     padding: 0;
     border-bottom: 0px;
+    border-top:0px;
+    .btn-line-small{
+        margin-left:10px;
+    }
 }
 
 .cancel-btn {
@@ -1032,7 +1114,7 @@ export default class Post extends Vue {
 }
 
 .swiper-wrapper, .swiper-container {
-    height: 130px !important;
+    //height: 130px !important;
 }
 
 .mp-midi {
@@ -1047,5 +1129,50 @@ export default class Post extends Vue {
     align-items: center;
     justify-content: space-between;
     height: auto !important;
+
 }
+
+.category-group {
+    width: 100%;
+    margin: 10px 10px 0px 0px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    background: #f5f5f5;
+    border: none;
+    cursor: pointer;
+}
+
+.back-group-btn {
+    .category-group{
+        justify-content: flex-start;
+        color: #0D0D0D;
+    }
+
+    .uil-arrow-circle-left {
+        font-size: 25px;
+        color: #f97316;
+        display: flex;
+    }
+
+}
+
+.channel-btn.off {
+    display: none !important;
+}
+
+.group-btn.off {
+    display: none !important;
+}
+
+.cross-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
 </style>
